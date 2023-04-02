@@ -1,0 +1,54 @@
+<!-- title -->
+<div class="mb-2">
+  <h2 class="text-2xl">Users</h2>
+</div>
+
+{{{userModal}}}
+
+<!-- results -->
+<div id="results" class="w-full h-full flex-grow p-3 overflow-auto">
+  <div>
+		<button id="download-xlsx" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download XLSX</button>
+		<button id="download-csv" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download CSV</button>
+		<button id="download-json" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download JSON</button>
+	</div>
+	<br />
+	<div id="resultsTable"></div>
+	<script>
+		var scriptUrl = "{{{scriptUrl}}}";
+		{{{tableData}}}
+		var table = new Tabulator("#resultsTable", {
+			data: tabledata,
+			columnDefaults: {
+				headerFilter: true,
+			},
+			columns: [
+				{ title: "Id", field: "id", cellClick:function(e, cell, value, data){ showUserModal(scriptUrl, cell.getValue()) }, sorter: "string" },
+				{ title: "First Name", field: "firstname", sorter: "string" },
+				{ title: "Last Name", field: "lastname", sorter: "string" },
+				{ title: "email", field: "email", sorter: "string" },
+				{ title: "Title", field: "title", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "Supervisor", field: "supervisor", cellClick:function(e, cell, value, data){ showUserModal(scriptUrl, cell.getValue()) }, sorter: "string" },
+			],
+		});
+		// trigger XLSX file download
+		document.getElementById("download-xlsx").addEventListener("click", function () {
+			table.download("xlsx", "users.xlsx", { sheetName: "Inventory Transactions" });
+			NS.form.setInited(false);
+		});
+		// trigger CSV file download
+		document.getElementById("download-csv").addEventListener("click", function () {
+			table.download("csv", "users.csv");
+			NS.form.setInited(false);
+		});
+		// trigger json file download
+		document.getElementById("download-json").addEventListener("click", function () {
+			table.download("json", "users.json");
+			NS.form.setInited(false);
+		});
+	</script>
+</div>

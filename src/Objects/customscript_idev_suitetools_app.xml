@@ -1,0 +1,25 @@
+<suitelet scriptid="customscript_idev_suitetools_app">
+  <description>The SuiteTools application.</description>
+  <isinactive>F</isinactive>
+  <name>SuiteTools App</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/SuiteTools/idev-suitetools-app.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_idev_suitetools_app">
+      <allemployees>F</allemployees>
+      <allroles>T</allroles>
+      <audemployee></audemployee>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>F</isonline>
+      <loglevel>DEBUG</loglevel>
+      <runasrole></runasrole>
+      <status>RELEASED</status>
+      <title>SuiteTools App</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</suitelet>

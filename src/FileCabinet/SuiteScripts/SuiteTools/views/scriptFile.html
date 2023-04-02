@@ -1,0 +1,24 @@
+<!-- title -->
+<div class="mb-2">
+    <h2 class="text-2xl">Script Details</h2>
+</div>
+
+API: {{apiversion}}<br/>
+Inactive: {{isinactive}}<br/>
+Type: {{scripttype}}<br/>
+Name: {{name}}<br/>
+Id #: {{id}}<br/>
+Id: {{scriptid}}<br/>
+Owner: {{owner}}<br/>
+File: {{scriptfile}}<br/>
+Notify Emails: {{notifyemails}}<br/>
+Description: {{description}}<br/>
+<br/>
+<div>
+    <button onclick="window.open('{{urlScriptLogs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Script Logs</button>
+</div>
+<br/>
+<!-- display code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+<pre class="line-numbers" class="line-numbers" data-src="plugins/line-numbers/index.html" style="white-space:pre-wrap;" class="language-javascript" data-src-status="loaded" tabindex="0"><code class="language-javascript">{{code}}</code></pre>

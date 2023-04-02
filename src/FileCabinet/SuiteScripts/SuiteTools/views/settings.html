@@ -1,0 +1,81 @@
+<div class="mb-2">
+  <h2 class="text-2xl">Settings</h2>
+	<div class="mb-2">
+		<h3 class="text-xl">Configuration</h3>
+		<p>The configuration values change between environments.</p>
+		<ul class="list-disc list-inside ml-4">
+			<li>Record Id: {{recordid}}<br/></li>
+			<li>CSS URL: {{cssurl}}</li>
+			<li>JS URL: {{jsurl}}</li>
+		</ul>
+	</div>
+	<div class="mb-2">
+		<h3 class="text-xl">Application</h3>
+		<p>The application settings.</p>
+		<ul class="ml-4">
+			<li>
+				<label class="relative inline-flex items-center cursor-pointer">
+					<input type="checkbox" id="devmode" value="" class="sr-only peer" checked>
+					<div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+					<span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Dev Mode</span>
+				</label>
+			</li>
+		</ul>
+		<script>
+			// set Dev Mode checkbox
+			document.getElementById("devmode").checked = {{devmode}};
+			// listen for Dev Mode checkbox change
+			document.getElementById('devmode').addEventListener('change', function() {
+				console.log('devmode changed to ' + this.checked);
+				postData(this.checked, '{{{scriptUrl}}}&action=data');
+			});
+
+			// create a custom script to post data to an endpoint
+			/**
+			 * Post data to an endpoint.
+			 * @author Matthew Plant
+			 * @param data - the data to post
+			 * @param {string} url - the endpoint to post to
+			 */
+			function postData(data, url) {
+				// Default options are marked with *
+				return fetch(url, {
+					body: JSON.stringify({ devmode: data }), // must match 'Content-Type' header
+					cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+					credentials: 'same-origin', // include, same-origin, *omit
+					headers: {
+						'user-agent': 'NetSuite SuiteScript 2.1',
+						'content-type': 'application/json'
+					},
+					method: 'POST', // *GET, POST, PUT, DELETE, etc.
+					mode: 'cors', // no-cors, cors, *same-origin
+					redirect: 'follow', // manual, *follow, error
+					referrer: 'no-referrer', // *client, no-referrer
+				})
+				.then(response => response.json()) // parses response to JSON
+				.catch(error => console.error(`Fetch Error =\n`, error));
+			}
+
+			/**
+			 * Post data to an endpoint.
+			 * @author Matthew Plant
+			 * @param data - the data to post
+			 * @param {string} pageUrl - the endpoint to post to
+			 */
+			//  function postData(multiselectIds, pageUrl) {
+			// 	// multiselect workaround
+			// 	CustomMultiselectPost(multiselectIds);
+
+			// 	// post the page
+			// 	var xhttp = new XMLHttpRequest();
+			// 	xhttp.onreadystatechange = function() {
+			// 		if (this.readyState == 4 && this.status == 200) {
+			// 			document.getElementById("main").innerHTML = this.responseText;
+			// 		}
+			// 	};
+			// 	xhttp.open("POST", pageUrl, true);
+			// 	xhttp.send();
+			// }
+		</script>
+	</div>
+</div>
