@@ -419,6 +419,30 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:search() returning', details: searchResults });
             return searchResults;
         }
+        /**
+         * Gets the Saved Search's internal id.
+         *
+         * @param id - the saved search id (e.g. "customsearch_...")
+         * @returns the internal id
+         */
+        getSearchInternalId(id) {
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteRecord:getSearchInternalId() initiated', details: { id: id } });
+            // get the internal id of the "Saved Search Lookup" (id: customsearch_idev_search_lookup) search
+            let internalId = 0;
+            // need to leverage an existing search since not all saved searches are accessible via the API
+            const searchLookupObj = search.load({ id: 'customsearch_idev_search_lookup', type: search.Type.SAVED_SEARCH });
+            searchLookupObj.filters.push(search.createFilter({ name: 'ID', operator: search.Operator.IS, values: id }));
+            const searchLookupResults = searchLookupObj.run().getRange({ start: 0, end: 1 });
+            if (searchLookupResults.length > 0) {
+                const result = searchLookupResults[0].getValue({ name: 'internalid' });
+                // check if type of result  is string
+                if (typeof result === 'string') {
+                    internalId = parseInt(result);
+                }
+            }
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteRecord:getSearchInternalId() returning', details: internalId });
+            return internalId;
+        }
     }
     exports.SuiteToolsLibraryNetSuiteSearch = SuiteToolsLibraryNetSuiteSearch;
     /**

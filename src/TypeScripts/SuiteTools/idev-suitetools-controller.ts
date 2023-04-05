@@ -91,15 +91,9 @@ export class SuiteToolsController {
       case 'scriptLogs':
         this.renderScriptLogsForm();
         break;
-      // case 'iframeSample':
-      //   this.stApp.stView.renderPage(
-      //     this.stApp.scriptUrl,
-      //     this.stApp.context,
-      //     this.stApp.stView.createIframeElement('{{scriptUrl}}&action=iframeSampleFrame')
-      //   );
-      //   break;
-      // case 'iframeSampleFrame':
-      //   break;
+      case 'webServicesLogs':
+        this.stApp.stView.renderIframeSearch('customsearch_idev_web_services_logs');
+        break;
       default:
         // if no action was specified then show the home page
         this.stApp.stView.render(this.getDashboardContent());
@@ -698,7 +692,7 @@ export class SuiteToolsController {
    * Renders the custom Script Log form
    */
   public renderScriptLogsForm(): void {
-    // log.debug({ title: 'SuiteToolsController:renderScriptLogsSearchForm() initiated', details: null });
+    // log.debug({ title: 'SuiteToolsController:renderScriptLogsForm() initiated', details: null });
 
     // set form input option values dynamically
     // const userListSql = "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee WHERE giveaccess = 'T' AND isinactive = 'F' ORDER BY name";
@@ -753,7 +747,7 @@ export class SuiteToolsController {
         const foundUser = userOptions.find((user) => user.value == userId);
         if (foundUser) {
           log.debug({
-            title: 'SuiteToolsController:renderScriptLogsSearchForm() user filter',
+            title: 'SuiteToolsController:renderScriptLogsForm() user filter',
             details: foundUser.text,
           });
           formFieldValues.push({ name: 'custom_users', value: [foundUser.value] });
@@ -761,7 +755,7 @@ export class SuiteToolsController {
         // if script then set to filter to that script
         if (scriptId) {
           log.debug({
-            title: 'SuiteToolsController:renderScriptLogsSearchForm() script filter',
+            title: 'SuiteToolsController:renderScriptLogsForm() script filter',
             details: scriptId,
           });
           formFieldValues.push({ name: 'custom_scripts', value: [scriptId] });
@@ -770,13 +764,13 @@ export class SuiteToolsController {
         const foundOwner = userOptions.find((user) => user.value == ownerId);
         if (foundOwner) {
           log.debug({
-            title: 'SuiteToolsController:renderScriptLogsSearchForm() owner filter',
+            title: 'SuiteToolsController:renderScriptLogsForm() owner filter',
             details: foundOwner.text,
           });
           formFieldValues.push({ name: 'custom_owners', value: [foundOwner.value] });
         }
         log.debug({
-          title: 'SuiteToolsController:renderScriptLogsSearchForm() formFieldValues =',
+          title: 'SuiteToolsController:renderScriptLogsForm() formFieldValues =',
           details: formFieldValues,
         });
       } else {
@@ -808,7 +802,7 @@ export class SuiteToolsController {
       // need to convert the user id to the user name
       // TODO: fix to handle multiple users
       const user = userOptions.find((user) => user.value == users);
-      log.debug({ title: 'SuiteToolsController:renderScriptLogsSearchForm() user = ', details: user });
+      log.debug({ title: 'SuiteToolsController:renderScriptLogsForm() user = ', details: user });
       // use the search API since user(s) requested
       if (dateOptions && Number(dateOptions) > 0) {
         // since less than a day force it to be today
@@ -859,7 +853,7 @@ export class SuiteToolsController {
     }
 
     // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/script-logs.html');
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptLogs.html');
     const bodyValues = {};
     bodyValues['scriptUrl'] = this.stApp.scriptUrl;
     bodyValues['optionValues'] = optionValues;

@@ -91,6 +91,42 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             this.stApp.context.response.write(bodyContent);
         }
         /**
+         * Renders the layout with a NetSuite Saved Search in an iFrame.
+         *
+         * @param id - the NetSuite Saved Search ID (e.g. "customsearch_...")
+         * @void writes the HTML content to the response
+         */
+        renderIframeSearch(id) {
+            log.debug({ title: 'SuiteToolsView:renderIframe() initiated', details: { id: id } });
+            // get the internal ID of the saved search
+            const internalId = this.stApp.stLib.stLibNs.stLibNsSearch.getSearchInternalId('customsearch_idev_web_services_logs');
+            this.renderIframe('/app/common/search/searchresults.nl?searchid=' + internalId);
+        }
+        /**
+         * Renders the layout with an iFrame.
+         *
+         * @param url
+         * @void writes the HTML content to the response
+         */
+        renderIframe(url) {
+            log.debug({ title: 'SuiteToolsView:renderIframe() initiated', details: { url: url } });
+            // populate body content with iFrame element
+            const bodyContent = this.stApp.stView.createIframeElement(url);
+            // populate layout content with Handlebars
+            const layoutValues = {};
+            layoutValues['css'] = this.stApp.stAppSettings.cssUrl;
+            layoutValues['js'] = this.stApp.stAppSettings.jsUrl;
+            layoutValues['title'] = this.stApp.appName;
+            layoutValues['body'] = bodyContent;
+            layoutValues['scriptUrl'] = this.stApp.scriptUrl;
+            layoutValues['userName'] = this.stApp.stAppNs.runtime.getCurrentUser().name;
+            layoutValues['userEmail'] = this.stApp.stAppNs.runtime.getCurrentUser().email;
+            const layout = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/layouts/main.html');
+            const layoutTemplate = Handlebars.compile(layout);
+            const content = layoutTemplate(layoutValues);
+            this.stApp.context.response.write(content);
+        }
+        /**
          * Creates an iFrame element with the specified URL, width and height.
          *
          * @param url - the URL to load in the iFrame
