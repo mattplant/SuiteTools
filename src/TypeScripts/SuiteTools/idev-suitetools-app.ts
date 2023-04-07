@@ -244,13 +244,13 @@ export class SuiteToolsApp {
    * @returns session key
    */
   public getSession(key: string): string {
-    log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
+    // log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
 
     // get it
     const value = this.stAppNs.runtime.getCurrentSession().get({ name: key });
     // clear it
     this.stAppNs.runtime.getCurrentSession().set({ name: key, value: null });
-    log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
+    // log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
 
     return value;
   }

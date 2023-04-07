@@ -108,7 +108,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             else {
                 fileObj = file.load({ id: id });
             }
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
             return fileObj;
         }
         /**
@@ -118,7 +118,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
          * @returns file contents
          */
         getFileContents(id) {
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
             const fileObj = this.getFile(id);
             return fileObj.getContents();
         }
@@ -129,7 +129,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
          * @returns file url
          */
         getFileURL(fileName) {
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { fileName: fileName } });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
             const fileObj = this.getFile(fileName);
             return fileObj.url;
         }

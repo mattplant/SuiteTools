@@ -135,7 +135,7 @@ export class SuiteToolsLibraryNetSuiteFile {
     } else {
       fileObj = file.load({ id: id });
     }
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
 
     return fileObj;
   }
@@ -147,7 +147,7 @@ export class SuiteToolsLibraryNetSuiteFile {
    * @returns file contents
    */
   public getFileContents(id: number | string): string {
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
 
     const fileObj = this.getFile(id);
 
@@ -161,7 +161,7 @@ export class SuiteToolsLibraryNetSuiteFile {
    * @returns file url
    */
   public getFileURL(fileName: string): string {
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { fileName: fileName } });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
 
     const fileObj = this.getFile(fileName);
 

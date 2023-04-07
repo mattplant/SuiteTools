@@ -58,17 +58,20 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                 case 'files':
                     this.renderFilesForm();
                     break;
-                case 'file':
+                case 'fileModal':
                     this.renderFileModal(id);
                     break;
+                // case 'file':
+                //   this.renderFileForm(id);
+                //   break;
                 case 'scripts':
                     this.renderScriptsForm();
                     break;
-                case 'script':
+                case 'scriptModal':
                     this.renderScriptModal(id);
                     break;
-                case 'scriptFile':
-                    this.renderScriptFileForm(id);
+                case 'script':
+                    this.renderScriptForm(id);
                     break;
                 // reports
                 case 'users':
@@ -79,6 +82,9 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                     break;
                 case 'user':
                     this.renderUserForm(id);
+                    break;
+                case 'userLogins':
+                    this.renderUserLoginsForm();
                     break;
                 case 'scriptLogs':
                     this.renderScriptLogsForm();
@@ -113,6 +119,12 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                         break;
                     case 'scripts':
                         this.renderScriptsForm();
+                        break;
+                    // case 'users':
+                    //   this.renderScriptLogsForm();
+                    //   break;
+                    case 'userLogins':
+                        this.renderUserLoginsForm();
                         break;
                     case 'scriptLogs':
                         this.renderScriptLogsForm();
@@ -165,10 +177,10 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                     }
                 }
             }
-            log.debug({
-                title: 'SuiteToolsController:getPostedFields() identified simple custom fields',
-                details: { customFields },
-            });
+            // log.debug({
+            //   title: 'SuiteToolsController:getPostedFields() identified simple custom fields',
+            //   details: { customFields },
+            // });
             const postedFields = [];
             for (const field of customFields) {
                 postedFields.push({ name: field, value: requestParameters[field] });
@@ -176,10 +188,10 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
             // get custom multiselects from #custom_multiselects which is workaround for NetSuite handling of multiselects
             if (requestParameters.custom_multiselects) {
                 const multiselects = JSON.parse(requestParameters.custom_multiselects);
-                log.debug({
-                    title: 'SuiteToolsController:getPostedFields() identified identified multiselects',
-                    details: multiselects,
-                });
+                // log.debug({
+                //   title: 'SuiteToolsController:getPostedFields() identified identified multiselects',
+                //   details: multiselects,
+                // });
                 for (const field of multiselects) {
                     const fieldName = field.field;
                     const fieldValues = [];
@@ -451,6 +463,8 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                 bodyValues['title'] = sqlResult.title;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + sqlResult.id;
                 bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + sqlResult.id;
+                bodyValues['urlUser'] = this.stApp.scriptUrl + '&action=script&userId=' + sqlResult.id;
+                bodyValues['urlUserLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + sqlResult.id;
                 bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + sqlResult.id;
                 bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + sqlResult.id;
             }
@@ -478,8 +492,67 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
             bodyValues['supervisorurl'] = sqlResult.supervisorurl;
             bodyValues['title'] = sqlResult.title;
             bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + sqlResult.id;
+            bodyValues['urlUserLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + sqlResult.id;
             bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + sqlResult.id;
             bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + sqlResult.id;
+            this.stApp.stView.render(body, bodyValues);
+        }
+        /**
+         * Renders the custom Web Services Logs form
+         */
+        renderUserLoginsForm() {
+            log.debug({ title: 'SuiteToolsController:renderUserLoginsForm() initiated', details: null });
+            // set form input option values dynamically
+            const userListSql = "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee ORDER BY name";
+            const userOptions = this.retrieveOptionValues(userListSql);
+            const optionValuesObj = {
+                options: [
+                    {
+                        field: 'custom_users',
+                        values: userOptions,
+                    },
+                ],
+            };
+            // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
+            const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+            // get the results
+            let formFieldValues = [];
+            if (this.stApp.context.request.method == 'GET') {
+                // WERE SCRIPT PARAMS SET IN THE URL?
+                const userId = this.stApp.context.request.parameters.userId;
+                if (userId) {
+                    // set the initial values for when script params are set in the URL
+                    formFieldValues.push({ name: 'custom_users', value: [userId] });
+                    formFieldValues.push({ name: 'custom_date_options', value: 'today' });
+                    // log.debug({
+                    //   title: 'SuiteToolsController:renderUserLoginsForm() formFieldValues =',
+                    //   details: formFieldValues,
+                    // });
+                }
+                else {
+                    // Set the default initial values for when no script params are set in the URL
+                    formFieldValues.push({ name: 'custom_date_options', value: '60' });
+                }
+            }
+            else {
+                // POST - get values from POSTed fields
+                formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+            }
+            const rows = this.getPostedField('custom_rows', formFieldValues);
+            const status = this.getPostedField('custom_status', formFieldValues);
+            const users = this.getPostedField('custom_users', formFieldValues);
+            const dateOptions = this.getPostedField('custom_date_options', formFieldValues);
+            // const title = this.getPostedField('custom_title', formFieldValues);
+            // const detail = this.getPostedField('custom_detail', formFieldValues);
+            const results = this.stApp.stModel.getUserLogins(rows, status, users, dateOptions);
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/userLogins.html');
+            const bodyValues = {};
+            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+            bodyValues['optionValues'] = optionValues;
+            bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+            bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
             this.stApp.stView.render(body, bodyValues);
         }
         /**
@@ -520,10 +593,10 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
             // const formData = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
             // get the results
-            let formFieldValues = {};
+            let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // GET - default initial values
-                formFieldValues = [{ name: 'custom_active', value: 'yes' }];
+                formFieldValues.push({ name: 'custom_active', value: 'yes' });
             }
             else {
                 // POST - get values from POSTed fields
@@ -574,7 +647,7 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                 bodyValues['notifyemails'] = sqlResult.notifyemails;
                 bodyValues['description'] = sqlResult.description;
                 bodyValues['urlNs'] = '/app/common/scripting/script.nl?id=' + sqlResult.id;
-                bodyValues['urlScriptFile'] = this.stApp.scriptUrl + '&action=scriptFile&id=' + sqlResult.id;
+                bodyValues['urlScript'] = this.stApp.scriptUrl + '&action=script&id=' + sqlResult.id;
                 bodyValues['urlScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&scriptId=' + sqlResult.id;
             }
             this.stApp.stView.renderPage(body, bodyValues);
@@ -584,11 +657,11 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
          *
          * @param id - the internal ID of the script
          */
-        renderScriptFileForm(id) {
-            log.debug({ title: 'SuiteToolsController:renderScriptFileForm() initiated', details: { id: id } });
+        renderScriptForm(id) {
+            log.debug({ title: 'SuiteToolsController:renderScriptForm() initiated', details: { id: id } });
             // get the results
             const sqlResult = this.stApp.stModel.getScript(id);
-            log.debug({ title: 'SuiteToolsController:renderScriptFileForm() sqlResult =', details: sqlResult });
+            log.debug({ title: 'SuiteToolsController:renderScriptForm() sqlResult =', details: sqlResult });
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptFile.html');
             const bodyValues = {};
@@ -654,10 +727,7 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                 const ownerId = this.stApp.context.request.parameters.ownerId;
                 if (userId || scriptId || ownerId) {
                     // set the initial values for when script params are set in the URL
-                    formFieldValues = [
-                        // { name: 'custom_rows', value: '250' },
-                        { name: 'custom_date_options', value: 'today' },
-                    ];
+                    formFieldValues.push({ name: 'custom_date_options', value: 'today' });
                     // if user then set to filter to that user's name
                     const foundUser = userOptions.find((user) => user.value == userId);
                     if (foundUser) {
@@ -691,11 +761,8 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                 }
                 else {
                     // Set the default initial values for when no script params are set in the URL
-                    formFieldValues = [
-                        // { name: 'custom_rows', value: '250' },
-                        { name: 'custom_levels', value: ['ERROR', 'EMERGENCY', 'SYSTEM'] },
-                        { name: 'custom_date_options', value: '15' },
-                    ];
+                    formFieldValues.push({ name: 'custom_levels', value: ['ERROR', 'EMERGENCY', 'SYSTEM'] });
+                    formFieldValues.push({ name: 'custom_date_options', value: '15' });
                 }
             }
             else {

@@ -59,8 +59,8 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
         /**
          * Get Files
          *
-         * @param scriptUrl - the script URL
-         * @param types - the script types
+         * @param rows - the number of rows to return
+         * @param types - the file types
          * @param versions - the API versions
          * @returns results
          */
@@ -251,6 +251,98 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 return null;
             }
             return sqlResults[0];
+        }
+        /**
+         * Get User Logins
+         *
+         * @param rows - the number of rows to return
+         * @param status - the status of the login
+         * @param users - the users to return logins for
+         * @param dateOptions - the dates to return logins for
+         * @returns HTML content
+         */
+        getUserLogins(rows, status, users, dateOptions
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ) {
+            log.debug({
+                title: `SuiteToolsModel:getUserLogins() initiated`,
+                details: {
+                    rows: rows,
+                    status: status,
+                    users: users,
+                    dateOptions: dateOptions,
+                },
+            });
+            let sql = `SELECT
+      TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH:MI:SS' ) AS date,
+      LoginAudit.status,
+      LoginAudit.oAuthAppName,
+      LoginAudit.oAuthAccessTokenName,
+      BUILTIN.DF( LoginAudit.role ) as role,
+      BUILTIN.DF( LoginAudit.user ) || ' (' || LoginAudit.user  || ')' AS userName,
+      LoginAudit.emailAddress,
+      LoginAudit.ipAddress,
+      LoginAudit.requestUri,
+      LoginAudit.detail,
+      LoginAudit.secChallenge,
+      LoginAudit.userAgent,
+    FROM
+      LoginAudit`;
+            // add where clause
+            const where = [];
+            if (rows) {
+                // limit to specified number of rows
+                where.push(`RowNum <= ${rows}`);
+                // } else {
+                //   // default to 50 rows
+                //   where.push(`RowNum <= 50`);
+            }
+            if (status) {
+                if (status === 'success') {
+                    where.push(`LoginAudit.status = 'Success'`);
+                }
+                if (status === 'failure') {
+                    where.push(`LoginAudit.status = 'Failure'`);
+                }
+            }
+            if (users) {
+                if (Array.isArray(users)) {
+                    users = users.map((user) => {
+                        return `'${user.toUpperCase()}'`;
+                    });
+                    where.push(`LoginAudit.user IN (${users.join(',')})`);
+                }
+            }
+            if (dateOptions) {
+                switch (dateOptions) {
+                    case '15':
+                        where.push('date > SYSDATE - ( 15 / 1440 )');
+                        break;
+                    case '60':
+                        where.push('date > SYSDATE - ( 1 / 24 )');
+                        break;
+                    case '240':
+                        where.push('date > SYSDATE - ( 4 / 24 )');
+                        break;
+                    case 'today':
+                        where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+                        break;
+                    case 'yesterday':
+                        where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+                        break;
+                    default:
+                        log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dateOptions });
+                        break;
+                }
+            }
+            if (where.length > 0) {
+                sql += ` WHERE ${where.join(' AND ')}`;
+            }
+            // add order by
+            sql += ` ORDER BY LoginAudit.date DESC`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            log.debug({ title: 'SuiteToolsModel:getUserLogins() returning', details: results });
+            return results;
         }
         /**
          * Get Scripts
@@ -445,6 +537,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 filters.push(search.createFilter({ name: 'type', operator: search.Operator.ANYOF, values: levels }));
             }
             if (users) {
+                // TODO - handle multiple users
                 filters.push(search.createFilter({ name: 'user', operator: search.Operator.IS, values: users }));
             }
             if (types) {
@@ -606,12 +699,12 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                     case '240':
                         where.push('date > SYSDATE - ( 4 / 24 )');
                         break;
-                    // case 'today':
-                    //   where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-                    //   break;
-                    // case 'yesterday':
-                    //   where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-                    //   break;
+                    case 'today':
+                        where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+                        break;
+                    case 'yesterday':
+                        where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+                        break;
                     default:
                         log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dateOptions });
                         break;

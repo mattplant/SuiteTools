@@ -1,12 +1,12 @@
 <!-- title -->
 <div class="mb-2">
-  <h2 class="text-2xl">Server Script Logs</h2>
+  <h2 class="text-2xl">Logins</h2>
 </div>
 
 <!-- form -->
 <form method="post">
   <input type="hidden" name="custom_multiselects" id="custom_multiselects" value="">
-  <button type="submit" onclick="postPage(['custom_levels', 'custom_users', 'custom_types', 'custom_scripts', 'custom_owners'], '{{scriptUrl}}');" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get Server Script Logs</button>
+  <button type="submit" onclick="postPage(['custom_users'], '{{scriptUrl}}');" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get Logins</button>
 
   <!-- criteria -->
   <div class="flex gap-4 p-2.5">
@@ -19,41 +19,22 @@
 		  <option value="1000">1000</option>
 		  <option value="2000">2000</option>
 		  <option value="4000">4000</option>
+		  <option value="">All</option>
 		</select>
 	</div>
-	<!-- log level -->
+	<!-- status -->
     <div>
-		<label for="custom_levels" class="block mb-2 text-sm font-medium text-gray-900">Level</label>
-		<select multiple size=6 name="custom_levels[]" id="custom_levels" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		  <option value="DEBUG">Debug</option>
-		  <option value="AUDIT">Audit</option>
-		  <option value="ERROR">Error</option>
-		  <option value="EMERGENCY">Emergency</option>
-		  <option value="SYSTEM">System</option>
+		<label for="custom_status" class="block mb-2 text-sm font-medium text-gray-900">Status</label>
+		<select size=6 name="custom_status" id="custom_status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+		  <option value="success">Success</option>
+		  <option value="failure">Failure</option>
+		  <option value="">All</option>
 		</select>
 	</div>
 	<!-- user -->
     <div>
 		<label for="custom_users" class="block mb-2 text-sm font-medium text-gray-900">User</label>
 		<select multiple size=6 name="custom_users[]" id="custom_users" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
-	</div>
-	<!-- script type -->
-    <div>
-		<label for="custom_types" class="block mb-2 text-sm font-medium text-gray-900">Script Type</label>
-		<select multiple size=6 name="custom_types[]" id="custom_types" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
-	</div>
-	<!-- scripts -->
-    <div>
-		<label for="custom_scripts" class="block mb-2 text-sm font-medium text-gray-900">Script</label>
-		<select multiple size=6 name="custom_scripts[]" id="custom_scripts" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
-	</div>
-	<!-- owner -->
-    <div>
-		<label for="custom_owners" class="block mb-2 text-sm font-medium text-gray-900">Owner</label>
-		<select multiple size=6 name="custom_owners[]" id="custom_owners" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 		</select>
 	</div>
 	<!-- date options -->
@@ -66,6 +47,7 @@
 		  <option value="today">Today</option>
 		  <option value="yesterday">Yesterday</option>
 		  <option value="lastweektodate">Last 7 Days</option>
+		  <option value="">All</option>
 		</select>
 	</div>
 	<!-- date range -->
@@ -86,21 +68,15 @@
 	<!-- date times picker -->
 	<!-- <input type="text" name="datetimes" /> -->
 	<!-- contains filters -->
-	<div class="relative max-w-sm">
+	<!-- <div class="relative max-w-sm">
 		<label class="block mb-2 text-sm font-medium text-gray-900">Content</label>
 		<label for="custom_title" class="block mb-0 text-sm font-medium text-gray-900">Title</label>
 		<input type="text" name="custom_title" id="custom_title"/>
 		<label for="custom_detail" class="block mb-0 text-sm font-medium text-gray-900">Detail</label>
 		<input type="text" name="custom_detail" id="custom_detail"/>
-	</div>
+	</div> -->
   </div>
 </form>
-
-<div class="flex gap-4 p-2.5">
-    <div>
-		<button id="clear_criteria" onclick="clearSelectFields(['custom_rows', 'custom_levels', 'custom_users','custom_types', 'custom_scripts', 'custom_owners', 'custom_date_options']); clearTextFields(['custom_title', 'custom_detail']);" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Clear Criteria</button>
-	</div>
-</div>
 
 <script>
 	{{{optionValues}}}
@@ -110,7 +86,6 @@
 	setFormSelections(formSelections);
 </script>
 
-{{{scriptModal}}}
 {{{userModal}}}
 
 <!-- results -->
@@ -131,19 +106,43 @@
 				headerFilter: true,
 			},
 			columns: [
-				{ title: "id", field: "id", sorter: "number" },
-				{ title: "Timestamp", field: "timestamp", sorter: "string" },
-				{ title: "Type", field: "type", sorter: "string" },
-				{ title: "User", field: "user", cellClick:function(e, cell, value, data){
+				{ title: "Date", field: "date", sorter: "string" },
+				{ title: "Status", field: "status", sorter: "string" },
+				{ title: "App Name", field: "oauthappname", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "Token Name", field: "oauthaccesstokenname", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "User", field: "username", cellClick:function(e, cell, value, data){
 					showUserModal(scriptUrl, cell.getValue()) }, sorter: "string" },
-				{ title: "Script Type", field: "scripttype", sorter: "string" },
-				{ title: "Owner", field: "owner", cellClick:function(e, cell, value, data){
-					showUserModal(scriptUrl, cell.getValue()) }, sorter: "string" },
-				{ title: "Script", field:"scriptname", cellClick:function(e, cell, value, data){
-					showScriptModal(scriptUrl, cell.getValue()) }, sorter:"string"
-				},
-				{ title: "Title", field: "title", sorter: "string" },
-				{ title: "Detail", field: "detail", sorter: "string" },
+				{ title: "Role", field: "role", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "Email Address", field: "emailaddress", sorter: "string" },
+				{ title: "IP Address", field: "ipaddress", sorter: "string" },
+				{ title: "Request URI", field: "requesturi", sorter: "string" },
+				{ title: "Detail", field: "detail", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "Challenge", field: "secchallenge", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "User Agent", field: "useragent", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
 			],
 		});
 		// trigger XLSX file download

@@ -135,7 +135,7 @@ function showModal(modalId, pageUrl, id) {
  * @param {string | number} id - the id of the record to show
  */
 function showFileModal(scriptUrl, id) {
-    pageUrl = scriptUrl + '&action=file&id=';
+    pageUrl = scriptUrl + '&action=fileModal&id=';
     content = showModal("file-modal", pageUrl, id);
 }
 
@@ -146,7 +146,7 @@ function showFileModal(scriptUrl, id) {
  * @param {string | number} id - the id of the record to show
  */
 function showScriptModal(scriptUrl, id) {
-    pageUrl = scriptUrl + '&action=script&id=';
+    pageUrl = scriptUrl + '&action=scriptModal&id=';
     content = showModal("script-modal", pageUrl, id);
 }
 

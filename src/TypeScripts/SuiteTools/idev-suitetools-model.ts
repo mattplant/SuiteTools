@@ -67,16 +67,16 @@ export class SuiteToolsModel {
   /**
    * Get Files
    *
-   * @param scriptUrl - the script URL
-   * @param types - the script types
+   * @param rows - the number of rows to return
+   * @param types - the file types
    * @param versions - the API versions
    * @returns results
    */
   public getFiles(
-    rows: string | string[],
+    rows: string,
     types: string | string[],
-    createdDateOptions: string | string[],
-    modifiedDateOptions: string | string[]
+    createdDateOptions: string,
+    modifiedDateOptions: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     log.debug({
@@ -279,6 +279,106 @@ export class SuiteToolsModel {
   }
 
   /**
+   * Get User Logins
+   *
+   * @param rows - the number of rows to return
+   * @param status - the status of the login
+   * @param users - the users to return logins for
+   * @param dateOptions - the dates to return logins for
+   * @returns HTML content
+   */
+  public getUserLogins(
+    rows: string,
+    status: string,
+    users: string[],
+    dateOptions: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getUserLogins() initiated`,
+      details: {
+        rows: rows,
+        status: status,
+        users: users,
+        dateOptions: dateOptions,
+      },
+    });
+
+    let sql = `SELECT
+      TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH:MI:SS' ) AS date,
+      LoginAudit.status,
+      LoginAudit.oAuthAppName,
+      LoginAudit.oAuthAccessTokenName,
+      BUILTIN.DF( LoginAudit.role ) as role,
+      BUILTIN.DF( LoginAudit.user ) || ' (' || LoginAudit.user  || ')' AS userName,
+      LoginAudit.emailAddress,
+      LoginAudit.ipAddress,
+      LoginAudit.requestUri,
+      LoginAudit.detail,
+      LoginAudit.secChallenge,
+      LoginAudit.userAgent,
+    FROM
+      LoginAudit`;
+    // add where clause
+    const where = [];
+    if (rows) {
+      // limit to specified number of rows
+      where.push(`RowNum <= ${rows}`);
+      // } else {
+      //   // default to 50 rows
+      //   where.push(`RowNum <= 50`);
+    }
+    if (status) {
+      if (status === 'success') {
+        where.push(`LoginAudit.status = 'Success'`);
+      }
+      if (status === 'failure') {
+        where.push(`LoginAudit.status = 'Failure'`);
+      }
+    }
+    if (users) {
+      if (Array.isArray(users)) {
+        users = users.map((user) => {
+          return `'${user.toUpperCase()}'`;
+        });
+        where.push(`LoginAudit.user IN (${users.join(',')})`);
+      }
+    }
+    if (dateOptions) {
+      switch (dateOptions) {
+        case '15':
+          where.push('date > SYSDATE - ( 15 / 1440 )');
+          break;
+        case '60':
+          where.push('date > SYSDATE - ( 1 / 24 )');
+          break;
+        case '240':
+          where.push('date > SYSDATE - ( 4 / 24 )');
+          break;
+        case 'today':
+          where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+          break;
+        case 'yesterday':
+          where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+          break;
+        default:
+          log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dateOptions });
+          break;
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY LoginAudit.date DESC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+
+    log.debug({ title: 'SuiteToolsModel:getUserLogins() returning', details: results });
+
+    return results;
+  }
+
+  /**
    * Get Scripts
    *
    * @param active - the active flag
@@ -290,12 +390,12 @@ export class SuiteToolsModel {
    * @returns results
    */
   public getScripts(
-    active: string | string[],
-    versions: string | string[],
-    types: string | string[],
-    scripts: string | string[],
-    owners: string | string[],
-    files: string | string[]
+    active: string,
+    versions: string[],
+    types: string[],
+    scripts: string[],
+    owners: string[],
+    files: string[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     log.debug({
@@ -494,6 +594,7 @@ export class SuiteToolsModel {
       filters.push(search.createFilter({ name: 'type', operator: search.Operator.ANYOF, values: levels }));
     }
     if (users) {
+      // TODO - handle multiple users
       filters.push(search.createFilter({ name: 'user', operator: search.Operator.IS, values: users }));
     }
     if (types) {
@@ -600,14 +701,14 @@ export class SuiteToolsModel {
    * @returns HTML content
    */
   public getScriptLogsViaSuiteQL(
-    rows: string | string[],
-    levels: string | string[],
-    types: string | string[],
-    scripts: string | string[],
-    owners: string | string[],
+    rows: string,
+    levels: string[],
+    types: string[],
+    scripts: string[],
+    owners: string[],
     dateOptions: string | string[],
-    title: string | string[],
-    detail: string | string[]
+    title: string,
+    detail: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     log.debug({
@@ -684,12 +785,12 @@ export class SuiteToolsModel {
         case '240':
           where.push('date > SYSDATE - ( 4 / 24 )');
           break;
-        // case 'today':
-        //   where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-        //   break;
-        // case 'yesterday':
-        //   where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-        //   break;
+        case 'today':
+          where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+          break;
+        case 'yesterday':
+          where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+          break;
         default:
           log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dateOptions });
           break;
