@@ -47,6 +47,7 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
             const { action, id } = this.stApp.context.request.parameters;
             log.debug('SuiteToolsController:getRequestHandle() routing request', { action: action, id: id });
             switch (action) {
+                // handle pages
                 case 'settings':
                     this.renderSettingsForm();
                     break;
@@ -111,9 +112,11 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
                 const action = this.stApp.context.request.parameters.action;
                 log.debug({ title: 'SuiteToolsController:processPostRequest() - action', details: action });
                 switch (action) {
-                    case 'data':
+                    // handle posted data
+                    case 'postData':
                         this.processPostedData();
                         break;
+                    // handle pages
                     case 'files':
                         this.renderFilesForm();
                         break;
@@ -242,22 +245,60 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
         // Data
         // ---------------------------------------------------------------------------------------------
         processPostedData() {
-            log.debug({ title: 'SuiteToolsController:processPostedData() initiated', details: '' });
             // get request body
             const requestBody = this.stApp.context.request.body;
-            log.debug({ title: 'SuiteToolsController:processPostedData() requestBody', details: requestBody });
+            log.debug({ title: 'SuiteToolsController:processPostedData() initiated with', details: requestBody });
             const requestBodyObj = JSON.parse(requestBody);
-            // TODO: expand out to handle other posted data
-            // get the value of devmode from the request body
-            const devMode = requestBodyObj.devmode;
-            log.debug({ title: 'SuiteToolsController:processPostedData() devmode', details: requestBodyObj.devmode });
-            const updatedSettings = {
-                custrecord_idev_st_setting_dev_mode: devMode,
-            };
-            log.debug({ title: `SuiteToolsAppSettings:processPostedData() updatedSettings = `, details: updatedSettings });
-            // save the value of devmode to the settings record
-            const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updatedSettings);
-            log.debug({ title: `SuiteToolsAppSettings:processPostedData() saved successfully?`, details: success });
+            // eslint-disable-next-line no-prototype-builtins
+            if (requestBodyObj.hasOwnProperty('name') && requestBodyObj.hasOwnProperty('value')) {
+                // get the name from the request body
+                const name = requestBodyObj.name;
+                // get the value of devmode from the request body
+                const value = requestBodyObj.value;
+                // log.debug({ title: 'SuiteToolsController:processPostedData() data', details: { name: name, value: value } });
+                // determine setting to update
+                let updateSettings = null;
+                const standardizedValues = [];
+                switch (name) {
+                    case 'devmode':
+                        updateSettings = { custrecord_idev_st_setting_dev_mode: value };
+                        break;
+                    case 'integrations':
+                        // log.debug({ title: 'SuiteToolsController:processPostedData() integrations', details: value });
+                        // standardize the integration field names (e.g. camelCase and remove spaces)
+                        for (const integration of value) {
+                            // log.debug({ title: 'SuiteToolsController:processPostedData() integration', details: integration });
+                            // get the values from the integration
+                            standardizedValues.push({
+                                internalId: integration['Internal ID'],
+                                name: integration['Name'],
+                                applicationId: integration['Application ID'],
+                                state: integration['State'],
+                                createdOn: integration['Created On'],
+                            });
+                        }
+                        // remove lost record of standardizedValues since it contains the the header row
+                        standardizedValues.pop();
+                        // log.debug({
+                        //   title: 'SuiteToolsController:processPostedData() standardizedValues',
+                        //   details: standardizedValues,
+                        // });
+                        updateSettings = { custrecord_idev_st_config_integrations: JSON.stringify(standardizedValues) };
+                        break;
+                }
+                if (updateSettings) {
+                    log.debug({ title: `SuiteToolsAppSettings:processPostedData() updateSettings = `, details: updateSettings });
+                    // save the value of devmode to the settings record
+                    const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updateSettings);
+                    log.debug({ title: `SuiteToolsAppSettings:processPostedData() saved successfully?`, details: success });
+                }
+                else {
+                    log.debug({ title: 'SuiteToolsController:processPostedData() message', details: 'name not found' });
+                }
+            }
+            else {
+                log.debug({ title: 'SuiteToolsController:processPostedData() message', details: 'name and/or value not found' });
+            }
             // write response
             const content = { message: 'payload was processed' };
             this.stApp.context.response.setHeader({ name: 'Content-Type', value: 'application/json' });
@@ -325,6 +366,8 @@ define(["require", "exports", "N/error", "N/log"], function (require, exports, e
             bodyValues['cssurl'] = this.stApp.stAppSettings.cssUrl;
             bodyValues['jsurl'] = this.stApp.stAppSettings.jsUrl;
             bodyValues['devmode'] = this.stApp.stAppSettings.devMode;
+            bodyValues['urlIntegrations'] = this.stApp.scriptUrl + '&action=getIntegrations';
+            bodyValues['integrations'] = this.stApp.stAppSettings.integrations;
             this.stApp.stView.render(body, bodyValues);
         }
         /**

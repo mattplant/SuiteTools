@@ -265,6 +265,7 @@ export class SuiteToolsAppSettings {
   private _cssUrl: string;
   private _jsUrl: string;
   private _devMode: boolean;
+  private _integrations: string;
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
@@ -280,6 +281,9 @@ export class SuiteToolsAppSettings {
   }
   get devMode(): boolean {
     return this._devMode;
+  }
+  get integrations(): string {
+    return this._integrations;
   }
 
   constructor(stApp: SuiteToolsApp) {
@@ -302,6 +306,7 @@ export class SuiteToolsAppSettings {
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_css_url AS cssUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
     FROM
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
     WHERE
@@ -311,6 +316,7 @@ export class SuiteToolsAppSettings {
     // log.debug({ title: `SuiteToolsAppSettings:getSettings() sqlResults = `, details: sqlResults });
 
     if (sqlResults.length === 0) {
+      // since no results then create core configs
       log.error({ title: `SuiteToolsAppSettings:getSettings() no results`, details: '' });
       this.createCoreConfigs();
     } else {
@@ -318,6 +324,8 @@ export class SuiteToolsAppSettings {
       this._cssUrl = sqlResults[0].cssurl;
       this._jsUrl = sqlResults[0].jsurl;
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+      this._integrations = JSON.parse(sqlResults[0].integrations);
+
       // if core configs are not set then set them
       if (!this._cssUrl || !this._jsUrl) {
         log.error({ title: `SuiteToolsAppSettings:getSettings() missing core configs`, details: '' });
