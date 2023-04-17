@@ -22,9 +22,16 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/log", "./handlebars.min", "./idev-suitetools-app"], function (require, exports, log, Handlebars, idev_suitetools_app_1) {
+define(["require", "exports", "N/log", "./handlebars.min"], function (require, exports, log, Handlebars) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsView = void 0;
+    exports.SuiteToolsView = exports.RenderType = void 0;
+    var RenderType;
+    (function (RenderType) {
+        RenderType[RenderType["Normal"] = 1] = "Normal";
+        RenderType[RenderType["PageOnly"] = 2] = "PageOnly";
+        RenderType[RenderType["Modal"] = 3] = "Modal";
+        RenderType[RenderType["Iframe"] = 4] = "Iframe";
+    })(RenderType = exports.RenderType || (exports.RenderType = {}));
     /**
      * SuiteTools View
      *
@@ -52,14 +59,14 @@ define(["require", "exports", "N/log", "./handlebars.min", "./idev-suitetools-ap
                 details: { renderType: renderType, bodyValues: bodyValues },
             });
             switch (renderType) {
-                case idev_suitetools_app_1.RenderType.Normal:
+                case RenderType.Normal:
                     this.renderNormal(body, bodyValues);
                     break;
-                case idev_suitetools_app_1.RenderType.PageOnly:
-                case idev_suitetools_app_1.RenderType.Modal:
+                case RenderType.PageOnly:
+                case RenderType.Modal:
                     this.renderPageOnly(body, bodyValues);
                     break;
-                case idev_suitetools_app_1.RenderType.Iframe:
+                case RenderType.Iframe:
                     this.renderIframe(body);
                     break;
                 default:

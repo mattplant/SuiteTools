@@ -22,7 +22,7 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], function (require, exports, error, log, idev_suitetools_app_1) {
+define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], function (require, exports, error, log, idev_suitetools_view_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SuiteToolsController = void 0;
     /**
@@ -60,7 +60,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                     this.renderFilesForm();
                     break;
                 case 'fileModal':
-                    this.renderFileForm(idev_suitetools_app_1.RenderType.Modal, id);
+                    this.renderFileForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 // case 'file':
                 //   this.renderFileForm(id);
@@ -69,47 +69,47 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                     this.renderScriptsForm();
                     break;
                 case 'scriptModal':
-                    this.renderScriptForm(idev_suitetools_app_1.RenderType.Modal, id);
+                    this.renderScriptForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 case 'script':
-                    this.renderScriptForm(idev_suitetools_app_1.RenderType.Normal, id);
+                    this.renderScriptForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
                 // reports
                 case 'integrations':
                     this.renderIntegrationsForm();
                     break;
                 case 'integrationModal':
-                    this.renderIntegrationForm(idev_suitetools_app_1.RenderType.Modal, id);
+                    this.renderIntegrationForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 case 'integration':
-                    this.renderIntegrationForm(idev_suitetools_app_1.RenderType.Normal, id);
+                    this.renderIntegrationForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
                 case 'tokens':
                     this.renderTokensForm();
                     break;
                 case 'tokenModal':
-                    this.renderTokenForm(idev_suitetools_app_1.RenderType.Modal, id);
+                    this.renderTokenForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 case 'token':
-                    this.renderTokenForm(idev_suitetools_app_1.RenderType.Normal, id);
+                    this.renderTokenForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
                 case 'roles':
                     this.renderRolesForm();
                     break;
                 case 'roleModal':
-                    this.renderRoleForm(idev_suitetools_app_1.RenderType.Modal, id);
+                    this.renderRoleForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 case 'role':
-                    this.renderRoleForm(idev_suitetools_app_1.RenderType.Normal, id);
+                    this.renderRoleForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
                 case 'users':
                     this.renderUsersForm();
                     break;
                 case 'userModal':
-                    this.renderUserForm(idev_suitetools_app_1.RenderType.Modal, id);
+                    this.renderUserForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 case 'user':
-                    this.renderUserForm(idev_suitetools_app_1.RenderType.Normal, id);
+                    this.renderUserForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
                 case 'userLogins':
                     this.renderUserLoginsForm();
@@ -122,7 +122,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                     break;
                 default:
                     // if no action was specified then show the home page
-                    this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, this.getDashboardContent());
+                    this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, this.getDashboardContent());
             }
         }
         /**
@@ -415,7 +415,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/appIssues.html');
             const bodyValues = {};
             bodyValues['issues'] = issues;
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.PageOnly, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.PageOnly, body, bodyValues);
         }
         /**
          * Renders the Application Error form.
@@ -438,7 +438,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                 log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLinesArray', details: stackLinesArray });
                 bodyValues['stack'] = stackLinesArray;
             }
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.PageOnly, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.PageOnly, body, bodyValues);
         }
         /**
          * Renders the Settings form.
@@ -455,7 +455,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['devmode'] = this.stApp.stAppSettings.devMode;
             bodyValues['urlIntegrations'] = this.stApp.scriptUrl + '&action=getIntegrations';
             bodyValues['integrations'] = this.stApp.stAppSettings.integrations;
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the System form.
@@ -482,7 +482,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['userRoleId'] = this.stApp.stAppNs.runtime.getCurrentUser().roleId;
             bodyValues['isAdmin'] = this.stApp.stAppNs.isAdmin;
             bodyValues['userSubsidiary'] = this.stApp.stAppNs.runtime.getCurrentUser().subsidiary;
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the Files form.
@@ -545,7 +545,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the File form.
@@ -652,7 +652,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the Script form.
@@ -669,7 +669,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             const record = this.stApp.stModel.getScript(id);
             // display the form
             let filename = 'views/script.html';
-            if (renderType === idev_suitetools_app_1.RenderType.Modal) {
+            if (renderType === idev_suitetools_view_1.RenderType.Modal) {
                 filename = 'views/partials/script.html';
             }
             // display the form
@@ -723,7 +723,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the Integration form.
@@ -740,7 +740,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             const record = this.stApp.stModel.getIntegration(id);
             // display the form
             let filename = 'views/integration.html';
-            if (renderType === idev_suitetools_app_1.RenderType.Modal) {
+            if (renderType === idev_suitetools_view_1.RenderType.Modal) {
                 filename = 'views/partials/integration.html';
             }
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
@@ -837,7 +837,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the Token form.
@@ -854,7 +854,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             const record = this.stApp.stModel.getToken(id);
             // display the form
             let filename = 'views/token.html';
-            if (renderType === idev_suitetools_app_1.RenderType.Modal) {
+            if (renderType === idev_suitetools_view_1.RenderType.Modal) {
                 filename = 'views/partials/token.html';
             }
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
@@ -913,7 +913,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the Role form
@@ -930,7 +930,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             const record = this.stApp.stModel.getRole(id);
             // display the form
             let filename = 'views/role.html';
-            if (renderType == idev_suitetools_app_1.RenderType.Modal) {
+            if (renderType == idev_suitetools_view_1.RenderType.Modal) {
                 filename = 'views/partials/role.html';
             }
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
@@ -1011,7 +1011,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the User form.
@@ -1029,7 +1029,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             log.debug({ title: 'SuiteToolsController:renderUserForm() record =', details: record });
             // display the form
             let filename = 'views/user.html';
-            if (renderType === idev_suitetools_app_1.RenderType.Modal) {
+            if (renderType === idev_suitetools_view_1.RenderType.Modal) {
                 filename = 'views/partials/user.html';
             }
             log.debug({ title: 'SuiteToolsController:renderUserForm() filename =', details: filename });
@@ -1121,7 +1121,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
          * Renders the Script Log form
@@ -1274,7 +1274,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(results, true);
-            this.stApp.stView.render(idev_suitetools_app_1.RenderType.Normal, body, bodyValues);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         // ---------------------------------------------------------------------------
         // Supporting Functions

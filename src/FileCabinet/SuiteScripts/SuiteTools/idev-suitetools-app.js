@@ -26,14 +26,7 @@
  */
 define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-model", "./idev-suitetools-view", "./idev-suitetools-controller", "./idev-suitetools-library"], function (require, exports, log, runtime, url, idev_suitetools_model_1, idev_suitetools_view_1, idev_suitetools_controller_1, idev_suitetools_library_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsAppNetSuite = exports.SuiteToolsAppSettings = exports.SuiteToolsApp = exports.onRequest = exports.RenderType = void 0;
-    var RenderType;
-    (function (RenderType) {
-        RenderType[RenderType["Normal"] = 1] = "Normal";
-        RenderType[RenderType["PageOnly"] = 2] = "PageOnly";
-        RenderType[RenderType["Modal"] = 3] = "Modal";
-        RenderType[RenderType["Iframe"] = 4] = "Iframe";
-    })(RenderType = exports.RenderType || (exports.RenderType = {}));
+    exports.SuiteToolsAppNetSuite = exports.SuiteToolsAppSettings = exports.SuiteToolsApp = exports.onRequest = void 0;
     /**
      * Suitelet onRequest event handler
      *

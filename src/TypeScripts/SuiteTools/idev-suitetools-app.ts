@@ -35,13 +35,6 @@ import { SuiteToolsView } from './idev-suitetools-view';
 import { SuiteToolsController } from './idev-suitetools-controller';
 import { SuiteToolsLibrary } from './idev-suitetools-library';
 
-export enum RenderType {
-  Normal = 1, // page with layout
-  PageOnly, // page only
-  Modal, // modal dialog
-  Iframe, // iframe
-}
-
 /**
  * Suitelet onRequest event handler
  *

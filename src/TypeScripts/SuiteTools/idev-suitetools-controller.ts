@@ -26,7 +26,8 @@
 import error = require('N/error');
 import log = require('N/log');
 
-import { SuiteToolsApp, RenderType } from './idev-suitetools-app';
+import { RenderType } from './idev-suitetools-view';
+import { SuiteToolsApp } from './idev-suitetools-app';
 
 /**
  * SuiteTools Controller

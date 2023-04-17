@@ -29,7 +29,14 @@ import log = require('N/log');
 // @ts-ignore
 import Handlebars = require('./handlebars.min');
 
-import { SuiteToolsApp, RenderType } from './idev-suitetools-app';
+import { SuiteToolsApp } from './idev-suitetools-app';
+
+export enum RenderType {
+  Normal = 1, // page with layout
+  PageOnly, // page only
+  Modal, // modal dialog
+  Iframe, // iframe
+}
 
 /**
  * SuiteTools View
