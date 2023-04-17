@@ -1,19 +1,22 @@
 <div class="mb-2">
   <h2 class="text-2xl">User Details</h2>
 	<div class="mb-2">
-	<ul>
-		<li>Name: {{entityid}}</li>
-		<li>{{#if isinactive}}Inactive{{else}}<b>Active</b>{{/if}}</li>
-		<li>First Name: {{firstname}}</li>
-		<li>Last Name: {{lastname}}</li>
-		<li>Email: {{email}}</li>
-		<li>Supervisor: {{supervisor}}</li>
-		<li>Supervisor URL: {{supervisorurl}}</li>
-		<li>Title: {{title}}</li>
-		{{#if notes}}<li>Notes: {{notes}}</li>{{/if}}
-	</ul>
+		<ul>
+			<li>Name: {{entityid}}</li>
+			<li>{{#if isinactive}}Inactive{{else}}<b>Active</b>{{/if}}</li>
+			<li>First Name: {{firstname}}</li>
+			<li>Last Name: {{lastname}}</li>
+			<li>Email: {{email}}</li>
+			<li>Supervisor: {{supervisor}}</li>
+			<li>Supervisor URL: {{supervisorurl}}</li>
+			<li>Title: {{title}}</li>
+			{{#if notes}}<li>Notes: {{notes}}</li>{{/if}}
+		</ul>
+	</div>
 	<button onclick="window.open('{{urlNs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View User Record</button>
-	<button onclick="window.open('{{urlUserLogins}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Logins</button>
+	<button onclick="window.open('{{urlLogins}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Logins</button>
+	<!-- <button onclick="window.open('{{urlRoles}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Roles</button> -->
+	<button onclick="window.open('{{urlTokens}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Tokens</button>
 	<button onclick="window.open('{{urlUserScriptLogs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View User Script Logs</button>
 	<button onclick="window.open('{{urlOwnerScriptLogs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Owned Script Logs</button>
 

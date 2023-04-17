@@ -454,11 +454,6 @@ export class SuiteToolsLibraryNetSuiteSearch {
       details: { type: type, columns: columns, filters: filters, rows: rows, setSession: setSession },
     });
 
-    // default number of required values if not specified
-    if (!rows) {
-      rows = '50';
-    }
-
     const stSearch = search.create({ type: type });
     stSearch.columns = columns;
     stSearch.filters = filters;
@@ -475,6 +470,11 @@ export class SuiteToolsLibraryNetSuiteSearch {
     // // .run().each has a limit of 4,000 results
     // return true;
     // });
+
+    // default number of required values if not specified
+    if (!rows) {
+      rows = '1000';
+    }
 
     // run the search
     const searchResults = stSearch.run().getRange({

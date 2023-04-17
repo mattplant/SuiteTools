@@ -93,21 +93,61 @@ function postPage(multiselectIds, pageUrl) {
     // xhttp.send();
 }
 
+const ModalType = Object.freeze({
+    "File": 1,
+    "Integration": 2,
+    "Role": 3,
+    "Script": 4,
+    "Token": 5,
+    "User": 6,
+});
+
 /**
  * Show a modal with a custom page.
  * @author Matthew Plant
- * @param {string} modalId - the id of the modal to show
- * @param {string} pageUrl - the url of the page to show
+ * @param {string} scriptUrl - the URL of the main script
+ * @param {number} modalType - the type of modal to show
  * @param {string | number} id - the id of the record to show
  */
-function showModal(modalId, pageUrl, id) {
-    // replace id if number in parentheses is found at end
+function showModal(scriptUrl, modalType, id) {
+    // determine the modal id and page url
+    switch (modalType) {
+        case ModalType.File:
+            modalId = 'file-modal';
+            action = 'fileModal';
+            break;
+        case ModalType.Integration:
+            modalId = 'integration-modal';
+            action = 'integrationModal';
+            break;
+        case ModalType.Role:
+            modalId = 'role-modal';
+            action = 'roleModal';
+            break;
+        case ModalType.Script:
+            modalId = 'script-modal';
+            action = 'scriptModal';
+            break;
+        case ModalType.Token:
+            modalId = 'token-modal';
+            action = 'tokenModal';
+            break;
+        default:
+        case ModalType.User:
+            modalId = 'user-modal';
+            action = 'userModal';
+        break;
+            console.error('Invalid modal type "' + modalType + '" provided.');
+            return;
+    }
+    // determine id replacing id if number in parentheses is found at end
     var str = id.toString();
     var matches = str.match(/\((-?\d+)\)$/);
     if (matches) {
         id = matches[1];
     }
-    pageUrl = pageUrl + id;
+    // build the page url
+    pageUrl = scriptUrl + '&action=' + action + '&id=' + id;
     // get the page
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -126,39 +166,6 @@ function showModal(modalId, pageUrl, id) {
     };
     xhttp.open("GET", pageUrl, true);
     xhttp.send();
-}
-
-/**
- * Show file modal.
- * @author Matthew Plant
- * @param {string} scriptUrl - the base url of the script to show
- * @param {string | number} id - the id of the record to show
- */
-function showFileModal(scriptUrl, id) {
-    pageUrl = scriptUrl + '&action=fileModal&id=';
-    content = showModal("file-modal", pageUrl, id);
-}
-
-/**
- * Show script modal.
- * @author Matthew Plant
- * @param {string} scriptUrl - the base url of the script to show
- * @param {string | number} id - the id of the record to show
- */
-function showScriptModal(scriptUrl, id) {
-    pageUrl = scriptUrl + '&action=scriptModal&id=';
-    content = showModal("script-modal", pageUrl, id);
-}
-
-/**
- * Show user modal.
- * @author Matthew Plant
- * @param {string} scriptUrl - the base url of the script to show
- * @param {string | number} id - the id of the record to show
- */
-function showUserModal(scriptUrl, id) {
-    pageUrl = scriptUrl + '&action=userModal&id=';
-    content = showModal("user-modal", pageUrl, id);
 }
 
 /**

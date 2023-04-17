@@ -26,7 +26,7 @@
 import error = require('N/error');
 import log = require('N/log');
 
-import { SuiteToolsApp } from './idev-suitetools-app';
+import { SuiteToolsApp, RenderType } from './idev-suitetools-app';
 
 /**
  * SuiteTools Controller
@@ -68,7 +68,7 @@ export class SuiteToolsController {
         this.renderFilesForm();
         break;
       case 'fileModal':
-        this.renderFileModal(id);
+        this.renderFileForm(RenderType.Modal, id);
         break;
       // case 'file':
       //   this.renderFileForm(id);
@@ -77,20 +77,47 @@ export class SuiteToolsController {
         this.renderScriptsForm();
         break;
       case 'scriptModal':
-        this.renderScriptModal(id);
+        this.renderScriptForm(RenderType.Modal, id);
         break;
       case 'script':
-        this.renderScriptForm(id);
+        this.renderScriptForm(RenderType.Normal, id);
         break;
       // reports
+      case 'integrations':
+        this.renderIntegrationsForm();
+        break;
+      case 'integrationModal':
+        this.renderIntegrationForm(RenderType.Modal, id);
+        break;
+      case 'integration':
+        this.renderIntegrationForm(RenderType.Normal, id);
+        break;
+      case 'tokens':
+        this.renderTokensForm();
+        break;
+      case 'tokenModal':
+        this.renderTokenForm(RenderType.Modal, id);
+        break;
+      case 'token':
+        this.renderTokenForm(RenderType.Normal, id);
+        break;
+      case 'roles':
+        this.renderRolesForm();
+        break;
+      case 'roleModal':
+        this.renderRoleForm(RenderType.Modal, id);
+        break;
+      case 'role':
+        this.renderRoleForm(RenderType.Normal, id);
+        break;
       case 'users':
         this.renderUsersForm();
         break;
       case 'userModal':
-        this.renderUserModal(id);
+        this.renderUserForm(RenderType.Modal, id);
         break;
       case 'user':
-        this.renderUserForm(id);
+        this.renderUserForm(RenderType.Normal, id);
         break;
       case 'userLogins':
         this.renderUserLoginsForm();
@@ -103,7 +130,7 @@ export class SuiteToolsController {
         break;
       default:
         // if no action was specified then show the home page
-        this.stApp.stView.render(this.getDashboardContent());
+        this.stApp.stView.render(RenderType.Normal, this.getDashboardContent());
     }
   }
 
@@ -139,13 +166,25 @@ export class SuiteToolsController {
         case 'userLogins':
           this.renderUserLoginsForm();
           break;
+        case 'integrations':
+          this.renderIntegrationsForm();
+          break;
+        case 'tokens':
+          this.renderTokensForm();
+          break;
+        case 'roles':
+          this.renderRolesForm();
+          break;
+        case 'users':
+          this.renderUsersForm();
+          break;
         case 'scriptLogs':
           this.renderScriptLogsForm();
           break;
         default:
           throw error.create({
             name: 'SUITE_TOOLS_INVALID_FORM_ERROR',
-            message: `An unsupported form ("${action}") was posted.`,
+            message: `An unsupported action ("${action}") was posted.`,
             notifyOff: true,
           });
       }
@@ -273,7 +312,7 @@ export class SuiteToolsController {
       const name = requestBodyObj.name;
       // get the value of devmode from the request body
       const value = requestBodyObj.value;
-      // log.debug({ title: 'SuiteToolsController:processPostedData() data', details: { name: name, value: value } });
+      log.debug({ title: 'SuiteToolsController:processPostedData() data', details: { name: name, value: value } });
 
       // determine setting to update
       let updateSettings = null;
@@ -287,23 +326,74 @@ export class SuiteToolsController {
           // standardize the integration field names (e.g. camelCase and remove spaces)
           for (const integration of value) {
             // log.debug({ title: 'SuiteToolsController:processPostedData() integration', details: integration });
-            // get the values from the integration
+            // add the standardized field and values including data cleansing to the array
             standardizedValues.push({
-              internalId: integration['Internal ID'],
+              id: integration['Internal ID'],
               name: integration['Name'],
-              applicationId: integration['Application ID'],
-              state: integration['State'],
+              nameId: integration['Name'] + ' (' + integration['Internal ID'] + ')',
+              integrationId: integration['Application ID'],
+              active: integration['State'] == 'Enabled' ? 'T' : 'F',
               createdOn: integration['Created On'],
             });
           }
-          // remove lost record of standardizedValues since it contains the the header row
+          // remove last record of standardizedValues since it contains the the header row
           standardizedValues.pop();
           // log.debug({
-          //   title: 'SuiteToolsController:processPostedData() standardizedValues',
+          //   title: 'SuiteToolsController:processPostedData() integrations standardizedValues',
           //   details: standardizedValues,
           // });
+          // sort the array by name
+          standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
           updateSettings = { custrecord_idev_st_config_integrations: JSON.stringify(standardizedValues) };
           break;
+        case 'tokens':
+          log.debug({ title: 'SuiteToolsController:processPostedData() tokens', details: value });
+          // standardize the integration field names (e.g. camelCase and remove spaces)
+          for (const token of value) {
+            log.debug({ title: 'SuiteToolsController:processPostedData() token', details: token });
+            // add integrationId and integrationNameId
+            //   TODO: handle case where multiple integrations have the same name
+            const foundIntegration = this.stApp.stModel
+              .getIntegrationList()
+              .find((integration) => integration.name.trim() === token['Application']);
+            const integrationId = foundIntegration ? foundIntegration.id : null;
+            const integrationNameId = foundIntegration ? foundIntegration.nameId : null;
+            // add userId
+            //   TODO: handle case where multiple users have the same name
+            const foundUser = this.stApp.stModel.getUserList().find((user) => user.name.trim() === token['User']);
+            const userId = foundUser ? foundUser.id : null;
+            // add roleId
+            //   TODO: handle case where multiple roles have the same name
+            const foundRole = this.stApp.stModel.getRoleList().find((role) => role.name.trim() === token['Role']);
+            const roleId = foundRole ? foundRole.id : null;
+            // add the standardized field and values including data cleansing to the array
+            standardizedValues.push({
+              id: token['Internal ID'],
+              active: token['Inactive'] == 'No' ? 'T' : 'F',
+              nameId: token['Token name'] + ' (' + token['Internal ID'] + ')',
+              integration: token['Application'],
+              integrationId: integrationId,
+              integrationNameId: integrationNameId,
+              user: token['User'],
+              userId: userId,
+              role: token['Role'],
+              roleId: roleId,
+              createdOn: token['Created'],
+              createdBy: token['Created By'],
+            });
+          }
+          // remove last record of standardizedValues since it contains the the header row
+          standardizedValues.pop();
+          // log.debug({
+          //   title: 'SuiteToolsController:processPostedData() tokens standardizedValues',
+          //   details: standardizedValues,
+          // });
+          // sort the array by name
+          standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+          updateSettings = { custrecord_idev_st_config_tokens: JSON.stringify(standardizedValues) };
+          break;
+        default:
+          log.debug({ title: 'SuiteToolsController:processPostedData() invalid name value', details: name });
       }
       if (updateSettings) {
         log.debug({ title: `SuiteToolsAppSettings:processPostedData() updateSettings = `, details: updateSettings });
@@ -315,8 +405,6 @@ export class SuiteToolsController {
           updateSettings
         );
         log.debug({ title: `SuiteToolsAppSettings:processPostedData() saved successfully?`, details: success });
-      } else {
-        log.debug({ title: 'SuiteToolsController:processPostedData() message', details: 'name not found' });
       }
     } else {
       log.debug({ title: 'SuiteToolsController:processPostedData() message', details: 'name and/or value not found' });
@@ -355,7 +443,7 @@ export class SuiteToolsController {
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/appIssues.html');
     const bodyValues = {};
     bodyValues['issues'] = issues;
-    this.stApp.stView.renderPage(body, bodyValues);
+    this.stApp.stView.render(RenderType.PageOnly, body, bodyValues);
   }
 
   /**
@@ -380,11 +468,11 @@ export class SuiteToolsController {
       log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLinesArray', details: stackLinesArray });
       bodyValues['stack'] = stackLinesArray;
     }
-    this.stApp.stView.renderPage(body, bodyValues);
+    this.stApp.stView.render(RenderType.PageOnly, body, bodyValues);
   }
 
   /**
-   * Renders the custom Settings form.
+   * Renders the Settings form.
    */
   public renderSettingsForm(): void {
     log.debug({ title: 'SuiteToolsController:renderSettingsForm() initiated', details: '' });
@@ -399,11 +487,11 @@ export class SuiteToolsController {
     bodyValues['devmode'] = this.stApp.stAppSettings.devMode;
     bodyValues['urlIntegrations'] = this.stApp.scriptUrl + '&action=getIntegrations';
     bodyValues['integrations'] = this.stApp.stAppSettings.integrations;
-    this.stApp.stView.render(body, bodyValues);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
   /**
-   * Renders the custom System form.
+   * Renders the System form.
    */
   public renderSystemForm(): void {
     log.debug({ title: 'SuiteToolsController:renderSystemForm() initiated', details: '' });
@@ -429,11 +517,11 @@ export class SuiteToolsController {
     bodyValues['isAdmin'] = this.stApp.stAppNs.isAdmin;
     bodyValues['userSubsidiary'] = this.stApp.stAppNs.runtime.getCurrentUser().subsidiary;
 
-    this.stApp.stView.render(body, bodyValues);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
   /**
-   * Renders the custom Files form.
+   * Renders the Files form.
    */
   public renderFilesForm(): void {
     log.debug({ title: 'SuiteToolsController:renderFilesForm() initiated', details: '' });
@@ -441,244 +529,126 @@ export class SuiteToolsController {
     this.stApp.setAlert('This feature is still under development.');
 
     // set form input option values dynamically
+    // rows
+    const rowOptions = this.stApp.stView.getRowOptions();
+    // types
     const typesOptions = this.retrieveOptionValues(
       'SELECT MediaType.key as id, MediaType.name FROM MediaType ORDER BY name'
     );
+    // versions
+    const createdOptions = this.stApp.stView.getDateOptions();
+    // versions
+    const modifiedOptions = this.stApp.stView.getDateOptions();
+    // option values
     const optionValuesObj = {
       options: [
         {
+          field: 'custom_rows',
+          values: rowOptions,
+        },
+        {
           field: 'custom_types',
           values: typesOptions,
+        },
+        {
+          field: 'custom_created_dates',
+          values: createdOptions,
+        },
+        {
+          field: 'custom_modified_dates',
+          values: modifiedOptions,
         },
       ],
     };
     // const formData = this.stApp.stLib.stLibNs.generateFormData();
     const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
 
-    // get the results
+    // get the records
     let formFieldValues = {};
     if (this.stApp.context.request.method == 'GET') {
       // GET - default initial values
-      formFieldValues = [{ name: 'custom_rows', value: '50' }];
+      formFieldValues = [{ name: 'custom_modified_dates', value: 'today' }];
     } else {
       // POST - get values from POSTed fields
       formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
     }
     const rows = this.getPostedField('custom_rows', formFieldValues);
     const types = this.getPostedField('custom_types', formFieldValues);
-    const createdDateOptions = this.getPostedField('custom_created_date_options', formFieldValues);
-    const modifiedDateOptions = this.getPostedField('custom_modified_date_options', formFieldValues);
-
-    // get the results
-    const sqlResults = this.stApp.stModel.getFiles(rows, types, createdDateOptions, modifiedDateOptions);
+    const createdDates = this.getPostedField('custom_created_dates', formFieldValues);
+    const modifiedDates = this.getPostedField('custom_modified_dates', formFieldValues);
+    const records = this.stApp.stModel.getFiles(rows, types, createdDates, modifiedDates);
 
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/files.html');
     const bodyValues = {};
-    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-    bodyValues['optionValues'] = optionValues;
-    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
     bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/file.html');
-    bodyValues['tableData'] = this.stApp.stView.generateTableData(sqlResults, true);
-    this.stApp.stView.render(body, bodyValues);
-  }
-
-  /**
-   * Renders the custom File modal.
-   *
-   * @param id - the internal ID of the file
-   */
-  public renderFileModal(id: string): void {
-    log.debug({ title: 'SuiteToolsController:renderFileModal() initiated', details: { id: id } });
-
-    // get the results
-    const sqlResult = this.stApp.stModel.getFile(id);
-    // log.debug({ title: 'SuiteToolsController:renderFileModal() sqlResult = ', details: sqlResult });
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/file.html');
-    const bodyValues = {};
-    bodyValues['id'] = sqlResult.id;
-    bodyValues['folder'] = sqlResult.folder;
-    bodyValues['createddate'] = sqlResult.createddate;
-    bodyValues['lastmodifieddate'] = sqlResult.lastmodifieddate;
-    bodyValues['filetype'] = sqlResult.filetype;
-    bodyValues['name'] = sqlResult.name;
-    bodyValues['filesize'] = sqlResult.filesize;
-    bodyValues['description'] = sqlResult.description;
-    bodyValues['url'] = sqlResult.url;
-    bodyValues['urlNs'] = '/app/common/media/mediaitem.nl?id=' + sqlResult.id;
-    this.stApp.stView.renderPage(body, bodyValues);
-  }
-
-  /**
-   * Renders the custom Scripts form.
-   */
-  public renderUsersForm(): void {
-    log.debug({ title: 'SuiteToolsController:renderUsersForm() initiated', details: '' });
-
-    // get the results
-    const sqlResults = this.stApp.stModel.getUsers();
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/users.html');
-    const bodyValues = {};
-    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
-    bodyValues['tableData'] = this.stApp.stView.generateTableData(sqlResults, true);
-    this.stApp.stView.render(body, bodyValues);
-  }
-
-  /**
-   * Renders the custom User modal.
-   *
-   * @param id - the internal ID of the user
-   */
-  public renderUserModal(id: string): void {
-    log.debug({ title: 'SuiteToolsController:renderUserForm() initiated', details: { id: id } });
-
-    // get the results
-    const sqlResult = this.stApp.stModel.getUser(id);
-    log.debug({ title: 'SuiteToolsController:renderUserForm() sqlResult =', details: sqlResult });
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/user.html');
-    const bodyValues = {};
-    if (sqlResult) {
-      bodyValues['id'] = sqlResult.id;
-      bodyValues['isinactive'] = sqlResult.isinactive == 'T';
-      bodyValues['entityid'] = sqlResult.entityid;
-      bodyValues['firstname'] = sqlResult.firstname;
-      bodyValues['lastname'] = sqlResult.lastname;
-      bodyValues['email'] = sqlResult.email;
-      bodyValues['supervisorname'] = sqlResult.supervisorname;
-      bodyValues['supervisorurl'] = sqlResult.supervisorurl;
-      bodyValues['title'] = sqlResult.title;
-      bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + sqlResult.id;
-      bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + sqlResult.id;
-      bodyValues['urlUser'] = this.stApp.scriptUrl + '&action=script&userId=' + sqlResult.id;
-      bodyValues['urlUserLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + sqlResult.id;
-      bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + sqlResult.id;
-      bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + sqlResult.id;
-    }
-    this.stApp.stView.renderPage(body, bodyValues);
-  }
-
-  /**
-   * Renders the custom User form.
-   *
-   * @param id - the internal ID of the user
-   */
-  public renderUserForm(id: string): void {
-    log.debug({ title: 'SuiteToolsController:renderUserForm() initiated', details: { id: id } });
-
-    // get the results
-    const sqlResult = this.stApp.stModel.getUser(id);
-    log.debug({ title: 'SuiteToolsController:renderUserForm() sqlResult =', details: sqlResult });
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/user.html');
-    const bodyValues = {};
-    bodyValues['id'] = sqlResult.id;
-    bodyValues['entityid'] = sqlResult.entityid;
-    bodyValues['firstname'] = sqlResult.firstname;
-    bodyValues['lastname'] = sqlResult.lastname;
-    bodyValues['email'] = sqlResult.email;
-    bodyValues['supervisorname'] = sqlResult.supervisorname;
-    bodyValues['supervisorurl'] = sqlResult.supervisorurl;
-    bodyValues['title'] = sqlResult.title;
-    bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + sqlResult.id;
-    bodyValues['urlUserLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + sqlResult.id;
-    bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + sqlResult.id;
-    bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + sqlResult.id;
-    this.stApp.stView.render(body, bodyValues);
-  }
-
-  /**
-   * Renders the custom Web Services Logs form
-   */
-  public renderUserLoginsForm(): void {
-    log.debug({ title: 'SuiteToolsController:renderUserLoginsForm() initiated', details: null });
-
-    // set form input option values dynamically
-    const userListSql =
-      "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee ORDER BY name";
-
-    const userOptions = this.retrieveOptionValues(userListSql);
-    const optionValuesObj = {
-      options: [
-        {
-          field: 'custom_users',
-          values: userOptions,
-        },
-      ],
-    };
-    // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
-    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-
-    // get the results
-    let formFieldValues = [];
-    if (this.stApp.context.request.method == 'GET') {
-      // WERE SCRIPT PARAMS SET IN THE URL?
-      const userId = this.stApp.context.request.parameters.userId;
-      if (userId) {
-        // set the initial values for when script params are set in the URL
-        formFieldValues.push({ name: 'custom_users', value: [userId] });
-        formFieldValues.push({ name: 'custom_date_options', value: 'today' });
-        // log.debug({
-        //   title: 'SuiteToolsController:renderUserLoginsForm() formFieldValues =',
-        //   details: formFieldValues,
-        // });
-      } else {
-        // Set the default initial values for when no script params are set in the URL
-        formFieldValues.push({ name: 'custom_date_options', value: '60' });
-      }
-    } else {
-      // POST - get values from POSTed fields
-      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
-    }
-    const rows = this.getPostedField('custom_rows', formFieldValues);
-    const status = this.getPostedField('custom_status', formFieldValues);
-    const users = this.getPostedField('custom_users', formFieldValues);
-    const dateOptions = this.getPostedField('custom_date_options', formFieldValues);
-    // const title = this.getPostedField('custom_title', formFieldValues);
-    // const detail = this.getPostedField('custom_detail', formFieldValues);
-
-    const results = this.stApp.stModel.getUserLogins(rows, status, users, dateOptions);
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/userLogins.html');
-    const bodyValues = {};
     bodyValues['scriptUrl'] = this.stApp.scriptUrl;
     bodyValues['optionValues'] = optionValues;
     bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
-    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
-    this.stApp.stView.render(body, bodyValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
   /**
-   * Renders the custom Scripts form.
+   * Renders the File form.
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderFileForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderFileForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getFile(id);
+
+    // display the form
+    const filename = 'views/partials/file.html';
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    bodyValues['id'] = record.id;
+    bodyValues['folder'] = record.folder;
+    bodyValues['createddate'] = record.createddate;
+    bodyValues['lastmodifieddate'] = record.lastmodifieddate;
+    bodyValues['filetype'] = record.filetype;
+    bodyValues['name'] = record.name;
+    bodyValues['filesize'] = record.filesize;
+    bodyValues['description'] = record.description;
+    bodyValues['url'] = record.url;
+    bodyValues['urlNs'] = '/app/common/media/mediaitem.nl?id=' + record.id;
+    this.stApp.stView.render(renderType, body, bodyValues);
+  }
+
+  /**
+   * Renders the Scripts form.
    */
   public renderScriptsForm(): void {
     log.debug({ title: 'SuiteToolsController:renderScriptsForm() initiated', details: null });
 
     // set form input option values dynamically
-    const versionOptions = this.retrieveOptionValues(
-      'SELECT scriptVersion.id, scriptVersion.name FROM scriptVersion ORDER BY name'
-    );
-    const typeOptions = this.retrieveOptionValues(
-      'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name'
-    );
-    const scriptOptions = this.retrieveOptionValues('SELECT id, name FROM script ORDER BY name');
-    const ownerOptions = this.retrieveOptionValues(
-      "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee WHERE giveaccess = 'T' AND isinactive = 'F' ORDER BY name"
-    );
+    // active
+    const activeOptions = this.stApp.stView.getActiveOptions();
+    // versions
+    const versionOptions = this.stApp.stView.getApiVersionOptions();
+    // types
+    const typeOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
+    // scripts
+    const scriptOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
+    // owners
+    const ownerOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+    // files
     const fileOptions = this.retrieveOptionValues(
       'SELECT UNIQUE file.name, file.id FROM script INNER JOIN file ON script.scriptfile = file.id ORDER BY file.name'
     );
+    // option values
     const optionValuesObj = {
       options: [
+        {
+          field: 'custom_active',
+          values: activeOptions,
+        },
         {
           field: 'custom_versions',
           values: versionOptions,
@@ -704,7 +674,7 @@ export class SuiteToolsController {
     // const formData = this.stApp.stLib.stLibNs.generateFormData();
     const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
 
-    // get the results
+    // get the records
     let formFieldValues = [];
     if (this.stApp.context.request.method == 'GET') {
       // GET - default initial values
@@ -719,112 +689,558 @@ export class SuiteToolsController {
     const scripts = this.getPostedField('custom_scripts', formFieldValues);
     const owners = this.getPostedField('custom_owners', formFieldValues);
     const files = this.getPostedField('custom_files', formFieldValues);
-
-    // get the results
-    const sqlResults = this.stApp.stModel.getScripts(active, versions, types, scripts, owners, files);
+    const records = this.stApp.stModel.getScripts(active, versions, types, scripts, owners, files);
 
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scripts.html');
     const bodyValues = {};
-    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-    bodyValues['optionValues'] = optionValues;
-    bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/file.html');
     bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
       'views/partials/modals/script.html'
     );
     bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+    bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/file.html');
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
     bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-    bodyValues['tableData'] = this.stApp.stView.generateTableData(sqlResults, true);
-    this.stApp.stView.render(body, bodyValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
   /**
-   * Renders the custom Script modal.
+   * Renders the Script form.
    *
-   * @param id - the internal ID of the script
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
    */
-  public renderScriptModal(id: string): void {
-    log.debug({ title: 'SuiteToolsController:renderScriptModal() initiated', details: { id: id } });
+  public renderScriptForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderScriptForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
 
-    // get the results
-    const sqlResult = this.stApp.stModel.getScript(id);
-    // log.debug({ title: 'SuiteToolsController:renderScriptModal() sqlResult =', details: sqlResult });
+    // get the record
+    const record = this.stApp.stModel.getScript(id);
 
     // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/script.html');
-    const bodyValues = {};
-    if (sqlResult) {
-      bodyValues['id'] = sqlResult.id;
-      bodyValues['apiversion'] = sqlResult.apiversion;
-      bodyValues['isinactive'] = sqlResult.isinactive == 'T';
-      bodyValues['scripttype'] = sqlResult.scripttype;
-      bodyValues['name'] = sqlResult.name;
-      bodyValues['scriptid'] = sqlResult.scriptid;
-      bodyValues['owner'] = sqlResult.owner;
-      bodyValues['scriptfile'] = sqlResult.scriptfile;
-      bodyValues['notifyemails'] = sqlResult.notifyemails;
-      bodyValues['description'] = sqlResult.description;
-      bodyValues['urlNs'] = '/app/common/scripting/script.nl?id=' + sqlResult.id;
-      bodyValues['urlScript'] = this.stApp.scriptUrl + '&action=script&id=' + sqlResult.id;
-      bodyValues['urlScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&scriptId=' + sqlResult.id;
+    let filename = 'views/script.html';
+    if (renderType === RenderType.Modal) {
+      filename = 'views/partials/script.html';
     }
-    this.stApp.stView.renderPage(body, bodyValues);
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    if (record) {
+      bodyValues['id'] = record.id;
+      bodyValues['apiversion'] = record.apiversion;
+      bodyValues['isinactive'] = record.isinactive == 'T';
+      bodyValues['scripttype'] = record.scripttype;
+      bodyValues['name'] = record.name;
+      bodyValues['scriptid'] = record.scriptid;
+      bodyValues['owner'] = record.owner;
+      bodyValues['scriptfile'] = record.scriptfile;
+      bodyValues['notifyemails'] = record.notifyemails;
+      bodyValues['description'] = record.description;
+      bodyValues['urlNs'] = '/app/common/scripting/script.nl?id=' + record.id;
+      bodyValues['urlScript'] = this.stApp.scriptUrl + '&action=script&id=' + record.id;
+      bodyValues['urlScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&scriptId=' + record.id;
+    }
+    this.stApp.stView.render(renderType, body, bodyValues);
   }
 
   /**
-   * Renders the custom Script File form.
-   *
-   * @param id - the internal ID of the script
+   * Renders the Integrations form
    */
-  public renderScriptForm(id: string): void {
-    log.debug({ title: 'SuiteToolsController:renderScriptForm() initiated', details: { id: id } });
+  public renderIntegrationsForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderIntegrationsForm() initiated', details: null });
 
-    // get the results
-    const sqlResult = this.stApp.stModel.getScript(id);
-    log.debug({ title: 'SuiteToolsController:renderScriptForm() sqlResult =', details: sqlResult });
+    // set form input option values dynamically
+    const optionValuesObj = {
+      options: [],
+    };
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the records
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // Set the default initial values
+      formFieldValues.push({ name: 'custom_status', value: 'T' });
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const status = this.getPostedField('custom_status', formFieldValues);
+    const results = this.stApp.stModel.getIntegrations(status);
 
     // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptFile.html');
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/integrations.html');
     const bodyValues = {};
-    if (sqlResult) {
-      bodyValues['id'] = sqlResult.id;
-      bodyValues['apiversion'] = sqlResult.apiversion;
-      bodyValues['isinactive'] = sqlResult.isinactive;
-      bodyValues['scripttype'] = sqlResult.scripttype;
-      bodyValues['name'] = sqlResult.name;
-      bodyValues['scriptid'] = sqlResult.scriptid;
-      bodyValues['owner'] = sqlResult.owner;
-      bodyValues['scriptfile'] = sqlResult.scriptfile;
-      bodyValues['notifyemails'] = sqlResult.notifyemails;
-      bodyValues['description'] = sqlResult.description;
-      bodyValues['urlScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&scriptId=' + sqlResult.id;
-      bodyValues['code'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(sqlResult.scriptfile);
-      sqlResult.scriptfile;
-    }
-    this.stApp.stView.render(body, bodyValues);
+    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+    bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/integration.html'
+    );
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
   /**
-   * Renders the custom Script Log form
+   * Renders the Integration form.
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderIntegrationForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderIntegrationForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getIntegration(id);
+
+    // display the form
+    let filename = 'views/integration.html';
+    if (renderType === RenderType.Modal) {
+      filename = 'views/partials/integration.html';
+    }
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    if (record) {
+      bodyValues['id'] = record.id;
+      bodyValues['active'] = record.active == 'T';
+      bodyValues['name'] = record.name;
+      bodyValues['integrationId'] = record.integrationId;
+      bodyValues['createdOn'] = record.createdOn;
+      bodyValues['url'] = this.stApp.scriptUrl + '&action=integration&id=' + record.id;
+      bodyValues['urlNs'] = '/app/common/integration/integrapp.nl?id=' + record.id;
+      bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&integrationId=' + record.id;
+    }
+    this.stApp.stView.render(renderType, body, bodyValues);
+  }
+
+  /**
+   * Renders the Tokens form
+   */
+  public renderTokensForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderTokensForm() initiated', details: null });
+
+    // set form input option values dynamically
+    // active
+    const activeOptions = this.stApp.stView.getActiveOptions();
+    // integrations
+    const integrationOptions = this.getOptionValues(this.stApp.stModel.getIntegrationList());
+    // users
+    const userOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+    // roles
+    const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
+    // option values
+    const optionValuesObj = {
+      options: [
+        {
+          field: 'custom_active',
+          values: activeOptions,
+        },
+        {
+          field: 'custom_integration',
+          values: integrationOptions,
+        },
+        {
+          field: 'custom_user',
+          values: userOptions,
+        },
+        {
+          field: 'custom_role',
+          values: roleOptions,
+        },
+      ],
+    };
+    // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the records
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // WERE SCRIPT PARAMS SET IN THE URL?
+      const integrationId = this.stApp.context.request.parameters.integrationId;
+      const userId = this.stApp.context.request.parameters.userId;
+      const roleId = this.stApp.context.request.parameters.roleId;
+      if (integrationId || userId || roleId) {
+        // set the initial values for when script params are set in the URL
+        if (integrationId) {
+          formFieldValues.push({ name: 'custom_integration', value: integrationId });
+        }
+        if (userId) {
+          formFieldValues.push({ name: 'custom_user', value: userId });
+        }
+        if (roleId) {
+          formFieldValues.push({ name: 'custom_role', value: roleId });
+        }
+      } else {
+        // Set the default initial values for when no script params are set in the URL
+        formFieldValues.push({ name: 'custom_active', value: 'T' });
+      }
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const active = this.getPostedField('custom_active', formFieldValues);
+    const integration = this.getPostedField('custom_integration', formFieldValues);
+    const user = this.getPostedField('custom_user', formFieldValues);
+    const role = this.getPostedField('custom_role', formFieldValues);
+    const results = this.stApp.stModel.getTokens(active, integration, user, role);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/tokens.html');
+    const bodyValues = {};
+    bodyValues['tokenModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/token.html');
+    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+    bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/integration.html'
+    );
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the Token form.
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderTokenForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderTokenForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getToken(id);
+
+    // display the form
+    let filename = 'views/token.html';
+    if (renderType === RenderType.Modal) {
+      filename = 'views/partials/token.html';
+    }
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    if (record) {
+      bodyValues['active'] = record.active == 'T';
+      bodyValues['name'] = record.nameId;
+      bodyValues['user'] = record.user;
+      bodyValues['role'] = record.role;
+      bodyValues['integration'] = record.integration;
+      bodyValues['createdOn'] = record.createdOn;
+      bodyValues['createdBy'] = record.createdBy;
+      bodyValues['url'] = this.stApp.scriptUrl + '&action=token&id=' + record.id;
+      bodyValues['urlNs'] = '/app/setup/accesstoken.nl?id=' + record.id;
+      bodyValues['urlIntegration'] = this.stApp.scriptUrl + '&action=integration&id=' + record.integration;
+    }
+    this.stApp.stView.render(renderType, body, bodyValues);
+  }
+
+  /**
+   * Renders the Roles form
+   */
+  public renderRolesForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderRolesForm() initiated', details: null });
+
+    // set form input option values dynamically
+    // active
+    const activeOptions = this.stApp.stView.getActiveOptions();
+    // option values
+    const optionValuesObj = {
+      options: [
+        {
+          field: 'custom_active',
+          values: activeOptions,
+        },
+      ],
+    };
+    // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the records
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // Set the default initial values for when no script params are set in the URL
+      formFieldValues.push({ name: 'custom_active', value: 'T' });
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const active = this.getPostedField('custom_active', formFieldValues);
+    const results = this.stApp.stModel.getRoles(active);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/roles.html');
+    const bodyValues = {};
+    bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/role.html');
+    bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/integration.html'
+    );
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the Role form
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderRoleForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderRoleForm()) initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getRole(id);
+
+    // display the form
+    let filename = 'views/role.html';
+    if (renderType == RenderType.Modal) {
+      filename = 'views/partials/role.html';
+    }
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    if (record) {
+      bodyValues['id'] = record.id;
+      bodyValues['isinactive'] = record.isinactive == 'T';
+      bodyValues['name'] = record.name;
+      bodyValues['centertype'] = record.centertype;
+      bodyValues['issalesrole'] = record.issalesrole == 'T';
+      bodyValues['issupportrole'] = record.issupportrole == 'T';
+      bodyValues['iswebserviceonlyrole'] = record.iswebserviceonlyrole == 'T';
+      bodyValues['url'] = this.stApp.scriptUrl + '&action=role&id=' + record.id;
+      bodyValues['urlNs'] = '/app/setup/role.nl?id=' + record.id;
+      bodyValues['urlUsers'] = this.stApp.scriptUrl + '&action=users&roleId=' + record.id;
+    }
+    this.stApp.stView.render(renderType, body, bodyValues);
+  }
+
+  /**
+   * Renders the Users form.
+   */
+  public renderUsersForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderUsersForm() initiated', details: '' });
+
+    // set form input option values dynamically
+    // active
+    const activeOptions = this.stApp.stView.getActiveOptions();
+    // roles
+    const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
+    // supervisors
+    const supervisorOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+    // option values
+    const optionValuesObj = {
+      options: [
+        {
+          field: 'custom_active',
+          values: activeOptions,
+        },
+        {
+          field: 'custom_role',
+          values: roleOptions,
+        },
+        {
+          field: 'custom_supervisor',
+          values: supervisorOptions,
+        },
+      ],
+    };
+    // const formData = this.stApp.stLib.stLibNs.generateFormData();
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the records
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // WERE SCRIPT PARAMS SET IN THE URL?
+      const roleId = this.stApp.context.request.parameters.roleId;
+      if (roleId) {
+        // set the initial values for when script params are set in the URL
+        formFieldValues.push({ name: 'custom_role', value: roleId });
+      } else {
+        // Set the default initial values for when no script params are set in the URL
+        formFieldValues.push({ name: 'custom_active', value: 'T' });
+      }
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const active = this.getPostedField('custom_active', formFieldValues);
+    const role = this.getPostedField('custom_role', formFieldValues);
+    const supervisors = this.getPostedField('custom_supervisor', formFieldValues);
+    const records = this.stApp.stModel.getUsers(active, role, supervisors);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/users.html');
+    const bodyValues = {};
+    bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/role.html');
+    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the User form.
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderUserForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderUserForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getUser(id);
+    log.debug({ title: 'SuiteToolsController:renderUserForm() record =', details: record });
+
+    // display the form
+    let filename = 'views/user.html';
+    if (renderType === RenderType.Modal) {
+      filename = 'views/partials/user.html';
+    }
+    log.debug({ title: 'SuiteToolsController:renderUserForm() filename =', details: filename });
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    bodyValues['id'] = record.id;
+    bodyValues['entityid'] = record.entityid;
+    bodyValues['firstname'] = record.firstname;
+    bodyValues['lastname'] = record.lastname;
+    bodyValues['email'] = record.email;
+    bodyValues['supervisorname'] = record.supervisorname;
+    bodyValues['supervisorurl'] = record.supervisorurl;
+    bodyValues['title'] = record.title;
+    bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
+    bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + record.id;
+    bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + record.id;
+    // bodyValues['urlRoles'] = this.stApp.scriptUrl + '&action=users&roleId=' + ???; - not 1 to 1
+    bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&userId=' + record.id;
+    bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + record.id;
+    bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + record.id;
+    this.stApp.stView.render(renderType, body, bodyValues);
+  }
+
+  /**
+   * Renders the Web Services Logs form
+   */
+  public renderUserLoginsForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderUserLoginsForm() initiated', details: null });
+
+    // set form input option values dynamically
+    // rows
+    const rowOptions = this.stApp.stView.getRowOptions();
+    // users
+    const userOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+    // dates
+    const dateOptions = this.stApp.stView.getDateOptions();
+    // option values
+    const optionValuesObj = {
+      options: [
+        {
+          field: 'custom_rows',
+          values: rowOptions,
+        },
+        {
+          field: 'custom_users',
+          values: userOptions,
+        },
+        {
+          field: 'custom_dates',
+          values: dateOptions,
+        },
+      ],
+    };
+    // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the records
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // WERE SCRIPT PARAMS SET IN THE URL?
+      const userId = this.stApp.context.request.parameters.userId;
+      if (userId) {
+        // set the initial values for when script params are set in the URL
+        formFieldValues.push({ name: 'custom_users', value: [userId] });
+        formFieldValues.push({ name: 'custom_dates', value: 'today' });
+        // log.debug({
+        //   title: 'SuiteToolsController:renderUserLoginsForm() formFieldValues =',
+        //   details: formFieldValues,
+        // });
+      } else {
+        // Set the default initial values for when no script params are set in the URL
+        formFieldValues.push({ name: 'custom_dates', value: '60' });
+      }
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const rows = this.getPostedField('custom_rows', formFieldValues);
+    const status = this.getPostedField('custom_status', formFieldValues);
+    const users = this.getPostedField('custom_users', formFieldValues);
+    const dates = this.getPostedField('custom_dates', formFieldValues);
+    // const title = this.getPostedField('custom_title', formFieldValues);
+    // const detail = this.getPostedField('custom_detail', formFieldValues);
+    const results = this.stApp.stModel.getUserLogins(rows, status, users, dates);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/userLogins.html');
+    const bodyValues = {};
+    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the Script Log form
    */
   public renderScriptLogsForm(): void {
     // log.debug({ title: 'SuiteToolsController:renderScriptLogsForm() initiated', details: null });
 
     // set form input option values dynamically
-    // const userListSql = "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee WHERE giveaccess = 'T' AND isinactive = 'F' ORDER BY name";
-    const userListSql =
-      "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee ORDER BY name";
-
-    const userOptions = this.retrieveOptionValues(userListSql);
-    const typeOptions = this.retrieveOptionValues(
-      'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name'
-    );
-    // const ownerOptions = this.retrieveOptionValues(
-    //   "SELECT employee.id, employee.firstname || ' ' || employee.lastname AS name FROM employee WHERE giveaccess = 'T' AND isinactive = 'F' ORDER BY name"
-    // );
-    const scriptOptions = this.retrieveOptionValues('SELECT id, name FROM script ORDER BY name');
+    // rows
+    const rowOptions = this.stApp.stView.getRowOptions();
+    // log levels
+    const logLevelOptions = this.stApp.stView.getLogLevelOptions();
+    // users
+    const userOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+    // types
+    const typeOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
+    // scripts
+    const scriptOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
+    // types
+    // owners
+    //   uses the same options as users
+    // dates
+    const dateOptions = this.stApp.stView.getDateOptions();
+    // option values
     const optionValuesObj = {
       options: [
+        {
+          field: 'custom_rows',
+          values: rowOptions,
+        },
+        {
+          field: 'custom_levels',
+          values: logLevelOptions,
+        },
         {
           field: 'custom_users',
           values: userOptions,
@@ -834,19 +1250,23 @@ export class SuiteToolsController {
           values: typeOptions,
         },
         {
+          field: 'custom_scripts',
+          values: scriptOptions,
+        },
+        {
           field: 'custom_owners',
           values: userOptions,
         },
         {
-          field: 'custom_scripts',
-          values: scriptOptions,
+          field: 'custom_dates',
+          values: dateOptions,
         },
       ],
     };
     // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
     const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
 
-    // get the results
+    // get the records
     let formFieldValues = [];
     if (this.stApp.context.request.method == 'GET') {
       // WERE SCRIPT PARAMS SET IN THE URL?
@@ -855,7 +1275,7 @@ export class SuiteToolsController {
       const ownerId = this.stApp.context.request.parameters.ownerId;
       if (userId || scriptId || ownerId) {
         // set the initial values for when script params are set in the URL
-        formFieldValues.push({ name: 'custom_date_options', value: 'today' });
+        formFieldValues.push({ name: 'custom_dates', value: 'today' });
         // if user then set to filter to that user's name
         const foundUser = userOptions.find((user) => user.value == userId);
         if (foundUser) {
@@ -889,7 +1309,7 @@ export class SuiteToolsController {
       } else {
         // Set the default initial values for when no script params are set in the URL
         formFieldValues.push({ name: 'custom_levels', value: ['ERROR', 'EMERGENCY', 'SYSTEM'] });
-        formFieldValues.push({ name: 'custom_date_options', value: '15' });
+        formFieldValues.push({ name: 'custom_dates', value: '15' });
       }
     } else {
       // POST - get values from POSTed fields
@@ -901,7 +1321,7 @@ export class SuiteToolsController {
     const types = this.getPostedField('custom_types', formFieldValues);
     const scripts = this.getPostedField('custom_scripts', formFieldValues);
     const owners = this.getPostedField('custom_owners', formFieldValues);
-    let dateOptions = this.getPostedField('custom_date_options', formFieldValues);
+    let dates = this.getPostedField('custom_dates', formFieldValues);
     const title = this.getPostedField('custom_title', formFieldValues);
     const detail = this.getPostedField('custom_detail', formFieldValues);
 
@@ -914,13 +1334,13 @@ export class SuiteToolsController {
       const user = userOptions.find((user) => user.value == users);
       log.debug({ title: 'SuiteToolsController:renderScriptLogsForm() user = ', details: user });
       // use the search API since user(s) requested
-      if (dateOptions && Number(dateOptions) > 0) {
+      if (dates && Number(dates) > 0) {
         // since less than a day force it to be today
         this.stApp.setAlert(
           'Setting "Date Options" to "Today" to retrieve user info with the Search API instead of the SuiteQL API.'
         );
-        dateOptions = 'today';
-        formFieldValues.find((field) => field.name == 'custom_date_options').value = 'today';
+        dates = 'today';
+        formFieldValues.find((field) => field.name == 'custom_dates').value = 'today';
       }
       results = this.stApp.stModel.getScriptLogsViaSearch(
         rows,
@@ -929,25 +1349,25 @@ export class SuiteToolsController {
         types,
         scripts,
         owners,
-        dateOptions,
+        dates,
         title,
         detail
       );
     } else {
-      if (dateOptions && Number(dateOptions) > 0) {
-        // use SuiteQL API since no specific user requested and dateOptions is less than a day
+      if (dates && Number(dates) > 0) {
+        // use SuiteQL API since no specific user requested and dates is less than a day
         results = this.stApp.stModel.getScriptLogsViaSuiteQL(
           rows,
           levels,
           types,
           scripts,
           owners,
-          dateOptions,
+          dates,
           title,
           detail
         );
       } else {
-        // use the search API since dateOptions is specified in days
+        // use the search API since dates is specified in days
         results = this.stApp.stModel.getScriptLogsViaSearch(
           rows,
           levels,
@@ -955,7 +1375,7 @@ export class SuiteToolsController {
           types,
           scripts,
           owners,
-          dateOptions,
+          dates,
           title,
           detail
         );
@@ -965,15 +1385,15 @@ export class SuiteToolsController {
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptLogs.html');
     const bodyValues = {};
-    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-    bodyValues['optionValues'] = optionValues;
-    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
     bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
       'views/partials/modals/script.html'
     );
-    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
     bodyValues['tableData'] = this.stApp.stView.generateTableData(results, true);
-    this.stApp.stView.render(body, bodyValues);
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
   // ---------------------------------------------------------------------------
@@ -981,33 +1401,40 @@ export class SuiteToolsController {
   // ---------------------------------------------------------------------------
 
   /**
-   * Renders the custom Script form.
+   * Retrieve the option values
    *
    * @param sql - the sql to retrieve values
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private retrieveOptionValues(sql: string, valueIsName = false): any[] {
-    // log.debug({ title: 'SuiteToolsController:retrieveOptionValues() initiated', details: { sql: sql } });
+  private retrieveOptionValues(sql: string): any[] {
+    log.debug({ title: 'SuiteToolsController:retrieveOptionValues() initiated', details: { sql: sql } });
 
-    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    // log.debug({ title: 'SuiteToolsController:retrieveOptionValues() - sqlResults =', details: sqlResults });
-    const options = [];
-    if (valueIsName) {
-      sqlResults.forEach((sqlResult) => {
-        options.push({
-          value: sqlResult.name,
-          text: sqlResult.name,
-        });
-      });
-    } else {
-      sqlResults.forEach((sqlResult) => {
-        options.push({
-          value: sqlResult.id,
-          text: sqlResult.name,
-        });
-      });
-    }
+    const records = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const options = this.getOptionValues(records);
 
     return options;
+  }
+
+  /**
+   * Get option values
+   *
+   * @param options - input values
+   * @param valueIsNameId - if true then the value is the name
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private getOptionValues(values: any[]): any[] {
+    log.debug({ title: 'SuiteToolsController:getOptionValues() initiated', details: null });
+
+    const optionsOut = [];
+    optionsOut.push({ value: '', text: 'All' });
+    values.forEach((option) => {
+      optionsOut.push({
+        value: option.id,
+        text: option.name,
+      });
+    });
+    log.debug({ title: 'SuiteToolsController:getOptionValues() returning', details: optionsOut });
+
+    return optionsOut;
   }
 }

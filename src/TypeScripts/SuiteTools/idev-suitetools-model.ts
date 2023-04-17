@@ -75,8 +75,8 @@ export class SuiteToolsModel {
   public getFiles(
     rows: string,
     types: string | string[],
-    createdDateOptions: string,
-    modifiedDateOptions: string
+    createdDates: string,
+    modifiedDates: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     log.debug({
@@ -84,8 +84,8 @@ export class SuiteToolsModel {
       details: {
         rows: rows,
         types: types,
-        createdDateOptions: createdDateOptions,
-        modifiedDateOptions: modifiedDateOptions,
+        createdDates: createdDates,
+        modifiedDates: modifiedDates,
       },
     });
     let sql = `SELECT
@@ -118,8 +118,8 @@ export class SuiteToolsModel {
         where.push(`filetype IN (${types.join(',')})`);
       }
     }
-    if (createdDateOptions) {
-      switch (createdDateOptions) {
+    if (createdDates) {
+      switch (createdDates) {
         case '15':
           where.push('createddate > SYSDATE - ( 15 / 1440 )');
           break;
@@ -133,12 +133,12 @@ export class SuiteToolsModel {
           where.push("TO_CHAR ( createddate, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
           break;
         default:
-          log.error({ title: `SuiteToolsModel:getFiles() invalid date option`, details: createdDateOptions });
+          log.error({ title: `SuiteToolsModel:getFiles() invalid date option`, details: createdDates });
           break;
       }
     }
-    if (modifiedDateOptions) {
-      switch (modifiedDateOptions) {
+    if (modifiedDates) {
+      switch (modifiedDates) {
         case '15':
           where.push('lastmodifieddate > SYSDATE - ( 15 / 1440 )');
           break;
@@ -152,7 +152,7 @@ export class SuiteToolsModel {
           where.push("TO_CHAR ( lastmodifieddate, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
           break;
         default:
-          log.error({ title: `SuiteToolsModel:getFiles() invalid date option`, details: modifiedDateOptions });
+          log.error({ title: `SuiteToolsModel:getFiles() invalid date option`, details: modifiedDates });
           break;
       }
     }
@@ -191,189 +191,52 @@ export class SuiteToolsModel {
       file
     WHERE
       file.id = ${id}`;
-    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-
-    return sqlResults[0];
-  }
-
-  /**
-   * Get Users
-   *
-   * @returns results
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getUsers(): any[] {
-    log.debug({ title: `SuiteToolsModel:getUsers() initiated`, details: '' });
-
-    const sql = `SELECT
-      employee.id,
-      employee.firstname,
-      employee.lastname,
-      employee.email,
-      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
-      employee.title
-    FROM
-      employee`;
     const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+    let result = null;
+    if (sqlResults.length === 0) {
+      this.stApp.setAlert('No results found that matched criteria.');
+    } else {
+      result = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsModel:getFile() returning', details: result });
 
-    return sqlResults;
+    return result;
   }
 
   /**
-   * Get user list
+   * Get script type list
    *
-   * @param [active]
    * @returns users
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getUserList(active?: boolean): any[] {
-    // log.debug({ title: `SuiteToolsModel:getUserList() initiated`, details: '' });
+  public getScriptTypeList(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getScriptTypeList() initiated`, details: { activeOnly: activeOnly } });
 
-    let sql = `SELECT
-      employee.id,
-      employee.firstname || ' ' || employee.lastname AS name
-    FROM
-      employee`;
-    if (active) {
-      sql += ` WHERE
-        giveaccess = 'T'
-        AND isinactive = 'F'
-      `;
-    }
-    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const sql = 'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name';
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
 
-    return sqlResults;
+    return results;
   }
 
   /**
-   * Get User
+   * Get script list
    *
-   * @param id - the script id to return
-   * @returns results
+   * @param [activeOnly]
+   * @returns users
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getUser(id: string): any {
-    log.debug({ title: `SuiteToolsModel:getUser() initiated`, details: { id: id } });
-
-    const sql = `SELECT
-      employee.id,
-      employee.entityid,
-      employee.firstname,
-      employee.lastname,
-      employee.email,
-      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
-      employee.title,
-      employee.isinactive,
-    FROM
-      employee
-    WHERE
-      employee.id = ${id}`;
-    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-
-    if (sqlResults.length === 0) {
-      log.error({ title: `SuiteToolsModel:getUser() no results`, details: { id: id } });
-      return null;
-    }
-
-    return sqlResults[0];
-  }
-
-  /**
-   * Get User Logins
-   *
-   * @param rows - the number of rows to return
-   * @param status - the status of the login
-   * @param users - the users to return logins for
-   * @param dateOptions - the dates to return logins for
-   * @returns HTML content
-   */
-  public getUserLogins(
-    rows: string,
-    status: string,
-    users: string[],
-    dateOptions: string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): any[] {
-    log.debug({
-      title: `SuiteToolsModel:getUserLogins() initiated`,
-      details: {
-        rows: rows,
-        status: status,
-        users: users,
-        dateOptions: dateOptions,
-      },
-    });
-
+  public getScriptList(activeOnly?: boolean): any[] {
+    // log.debug({ title: `SuiteToolsModel:getScriptList() initiated`, details: { activeOnly: activeOnly } });
     let sql = `SELECT
-      TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH:MI:SS' ) AS date,
-      LoginAudit.status,
-      LoginAudit.oAuthAppName,
-      LoginAudit.oAuthAccessTokenName,
-      BUILTIN.DF( LoginAudit.role ) as role,
-      BUILTIN.DF( LoginAudit.user ) || ' (' || LoginAudit.user  || ')' AS userName,
-      LoginAudit.emailAddress,
-      LoginAudit.ipAddress,
-      LoginAudit.requestUri,
-      LoginAudit.detail,
-      LoginAudit.secChallenge,
-      LoginAudit.userAgent,
+      script.id,
+      script.name
     FROM
-      LoginAudit`;
-    // add where clause
-    const where = [];
-    if (rows) {
-      // limit to specified number of rows
-      where.push(`RowNum <= ${rows}`);
-      // } else {
-      //   // default to 50 rows
-      //   where.push(`RowNum <= 50`);
+      script`;
+    if (activeOnly) {
+      sql += ` WHERE isinactive = 'F'`;
     }
-    if (status) {
-      if (status === 'success') {
-        where.push(`LoginAudit.status = 'Success'`);
-      }
-      if (status === 'failure') {
-        where.push(`LoginAudit.status = 'Failure'`);
-      }
-    }
-    if (users) {
-      if (Array.isArray(users)) {
-        users = users.map((user) => {
-          return `'${user.toUpperCase()}'`;
-        });
-        where.push(`LoginAudit.user IN (${users.join(',')})`);
-      }
-    }
-    if (dateOptions) {
-      switch (dateOptions) {
-        case '15':
-          where.push('date > SYSDATE - ( 15 / 1440 )');
-          break;
-        case '60':
-          where.push('date > SYSDATE - ( 1 / 24 )');
-          break;
-        case '240':
-          where.push('date > SYSDATE - ( 4 / 24 )');
-          break;
-        case 'today':
-          where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-          break;
-        case 'yesterday':
-          where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-          break;
-        default:
-          log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dateOptions });
-          break;
-      }
-    }
-    if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
-    }
-    // add order by
-    sql += ` ORDER BY LoginAudit.date DESC`;
-    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-
-    log.debug({ title: 'SuiteToolsModel:getUserLogins() returning', details: results });
+    sql += ` ORDER BY name ASC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
 
     return results;
   }
@@ -421,10 +284,10 @@ export class SuiteToolsModel {
     // add where clause
     const where = [];
     if (active) {
-      if (active === 'yes') {
+      if (active === 'T') {
         where.push(`script.isinactive = 'F'`);
       }
-      if (active === 'no') {
+      if (active === 'F') {
         where.push(`script.isinactive = 'T'`);
       }
     }
@@ -500,14 +363,514 @@ export class SuiteToolsModel {
       script
     WHERE
       script.id = ${id}`;
-    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-
+    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+    let result = null;
     if (sqlResults.length === 0) {
-      log.error({ title: `SuiteToolsModel:getScript() no results`, details: { id: id } });
-      return null;
+      this.stApp.setAlert('No results found that matched criteria.');
+    } else {
+      result = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsModel:getScript() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get integration list
+   *
+   * @returns integrations
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getIntegrationList(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getIntegrationList() initiated`, details: null });
+
+    const results = this.stApp.stAppSettings.integrations;
+    // log.debug({ title: 'SuiteToolsModel:getIntegrationList returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Integrations
+   *
+   * @param [status] - the status of the records
+   * @returns integrations
+   */
+  public getIntegrations(
+    status: string = null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getIntegrations() initiated`,
+      details: {
+        status: status,
+      },
+    });
+
+    let results = this.stApp.stAppSettings.integrations;
+
+    if (status) {
+      // filter results for status
+      results = results.filter((result) => result.active == status);
     }
 
-    return sqlResults[0];
+    log.debug({ title: 'SuiteToolsModel:getIntegrations() returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Integration
+   *
+   * @param id - the id of the record
+   * @returns integration
+   */
+  public getIntegration(id: string): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any {
+    log.debug({ title: `SuiteToolsModel:getIntegration() initiated`, details: { id: id } });
+
+    const results = this.stApp.stAppSettings.integrations;
+    const resultsFiltered = results.filter((result) => result.id == id);
+    let result = null;
+    if (resultsFiltered.length === 0) {
+      this.stApp.setAlert('No results found that matched criteria.');
+    } else {
+      result = resultsFiltered[0];
+    }
+    log.debug({ title: 'SuiteToolsModel:getIntegration() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get token list
+   *
+   * @param [activeOnly]
+   * @returns users
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getTokenList(activeOnly = false): any[] {
+    // log.debug({ title: `SuiteToolsModel:getTokenList() initiated`, details: { activeOnly: activeOnly } });
+
+    let results = this.stApp.stAppSettings.tokens;
+    if (activeOnly) {
+      results = results.filter((result) => result.active == 'T');
+    }
+    // log.debug({ title: 'SuiteToolsModel:getIntegrationList returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Tokens
+   *
+   * @param status
+   * @returns HTML content
+   */
+  public getTokens(
+    active: string,
+    integration: string,
+    user: string,
+    role: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getTokens() initiated`,
+      details: {
+        active: active,
+        integration: integration,
+        user: user,
+        role: role,
+      },
+    });
+
+    let tokens = this.stApp.stModel.getTokenList();
+    if (active) {
+      tokens = tokens.filter((result) => result.active == active);
+    }
+    if (integration) {
+      tokens = tokens.filter((result) => result.integrationId == integration);
+    }
+    if (user) {
+      // do we have a numeric id or a string name
+      if (!isNaN(parseInt(user))) {
+        // build the name string
+        // TODO optimize this
+        const userObj = this.getUser(user);
+        if (userObj) {
+          log.debug({ title: `SuiteToolsModel:getTokens() userObj =`, details: userObj });
+          // need to handle the case where the user has no first or last name
+          const firstName = userObj.firstname ? userObj.firstname : '';
+          const lastName = userObj.lastname ? userObj.lastname : '';
+          user = `${firstName} ${lastName}`.trim();
+          user += ` (${userObj.id})`;
+        }
+      }
+      log.debug({ title: `SuiteToolsModel:getTokens() filtering for user`, details: user });
+      tokens = tokens.filter((result) => result.user == user.trim());
+    }
+    if (role) {
+      tokens = tokens.filter((result) => result.roleId == role);
+    }
+    log.debug({ title: 'SuiteToolsModel:getTokens() returning', details: tokens });
+
+    return tokens;
+  }
+
+  /**
+   * Get Token
+   *
+   * @param id - the id of the record
+   * @returns Token
+   */
+  public getToken(id: string): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any {
+    // log.debug({ title: `SuiteToolsModel:getToken() initiated`, details: { id: id } });
+
+    const resultsFiltered = this.stApp.stModel.getTokenList().filter((result) => result.id == id);
+    const result = resultsFiltered ? resultsFiltered[0] : null;
+    if (!result) {
+      this.stApp.setAlert('No results found that matched criteria.');
+    }
+    log.debug({ title: 'SuiteToolsModel:getToken() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get role list
+   *
+   * @param [activeOnly]
+   * @returns roles
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getRoleList(activeOnly = false): any[] {
+    // log.debug({ title: `SuiteToolsModel:getRoleList() initiated`, details: { activeOnly: activeOnly } });
+
+    let sql = `SELECT
+      role.id,
+      role.name
+    FROM
+      role`;
+    if (activeOnly) {
+      sql += ` WHERE isInactive = 'F'`;
+    }
+    sql += ` ORDER BY role.name`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    // log.debug({ title: 'SuiteToolsModel:getRoleList returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Roles
+   *
+   * @param status - the status of the login
+   * @returns HTML content
+   */
+  public getRoles(
+    active: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getRoles() initiated`,
+      details: {
+        active: active,
+      },
+    });
+
+    let sql = `SELECT
+      role.id,
+      role.scriptId,
+      role.name,
+      role.name || ' (' || role.id  || ')' AS nameId,
+      role.centerType,
+      role.isInactive,
+      role.isSalesRole,
+      role.isSupportRole,
+      role.isWebServiceOnlyRole
+    FROM
+      role`;
+    // add where clause
+    const where = [];
+    if (active) {
+      if (active === 'T') {
+        where.push(`role.isinactive = 'F'`);
+      }
+      if (active === 'F') {
+        where.push(`role.isinactive = 'T'`);
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY role.name`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+    log.debug({ title: 'SuiteToolsModel:getRoles() returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Role
+   *
+   * @param id - the id of the record
+   * @returns Role
+   */
+  public getRole(id: string): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any {
+    log.debug({ title: `SuiteToolsModel:getRole() initiated`, details: { id: id } });
+
+    const sql = `SELECT
+      role.id,
+      role.scriptId,
+      role.name,
+      role.name || ' (' || role.id  || ')' AS nameId,
+      role.centerType,
+      role.isInactive,
+      role.isSalesRole,
+      role.isSupportRole,
+      role.isWebServiceOnlyRole
+    FROM
+      role
+    WHERE
+      role.id = ${id}`;
+    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+    let result = null;
+    if (sqlResults.length === 0) {
+      this.stApp.setAlert('No results found that matched criteria.');
+    } else {
+      result = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsModel:getRole() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get user list
+   *
+   * @param [activeOnly]
+   * @returns users
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getUserList(activeOnly?: boolean): any[] {
+    // log.debug({ title: `SuiteToolsModel:getUserList() initiated`, details: { activeOnly: activeOnly } });
+
+    let sql = `SELECT
+      employee.id,
+      TRIM(employee.firstname || ' ' || employee.lastname) AS name
+    FROM
+      employee`;
+    if (activeOnly) {
+      sql += ` WHERE
+        giveaccess = 'T'
+        AND isinactive = 'F'`;
+    }
+    sql += ` ORDER BY name ASC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    // log.debug({ title: 'SuiteToolsModel:getUserList() returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Users
+   *
+   * @returns results
+   */
+  public getUsers(
+    active: string,
+    role: string,
+    supervisors: string[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getUsers() initiated`,
+      details: { active: active, role: role, supervisors: supervisors },
+    });
+
+    let sql = `SELECT
+      employee.id,
+      employee.firstname,
+      employee.lastname,
+      employee.email,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,`;
+    if (role) {
+      sql += ` role.id AS roleId,
+      role.name || ' (' || role.id || ')' AS roleName`;
+    }
+    sql += ` FROM employee`;
+    if (role) {
+      sql += ` INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
+      INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
+    }
+    // add where clause
+    const where = [];
+    if (active) {
+      if (active === 'T') {
+        where.push(`employee.giveaccess = 'T'`);
+        where.push(`employee.isinactive = 'F'`);
+      }
+      if (active === 'F') {
+        where.push(`(employee.isinactive = 'F' OR employee.giveaccess = 'T')`);
+      }
+    }
+    if (role) {
+      where.push(`role.id = ${role}`);
+    }
+    if (supervisors) {
+      if (Array.isArray(supervisors)) {
+        supervisors = supervisors.map((user) => {
+          return `'${user.toUpperCase()}'`;
+        });
+        where.push(`employee.supervisor IN (${supervisors.join(',')})`);
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY employee.firstname ASC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+
+    log.debug({ title: 'SuiteToolsModel:getUserLogins() returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get User
+   *
+   * @param id - the record id to return
+   * @returns user
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getUser(id: string): any {
+    log.debug({ title: `SuiteToolsModel:getUser() initiated`, details: { id: id } });
+
+    const sql = `SELECT
+      employee.id,
+      employee.entityid,
+      employee.firstname,
+      employee.lastname,
+      employee.email,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,
+      employee.isinactive,
+    FROM
+      employee
+    WHERE
+      employee.id = ${id}`;
+    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+    let result = null;
+    if (sqlResults.length === 0) {
+      this.stApp.setAlert('No results found that matched criteria.');
+    } else {
+      result = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsModel:getUser() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get User Logins
+   *
+   * @param rows - the number of rows to return
+   * @param status - the status of the login
+   * @param users - the users to return logins for
+   * @param dates - the dates to return logins for
+   * @returns HTML content
+   */
+  public getUserLogins(
+    rows: string,
+    status: string,
+    users: string[],
+    dates: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getUserLogins() initiated`,
+      details: {
+        rows: rows,
+        status: status,
+        users: users,
+        dates: dates,
+      },
+    });
+
+    let sql = `SELECT
+      TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH:MI:SS' ) AS date,
+      LoginAudit.status,
+      LoginAudit.oAuthAppName,
+      LoginAudit.oAuthAccessTokenName,
+      BUILTIN.DF( LoginAudit.role ) as role,
+      BUILTIN.DF( LoginAudit.user ) || ' (' || LoginAudit.user  || ')' AS userName,
+      LoginAudit.emailAddress,
+      LoginAudit.ipAddress,
+      LoginAudit.requestUri,
+      LoginAudit.detail,
+      LoginAudit.secChallenge,
+      LoginAudit.userAgent,
+    FROM
+      LoginAudit`;
+    // add where clause
+    const where = [];
+    if (rows) {
+      // limit to specified number of rows
+      where.push(`RowNum <= ${rows}`);
+    }
+    if (status) {
+      if (status === 'success') {
+        where.push(`LoginAudit.status = 'Success'`);
+      }
+      if (status === 'failure') {
+        where.push(`LoginAudit.status = 'Failure'`);
+      }
+    }
+    if (users) {
+      if (Array.isArray(users)) {
+        users = users.map((user) => {
+          return `'${user.toUpperCase()}'`;
+        });
+        where.push(`LoginAudit.user IN (${users.join(',')})`);
+      }
+    }
+    if (dates) {
+      switch (dates) {
+        case '15':
+          where.push('date > SYSDATE - ( 15 / 1440 )');
+          break;
+        case '60':
+          where.push('date > SYSDATE - ( 1 / 24 )');
+          break;
+        case '240':
+          where.push('date > SYSDATE - ( 4 / 24 )');
+          break;
+        case 'today':
+          where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+          break;
+        case 'yesterday':
+          where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+          break;
+        default:
+          log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dates });
+          break;
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY LoginAudit.date DESC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+
+    log.debug({ title: 'SuiteToolsModel:getUserLogins() returning', details: results });
+
+    return results;
   }
 
   /**
@@ -521,7 +884,7 @@ export class SuiteToolsModel {
    * @param types - types of script
    * @param scripts - the scripts to return log records for
    * @param owners - the script owners to return log records for
-   * @param dateOptions - the dates to return log records for
+   * @param dates - the dates to return log records for
    * @param title - the title contains this string
    * @param detail - the detail contains this string
    * @returns HTML content
@@ -533,7 +896,7 @@ export class SuiteToolsModel {
     types: string,
     scripts: string,
     owners: string,
-    dateOptions: string,
+    dates: string,
     title: string,
     detail: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -547,7 +910,7 @@ export class SuiteToolsModel {
         types: types,
         scripts: scripts,
         owners: owners,
-        dateOptions: dateOptions,
+        dates: dates,
         title: title,
         detail: detail,
       },
@@ -622,8 +985,8 @@ export class SuiteToolsModel {
         })
       );
     }
-    if (dateOptions) {
-      filters.push(search.createFilter({ name: 'date', operator: search.Operator.ON, values: dateOptions }));
+    if (dates) {
+      filters.push(search.createFilter({ name: 'date', operator: search.Operator.ON, values: dates }));
     }
     if (title) {
       filters.push(search.createFilter({ name: 'title', operator: search.Operator.CONTAINS, values: title }));
@@ -695,7 +1058,7 @@ export class SuiteToolsModel {
    * @param types - types of script
    * @param scripts - the scripts to return log records for
    * @param owners - the script owners to return log records for
-   * @param dateOptions - the dates to return log records for
+   * @param dates - the dates to return log records for
    * @param title - the title contains this string
    * @param detail - the detail contains this string
    * @returns HTML content
@@ -706,7 +1069,7 @@ export class SuiteToolsModel {
     types: string[],
     scripts: string[],
     owners: string[],
-    dateOptions: string | string[],
+    dates: string | string[],
     title: string,
     detail: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -719,7 +1082,7 @@ export class SuiteToolsModel {
         types: types,
         scripts: scripts,
         owners: owners,
-        dateOptions: dateOptions,
+        dates: dates,
         title: title,
         detail: detail,
       },
@@ -774,8 +1137,8 @@ export class SuiteToolsModel {
         where.push(`owner IN (${owners.join(',')})`);
       }
     }
-    if (dateOptions) {
-      switch (dateOptions) {
+    if (dates) {
+      switch (dates) {
         case '15':
           where.push('date > SYSDATE - ( 15 / 1440 )');
           break;
@@ -792,7 +1155,7 @@ export class SuiteToolsModel {
           where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
           break;
         default:
-          log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dateOptions });
+          log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dates });
           break;
       }
     }

@@ -23,28 +23,10 @@
 			<li>
 				<button onclick="getIntegrations();" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Update Integrations</button>
 			</li>
+			<li>
+				<button onclick="getTokens();" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Update Tokens</button>
+			</li>
 		</ul>
-	</div>
-	<div class="mb-2">
-		<h3 class="text-xl">Integrations</h3>
-		<table>
-			<tr>
-				<th>Internal ID</th>
-				<th>Name</th>
-				<th>Application ID</th>
-				<th>State</th>
-				<th>Created On</th>
-			</tr>
-			{{#each integrations}}
-			<tr>
-				<td>{{this.internalId}}</td>
-				<td>{{this.name}}</td>
-				<td>{{this.applicationId}}</td>
-				<td>{{this.state}}</td>
-				<td>{{this.createdOn}}</td>
-			</tr>
-			{{/each}}
-		</table>
 	</div>
 </div>
 
@@ -81,7 +63,7 @@
 	}
 
 	/**
-	 * Get Integration content
+	 * Get Integration data
 	 *
 	 * @param {string} url - the endpoint to get data from
 	 */
@@ -105,7 +87,7 @@
 				console.error(`getPageContent Error =\n`, error);
 			});
 		};
-		// get the content from Integrations page - https://3866611.app.netsuite.com/app/common/integration/integrapplist.nl
+		// get the data from Integrations page - https://XYZ.app.netsuite.com/app/common/integration/integrapplist.nl
 		// post integrations data to SuiteTools
 		const url = '/app/common/integration/integrapplist.nl';
 		const getIntegrationData = async () => {
@@ -115,5 +97,42 @@
 			postData('integrations', integrationData, destUrl);
 		};
 		getIntegrationData();
+	}
+
+	/**
+	 * Get Token data
+	 *
+	 * @param {string} url - the endpoint to get data from
+	 */
+	 function getTokens() {
+		// helper function to get the content from a page
+		const getPageContent = (URL) => {
+			return fetch(url)
+			.then((response) => response.text())
+			.then((pageData) => {
+				// parse page data
+				const parser = new DOMParser();
+				const domPage = parser.parseFromString(pageData, 'text/html');
+				const table = domPage.getElementById('div__body').innerHTML;
+				// console.log(table);
+				const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
+				// console.log(tableJson);
+
+				return tableJson;
+			})
+			.catch((error) => {
+				console.error(`getPageContent Error =\n`, error);
+			});
+		};
+		// get the data from Tokens page - https://XYZ.app.netsuite.com/app/setup/accesstokens.nl
+		// post tokens data to SuiteTools
+		const url = '/app/setup/accesstokens.nl';
+		const getTokenData = async () => {
+			const tokenData = await getPageContent(url);
+			console.log(tokenData);
+			destUrl = '{{{scriptUrl}}}&action=postData';
+			postData('tokens', tokenData, destUrl);
+		};
+		getTokenData();
 	}
 </script>

@@ -26,7 +26,14 @@
  */
 define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-model", "./idev-suitetools-view", "./idev-suitetools-controller", "./idev-suitetools-library"], function (require, exports, log, runtime, url, idev_suitetools_model_1, idev_suitetools_view_1, idev_suitetools_controller_1, idev_suitetools_library_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsAppNetSuite = exports.SuiteToolsAppSettings = exports.SuiteToolsApp = exports.onRequest = void 0;
+    exports.SuiteToolsAppNetSuite = exports.SuiteToolsAppSettings = exports.SuiteToolsApp = exports.onRequest = exports.RenderType = void 0;
+    var RenderType;
+    (function (RenderType) {
+        RenderType[RenderType["Normal"] = 1] = "Normal";
+        RenderType[RenderType["PageOnly"] = 2] = "PageOnly";
+        RenderType[RenderType["Modal"] = 3] = "Modal";
+        RenderType[RenderType["Iframe"] = 4] = "Iframe";
+    })(RenderType = exports.RenderType || (exports.RenderType = {}));
     /**
      * Suitelet onRequest event handler
      *
@@ -230,8 +237,13 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         get devMode() {
             return this._devMode;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         get integrations() {
             return this._integrations;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        get tokens() {
+            return this._tokens;
         }
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsAppSettings:constructor() initiated', details: null });
@@ -251,6 +263,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
     FROM
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
     WHERE
@@ -269,6 +282,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
                 this._jsUrl = sqlResults[0].jsurl;
                 this._devMode = sqlResults[0].devmode === 'T' ? true : false;
                 this._integrations = JSON.parse(sqlResults[0].integrations);
+                this._tokens = JSON.parse(sqlResults[0].tokens);
                 // if core configs are not set then set them
                 if (!this._cssUrl || !this._jsUrl) {
                     log.error({ title: `SuiteToolsAppSettings:getSettings() missing core configs`, details: '' });

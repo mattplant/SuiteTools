@@ -35,6 +35,13 @@ import { SuiteToolsView } from './idev-suitetools-view';
 import { SuiteToolsController } from './idev-suitetools-controller';
 import { SuiteToolsLibrary } from './idev-suitetools-library';
 
+export enum RenderType {
+  Normal = 1, // page with layout
+  PageOnly, // page only
+  Modal, // modal dialog
+  Iframe, // iframe
+}
+
 /**
  * Suitelet onRequest event handler
  *
@@ -265,7 +272,10 @@ export class SuiteToolsAppSettings {
   private _cssUrl: string;
   private _jsUrl: string;
   private _devMode: boolean;
-  private _integrations: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _integrations: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _tokens: any[];
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
@@ -282,8 +292,13 @@ export class SuiteToolsAppSettings {
   get devMode(): boolean {
     return this._devMode;
   }
-  get integrations(): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get integrations(): any[] {
     return this._integrations;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get tokens(): any[] {
+    return this._tokens;
   }
 
   constructor(stApp: SuiteToolsApp) {
@@ -307,6 +322,7 @@ export class SuiteToolsAppSettings {
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
     FROM
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
     WHERE
@@ -325,6 +341,7 @@ export class SuiteToolsAppSettings {
       this._jsUrl = sqlResults[0].jsurl;
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
       this._integrations = JSON.parse(sqlResults[0].integrations);
+      this._tokens = JSON.parse(sqlResults[0].tokens);
 
       // if core configs are not set then set them
       if (!this._cssUrl || !this._jsUrl) {
