@@ -108,7 +108,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             else {
                 fileObj = file.load({ id: id });
             }
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
             return fileObj;
         }
         /**
@@ -118,7 +118,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
          * @returns file contents
          */
         getFileContents(id) {
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
             const fileObj = this.getFile(id);
             return fileObj.getContents();
         }
@@ -129,7 +129,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
          * @returns file url
          */
         getFileURL(fileName) {
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { fileName: fileName } });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
             const fileObj = this.getFile(fileName);
             return fileObj.url;
         }
@@ -393,10 +393,6 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
                 title: `SuiteToolsLibraryNetSuiteSearch:search() initiated`,
                 details: { type: type, columns: columns, filters: filters, rows: rows, setSession: setSession },
             });
-            // default number of required values if not specified
-            if (!rows) {
-                rows = '50';
-            }
             const stSearch = search.create({ type: type });
             stSearch.columns = columns;
             stSearch.filters = filters;
@@ -411,6 +407,10 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             // // .run().each has a limit of 4,000 results
             // return true;
             // });
+            // default number of required values if not specified
+            if (!rows) {
+                rows = '1000';
+            }
             // run the search
             const searchResults = stSearch.run().getRange({
                 start: 0,

@@ -13,50 +13,25 @@
 	<!-- rows options -->
     <div>
 		<label for="custom_rows" class="block mb-2 text-sm font-medium text-gray-900">Rows</label>
-		<select size=6 name="custom_rows" id="custom_rows" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		  <option value="50">50</option>
-		  <option value="250">250</option>
-		  <option value="1000">1000</option>
-		  <option value="2500">2500</option>
-		  <option value="5000">5000</option>
-		</select>
+		<select size=6 name="custom_rows" id="custom_rows" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- script type -->
     <div>
 		<label for="custom_types" class="block mb-2 text-sm font-medium text-gray-900">File Type</label>
-		<select multiple size=6 name="custom_types[]" id="custom_types" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
+		<select multiple size=6 name="custom_types[]" id="custom_types" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- created date options -->
     <div>
-		<label for="custom_created_date_options" class="block mb-2 text-sm font-medium text-gray-900">Created Date</label>
-		<select size=6 name="custom_created_date_options" id="custom_created_date_options" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		  <option value="15">Last 15 minutes</option>
-		  <option value="60">Last hour</option>
-		  <option value="today">Today</option>
-		  <option value="yesterday">Yesterday</option>
-		  <option value="custom">Custom</option>
-		</select>
+		<label for="custom_created_dates" class="block mb-2 text-sm font-medium text-gray-900">Created Date</label>
+		<select size=6 name="custom_created_dates" id="custom_created_dates" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- modified date options -->
     <div>
-		<label for="custom_modified_date_options" class="block mb-2 text-sm font-medium text-gray-900">Modified Date</label>
-		<select size=6 name="custom_modified_date_options" id="custom_modified_date_options" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		  <option value="15">Last 15 minutes</option>
-		  <option value="60">Last hour</option>
-		  <option value="today">Today</option>
-		  <option value="yesterday">Yesterday</option>
-		  <option value="custom">Custom</option>
-		</select>
+		<label for="custom_modified_dates" class="block mb-2 text-sm font-medium text-gray-900">Modified Date</label>
+		<select size=6 name="custom_modified_dates" id="custom_modified_dates" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
   </div>
 </form>
-
-<div class="flex gap-4 p-2.5">
-    <div>
-		<button id="clear_criteria" onclick="clearSelectFields(['custom_rows', 'custom_types', 'custom_created_date_options', 'custom_modified_date_options']);" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Clear Criteria</button>
-	</div>
-</div>
 
 <script>
 	{{{optionValues}}}
@@ -97,7 +72,7 @@
 				{ title: "createddate", field: "createddate", hozAlign:"center", sorter: "string" },
 				{ title: "lastmodifieddate", field: "lastmodifieddate", sorter: "string" },
 				{ title: "Type", field: "filetypename", sorter: "string" },
-				{ title: "Name", field:"name", cellClick:function(e, cell, value, data){ showFileModal(scriptUrl, cell.getValue()) }, sorter:"string"},
+				{ title: "Name", field:"name", cellClick:function(e, cell, value, data){ showModal(scriptUrl, ModalType.File, cell.getValue()) }, sorter:"string"},
 				{ title: "File Size", field: "filesize", sorter: "string" },
 				{ title: "Description", field: "description", sorter: "string", formatter:function(cell, formatterParams, onRendered){
 					if (cell.getValue() != "null") {
@@ -113,7 +88,7 @@
 		});
 		// trigger XLSX file download
 		document.getElementById("download-xlsx").addEventListener("click", function () {
-			table.download("xlsx", "files.xlsx", { sheetName: "Inventory Transactions" });
+			table.download("xlsx", "files.xlsx", { sheetName: "Files" });
 			NS.form.setInited(false);
 		});
 		// trigger CSV file download

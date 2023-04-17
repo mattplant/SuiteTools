@@ -201,12 +201,12 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
          * @returns session key
          */
         getSession(key) {
-            log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
+            // log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
             // get it
             const value = this.stAppNs.runtime.getCurrentSession().get({ name: key });
             // clear it
             this.stAppNs.runtime.getCurrentSession().set({ name: key, value: null });
-            log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
+            // log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
             return value;
         }
     }
@@ -230,6 +230,14 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         get devMode() {
             return this._devMode;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        get integrations() {
+            return this._integrations;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        get tokens() {
+            return this._tokens;
+        }
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsAppSettings:constructor() initiated', details: null });
             this._stApp = stApp;
@@ -247,6 +255,8 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_css_url AS cssUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
     FROM
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
     WHERE
@@ -255,6 +265,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
             const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
             // log.debug({ title: `SuiteToolsAppSettings:getSettings() sqlResults = `, details: sqlResults });
             if (sqlResults.length === 0) {
+                // since no results then create core configs
                 log.error({ title: `SuiteToolsAppSettings:getSettings() no results`, details: '' });
                 this.createCoreConfigs();
             }
@@ -263,6 +274,8 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
                 this._cssUrl = sqlResults[0].cssurl;
                 this._jsUrl = sqlResults[0].jsurl;
                 this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+                this._integrations = JSON.parse(sqlResults[0].integrations);
+                this._tokens = JSON.parse(sqlResults[0].tokens);
                 // if core configs are not set then set them
                 if (!this._cssUrl || !this._jsUrl) {
                     log.error({ title: `SuiteToolsAppSettings:getSettings() missing core configs`, details: '' });

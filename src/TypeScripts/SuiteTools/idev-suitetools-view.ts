@@ -31,6 +31,13 @@ import Handlebars = require('./handlebars.min');
 
 import { SuiteToolsApp } from './idev-suitetools-app';
 
+export enum RenderType {
+  Normal = 1, // page with layout
+  PageOnly, // page only
+  Modal, // modal dialog
+  Iframe, // iframe
+}
+
 /**
  * SuiteTools View
  *
@@ -49,13 +56,47 @@ export class SuiteToolsView {
   }
 
   /**
+   * Render content
+   *
+   * @param renderType - the type of render
+   * @param body - the templated content
+   * @param [bodyValues] - the values to use in the templates
+   * @returns HTML content
+   */
+  public render(renderType: RenderType, body: string, bodyValues?: object): void {
+    log.debug({
+      title: 'SuiteToolsView:render() initiated',
+      details: { renderType: renderType, bodyValues: bodyValues },
+    });
+
+    switch (renderType) {
+      case RenderType.Normal:
+        this.renderNormal(body, bodyValues);
+        break;
+      case RenderType.PageOnly:
+      case RenderType.Modal:
+        this.renderPageOnly(body, bodyValues);
+        break;
+      case RenderType.Iframe:
+        this.renderIframe(body);
+        break;
+      default:
+        // log error since invalid render type
+        log.error({
+          title: 'SuiteToolsView:render() invalid render type',
+          details: { renderType: renderType },
+        });
+    }
+  }
+
+  /**
    * Renders the layout with main content.
    *
    * @param body - the templated content
    * @param [bodyValues] - the values to use in the templates
    * @returns HTML content
    */
-  public render(body: string, bodyValues?: object): void {
+  private renderNormal(body: string, bodyValues?: object): void {
     // log.debug({ title: 'SuiteToolsView:Render() initiated', details: null });
 
     // populate body content with Handlebars
@@ -96,7 +137,7 @@ export class SuiteToolsView {
    * @param [bodyValues] - the values to use in the templates
    * @returns HTML content
    */
-  public renderPage(body: string, bodyValues?: object): void {
+  private renderPageOnly(body: string, bodyValues?: object): void {
     log.debug({ title: 'SuiteToolsView:RenderPage() initiated', details: null });
 
     // populate body content with Handlebars
@@ -273,5 +314,103 @@ export class SuiteToolsView {
     // log.debug({ title: 'SuiteToolsView:generateTableData() returning', details: tableData });
 
     return tableData;
+  }
+
+  /**
+   * Get active options
+   *
+   * @returns form select options
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getActiveOptions(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getActiveOptions() initiated`, details: '' });
+
+    const options = [];
+    options.push({ value: '', text: 'All' });
+    options.push({ value: 'T', text: 'Yes' });
+    options.push({ value: 'F', text: 'No' });
+
+    return options;
+  }
+
+  /**
+   * Get API version options
+   *
+   * @returns form select options
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getApiVersionOptions(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getApiVersionOptions() initiated`, details: '' });
+
+    // note: source of truth is: 'SELECT scriptVersion.id, scriptVersion.name FROM scriptVersion ORDER BY name'
+
+    const options = [];
+    options.push({ value: '', text: 'All' });
+    options.push({ value: '1.0', text: '1.0' });
+    options.push({ value: '2.0', text: '2.0' });
+    options.push({ value: '2.1', text: '2.1' });
+
+    return options;
+  }
+
+  /**
+   * Get date options
+   *
+   * @returns form select options
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getDateOptions(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getDateOptions() initiated`, details: '' });
+
+    const options = [];
+    options.push({ value: '', text: 'All' });
+    options.push({ value: '15', text: 'Last 15 minutes' });
+    options.push({ value: '60', text: 'Last hour' });
+    options.push({ value: '240', text: 'Last 4 hours' });
+    options.push({ value: 'today', text: 'Today' });
+    options.push({ value: 'yesterday', text: 'Yesterday' });
+    options.push({ value: 'lastweektodate', text: 'Last 7 Days' });
+
+    return options;
+  }
+
+  /**
+   * Get log level options
+   *
+   * @returns form select options
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getLogLevelOptions(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getLogLevelOptions() initiated`, details: '' });
+
+    const options = [];
+    options.push({ value: '', text: 'All' });
+    options.push({ value: 'DEBUG', text: 'Debug' });
+    options.push({ value: 'AUDIT', text: 'Audit' });
+    options.push({ value: 'ERROR', text: 'Error' });
+    options.push({ value: 'EMERGENCY', text: 'Emergency' });
+    options.push({ value: 'SYSTEM', text: 'System' });
+
+    return options;
+  }
+
+  /**
+   * Get row options
+   *
+   * @returns form select options
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getRowOptions(): any[] {
+    // log.debug({ title: `SuiteToolsModel:getRowOptions() initiated`, details: '' });
+
+    const options = [];
+    options.push({ value: '', text: 'All' });
+    options.push({ value: '50', text: '50' });
+    options.push({ value: '250', text: '250' });
+    options.push({ value: '1000', text: '1000' });
+    options.push({ value: '2000', text: '2000' });
+    options.push({ value: '4000', text: '4000' });
+
+    return options;
   }
 }

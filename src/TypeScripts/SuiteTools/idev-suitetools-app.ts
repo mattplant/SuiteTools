@@ -244,13 +244,13 @@ export class SuiteToolsApp {
    * @returns session key
    */
   public getSession(key: string): string {
-    log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
+    // log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
 
     // get it
     const value = this.stAppNs.runtime.getCurrentSession().get({ name: key });
     // clear it
     this.stAppNs.runtime.getCurrentSession().set({ name: key, value: null });
-    log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
+    // log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
 
     return value;
   }
@@ -265,6 +265,10 @@ export class SuiteToolsAppSettings {
   private _cssUrl: string;
   private _jsUrl: string;
   private _devMode: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _integrations: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _tokens: any[];
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
@@ -280,6 +284,14 @@ export class SuiteToolsAppSettings {
   }
   get devMode(): boolean {
     return this._devMode;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get integrations(): any[] {
+    return this._integrations;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get tokens(): any[] {
+    return this._tokens;
   }
 
   constructor(stApp: SuiteToolsApp) {
@@ -302,6 +314,8 @@ export class SuiteToolsAppSettings {
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_css_url AS cssUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
     FROM
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
     WHERE
@@ -311,6 +325,7 @@ export class SuiteToolsAppSettings {
     // log.debug({ title: `SuiteToolsAppSettings:getSettings() sqlResults = `, details: sqlResults });
 
     if (sqlResults.length === 0) {
+      // since no results then create core configs
       log.error({ title: `SuiteToolsAppSettings:getSettings() no results`, details: '' });
       this.createCoreConfigs();
     } else {
@@ -318,6 +333,9 @@ export class SuiteToolsAppSettings {
       this._cssUrl = sqlResults[0].cssurl;
       this._jsUrl = sqlResults[0].jsurl;
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+      this._integrations = JSON.parse(sqlResults[0].integrations);
+      this._tokens = JSON.parse(sqlResults[0].tokens);
+
       // if core configs are not set then set them
       if (!this._cssUrl || !this._jsUrl) {
         log.error({ title: `SuiteToolsAppSettings:getSettings() missing core configs`, details: '' });

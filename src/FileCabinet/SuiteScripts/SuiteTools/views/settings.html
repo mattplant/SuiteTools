@@ -20,62 +20,119 @@
 					<span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Dev Mode</span>
 				</label>
 			</li>
+			<li>
+				<button onclick="getIntegrations();" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Update Integrations</button>
+			</li>
+			<li>
+				<button onclick="getTokens();" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Update Tokens</button>
+			</li>
 		</ul>
-		<script>
-			// set Dev Mode checkbox
-			document.getElementById("devmode").checked = {{devmode}};
-			// listen for Dev Mode checkbox change
-			document.getElementById('devmode').addEventListener('change', function() {
-				console.log('devmode changed to ' + this.checked);
-				postData(this.checked, '{{{scriptUrl}}}&action=data');
-			});
-
-			// create a custom script to post data to an endpoint
-			/**
-			 * Post data to an endpoint.
-			 * @author Matthew Plant
-			 * @param data - the data to post
-			 * @param {string} url - the endpoint to post to
-			 */
-			function postData(data, url) {
-				// Default options are marked with *
-				return fetch(url, {
-					body: JSON.stringify({ devmode: data }), // must match 'Content-Type' header
-					cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-					credentials: 'same-origin', // include, same-origin, *omit
-					headers: {
-						'user-agent': 'NetSuite SuiteScript 2.1',
-						'content-type': 'application/json'
-					},
-					method: 'POST', // *GET, POST, PUT, DELETE, etc.
-					mode: 'cors', // no-cors, cors, *same-origin
-					redirect: 'follow', // manual, *follow, error
-					referrer: 'no-referrer', // *client, no-referrer
-				})
-				.then(response => response.json()) // parses response to JSON
-				.catch(error => console.error(`Fetch Error =\n`, error));
-			}
-
-			/**
-			 * Post data to an endpoint.
-			 * @author Matthew Plant
-			 * @param data - the data to post
-			 * @param {string} pageUrl - the endpoint to post to
-			 */
-			//  function postData(multiselectIds, pageUrl) {
-			// 	// multiselect workaround
-			// 	CustomMultiselectPost(multiselectIds);
-
-			// 	// post the page
-			// 	var xhttp = new XMLHttpRequest();
-			// 	xhttp.onreadystatechange = function() {
-			// 		if (this.readyState == 4 && this.status == 200) {
-			// 			document.getElementById("main").innerHTML = this.responseText;
-			// 		}
-			// 	};
-			// 	xhttp.open("POST", pageUrl, true);
-			// 	xhttp.send();
-			// }
-		</script>
 	</div>
 </div>
+
+<!-- load libraries need to process the integration data -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- table-to-json -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/table-to-json/1.0.0/jquery.tabletojson.min.js" integrity="sha512-kq3madMG50UJqYNMbXKO3loD85v8Mtv6kFqj7U9MMpLXHGNO87v0I26anynXAuERIM08MHNof1SDaasfw9hXjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+	// set Dev Mode checkbox
+	document.getElementById('devmode').checked = {{devmode}};
+	// listen for Dev Mode checkbox change
+	document.getElementById('devmode').addEventListener('change', function() {
+		console.log('devmode changed to ' + this.checked);
+		postData('devmode', this.checked, '{{{scriptUrl}}}&action=postData');
+	});
+
+	/**
+	 * Post data to an endpoint.
+	 *
+	 * @param data - the data to post
+	 * @param {string} url - the endpoint to post to
+	 */
+		function postData(name, data, url) {
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name: name, value: data })
+		};
+		return fetch(url, requestOptions)
+			.then(response => response.text())
+			.catch(error => console.error('postData Error =\n', error));
+	}
+
+	/**
+	 * Get Integration data
+	 *
+	 * @param {string} url - the endpoint to get data from
+	 */
+		function getIntegrations() {
+		// helper function to get the content from a page
+		const getPageContent = (URL) => {
+			return fetch(url)
+			.then((response) => response.text())
+			.then((pageData) => {
+				// parse page data
+				const parser = new DOMParser();
+				const domPage = parser.parseFromString(pageData, 'text/html');
+				const table = domPage.getElementById('div__body').innerHTML;
+				// console.log(table);
+				const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
+				// console.log(tableJson);
+
+				return tableJson;
+			})
+			.catch((error) => {
+				console.error(`getPageContent Error =\n`, error);
+			});
+		};
+		// get the data from Integrations page - https://XYZ.app.netsuite.com/app/common/integration/integrapplist.nl
+		// post integrations data to SuiteTools
+		const url = '/app/common/integration/integrapplist.nl';
+		const getIntegrationData = async () => {
+			const integrationData = await getPageContent(url);
+			console.log(integrationData);
+			destUrl = '{{{scriptUrl}}}&action=postData';
+			postData('integrations', integrationData, destUrl);
+		};
+		getIntegrationData();
+	}
+
+	/**
+	 * Get Token data
+	 *
+	 * @param {string} url - the endpoint to get data from
+	 */
+	 function getTokens() {
+		// helper function to get the content from a page
+		const getPageContent = (URL) => {
+			return fetch(url)
+			.then((response) => response.text())
+			.then((pageData) => {
+				// parse page data
+				const parser = new DOMParser();
+				const domPage = parser.parseFromString(pageData, 'text/html');
+				const table = domPage.getElementById('div__body').innerHTML;
+				// console.log(table);
+				const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
+				// console.log(tableJson);
+
+				return tableJson;
+			})
+			.catch((error) => {
+				console.error(`getPageContent Error =\n`, error);
+			});
+		};
+		// get the data from Tokens page - https://XYZ.app.netsuite.com/app/setup/accesstokens.nl
+		// post tokens data to SuiteTools
+		const url = '/app/setup/accesstokens.nl';
+		const getTokenData = async () => {
+			const tokenData = await getPageContent(url);
+			console.log(tokenData);
+			destUrl = '{{{scriptUrl}}}&action=postData';
+			postData('tokens', tokenData, destUrl);
+		};
+		getTokenData();
+	}
+</script>

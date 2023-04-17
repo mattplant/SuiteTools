@@ -135,7 +135,7 @@ export class SuiteToolsLibraryNetSuiteFile {
     } else {
       fileObj = file.load({ id: id });
     }
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
 
     return fileObj;
   }
@@ -147,7 +147,7 @@ export class SuiteToolsLibraryNetSuiteFile {
    * @returns file contents
    */
   public getFileContents(id: number | string): string {
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
 
     const fileObj = this.getFile(id);
 
@@ -161,7 +161,7 @@ export class SuiteToolsLibraryNetSuiteFile {
    * @returns file url
    */
   public getFileURL(fileName: string): string {
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { fileName: fileName } });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
 
     const fileObj = this.getFile(fileName);
 
@@ -454,11 +454,6 @@ export class SuiteToolsLibraryNetSuiteSearch {
       details: { type: type, columns: columns, filters: filters, rows: rows, setSession: setSession },
     });
 
-    // default number of required values if not specified
-    if (!rows) {
-      rows = '50';
-    }
-
     const stSearch = search.create({ type: type });
     stSearch.columns = columns;
     stSearch.filters = filters;
@@ -475,6 +470,11 @@ export class SuiteToolsLibraryNetSuiteSearch {
     // // .run().each has a limit of 4,000 results
     // return true;
     // });
+
+    // default number of required values if not specified
+    if (!rows) {
+      rows = '1000';
+    }
 
     // run the search
     const searchResults = stSearch.run().getRange({

@@ -13,50 +13,35 @@
 	<!-- active -->
     <div>
 		<label for="custom_active" class="block mb-2 text-sm font-medium text-gray-900">Active</label>
-		<select size=6 name="custom_active" id="custom_active" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		  <option value="yes">Yes</option>
-		  <option value="no">No</option>
-		  <option value="all">Both</option>
-		</select>
+		<select size=6 name="custom_active" id="custom_active" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- API version -->
     <div>
 		<label for="custom_versions" class="block mb-2 text-sm font-medium text-gray-900">API</label>
-		<select multiple size=6 name="custom_versions[]" id="custom_versions" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
+		<select multiple size=6 name="custom_versions[]" id="custom_versions" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- script type -->
     <div>
 		<label for="custom_types" class="block mb-2 text-sm font-medium text-gray-900">Script Type</label>
-		<select multiple size=6 name="custom_types[]" id="custom_types" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
+		<select multiple size=6 name="custom_types[]" id="custom_types" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- script -->
     <div>
 		<label for="custom_scripts" class="block mb-2 text-sm font-medium text-gray-900">Script</label>
-		<select multiple size=6 name="custom_scripts[]" id="custom_scripts" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
+		<select multiple size=6 name="custom_scripts[]" id="custom_scripts" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- owner -->
     <div>
 		<label for="custom_owners" class="block mb-2 text-sm font-medium text-gray-900">Owner</label>
-		<select multiple size=6 name="custom_owners[]" id="custom_owners" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
+		<select multiple size=6 name="custom_owners[]" id="custom_owners" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
 	<!-- file -->
     <div>
 		<label for="custom_files" class="block mb-2 text-sm font-medium text-gray-900">File</label>
-		<select multiple size=6 name="custom_files[]" id="custom_files" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-		</select>
+		<select multiple size=6 name="custom_files[]" id="custom_files" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
 	</div>
   </div>
 </form>
-
-<div class="flex gap-4 p-2.5">
-	<div>
-		<button id="clear_criteria" onclick="clearSelectFields(['custom_active', 'custom_versions', 'custom_types', 'custom_scripts', 'custom_owners', 'custom_files']);" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Clear Criteria</button>
-	</div>
-</div>
 
 <script>
 	{{{optionValues}}}
@@ -88,7 +73,7 @@
 				headerFilter: true,
 			},
 			columns: [
-				{ title: "Id", field: "id", cellClick:function(e, cell, value, data){ showScriptModal(scriptUrl, cell.getValue()) }, sorter: "string" },
+				{ title: "ID", field: "id", cellClick:function(e, cell, value, data){ showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter: "string" },
 				{ title: "Active", field: "isinactive", headerFilter:false, hozAlign:"center", sorter: "string", formatter:function(cell, formatterParams, onRendered){
 					if (cell.getValue() == "T") {
 						return "No";
@@ -98,10 +83,10 @@
 				}},
 				{ title: "API", field: "apiversion", hozAlign:"center", sorter: "string" },
 				{ title: "Script Type", field: "scripttype", sorter: "string" },
-				{ title: "Script", field:"name", cellClick:function(e, cell, value, data){ showScriptModal(scriptUrl, cell.getValue()) }, sorter:"string"},
+				{ title: "Script", field:"name", cellClick:function(e, cell, value, data){ showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter:"string"},
 				{ title: "Id", field: "scriptid", sorter: "string" },
-				{ title: "Owner", field: "owner", cellClick:function(e, cell, value, data){ showUserModal(scriptUrl, cell.getValue()) }, sorter: "string" },
-				{ title: "File", field: "scriptfile", cellClick:function(e, cell, value, data){ showFileModal(scriptUrl, cell.getValue()) }, sorter: "string" },
+				{ title: "Owner", field: "owner", cellClick:function(e, cell, value, data){ showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
+				{ title: "File", field: "scriptfile", cellClick:function(e, cell, value, data){ showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter: "string" },
 				{ title: "Description", field: "description", sorter: "string", formatter:function(cell, formatterParams, onRendered){
 					if (cell.getValue() != "null") {
 						return cell.getValue();
@@ -116,7 +101,7 @@
 		});
 		// trigger XLSX file download
 		document.getElementById("download-xlsx").addEventListener("click", function () {
-			table.download("xlsx", "scripts.xlsx", { sheetName: "Inventory Transactions" });
+			table.download("xlsx", "scripts.xlsx", { sheetName: "Scripts" });
 			NS.form.setInited(false);
 		});
 		// trigger CSV file download
