@@ -191,7 +191,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
         /**
          * Get script type list
          *
-         * @returns users
+         * @returns script types
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getScriptTypeList() {
@@ -204,11 +204,11 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
          * Get script list
          *
          * @param [activeOnly]
-         * @returns users
+         * @returns scripts
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getScriptList(activeOnly) {
-            // log.debug({ title: `SuiteToolsModel:getScriptList() initiated`, details: { activeOnly: activeOnly } });
+            log.debug({ title: `SuiteToolsModel:getScriptList() initiated`, details: { activeOnly: activeOnly } });
             let sql = `SELECT
       script.id,
       script.name
@@ -419,7 +419,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
          * Get Tokens
          *
          * @param status
-         * @returns HTML content
+         * @returns tokens
          */
         getTokens(active, integration, user, role
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -434,6 +434,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 },
             });
             let tokens = this.stApp.stModel.getTokenList();
+            // log.debug({ title: `SuiteToolsModel:getTokens() unfiltered tokens =`, details: tokens });
             if (active) {
                 tokens = tokens.filter((result) => result.active == active);
             }
@@ -441,22 +442,22 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 tokens = tokens.filter((result) => result.integrationId == integration);
             }
             if (user) {
-                // do we have a numeric id or a string name
-                if (!isNaN(parseInt(user))) {
-                    // build the name string
-                    // TODO optimize this
-                    const userObj = this.getUser(user);
-                    if (userObj) {
-                        log.debug({ title: `SuiteToolsModel:getTokens() userObj =`, details: userObj });
-                        // need to handle the case where the user has no first or last name
-                        const firstName = userObj.firstname ? userObj.firstname : '';
-                        const lastName = userObj.lastname ? userObj.lastname : '';
-                        user = `${firstName} ${lastName}`.trim();
-                        user += ` (${userObj.id})`;
-                    }
-                }
+                // // do we have a numeric id or a string name
+                // if (!isNaN(parseInt(user))) {
+                //   // build the name string
+                //   // TODO optimize this
+                //   const userObj = this.getUser(user);
+                //   if (userObj) {
+                //     log.debug({ title: `SuiteToolsModel:getTokens() userObj =`, details: userObj });
+                //     // need to handle the case where the user has no first or last name
+                //     const firstName = userObj.firstname ? userObj.firstname : '';
+                //     const lastName = userObj.lastname ? userObj.lastname : '';
+                //     user = `${firstName} ${lastName}`.trim();
+                //     user += ` (${userObj.id})`;
+                //   }
+                // }
                 log.debug({ title: `SuiteToolsModel:getTokens() filtering for user`, details: user });
-                tokens = tokens.filter((result) => result.user == user.trim());
+                tokens = tokens.filter((result) => result.userId == user);
             }
             if (role) {
                 tokens = tokens.filter((result) => result.roleId == role);
@@ -506,7 +507,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
          * Get Roles
          *
          * @param status - the status of the login
-         * @returns HTML content
+         * @returns roles
          */
         getRoles(active
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -582,86 +583,36 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             return result;
         }
         /**
-         * Get user list
-         *
-         * @param [activeOnly]
-         * @returns users
-         */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getUserList(activeOnly) {
-            // log.debug({ title: `SuiteToolsModel:getUserList() initiated`, details: { activeOnly: activeOnly } });
-            let sql = `SELECT
-      employee.id,
-      TRIM(employee.firstname || ' ' || employee.lastname) AS name
-    FROM
-      employee`;
-            if (activeOnly) {
-                sql += ` WHERE
-        giveaccess = 'T'
-        AND isinactive = 'F'`;
-            }
-            sql += ` ORDER BY name ASC`;
-            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-            // log.debug({ title: 'SuiteToolsModel:getUserList() returning', details: results });
-            return results;
-        }
-        /**
          * Get Users
          *
          * @returns results
          */
-        getUsers(active, role, supervisors
+        getUsers(role, supervisor
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ) {
             log.debug({
                 title: `SuiteToolsModel:getUsers() initiated`,
-                details: { active: active, role: role, supervisors: supervisors },
+                details: { role: role, supervisor: supervisor },
             });
-            let sql = `SELECT
-      employee.id,
-      employee.firstname,
-      employee.lastname,
-      employee.email,
-      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
-      employee.title,`;
+            let results = this.stApp.stAppSettings.users;
+            log.debug({ title: 'SuiteToolsModel:getUsers() unfiltered users', details: results });
             if (role) {
-                sql += ` role.id AS roleId,
-      role.name || ' (' || role.id || ')' AS roleName`;
-            }
-            sql += ` FROM employee`;
-            if (role) {
-                sql += ` INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
-      INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
-            }
-            // add where clause
-            const where = [];
-            if (active) {
-                if (active === 'T') {
-                    where.push(`employee.giveaccess = 'T'`);
-                    where.push(`employee.isinactive = 'F'`);
-                }
-                if (active === 'F') {
-                    where.push(`(employee.isinactive = 'F' OR employee.giveaccess = 'T')`);
-                }
-            }
-            if (role) {
-                where.push(`role.id = ${role}`);
-            }
-            if (supervisors) {
-                if (Array.isArray(supervisors)) {
-                    supervisors = supervisors.map((user) => {
-                        return `'${user.toUpperCase()}'`;
+                const tempResults = [];
+                for (const result of results) {
+                    // add user if role id of (role) is present
+                    const roleIdsObj = JSON.parse(result.roleIds);
+                    roleIdsObj.forEach((roleId) => {
+                        if (roleId == role) {
+                            tempResults.push(result);
+                        }
                     });
-                    where.push(`employee.supervisor IN (${supervisors.join(',')})`);
                 }
+                results = tempResults;
             }
-            if (where.length > 0) {
-                sql += ` WHERE ${where.join(' AND ')}`;
+            if (supervisor) {
+                results = results.filter((result) => result.supervisorid == supervisor);
             }
-            // add order by
-            sql += ` ORDER BY employee.firstname ASC`;
-            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-            log.debug({ title: 'SuiteToolsModel:getUserLogins() returning', details: results });
+            log.debug({ title: 'SuiteToolsModel:getUsers() returning', details: results });
             return results;
         }
         /**
@@ -698,13 +649,41 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             return result;
         }
         /**
+         * Get Users Roles
+         *
+         * @returns users roles matrix
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getUsersRoles() {
+            log.debug({
+                title: `SuiteToolsModel:getUsersRoles() initiated`,
+                details: null,
+            });
+            const sql = `SELECT
+        Employee.id,
+        Employee.entityId,
+        Role.id as roleId,
+        Role.name AS roleName,
+      FROM
+        Employee
+        INNER JOIN EmployeeRolesForSearch ON
+          ( EmployeeRolesForSearch.entity = Employee.id )
+        INNER JOIN Role ON
+          ( Role.ID = EmployeeRolesForSearch.role ) AND ( Role.isInactive = 'F' )
+      ORDER BY
+        Employee.entityId ASC`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+            log.debug({ title: 'SuiteToolsModel:getUsersRoles() returning', details: results });
+            return results;
+        }
+        /**
          * Get User Logins
          *
          * @param rows - the number of rows to return
          * @param status - the status of the login
          * @param users - the users to return logins for
          * @param dates - the dates to return logins for
-         * @returns HTML content
+         * @returns user logins
          */
         getUserLogins(rows, status, users, dates
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -773,7 +752,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                         where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
                         break;
                     default:
-                        log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dates });
+                        log.error({ title: `SuiteToolsModel:getUserLogins() invalid date option`, details: dates });
                         break;
                 }
             }
@@ -800,7 +779,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
          * @param dates - the dates to return log records for
          * @param title - the title contains this string
          * @param detail - the detail contains this string
-         * @returns HTML content
+         * @returns script logs
          */
         getScriptLogsViaSearch(rows, levels, users, types, scripts, owners, dates, title, detail
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -894,7 +873,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             // run the search
             const searchResults = this.stApp.stLib.stLibNs.stLibNsSearch.search('scriptexecutionlog', columns, filters, rows, true);
             // get list of active users so that we can determine user ids
-            const userList = this.stApp.stModel.getUserList();
+            const userList = this.stApp.stModel.getEmployeeList(true);
             // only return the results
             const results = searchResults.map((result) => {
                 // log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:search() - columns', details: result.columns });
@@ -931,6 +910,125 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             return results;
         }
         /**
+         * Get employee list
+         *
+         * @param [activeOnly]
+         * @returns employees
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getEmployeeList(activeOnly) {
+            // log.debug({ title: `SuiteToolsModel:getEmployeeList() initiated`, details: { activeOnly: activeOnly } });
+            let sql = `SELECT
+      employee.id,
+      TRIM(employee.firstname || ' ' || employee.lastname) AS name
+    FROM
+      employee`;
+            if (activeOnly) {
+                sql += ` WHERE
+        giveaccess = 'T'
+        AND isinactive = 'F'`;
+            }
+            sql += ` ORDER BY name ASC`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+            // log.debug({ title: 'SuiteToolsModel:getEmployeeList() returning', details: results });
+            return results;
+        }
+        /**
+         * Get Employees
+         *
+         * @returns results
+         */
+        getEmployees(active, role, supervisors
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ) {
+            log.debug({
+                title: `SuiteToolsModel:getEmployees() initiated`,
+                details: { active: active, role: role, supervisors: supervisors },
+            });
+            // alternative name field: // TRIM(TRIM(employee.firstname) || ' ' || TRIM(employee.lastname)) as name,
+            let sql = `SELECT
+      employee.id,
+      employee.email,
+      employee.entityid || ' (' || employee.id || ')' AS name,
+      employee.firstname,
+      employee.lastname,
+      employee.supervisor as supervisorId,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,`;
+            if (role) {
+                sql += ` role.id AS roleId,
+      role.name || ' (' || role.id || ')' AS roleName`;
+            }
+            sql += ` FROM employee`;
+            if (role) {
+                sql += ` INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
+      INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
+            }
+            // add where clause
+            const where = [];
+            if (active) {
+                if (active === 'T') {
+                    where.push(`employee.giveaccess = 'T'`);
+                    where.push(`employee.isinactive = 'F'`);
+                }
+                if (active === 'F') {
+                    where.push(`(employee.isinactive = 'F' OR employee.giveaccess = 'T')`);
+                }
+            }
+            if (role) {
+                where.push(`role.id = ${role}`);
+            }
+            if (supervisors) {
+                if (Array.isArray(supervisors)) {
+                    supervisors = supervisors.map((employee) => {
+                        return `'${employee.toUpperCase()}'`;
+                    });
+                    where.push(`employee.supervisor IN (${supervisors.join(',')})`);
+                }
+            }
+            if (where.length > 0) {
+                sql += ` WHERE ${where.join(' AND ')}`;
+            }
+            // add order by
+            sql += ` ORDER BY employee.firstname ASC`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            log.debug({ title: 'SuiteToolsModel:getEmployees() returning', details: results });
+            return results;
+        }
+        /**
+         * Get Employee
+         *
+         * @param id - the record id to return
+         * @returns employee
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getEmployee(id) {
+            log.debug({ title: `SuiteToolsModel:getEmployee() initiated`, details: { id: id } });
+            const sql = `SELECT
+      employee.id,
+      employee.entityid,
+      employee.firstname,
+      employee.lastname,
+      employee.email,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,
+      employee.isinactive,
+    FROM
+      employee
+    WHERE
+      employee.id = ${id}`;
+            const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            let result = null;
+            if (sqlResults.length === 0) {
+                this.stApp.setAlert('No results found that matched criteria.');
+            }
+            else {
+                result = sqlResults[0];
+            }
+            log.debug({ title: 'SuiteToolsModel:getEmployee() returning', details: result });
+            return result;
+        }
+        /**
          * Get Script Logs results (SuiteQL version)
          *
          * The SuiteQL version can not return the user that triggered the log message, but it can only be filtered by minutes.
@@ -943,7 +1041,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
          * @param dates - the dates to return log records for
          * @param title - the title contains this string
          * @param detail - the detail contains this string
-         * @returns HTML content
+         * @returns script logs
          */
         getScriptLogsViaSuiteQL(rows, levels, types, scripts, owners, dates, title, detail
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

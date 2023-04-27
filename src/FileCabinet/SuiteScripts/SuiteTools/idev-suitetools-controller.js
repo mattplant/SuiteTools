@@ -114,6 +114,15 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 case 'userLogins':
                     this.renderUserLoginsForm();
                     break;
+                case 'employees':
+                    this.renderEmployeesForm();
+                    break;
+                case 'employeeModal':
+                    this.renderEmployeeForm(idev_suitetools_view_1.RenderType.Modal, id);
+                    break;
+                case 'employee':
+                    this.renderEmployeeForm(idev_suitetools_view_1.RenderType.Normal, id);
+                    break;
                 case 'scriptLogs':
                     this.renderScriptLogsForm();
                     break;
@@ -150,9 +159,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     case 'scripts':
                         this.renderScriptsForm();
                         break;
-                    // case 'users':
-                    //   this.renderScriptLogsForm();
-                    //   break;
                     case 'userLogins':
                         this.renderUserLoginsForm();
                         break;
@@ -170,6 +176,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                         break;
                     case 'scriptLogs':
                         this.renderScriptLogsForm();
+                        break;
+                    case 'employees':
+                        this.renderEmployeesForm();
                         break;
                     default:
                         throw error.create({
@@ -292,95 +301,49 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             if (requestBodyObj.hasOwnProperty('name') && requestBodyObj.hasOwnProperty('value')) {
                 // get the name from the request body
                 const name = requestBodyObj.name;
-                // get the value of devmode from the request body
+                // get the value from the request body
                 const value = requestBodyObj.value;
                 log.debug({ title: 'SuiteToolsController:processPostedData() data', details: { name: name, value: value } });
                 // determine setting to update
                 let updateSettings = null;
-                const standardizedValues = [];
                 switch (name) {
                     case 'devmode':
                         updateSettings = { custrecord_idev_st_setting_dev_mode: value };
                         break;
-                    case 'integrations':
-                        // log.debug({ title: 'SuiteToolsController:processPostedData() integrations', details: value });
-                        // standardize the integration field names (e.g. camelCase and remove spaces)
-                        for (const integration of value) {
-                            // log.debug({ title: 'SuiteToolsController:processPostedData() integration', details: integration });
-                            // add the standardized field and values including data cleansing to the array
-                            standardizedValues.push({
-                                id: integration['Internal ID'],
-                                name: integration['Name'],
-                                nameId: integration['Name'] + ' (' + integration['Internal ID'] + ')',
-                                integrationId: integration['Application ID'],
-                                active: integration['State'] == 'Enabled' ? 'T' : 'F',
-                                createdOn: integration['Created On'],
-                            });
-                        }
-                        // remove last record of standardizedValues since it contains the the header row
-                        standardizedValues.pop();
-                        // log.debug({
-                        //   title: 'SuiteToolsController:processPostedData() integrations standardizedValues',
-                        //   details: standardizedValues,
-                        // });
-                        // sort the array by name
-                        standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
-                        updateSettings = { custrecord_idev_st_config_integrations: JSON.stringify(standardizedValues) };
-                        break;
-                    case 'tokens':
-                        log.debug({ title: 'SuiteToolsController:processPostedData() tokens', details: value });
-                        // standardize the integration field names (e.g. camelCase and remove spaces)
-                        for (const token of value) {
-                            log.debug({ title: 'SuiteToolsController:processPostedData() token', details: token });
-                            // add integrationId and integrationNameId
-                            //   TODO: handle case where multiple integrations have the same name
-                            const foundIntegration = this.stApp.stModel
-                                .getIntegrationList()
-                                .find((integration) => integration.name.trim() === token['Application']);
-                            const integrationId = foundIntegration ? foundIntegration.id : null;
-                            const integrationNameId = foundIntegration ? foundIntegration.nameId : null;
-                            // add userId
-                            //   TODO: handle case where multiple users have the same name
-                            const foundUser = this.stApp.stModel.getUserList().find((user) => user.name.trim() === token['User']);
-                            const userId = foundUser ? foundUser.id : null;
-                            // add roleId
-                            //   TODO: handle case where multiple roles have the same name
-                            const foundRole = this.stApp.stModel.getRoleList().find((role) => role.name.trim() === token['Role']);
-                            const roleId = foundRole ? foundRole.id : null;
-                            // add the standardized field and values including data cleansing to the array
-                            standardizedValues.push({
-                                id: token['Internal ID'],
-                                active: token['Inactive'] == 'No' ? 'T' : 'F',
-                                nameId: token['Token name'] + ' (' + token['Internal ID'] + ')',
-                                integration: token['Application'],
-                                integrationId: integrationId,
-                                integrationNameId: integrationNameId,
-                                user: token['User'],
-                                userId: userId,
-                                role: token['Role'],
-                                roleId: roleId,
-                                createdOn: token['Created'],
-                                createdBy: token['Created By'],
-                            });
-                        }
-                        // remove last record of standardizedValues since it contains the the header row
-                        standardizedValues.pop();
-                        // log.debug({
-                        //   title: 'SuiteToolsController:processPostedData() tokens standardizedValues',
-                        //   details: standardizedValues,
-                        // });
-                        // sort the array by name
-                        standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
-                        updateSettings = { custrecord_idev_st_config_tokens: JSON.stringify(standardizedValues) };
+                    case 'nsData':
+                        updateSettings = this.updateNsData(value);
                         break;
                     default:
                         log.debug({ title: 'SuiteToolsController:processPostedData() invalid name value', details: name });
                 }
                 if (updateSettings) {
-                    log.debug({ title: `SuiteToolsAppSettings:processPostedData() updateSettings = `, details: updateSettings });
-                    // save the value of devmode to the settings record
-                    const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updateSettings);
-                    log.debug({ title: `SuiteToolsAppSettings:processPostedData() saved successfully?`, details: success });
+                    // save to the settings record
+                    log.debug({ title: `SuiteToolsController:processPostedData() updateSettings = `, details: updateSettings });
+                    if (!Array.isArray(updateSettings)) {
+                        log.debug({ title: `SuiteToolsController:processPostedData() updateSettings = `, details: updateSettings });
+                        const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updateSettings);
+                        log.debug({ title: `SuiteToolsController:processPostedData() saved successfully?`, details: success });
+                    }
+                    else {
+                        log.debug({
+                            title: `SuiteToolsController:processPostedData() updateSettings is an array of settings`,
+                            details: updateSettings.length + ' settings',
+                        });
+                        for (const updateSetting of updateSettings) {
+                            log.debug({ title: `SuiteToolsController:processPostedData() updateSetting = `, details: updateSetting });
+                            const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updateSetting);
+                            log.debug({ title: `SuiteToolsController:processPostedData() saved successfully?`, details: success });
+                        }
+                    }
+                    // log remaining usage
+                    log.debug({
+                        title: `SuiteToolsController:processPostedData() Remaining Usage`,
+                        details: this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() +
+                            ' units' +
+                            ' (' +
+                            this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() / 10 +
+                            '%)',
+                    });
                 }
             }
             else {
@@ -540,7 +503,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/files.html');
             const bodyValues = {};
-            bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/file.html');
+            bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/file.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -589,9 +552,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // types
             const typeOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
             // scripts
-            const scriptOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
+            const scriptOptions = this.getOptionValues(this.stApp.stModel.getScriptList());
             // owners
-            const ownerOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+            const ownerOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList());
             // files
             const fileOptions = this.retrieveOptionValues('SELECT UNIQUE file.name, file.id FROM script INNER JOIN file ON script.scriptfile = file.id ORDER BY file.name');
             // option values
@@ -645,9 +608,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scripts.html');
             const bodyValues = {};
-            bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/script.html');
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
-            bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/file.html');
+            bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/script.html');
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
+            bodyValues['fileModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/file.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -689,6 +652,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 bodyValues['urlNs'] = '/app/common/scripting/script.nl?id=' + record.id;
                 bodyValues['urlScript'] = this.stApp.scriptUrl + '&action=script&id=' + record.id;
                 bodyValues['urlScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&scriptId=' + record.id;
+                if (renderType === idev_suitetools_view_1.RenderType.Normal) {
+                    // bodyValues['code'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents( ???)
+                }
             }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
@@ -717,8 +683,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/integrations.html');
             const bodyValues = {};
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
-            bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/integration.html');
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
+            bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/integration.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -754,6 +720,11 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=integration&id=' + record.id;
                 bodyValues['urlNs'] = '/app/common/integration/integrapp.nl?id=' + record.id;
                 bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&integrationId=' + record.id;
+                if (renderType === idev_suitetools_view_1.RenderType.Normal) {
+                    // display the tokens for this integration
+                    const results = this.stApp.stModel.getTokens(null, record.id, null, null);
+                    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+                }
             }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
@@ -768,7 +739,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // integrations
             const integrationOptions = this.getOptionValues(this.stApp.stModel.getIntegrationList());
             // users
-            const userOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+            const userOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList(true));
             // roles
             const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
             // option values
@@ -830,9 +801,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/tokens.html');
             const bodyValues = {};
-            bodyValues['tokenModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/token.html');
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
-            bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/integration.html');
+            bodyValues['tokenModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/token.html');
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
+            bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/integration.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -907,8 +878,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/roles.html');
             const bodyValues = {};
-            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/role.html');
-            bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/integration.html');
+            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
+            bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/integration.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -955,19 +926,13 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
         renderUsersForm() {
             log.debug({ title: 'SuiteToolsController:renderUsersForm() initiated', details: '' });
             // set form input option values dynamically
-            // active
-            const activeOptions = this.stApp.stView.getActiveOptions();
             // roles
             const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
             // supervisors
-            const supervisorOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+            const supervisorOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList());
             // option values
             const optionValuesObj = {
                 options: [
-                    {
-                        field: 'custom_active',
-                        values: activeOptions,
-                    },
                     {
                         field: 'custom_role',
                         values: roleOptions,
@@ -989,24 +954,19 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     // set the initial values for when script params are set in the URL
                     formFieldValues.push({ name: 'custom_role', value: roleId });
                 }
-                else {
-                    // Set the default initial values for when no script params are set in the URL
-                    formFieldValues.push({ name: 'custom_active', value: 'T' });
-                }
             }
             else {
                 // POST - get values from POSTed fields
                 formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
             }
-            const active = this.getPostedField('custom_active', formFieldValues);
             const role = this.getPostedField('custom_role', formFieldValues);
-            const supervisors = this.getPostedField('custom_supervisor', formFieldValues);
-            const records = this.stApp.stModel.getUsers(active, role, supervisors);
+            const supervisor = this.getPostedField('custom_supervisor', formFieldValues);
+            const records = this.stApp.stModel.getUsers(role, supervisor);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/users.html');
             const bodyValues = {};
-            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/role.html');
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -1053,7 +1013,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             this.stApp.stView.render(renderType, body, bodyValues);
         }
         /**
-         * Renders the Web Services Logs form
+         * Renders the User Logins form
          */
         renderUserLoginsForm() {
             log.debug({ title: 'SuiteToolsController:renderUserLoginsForm() initiated', details: null });
@@ -1061,7 +1021,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // rows
             const rowOptions = this.stApp.stView.getRowOptions();
             // users
-            const userOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+            const userOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList(true));
             // dates
             const dateOptions = this.stApp.stView.getDateOptions();
             // option values
@@ -1116,12 +1076,112 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/userLogins.html');
             const bodyValues = {};
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
+         * Renders the Employees form.
+         */
+        renderEmployeesForm() {
+            log.debug({ title: 'SuiteToolsController:renderEmployeesForm() initiated', details: '' });
+            // set form input option values dynamically
+            // active
+            const activeOptions = this.stApp.stView.getActiveOptions();
+            // roles
+            const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
+            // supervisors
+            const supervisorOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList());
+            // option values
+            const optionValuesObj = {
+                options: [
+                    {
+                        field: 'custom_active',
+                        values: activeOptions,
+                    },
+                    {
+                        field: 'custom_role',
+                        values: roleOptions,
+                    },
+                    {
+                        field: 'custom_supervisor',
+                        values: supervisorOptions,
+                    },
+                ],
+            };
+            // const formData = this.stApp.stLib.stLibNs.generateFormData();
+            const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+            // get the records
+            let formFieldValues = [];
+            if (this.stApp.context.request.method == 'GET') {
+                // WERE SCRIPT PARAMS SET IN THE URL?
+                const roleId = this.stApp.context.request.parameters.roleId;
+                if (roleId) {
+                    // set the initial values for when script params are set in the URL
+                    formFieldValues.push({ name: 'custom_role', value: roleId });
+                }
+                else {
+                    // Set the default initial values for when no script params are set in the URL
+                    formFieldValues.push({ name: 'custom_active', value: 'T' });
+                }
+            }
+            else {
+                // POST - get values from POSTed fields
+                formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+            }
+            const active = this.getPostedField('custom_active', formFieldValues);
+            const role = this.getPostedField('custom_role', formFieldValues);
+            const supervisors = this.getPostedField('custom_supervisor', formFieldValues);
+            const records = this.stApp.stModel.getEmployees(active, role, supervisors);
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/employees.html');
+            const bodyValues = {};
+            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
+            bodyValues['employeeModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/employee.html');
+            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+            bodyValues['optionValues'] = optionValues;
+            bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+            bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
+         * Renders the Employee form.
+         *
+         * @param renderType - the type of render
+         * @param id - the internal ID of the record
+         */
+        renderEmployeeForm(renderType, id) {
+            log.debug({
+                title: 'SuiteToolsController:renderEmployeeForm() initiated',
+                details: { renderType: renderType, id: id },
+            });
+            // get the record
+            const record = this.stApp.stModel.getEmployee(id);
+            log.debug({ title: 'SuiteToolsController:renderEmployeeForm() record =', details: record });
+            // display the form
+            let filename = 'views/employee.html';
+            if (renderType === idev_suitetools_view_1.RenderType.Modal) {
+                filename = 'views/partials/employee.html';
+            }
+            log.debug({ title: 'SuiteToolsController:renderEmployeeForm() filename =', details: filename });
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+            const bodyValues = {};
+            bodyValues['id'] = record.id;
+            bodyValues['entityid'] = record.entityid;
+            bodyValues['firstname'] = record.firstname;
+            bodyValues['lastname'] = record.lastname;
+            bodyValues['email'] = record.email;
+            bodyValues['supervisorname'] = record.supervisorname;
+            bodyValues['supervisorurl'] = record.supervisorurl;
+            bodyValues['title'] = record.title;
+            bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
+            bodyValues['url'] = this.stApp.scriptUrl + '&action=employee&id=' + record.id;
+            bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + record.id;
+            // bodyValues['urlRoles'] = this.stApp.scriptUrl + '&action=employees&roleId=' + ???; - not 1 to 1
+            this.stApp.stView.render(renderType, body, bodyValues);
         }
         /**
          * Renders the Script Log form
@@ -1134,7 +1194,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // log levels
             const logLevelOptions = this.stApp.stView.getLogLevelOptions();
             // users
-            const userOptions = this.getOptionValues(this.stApp.stModel.getUserList());
+            const userOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList(true));
             // types
             const typeOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
             // scripts
@@ -1268,8 +1328,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptLogs.html');
             const bodyValues = {};
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/user.html');
-            bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/script.html');
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
+            bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/script.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
@@ -1310,6 +1370,186 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             });
             log.debug({ title: 'SuiteToolsController:getOptionValues() returning', details: optionsOut });
             return optionsOut;
+        }
+        /**
+         * Update NetSuite data
+         *
+         * @param value - the values to update
+         *
+         * @returns NetSuite data
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        updateNsData(value) {
+            log.debug({ title: 'SuiteToolsController:updateNsData() initiated', details: '' });
+            const updateSettings = [];
+            // integrations
+            let standardizedValues = [];
+            let results = value.filter((result) => result.name == 'integrations');
+            if (results.length > 0) {
+                // log.debug({ title: 'SuiteToolsController:updateNsData() integrations', details: results });
+                // standardize the integration field names (e.g. camelCase and remove spaces)
+                for (const integration of results[0].values) {
+                    // log.debug({ title: 'SuiteToolsController:updateNsData() integration', details: integration });
+                    // add the standardized field and values including data cleansing to the array
+                    standardizedValues.push({
+                        id: integration['Internal ID'],
+                        name: integration['Name'],
+                        nameId: integration['Name'] + ' (' + integration['Internal ID'] + ')',
+                        integrationId: integration['Application ID'],
+                        active: integration['State'] == 'Enabled' ? 'T' : 'F',
+                        createdOn: integration['Created On'],
+                    });
+                }
+                if (standardizedValues.length > 0) {
+                    // remove last record of standardizedValues since it contains the the header row
+                    standardizedValues.pop();
+                    // log.debug({
+                    //   title: 'SuiteToolsController:updateNsData() integrations standardizedValues',
+                    //   details: standardizedValues,
+                    // });
+                    // sort the array by name
+                    standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+                    updateSettings.push({ custrecord_idev_st_config_integrations: JSON.stringify(standardizedValues) });
+                }
+            }
+            // tokens
+            const integrationList = standardizedValues;
+            standardizedValues = [];
+            const rolelist = this.stApp.stModel.getRoleList();
+            const userList = this.stApp.stModel.getEmployeeList();
+            results = value.filter((result) => result.name == 'tokens');
+            if (results.length > 0) {
+                // log.debug({ title: 'SuiteToolsController:updateNsData() tokens', details: results });
+                // standardize the integration field names (e.g. camelCase and remove spaces)
+                for (const token of results[0].values) {
+                    // log.debug({ title: 'SuiteToolsController:updateNsData() token', details: token });
+                    // add integrationId and integrationNameId
+                    //   TODO: handle case where multiple integrations have the same name
+                    const foundIntegration = integrationList.find((integration) => integration.name.trim() === token['Application']);
+                    const integrationId = foundIntegration ? foundIntegration.id : null;
+                    const integrationNameId = foundIntegration ? foundIntegration.nameId : null;
+                    // add roleId
+                    //   TODO: handle case where multiple roles have the same name
+                    const foundRole = rolelist.find((role) => role.name.trim() === token['Role']);
+                    const roleId = foundRole ? foundRole.id : null;
+                    // add userId
+                    //   TODO: handle case where multiple users have the same name
+                    const foundUser = userList.find((user) => user.name.trim() === token['User']);
+                    const userId = foundUser ? foundUser.id : null;
+                    // add the standardized field and values including data cleansing to the array
+                    standardizedValues.push({
+                        id: token['Internal ID'],
+                        active: token['Inactive'] == 'No' ? 'T' : 'F',
+                        nameId: token['Token name'] + ' (' + token['Internal ID'] + ')',
+                        integration: token['Application'],
+                        integrationId: integrationId,
+                        integrationNameId: integrationNameId,
+                        role: token['Role'],
+                        roleId: roleId,
+                        user: token['User'],
+                        userId: userId,
+                        createdOn: token['Created'],
+                        createdBy: token['Created By'],
+                    });
+                }
+                if (standardizedValues.length > 0) {
+                    // remove last record of standardizedValues since it contains the the header row
+                    standardizedValues.pop();
+                    // log.debug({
+                    //   title: 'SuiteToolsController:updateNsData() tokens standardizedValues',
+                    //   details: standardizedValues,
+                    // });
+                    // sort the array by name
+                    standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+                    updateSettings.push({ custrecord_idev_st_config_tokens: JSON.stringify(standardizedValues) });
+                }
+            }
+            // users
+            // this is code to get the user list from NetSuite's Manage Users page (/app/setup/listusers.nl)
+            // standardizedValues = [];
+            // results = value.filter((result) => result.name == 'users');
+            // if (results.length > 0) {
+            //   // log.debug({ title: 'SuiteToolsController:updateNsData() users', details: results });
+            //   const users = this.stApp.stModel.getUsers('T', null, null);
+            //   log.debug({ title: 'SuiteToolsController:updateNsData() users', details: users });
+            //   // standardize the integration field names (e.g. camelCase and remove spaces)
+            //   for (const user of results[0].values) {
+            //     log.debug({ title: 'SuiteToolsController:updateNsData() user', details: user });
+            //     // add additional user info
+            //     log.debug({ title: 'SuiteToolsController:updateNsData() user Email', details: user['Email'] });
+            //     // get userRecord email
+            //     const foundUser = users.find((record) => record['email'] == user['Email']);
+            //     log.debug({ title: 'SuiteToolsController:updateNsData() foundUser', details: foundUser });
+            //     const userId = foundUser ? foundUser.id : null;
+            //     // add the standardized field and values including data cleansing to the array
+            //     standardizedValues.push({
+            //       id: userId,
+            //       name: user['Name'],
+            //       email: user['Email'],
+            //       role: user['Role'],
+            //     });
+            //   }
+            //   if (standardizedValues.length > 0) {
+            //     // remove last record of standardizedValues since it contains the the header row
+            //     standardizedValues.pop();
+            //     // log.debug({
+            //     //   title: 'SuiteToolsController:updateNsData() users standardizedValues',
+            //     //   details: standardizedValues,
+            //     // });
+            //     // sort the array by name
+            //     standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+            //     updateSettings.push({ custrecord_idev_st_config_users: JSON.stringify(standardizedValues) });
+            //   }
+            // }
+            // find example to lookup user by email
+            // const foundUser = users.find((record) => record['email'] == user['Email']);
+            standardizedValues = [];
+            const users = this.stApp.stModel.getEmployees('T', null, null);
+            log.debug({ title: 'SuiteToolsController:updateNsData() users', details: users });
+            const usersRoles = this.stApp.stModel.getUsersRoles();
+            log.debug({ title: 'SuiteToolsController:updateNsData() usersRoles', details: usersRoles });
+            // standardize the integration field names (e.g. camelCase and remove spaces)
+            const lastLoginsSql = 'SELECT LoginAudit.User, MAX(LoginAudit.Date) AS lastLogin FROM LoginAudit GROUP BY LoginAudit.User';
+            const lastLogins = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(lastLoginsSql);
+            for (const user of users) {
+                // log.debug({ title: 'SuiteToolsController:updateNsData() user', details: user });
+                // add additional user info
+                // last login
+                const foundLogin = lastLogins.find((record) => record['user'] == user['id']);
+                // log.debug({ title: 'SuiteToolsController:updateNsData() foundLogin', details: foundLogin });
+                const lastlogin = foundLogin ? foundLogin.lastlogin : null;
+                // roles
+                const roleIds = [];
+                const roles = [];
+                const userRoles = usersRoles.filter((record) => record['id'] == user['id']);
+                for (const userRole of userRoles) {
+                    roleIds.push(userRole.roleid);
+                    roles.push(userRole.rolename);
+                }
+                // add the standardized field and values including data cleansing to the array
+                standardizedValues.push({
+                    id: user.id,
+                    name: user.name,
+                    firstname: user.fistname,
+                    lastname: user.lastname,
+                    email: user.email,
+                    supervisorid: user.supervisorid,
+                    supervisor: user.supervisor == ' ()' ? '' : user.supervisor,
+                    title: user.title ? user.title : '',
+                    lastlogin: lastlogin ? lastlogin : '',
+                    roleIds: JSON.stringify(roleIds),
+                    roles: roles.join(', '),
+                });
+            }
+            // log.debug({
+            //   title: 'SuiteToolsController:updateNsData() users standardizedValues',
+            //   details: standardizedValues,
+            // });
+            // sort the array by name
+            standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+            updateSettings.push({ custrecord_idev_st_config_users: JSON.stringify(standardizedValues) });
+            log.debug({ title: 'SuiteToolsController:updateNsData() returning', details: updateSettings });
+            return updateSettings;
         }
     }
     exports.SuiteToolsController = SuiteToolsController;

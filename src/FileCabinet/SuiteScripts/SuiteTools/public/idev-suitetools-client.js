@@ -94,12 +94,13 @@ function postPage(multiselectIds, pageUrl) {
 }
 
 const ModalType = Object.freeze({
-    "File": 1,
-    "Integration": 2,
-    "Role": 3,
-    "Script": 4,
-    "Token": 5,
-    "User": 6,
+    "Employee": 1,
+    "File": 2,
+    "Integration": 3,
+    "Role": 4,
+    "Script": 5,
+    "Token": 6,
+    "User": 7,
 });
 
 /**
@@ -112,6 +113,10 @@ const ModalType = Object.freeze({
 function showModal(scriptUrl, modalType, id) {
     // determine the modal id and page url
     switch (modalType) {
+        case ModalType.Employee:
+            modalId = 'employee-modal';
+            action = 'employeeModal';
+            break;
         case ModalType.File:
             modalId = 'file-modal';
             action = 'fileModal';
@@ -132,11 +137,11 @@ function showModal(scriptUrl, modalType, id) {
             modalId = 'token-modal';
             action = 'tokenModal';
             break;
-        default:
         case ModalType.User:
             modalId = 'user-modal';
             action = 'userModal';
-        break;
+            break;
+        default:
             console.error('Invalid modal type "' + modalType + '" provided.');
             return;
     }

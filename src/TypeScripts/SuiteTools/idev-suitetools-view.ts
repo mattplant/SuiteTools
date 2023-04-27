@@ -64,10 +64,7 @@ export class SuiteToolsView {
    * @returns HTML content
    */
   public render(renderType: RenderType, body: string, bodyValues?: object): void {
-    log.debug({
-      title: 'SuiteToolsView:render() initiated',
-      details: { renderType: renderType, bodyValues: bodyValues },
-    });
+    log.debug({ title: 'SuiteToolsView:render() initiated', details: null });
 
     switch (renderType) {
       case RenderType.Normal:

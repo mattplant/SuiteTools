@@ -238,6 +238,10 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         get tokens() {
             return this._tokens;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        get users() {
+            return this._users;
+        }
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsAppSettings:constructor() initiated', details: null });
             this._stApp = stApp;
@@ -257,6 +261,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_users AS users,
     FROM
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
     WHERE
@@ -276,6 +281,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
                 this._devMode = sqlResults[0].devmode === 'T' ? true : false;
                 this._integrations = JSON.parse(sqlResults[0].integrations);
                 this._tokens = JSON.parse(sqlResults[0].tokens);
+                this._users = JSON.parse(sqlResults[0].users);
                 // if core configs are not set then set them
                 if (!this._cssUrl || !this._jsUrl) {
                     log.error({ title: `SuiteToolsAppSettings:getSettings() missing core configs`, details: '' });

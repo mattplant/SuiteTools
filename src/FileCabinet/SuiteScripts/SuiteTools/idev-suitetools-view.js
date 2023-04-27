@@ -54,10 +54,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          * @returns HTML content
          */
         render(renderType, body, bodyValues) {
-            log.debug({
-                title: 'SuiteToolsView:render() initiated',
-                details: { renderType: renderType, bodyValues: bodyValues },
-            });
+            log.debug({ title: 'SuiteToolsView:render() initiated', details: null });
             switch (renderType) {
                 case RenderType.Normal:
                     this.renderNormal(body, bodyValues);
