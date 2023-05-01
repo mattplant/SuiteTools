@@ -21,13 +21,13 @@
 				</label>
 			</li>
 			<li>
-				<button onclick="loadNsData();" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Update NetSuite Data</button>
+				<button onclick="getNsData('{{{scriptUrl}}}&action=postData');" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Get NetSuite Integrations Data</button>
 			</li>
 		</ul>
 	</div>
 </div>
 
-<!-- load libraries need to process the integration data -->
+<!-- load libraries needed to scrape tables on NetSuite pages -->
 <!-- jQuery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- table-to-json -->
@@ -43,39 +43,23 @@
 	});
 
 	/**
-	 * Post data to an endpoint.
+	 * Get page table content
 	 *
-	 * @param name - the name of the data
-	 * @param data - the data to post
-	 * @param {string} url - the endpoint to post to
-	 */
-	function postData(name, data, url) {
-		const requestOptions = {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name: name, value: data })
-		};
-		return fetch(url, requestOptions)
-			.then(response => response.text())
-			.catch(error => console.error('postData Error =\n', error));
-	}
-
-	/**
-	 * Get page content
+	 * @requires jQuery and tableToJSON
 	 *
 	 * @param {string} url - the endpoint to get data from
+	 * @param {string} id - the id of the table element to get
+	 * @returns {object} - the table data
 	 */
-	function getPageContent(url) {
+	function getPageTableContent(url, id) {
 		return fetch(url)
 		.then((response) => response.text())
 		.then((pageData) => {
-			// parse page data
 			const parser = new DOMParser();
 			const domPage = parser.parseFromString(pageData, 'text/html');
-			const table = domPage.getElementById('div__body').innerHTML;
-			// console.log(table);
+			const table = domPage.getElementById(id).innerHTML;
 			const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
-			// console.log(tableJson);
+			console.log(tableJson);
 
 			return tableJson;
 		})
@@ -86,35 +70,56 @@
 
 	/**
 	 * Get NetSuite data
+	 *
+	 * @param {string} destUrl - the destination URL to post the data to
 	 */
-	 function loadNsData() {
-		const getNsData = async () => {
-			let nsData = [];
+	async function getNsData(destUrl) {
+		let nsData = [];
 
-			// integrations
-			// get from Integrations page - https://XYZ.app.netsuite.com/app/common/integration/integrapplist.nl
-			const integrationData = await getPageContent('/app/common/integration/integrapplist.nl');
-			console.log(integrationData);
-			nsData.push({ name: 'integrations', values: integrationData });
+		// integrations
+		// get from Integrations page - https://XYZ.app.netsuite.com/app/common/integration/integrapplist.nl
+		const integrations = await getPageTableContent('/app/common/integration/integrapplist.nl', 'div__body');
+		console.log('integrations = ' + JSON.stringify(integrations));
+		nsData.push({ name: 'integrations', values: integrations });
 
-			// tokens
-			// get from Tokens page - https://XYZ.app.netsuite.com/app/setup/accesstokens.nl
-			const tokenData = await getPageContent('/app/setup/accesstokens.nl');
-			console.log(tokenData);
-			nsData.push({ name: 'tokens', values: tokenData });
+		// remove last record since it contains the the header row
+		integrations.pop();
+		// supplement integrations data with additional data
+		let integrationsDetails = [];
+		await Promise.all(integrations.map(async (integration) => {
+			integrationId = integration['Internal ID'];
+			// authentication tab
+			const authenticationData = { "name": integrationId, "values": await getIntegrationPageContent(`/app/common/integration/integrapp.nl?id=${integrationId}`)};
+			// console.log('authenticationData = ' + JSON.stringify(authenticationData));
+			integrationsDetails.push(authenticationData);
+		}));
+		console.log('integrationsDetails = ' + JSON.stringify(integrationsDetails));
+		nsData.push({ name: 'integrationsDetails', values: integrationsDetails });
 
-			// currently getting from active employees that have access
-			// users
-			// // get from Users page - https://XYZ.app.netsuite.com/app/setup/listusers.nl
-			// const userData = await getPageContent('/app/setup/listusers.nl');
-			// console.log(userData);
-			// nsData.push({ name: 'users', values: userData });
+		// tokens
+		// get from Tokens page - https://XYZ.app.netsuite.com/app/setup/accesstokens.nl
+		const tokenData = await getPageTableContent('/app/setup/accesstokens.nl', 'div__body');
+		nsData.push({ name: 'tokens', values: tokenData });
 
-			// post integrations data to SuiteTools
-			destUrl = '{{{scriptUrl}}}&action=postData';
-			postData('nsData', nsData, destUrl);
-		};
-
-		getNsData();
+		// post integrations data to SuiteTools
+		postData('integrations', nsData, destUrl);
 	}
+
+	async function getIntegrationPageContent(url) {
+		return fetch(url)
+		.then((response) => response.text())
+		.then((pageData) => {
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(pageData, 'text/html');
+			const nsData = [];
+			nsData.push({ name: 'tokenauthflag', values: doc.querySelector(`#tokenauthflag_fs > img[alt]`).alt });
+			nsData.push({ name: 'authorizationcodegrant', values: doc.querySelector(`#authorizationcodegrant_fs > img[alt]`).alt });
+			nsData.push({ name: 'rlcauthflag', values: doc.querySelector(`#rlcauthflag_fs > img[alt]`).alt });
+
+			return nsData;
+		})
+		.catch((error) => {
+			console.error(`getPageContent Error =\n`, error);
+		});
+	};
 </script>

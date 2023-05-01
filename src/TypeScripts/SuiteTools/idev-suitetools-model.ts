@@ -748,7 +748,7 @@ export class SuiteToolsModel {
       ORDER BY
         Employee.entityId ASC`;
     const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    log.debug({ title: 'SuiteToolsModel:getUsersRoles() returning', details: results });
+    // log.debug({ title: 'SuiteToolsModel:getUsersRoles() returning', details: results });
 
     return results;
   }
@@ -1091,11 +1091,10 @@ export class SuiteToolsModel {
     const where = [];
     if (active) {
       if (active === 'T') {
-        where.push(`employee.giveaccess = 'T'`);
         where.push(`employee.isinactive = 'F'`);
       }
       if (active === 'F') {
-        where.push(`(employee.isinactive = 'F' OR employee.giveaccess = 'T')`);
+        where.push(`employee.isinactive = 'T'`);
       }
     }
     if (role) {
@@ -1115,8 +1114,7 @@ export class SuiteToolsModel {
     // add order by
     sql += ` ORDER BY employee.firstname ASC`;
     const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-
-    log.debug({ title: 'SuiteToolsModel:getEmployees() returning', details: results });
+    // log.debug({ title: 'SuiteToolsModel:getEmployees() returning', details: results });
 
     return results;
   }

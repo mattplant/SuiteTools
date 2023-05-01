@@ -673,7 +673,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
       ORDER BY
         Employee.entityId ASC`;
             const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-            log.debug({ title: 'SuiteToolsModel:getUsersRoles() returning', details: results });
+            // log.debug({ title: 'SuiteToolsModel:getUsersRoles() returning', details: results });
             return results;
         }
         /**
@@ -968,11 +968,10 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             const where = [];
             if (active) {
                 if (active === 'T') {
-                    where.push(`employee.giveaccess = 'T'`);
                     where.push(`employee.isinactive = 'F'`);
                 }
                 if (active === 'F') {
-                    where.push(`(employee.isinactive = 'F' OR employee.giveaccess = 'T')`);
+                    where.push(`employee.isinactive = 'T'`);
                 }
             }
             if (role) {
@@ -992,7 +991,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             // add order by
             sql += ` ORDER BY employee.firstname ASC`;
             const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-            log.debug({ title: 'SuiteToolsModel:getEmployees() returning', details: results });
+            // log.debug({ title: 'SuiteToolsModel:getEmployees() returning', details: results });
             return results;
         }
         /**

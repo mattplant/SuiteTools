@@ -102,7 +102,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 case 'role':
                     this.renderRoleForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
-                case 'users':
+                case 'users': // we are using the same form for employees and users
                     this.renderUsersForm();
                     break;
                 case 'userModal':
@@ -114,9 +114,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 case 'userLogins':
                     this.renderUserLoginsForm();
                     break;
-                case 'employees':
-                    this.renderEmployeesForm();
-                    break;
+                // case 'employees': // we are using the same form for employees and users
                 case 'employeeModal':
                     this.renderEmployeeForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
@@ -176,9 +174,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                         break;
                     case 'scriptLogs':
                         this.renderScriptLogsForm();
-                        break;
-                    case 'employees':
-                        this.renderEmployeesForm();
                         break;
                     default:
                         throw error.create({
@@ -293,9 +288,10 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
         // Data
         // ---------------------------------------------------------------------------------------------
         processPostedData() {
+            log.debug({ title: 'SuiteToolsController:processPostedData() initiated with', details: null });
             // get request body
             const requestBody = this.stApp.context.request.body;
-            log.debug({ title: 'SuiteToolsController:processPostedData() initiated with', details: requestBody });
+            // log.debug({ title: 'SuiteToolsController:processPostedData() requestBody =', details: requestBody });
             const requestBodyObj = JSON.parse(requestBody);
             // eslint-disable-next-line no-prototype-builtins
             if (requestBodyObj.hasOwnProperty('name') && requestBodyObj.hasOwnProperty('value')) {
@@ -303,24 +299,26 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 const name = requestBodyObj.name;
                 // get the value from the request body
                 const value = requestBodyObj.value;
-                log.debug({ title: 'SuiteToolsController:processPostedData() data', details: { name: name, value: value } });
+                // log.debug({ title: 'SuiteToolsController:processPostedData() data', details: { name: name, value: value } });
                 // determine setting to update
                 let updateSettings = null;
                 switch (name) {
                     case 'devmode':
                         updateSettings = { custrecord_idev_st_setting_dev_mode: value };
                         break;
-                    case 'nsData':
-                        updateSettings = this.updateNsData(value);
+                    case 'integrations':
+                        updateSettings = this.updateIntegrationsData(value);
+                        break;
+                    case 'integration':
+                        // test this
+                        this.updateIntegrationData(value);
                         break;
                     default:
                         log.debug({ title: 'SuiteToolsController:processPostedData() invalid name value', details: name });
                 }
                 if (updateSettings) {
                     // save to the settings record
-                    log.debug({ title: `SuiteToolsController:processPostedData() updateSettings = `, details: updateSettings });
                     if (!Array.isArray(updateSettings)) {
-                        log.debug({ title: `SuiteToolsController:processPostedData() updateSettings = `, details: updateSettings });
                         const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updateSettings);
                         log.debug({ title: `SuiteToolsController:processPostedData() saved successfully?`, details: success });
                     }
@@ -330,7 +328,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                             details: updateSettings.length + ' settings',
                         });
                         for (const updateSetting of updateSettings) {
-                            log.debug({ title: `SuiteToolsController:processPostedData() updateSetting = `, details: updateSetting });
                             const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', this.stApp.stAppSettings.recordId, updateSetting);
                             log.debug({ title: `SuiteToolsController:processPostedData() saved successfully?`, details: success });
                         }
@@ -485,7 +482,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const formData = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = {};
             if (this.stApp.context.request.method == 'GET') {
                 // GET - default initial values
@@ -499,7 +496,12 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             const types = this.getPostedField('custom_types', formFieldValues);
             const createdDates = this.getPostedField('custom_created_dates', formFieldValues);
             const modifiedDates = this.getPostedField('custom_modified_dates', formFieldValues);
-            const records = this.stApp.stModel.getFiles(rows, types, createdDates, modifiedDates);
+            const results = this.stApp.stModel.getFiles(rows, types, createdDates, modifiedDates);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/files.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/files.html');
             const bodyValues = {};
@@ -507,7 +509,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -588,7 +590,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const formData = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // GET - default initial values
@@ -604,7 +606,12 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             const scripts = this.getPostedField('custom_scripts', formFieldValues);
             const owners = this.getPostedField('custom_owners', formFieldValues);
             const files = this.getPostedField('custom_files', formFieldValues);
-            const records = this.stApp.stModel.getScripts(active, versions, types, scripts, owners, files);
+            const results = this.stApp.stModel.getScripts(active, versions, types, scripts, owners, files);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/scripts.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scripts.html');
             const bodyValues = {};
@@ -614,7 +621,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -633,7 +640,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             let filename = 'views/script.html';
             if (renderType === idev_suitetools_view_1.RenderType.Modal) {
-                filename = 'views/partials/script.html';
+                filename = 'views/partials/modals/content/script.html';
             }
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
@@ -668,7 +675,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 options: [],
             };
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // Set the default initial values
@@ -680,6 +687,11 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             }
             const status = this.getPostedField('custom_status', formFieldValues);
             const results = this.stApp.stModel.getIntegrations(status);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/integrations.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/integrations.html');
             const bodyValues = {};
@@ -688,7 +700,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -707,23 +719,32 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             let filename = 'views/integration.html';
             if (renderType === idev_suitetools_view_1.RenderType.Modal) {
-                filename = 'views/partials/integration.html';
+                filename = 'views/partials/modals/content/integration.html';
             }
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
             if (record) {
+                bodyValues['scriptUrl'] = this.stApp.scriptUrl;
                 bodyValues['id'] = record.id;
                 bodyValues['active'] = record.active == 'T';
                 bodyValues['name'] = record.name;
                 bodyValues['integrationId'] = record.integrationId;
                 bodyValues['createdOn'] = record.createdOn;
+                bodyValues['tokenauthflag'] = record.tokenauthflag;
+                bodyValues['authorizationcodegrant'] = record.authorizationcodegrant;
+                bodyValues['rlcauthflag'] = record.rlcauthflag;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=integration&id=' + record.id;
                 bodyValues['urlNs'] = '/app/common/integration/integrapp.nl?id=' + record.id;
                 bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&integrationId=' + record.id;
                 if (renderType === idev_suitetools_view_1.RenderType.Normal) {
                     // display the tokens for this integration
                     const results = this.stApp.stModel.getTokens(null, record.id, null, null);
-                    bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+                    const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/tokens.html');
+                    const resultsValues = {};
+                    resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+                    resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+                    const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+                    bodyValues['results'] = resultsContent;
                 }
             }
             this.stApp.stView.render(renderType, body, bodyValues);
@@ -765,7 +786,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // WERE SCRIPT PARAMS SET IN THE URL?
@@ -798,6 +819,11 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             const user = this.getPostedField('custom_user', formFieldValues);
             const role = this.getPostedField('custom_role', formFieldValues);
             const results = this.stApp.stModel.getTokens(active, integration, user, role);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/tokens.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/tokens.html');
             const bodyValues = {};
@@ -807,7 +833,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -826,7 +852,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             let filename = 'views/token.html';
             if (renderType === idev_suitetools_view_1.RenderType.Modal) {
-                filename = 'views/partials/token.html';
+                filename = 'views/partials/modals/content/token.html';
             }
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
@@ -863,7 +889,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // Set the default initial values for when no script params are set in the URL
@@ -875,6 +901,11 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             }
             const active = this.getPostedField('custom_active', formFieldValues);
             const results = this.stApp.stModel.getRoles(active);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/roles.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/roles.html');
             const bodyValues = {};
@@ -883,7 +914,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -902,7 +933,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             let filename = 'views/role.html';
             if (renderType == idev_suitetools_view_1.RenderType.Modal) {
-                filename = 'views/partials/role.html';
+                filename = 'views/partials/modals/content/role.html';
             }
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
@@ -945,8 +976,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const formData = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
+            let results = null;
             if (this.stApp.context.request.method == 'GET') {
                 // WERE SCRIPT PARAMS SET IN THE URL?
                 const roleId = this.stApp.context.request.parameters.roleId;
@@ -954,23 +986,41 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     // set the initial values for when script params are set in the URL
                     formFieldValues.push({ name: 'custom_role', value: roleId });
                 }
+                else {
+                    // Set the default initial values for when no script params are set in the URL
+                    formFieldValues.push({ name: 'custom_active', value: 'U' });
+                }
             }
             else {
                 // POST - get values from POSTed fields
                 formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
             }
+            const active = this.getPostedField('custom_active', formFieldValues);
             const role = this.getPostedField('custom_role', formFieldValues);
             const supervisor = this.getPostedField('custom_supervisor', formFieldValues);
-            const records = this.stApp.stModel.getUsers(role, supervisor);
+            let resultsTemplate = '';
+            if (active == 'U') {
+                results = this.stApp.stModel.getUsers(role, supervisor);
+                resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/users.html');
+            }
+            else {
+                results = this.stApp.stModel.getEmployees(active, role, supervisor);
+                resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/employees.html');
+            }
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results, true);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/users.html');
             const bodyValues = {};
+            bodyValues['employeeModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/employee.html');
             bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
             bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -990,7 +1040,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             let filename = 'views/user.html';
             if (renderType === idev_suitetools_view_1.RenderType.Modal) {
-                filename = 'views/partials/user.html';
+                filename = 'views/partials/modals/content/user.html';
             }
             log.debug({ title: 'SuiteToolsController:renderUserForm() filename =', details: filename });
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
@@ -1043,7 +1093,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // WERE SCRIPT PARAMS SET IN THE URL?
@@ -1073,78 +1123,19 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // const title = this.getPostedField('custom_title', formFieldValues);
             // const detail = this.getPostedField('custom_detail', formFieldValues);
             const results = this.stApp.stModel.getUserLogins(rows, status, users, dates);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/logins.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
-            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/userLogins.html');
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/logins.html');
             const bodyValues = {};
             bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(results);
-            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
-        }
-        /**
-         * Renders the Employees form.
-         */
-        renderEmployeesForm() {
-            log.debug({ title: 'SuiteToolsController:renderEmployeesForm() initiated', details: '' });
-            // set form input option values dynamically
-            // active
-            const activeOptions = this.stApp.stView.getActiveOptions();
-            // roles
-            const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
-            // supervisors
-            const supervisorOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList());
-            // option values
-            const optionValuesObj = {
-                options: [
-                    {
-                        field: 'custom_active',
-                        values: activeOptions,
-                    },
-                    {
-                        field: 'custom_role',
-                        values: roleOptions,
-                    },
-                    {
-                        field: 'custom_supervisor',
-                        values: supervisorOptions,
-                    },
-                ],
-            };
-            // const formData = this.stApp.stLib.stLibNs.generateFormData();
-            const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
-            let formFieldValues = [];
-            if (this.stApp.context.request.method == 'GET') {
-                // WERE SCRIPT PARAMS SET IN THE URL?
-                const roleId = this.stApp.context.request.parameters.roleId;
-                if (roleId) {
-                    // set the initial values for when script params are set in the URL
-                    formFieldValues.push({ name: 'custom_role', value: roleId });
-                }
-                else {
-                    // Set the default initial values for when no script params are set in the URL
-                    formFieldValues.push({ name: 'custom_active', value: 'T' });
-                }
-            }
-            else {
-                // POST - get values from POSTed fields
-                formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
-            }
-            const active = this.getPostedField('custom_active', formFieldValues);
-            const role = this.getPostedField('custom_role', formFieldValues);
-            const supervisors = this.getPostedField('custom_supervisor', formFieldValues);
-            const records = this.stApp.stModel.getEmployees(active, role, supervisors);
-            // display the form
-            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/employees.html');
-            const bodyValues = {};
-            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
-            bodyValues['employeeModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/employee.html');
-            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-            bodyValues['optionValues'] = optionValues;
-            bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            bodyValues['tableData'] = this.stApp.stView.generateTableData(records, true);
+            bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -1164,7 +1155,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             let filename = 'views/employee.html';
             if (renderType === idev_suitetools_view_1.RenderType.Modal) {
-                filename = 'views/partials/employee.html';
+                filename = 'views/partials/modals/content/employee.html';
             }
             log.debug({ title: 'SuiteToolsController:renderEmployeeForm() filename =', details: filename });
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
@@ -1239,7 +1230,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             };
             // const optionValues = this.stApp.stLib.stLibNs.generateFormData();
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the records
+            // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // WERE SCRIPT PARAMS SET IN THE URL?
@@ -1325,6 +1316,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     results = this.stApp.stModel.getScriptLogsViaSearch(rows, levels, users, types, scripts, owners, dates, title, detail);
                 }
             }
+            // TODO - have this form also use the results template after fixing sporadic encoding issue
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptLogs.html');
             const bodyValues = {};
@@ -1372,39 +1364,62 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             return optionsOut;
         }
         /**
-         * Update NetSuite data
+         * Update integrations data
          *
          * @param value - the values to update
          *
-         * @returns NetSuite data
+         * @returns integrations data
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        updateNsData(value) {
-            log.debug({ title: 'SuiteToolsController:updateNsData() initiated', details: '' });
+        updateIntegrationsData(value) {
+            log.debug({ title: 'SuiteToolsController:updateIntegrationsData() initiated', details: '' });
             const updateSettings = [];
+            // integrations details
+            let integrationsDetails = [];
+            let results = value.filter((result) => result.name == 'integrationsDetails');
+            if (results.length > 0) {
+                integrationsDetails = results[0].values;
+            }
+            else {
+                log.error({ title: 'SuiteToolsController:updateIntegrationsData() integrationsDetails not found', details: '' });
+            }
             // integrations
             let standardizedValues = [];
-            let results = value.filter((result) => result.name == 'integrations');
+            results = value.filter((result) => result.name == 'integrations');
             if (results.length > 0) {
-                // log.debug({ title: 'SuiteToolsController:updateNsData() integrations', details: results });
-                // standardize the integration field names (e.g. camelCase and remove spaces)
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() integrations', details: results });
                 for (const integration of results[0].values) {
-                    // log.debug({ title: 'SuiteToolsController:updateNsData() integration', details: integration });
-                    // add the standardized field and values including data cleansing to the array
+                    // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() integration', details: integration });
+                    const id = integration['Internal ID'];
+                    // add integration details to the integration
+                    let details = integrationsDetails.filter((detail) => detail['name'] == id);
+                    details = results.length > 0 ? details[0].values : [];
+                    // tokenauthflag
+                    const tokenauthflagFind = details.filter((detail) => detail['name'] == 'tokenauthflag');
+                    const tokenauthflag = tokenauthflagFind.length > 0 ? tokenauthflagFind[0].values : [];
+                    // authorizationcodegrant
+                    const authorizationcodegrantFind = details.filter((detail) => detail['name'] == 'authorizationcodegrant');
+                    const authorizationcodegrant = authorizationcodegrantFind.length > 0 ? authorizationcodegrantFind[0].values : [];
+                    const rlcauthflagFind = details.filter((detail) => detail['name'] == 'rlcauthflag');
+                    const rlcauthflag = rlcauthflagFind.length > 0 ? rlcauthflagFind[0].values : [];
+                    // standardize the integration field names (e.g. camelCase and remove spaces)
                     standardizedValues.push({
-                        id: integration['Internal ID'],
+                        id: id,
                         name: integration['Name'],
                         nameId: integration['Name'] + ' (' + integration['Internal ID'] + ')',
                         integrationId: integration['Application ID'],
                         active: integration['State'] == 'Enabled' ? 'T' : 'F',
                         createdOn: integration['Created On'],
+                        tokenauthflag: tokenauthflag == 'Checked' ? 'T' : 'F',
+                        authorizationcodegrant: authorizationcodegrant == 'Checked' ? 'T' : 'F',
+                        rlcauthflag: rlcauthflag == 'Checked' ? 'T' : 'F',
                     });
                 }
                 if (standardizedValues.length > 0) {
                     // remove last record of standardizedValues since it contains the the header row
                     standardizedValues.pop();
                     // log.debug({
-                    //   title: 'SuiteToolsController:updateNsData() integrations standardizedValues',
+                    //   title: 'SuiteToolsController:updateIntegrationsData() integrations standardizedValues',
                     //   details: standardizedValues,
                     // });
                     // sort the array by name
@@ -1419,10 +1434,10 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             const userList = this.stApp.stModel.getEmployeeList();
             results = value.filter((result) => result.name == 'tokens');
             if (results.length > 0) {
-                // log.debug({ title: 'SuiteToolsController:updateNsData() tokens', details: results });
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() tokens', details: results });
                 // standardize the integration field names (e.g. camelCase and remove spaces)
                 for (const token of results[0].values) {
-                    // log.debug({ title: 'SuiteToolsController:updateNsData() token', details: token });
+                    // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() token', details: token });
                     // add integrationId and integrationNameId
                     //   TODO: handle case where multiple integrations have the same name
                     const foundIntegration = integrationList.find((integration) => integration.name.trim() === token['Application']);
@@ -1456,7 +1471,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     // remove last record of standardizedValues since it contains the the header row
                     standardizedValues.pop();
                     // log.debug({
-                    //   title: 'SuiteToolsController:updateNsData() tokens standardizedValues',
+                    //   title: 'SuiteToolsController:updateIntegrationsData() tokens standardizedValues',
                     //   details: standardizedValues,
                     // });
                     // sort the array by name
@@ -1469,17 +1484,17 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // standardizedValues = [];
             // results = value.filter((result) => result.name == 'users');
             // if (results.length > 0) {
-            //   // log.debug({ title: 'SuiteToolsController:updateNsData() users', details: results });
+            //   // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() users', details: results });
             //   const users = this.stApp.stModel.getUsers('T', null, null);
-            //   log.debug({ title: 'SuiteToolsController:updateNsData() users', details: users });
+            //   log.debug({ title: 'SuiteToolsController:updateIntegrationsData() users', details: users });
             //   // standardize the integration field names (e.g. camelCase and remove spaces)
             //   for (const user of results[0].values) {
-            //     log.debug({ title: 'SuiteToolsController:updateNsData() user', details: user });
+            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
             //     // add additional user info
-            //     log.debug({ title: 'SuiteToolsController:updateNsData() user Email', details: user['Email'] });
+            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user Email', details: user['Email'] });
             //     // get userRecord email
             //     const foundUser = users.find((record) => record['email'] == user['Email']);
-            //     log.debug({ title: 'SuiteToolsController:updateNsData() foundUser', details: foundUser });
+            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundUser', details: foundUser });
             //     const userId = foundUser ? foundUser.id : null;
             //     // add the standardized field and values including data cleansing to the array
             //     standardizedValues.push({
@@ -1493,7 +1508,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             //     // remove last record of standardizedValues since it contains the the header row
             //     standardizedValues.pop();
             //     // log.debug({
-            //     //   title: 'SuiteToolsController:updateNsData() users standardizedValues',
+            //     //   title: 'SuiteToolsController:updateIntegrationsData() users standardizedValues',
             //     //   details: standardizedValues,
             //     // });
             //     // sort the array by name
@@ -1505,18 +1520,16 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // const foundUser = users.find((record) => record['email'] == user['Email']);
             standardizedValues = [];
             const users = this.stApp.stModel.getEmployees('T', null, null);
-            log.debug({ title: 'SuiteToolsController:updateNsData() users', details: users });
             const usersRoles = this.stApp.stModel.getUsersRoles();
-            log.debug({ title: 'SuiteToolsController:updateNsData() usersRoles', details: usersRoles });
             // standardize the integration field names (e.g. camelCase and remove spaces)
             const lastLoginsSql = 'SELECT LoginAudit.User, MAX(LoginAudit.Date) AS lastLogin FROM LoginAudit GROUP BY LoginAudit.User';
             const lastLogins = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(lastLoginsSql);
             for (const user of users) {
-                // log.debug({ title: 'SuiteToolsController:updateNsData() user', details: user });
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
                 // add additional user info
                 // last login
                 const foundLogin = lastLogins.find((record) => record['user'] == user['id']);
-                // log.debug({ title: 'SuiteToolsController:updateNsData() foundLogin', details: foundLogin });
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLogin', details: foundLogin });
                 const lastlogin = foundLogin ? foundLogin.lastlogin : null;
                 // roles
                 const roleIds = [];
@@ -1541,15 +1554,24 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     roles: roles.join(', '),
                 });
             }
-            // log.debug({
-            //   title: 'SuiteToolsController:updateNsData() users standardizedValues',
-            //   details: standardizedValues,
-            // });
             // sort the array by name
             standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
             updateSettings.push({ custrecord_idev_st_config_users: JSON.stringify(standardizedValues) });
-            log.debug({ title: 'SuiteToolsController:updateNsData() returning', details: updateSettings });
+            // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() returning', details: updateSettings });
             return updateSettings;
+        }
+        /**
+         * Update integration data
+         *
+         * @param value - the values to update
+         *
+         * @returns integration data
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        updateIntegrationData(value) {
+            log.debug({ title: 'SuiteToolsController:updateIntegrationData() initiated', details: '' });
+            const results = value;
+            log.debug({ title: 'SuiteToolsController:updateIntegrationData() results', details: results });
         }
     }
     exports.SuiteToolsController = SuiteToolsController;

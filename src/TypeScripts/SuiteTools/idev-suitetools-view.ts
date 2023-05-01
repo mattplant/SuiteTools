@@ -56,11 +56,29 @@ export class SuiteToolsView {
   }
 
   /**
+   * Builds content section.
+   *
+   * @param body - the templated content
+   * @param [values] - the values to use in the template
+   * @returns HTML content
+   */
+  public buildContent(body: string, values?: object): void {
+    log.debug({ title: 'SuiteToolsView:buildContent() initiated', details: null });
+
+    // populate body content with Handlebars
+    const template = Handlebars.compile(body);
+    const content = template(values);
+    log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
+
+    return content;
+  }
+
+  /**
    * Render content
    *
    * @param renderType - the type of render
    * @param body - the templated content
-   * @param [bodyValues] - the values to use in the templates
+   * @param [bodyValues] - the values to use in the template
    * @returns HTML content
    */
   public render(renderType: RenderType, body: string, bodyValues?: object): void {
@@ -90,7 +108,7 @@ export class SuiteToolsView {
    * Renders the layout with main content.
    *
    * @param body - the templated content
-   * @param [bodyValues] - the values to use in the templates
+   * @param [bodyValues] - the values to use in the template
    * @returns HTML content
    */
   private renderNormal(body: string, bodyValues?: object): void {
@@ -131,7 +149,7 @@ export class SuiteToolsView {
    * Renders the page without the layout.
    *
    * @param body - the templated content
-   * @param [bodyValues] - the values to use in the templates
+   * @param [bodyValues] - the values to use in the template
    * @returns HTML content
    */
   private renderPageOnly(body: string, bodyValues?: object): void {
@@ -343,9 +361,9 @@ export class SuiteToolsView {
 
     const options = [];
     options.push({ value: '', text: 'All' });
-    options.push({ value: '1.0', text: '1.0' });
-    options.push({ value: '2.0', text: '2.0' });
     options.push({ value: '2.1', text: '2.1' });
+    options.push({ value: '2.0', text: '2.0' });
+    options.push({ value: '1.0', text: '1.0' });
 
     return options;
   }

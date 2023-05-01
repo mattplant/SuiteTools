@@ -224,3 +224,41 @@ function setFormSelections(data) {
         }
     }
 }
+
+	/**
+	 * Get page content
+	 *
+	 * @param {string} url - the endpoint to get data from
+	 * @param {string} id - the id of the element to get
+	 */
+    function getPageContent(url, id) {
+		return fetch(url)
+		.then((response) => response.text())
+		.then((pageData) => {
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(pageData, 'text/html');
+			const content = doc.getElementById(id).innerHTML;
+			return content;
+		})
+		.catch((error) => {
+			console.error(`getPageContent Error =\n`, error);
+		});
+	};
+
+	/**
+	 * Post data to an endpoint.
+	 *
+	 * @param name - the name of the data
+	 * @param data - the data to post
+	 * @param {string} url - the endpoint to post to
+	 */
+	function postData(name, data, url) {
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name: name, value: data })
+		};
+		return fetch(url, requestOptions)
+			.then(response => response.text())
+			.catch(error => console.error('postData Error =\n', error));
+	}

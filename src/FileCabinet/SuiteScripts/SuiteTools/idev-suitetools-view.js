@@ -46,11 +46,26 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             this._stApp = stApp;
         }
         /**
+         * Builds content section.
+         *
+         * @param body - the templated content
+         * @param [values] - the values to use in the template
+         * @returns HTML content
+         */
+        buildContent(body, values) {
+            log.debug({ title: 'SuiteToolsView:buildContent() initiated', details: null });
+            // populate body content with Handlebars
+            const template = Handlebars.compile(body);
+            const content = template(values);
+            log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
+            return content;
+        }
+        /**
          * Render content
          *
          * @param renderType - the type of render
          * @param body - the templated content
-         * @param [bodyValues] - the values to use in the templates
+         * @param [bodyValues] - the values to use in the template
          * @returns HTML content
          */
         render(renderType, body, bodyValues) {
@@ -78,7 +93,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          * Renders the layout with main content.
          *
          * @param body - the templated content
-         * @param [bodyValues] - the values to use in the templates
+         * @param [bodyValues] - the values to use in the template
          * @returns HTML content
          */
         renderNormal(body, bodyValues) {
@@ -116,7 +131,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          * Renders the page without the layout.
          *
          * @param body - the templated content
-         * @param [bodyValues] - the values to use in the templates
+         * @param [bodyValues] - the values to use in the template
          * @returns HTML content
          */
         renderPageOnly(body, bodyValues) {
@@ -300,9 +315,9 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             // note: source of truth is: 'SELECT scriptVersion.id, scriptVersion.name FROM scriptVersion ORDER BY name'
             const options = [];
             options.push({ value: '', text: 'All' });
-            options.push({ value: '1.0', text: '1.0' });
-            options.push({ value: '2.0', text: '2.0' });
             options.push({ value: '2.1', text: '2.1' });
+            options.push({ value: '2.0', text: '2.0' });
+            options.push({ value: '1.0', text: '1.0' });
             return options;
         }
         /**
