@@ -102,8 +102,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 case 'role':
                     this.renderRoleForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
-                case 'users': // we are using the same form for employees and users
-                    this.renderUsersForm();
+                case 'users':
+                    this.renderUsersIntegrationForm();
                     break;
                 case 'userModal':
                     this.renderUserForm(idev_suitetools_view_1.RenderType.Modal, id);
@@ -111,15 +111,20 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 case 'user':
                     this.renderUserForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
-                case 'userLogins':
-                    this.renderUserLoginsForm();
+                case 'loginsIntegration':
+                    this.renderLoginsForm(true);
                     break;
-                // case 'employees': // we are using the same form for employees and users
+                case 'employees':
+                    this.renderEmployeesForm();
+                    break;
                 case 'employeeModal':
                     this.renderEmployeeForm(idev_suitetools_view_1.RenderType.Modal, id);
                     break;
                 case 'employee':
                     this.renderEmployeeForm(idev_suitetools_view_1.RenderType.Normal, id);
+                    break;
+                case 'loginsEmployee':
+                    this.renderLoginsForm(false);
                     break;
                 case 'scriptLogs':
                     this.renderScriptLogsForm();
@@ -157,9 +162,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     case 'scripts':
                         this.renderScriptsForm();
                         break;
-                    case 'userLogins':
-                        this.renderUserLoginsForm();
-                        break;
                     case 'integrations':
                         this.renderIntegrationsForm();
                         break;
@@ -170,7 +172,16 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                         this.renderRolesForm();
                         break;
                     case 'users':
-                        this.renderUsersForm();
+                        this.renderUsersIntegrationForm();
+                        break;
+                    case 'loginsIntegration':
+                        this.renderLoginsForm(true);
+                        break;
+                    case 'employees':
+                        this.renderEmployeesForm();
+                        break;
+                    case 'loginsEmployee':
+                        this.renderLoginsForm();
                         break;
                     case 'scriptLogs':
                         this.renderScriptLogsForm();
@@ -415,6 +426,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             bodyValues['devmode'] = this.stApp.stAppSettings.devMode;
             bodyValues['urlIntegrations'] = this.stApp.scriptUrl + '&action=getIntegrations';
             bodyValues['integrations'] = this.stApp.stAppSettings.integrations;
+            bodyValues['lastLoginSearchId'] = this.stApp.stLib.stLibNs.stLibNsSearch.getSearchInternalId('customsearch_idev_user_last_login');
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -678,7 +690,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
-                // Set the default initial values
+                // set the default initial values
                 formFieldValues.push({ name: 'custom_status', value: 'T' });
             }
             else {
@@ -724,6 +736,16 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
             if (record) {
+                // determine last login
+                const lastLoginSQL = `SELECT
+          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+        FROM
+          LoginAudit
+        WHERE
+        oAuthAppName = '${record.name}'
+        GROUP BY LoginAudit.oauthaccesstokenname`;
+                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // set the values
                 bodyValues['scriptUrl'] = this.stApp.scriptUrl;
                 bodyValues['id'] = record.id;
                 bodyValues['active'] = record.active == 'T';
@@ -733,11 +755,15 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 bodyValues['tokenauthflag'] = record.tokenauthflag;
                 bodyValues['authorizationcodegrant'] = record.authorizationcodegrant;
                 bodyValues['rlcauthflag'] = record.rlcauthflag;
+                bodyValues['lastLogin'] = lastLogin;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=integration&id=' + record.id;
                 bodyValues['urlNs'] = '/app/common/integration/integrapp.nl?id=' + record.id;
                 bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&integrationId=' + record.id;
+                bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&integrationId=' + record.id;
                 if (renderType === idev_suitetools_view_1.RenderType.Normal) {
                     // display the tokens for this integration
+                    bodyValues['tokenModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/token.html');
+                    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
                     const results = this.stApp.stModel.getTokens(null, record.id, null, null);
                     const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/tokens.html');
                     const resultsValues = {};
@@ -806,7 +832,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     }
                 }
                 else {
-                    // Set the default initial values for when no script params are set in the URL
+                    // set the default initial values for when no script params are set in the URL
                     formFieldValues.push({ name: 'custom_active', value: 'T' });
                 }
             }
@@ -857,8 +883,18 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
             if (record) {
+                // determine last login
+                const lastLoginSQL = `SELECT
+          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+        FROM
+          LoginAudit
+        WHERE
+          oauthaccesstokenname = '${record.name}'
+        GROUP BY LoginAudit.oauthaccesstokenname`;
+                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // set the values
                 bodyValues['active'] = record.active == 'T';
-                bodyValues['name'] = record.nameId;
+                bodyValues['name'] = record.name;
                 bodyValues['user'] = record.user;
                 bodyValues['role'] = record.role;
                 bodyValues['integration'] = record.integration;
@@ -866,7 +902,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 bodyValues['createdBy'] = record.createdBy;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=token&id=' + record.id;
                 bodyValues['urlNs'] = '/app/setup/accesstoken.nl?id=' + record.id;
-                bodyValues['urlIntegration'] = this.stApp.scriptUrl + '&action=integration&id=' + record.integration;
+                bodyValues['urlIntegration'] = this.stApp.scriptUrl + '&action=integration&id=' + record.integrationId;
+                bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&tokenId=' + record.id;
+                bodyValues['lastLogin'] = lastLogin;
             }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
@@ -892,7 +930,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
-                // Set the default initial values for when no script params are set in the URL
+                // set the default initial values for when no script params are set in the URL
                 formFieldValues.push({ name: 'custom_active', value: 'T' });
             }
             else {
@@ -954,8 +992,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
         /**
          * Renders the Users form.
          */
-        renderUsersForm() {
-            log.debug({ title: 'SuiteToolsController:renderUsersForm() initiated', details: '' });
+        renderUsersIntegrationForm() {
+            log.debug({ title: 'SuiteToolsController:renderUsersIntegrationForm() initiated', details: '' });
             // set form input option values dynamically
             // roles
             const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
@@ -986,33 +1024,23 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     // set the initial values for when script params are set in the URL
                     formFieldValues.push({ name: 'custom_role', value: roleId });
                 }
-                else {
-                    // Set the default initial values for when no script params are set in the URL
-                    formFieldValues.push({ name: 'custom_active', value: 'U' });
-                }
             }
             else {
                 // POST - get values from POSTed fields
                 formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
             }
-            const active = this.getPostedField('custom_active', formFieldValues);
+            // const active = this.getPostedField('custom_active', formFieldValues);
             const role = this.getPostedField('custom_role', formFieldValues);
             const supervisor = this.getPostedField('custom_supervisor', formFieldValues);
             let resultsTemplate = '';
-            if (active == 'U') {
-                results = this.stApp.stModel.getUsers(role, supervisor);
-                resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/users.html');
-            }
-            else {
-                results = this.stApp.stModel.getEmployees(active, role, supervisor);
-                resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/employees.html');
-            }
+            results = this.stApp.stModel.getUsersIntegration(role, supervisor);
+            resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/usersIntegration.html');
             const resultsValues = {};
             resultsValues['scriptUrl'] = this.stApp.scriptUrl;
             resultsValues['tableData'] = this.stApp.stView.generateTableData(results, true);
             const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
-            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/users.html');
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/usersIntegration.html');
             const bodyValues = {};
             bodyValues['employeeModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/employee.html');
             bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
@@ -1045,31 +1073,54 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             log.debug({ title: 'SuiteToolsController:renderUserForm() filename =', details: filename });
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
-            bodyValues['id'] = record.id;
-            bodyValues['entityid'] = record.entityid;
-            bodyValues['firstname'] = record.firstname;
-            bodyValues['lastname'] = record.lastname;
-            bodyValues['email'] = record.email;
-            bodyValues['supervisorname'] = record.supervisorname;
-            bodyValues['supervisorurl'] = record.supervisorurl;
-            bodyValues['title'] = record.title;
-            bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
-            bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + record.id;
-            bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + record.id;
-            // bodyValues['urlRoles'] = this.stApp.scriptUrl + '&action=users&roleId=' + ???; - not 1 to 1
-            bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&userId=' + record.id;
-            bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + record.id;
-            bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + record.id;
+            if (record) {
+                // determine last login
+                const lastLoginSQL = `SELECT
+          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+        FROM
+          LoginAudit
+        WHERE
+          LoginAudit.user = '${record.id}'
+        GROUP BY LoginAudit.user`;
+                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // set the values
+                bodyValues['id'] = record.id;
+                bodyValues['entityid'] = record.entityid;
+                bodyValues['firstname'] = record.firstname;
+                bodyValues['lastname'] = record.lastname;
+                bodyValues['email'] = record.email;
+                // bodyValues['supervisorName'] = `<a href="${this.stApp.scriptUrl}&action=user&id=${record.supervisorid}">${record.supervisorname}</a>`;
+                bodyValues['supervisorName'] = record.supervisorname;
+                bodyValues['title'] = record.title;
+                bodyValues['lastlogin'] = lastLogin;
+                bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
+                bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + record.id;
+                bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&userId=' + record.id;
+                // bodyValues['urlRoles'] = this.stApp.scriptUrl + '&action=users&roleId=' + ???; - not 1 to 1
+                bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&userId=' + record.id;
+                bodyValues['urlUserScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&userId=' + record.id;
+                bodyValues['urlOwnerScriptLogs'] = this.stApp.scriptUrl + '&action=scriptLogs&ownerId=' + record.id;
+            }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
         /**
-         * Renders the User Logins form
+         * Renders logins form
+         *
+         * @param [integrationMode]
          */
-        renderUserLoginsForm() {
-            log.debug({ title: 'SuiteToolsController:renderUserLoginsForm() initiated', details: null });
+        renderLoginsForm(integrationMode = false) {
+            log.debug({ title: 'SuiteToolsController:renderLoginsForm() initiated', details: null });
             // set form input option values dynamically
             // rows
             const rowOptions = this.stApp.stView.getRowOptions();
+            let integrationOptions = [];
+            let tokenOptions = [];
+            if (integrationMode) {
+                // integrations
+                integrationOptions = this.getOptionValues(this.stApp.stModel.getIntegrationList());
+                // tokens
+                tokenOptions = this.getOptionValues(this.stApp.stModel.getTokenList());
+            }
             // users
             const userOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList(true));
             // dates
@@ -1080,6 +1131,14 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     {
                         field: 'custom_rows',
                         values: rowOptions,
+                    },
+                    {
+                        field: 'custom_integration',
+                        values: integrationOptions,
+                    },
+                    {
+                        field: 'custom_token',
+                        values: tokenOptions,
                     },
                     {
                         field: 'custom_users',
@@ -1097,18 +1156,24 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // WERE SCRIPT PARAMS SET IN THE URL?
+                const integrationId = this.stApp.context.request.parameters.integrationId;
+                const tokenId = this.stApp.context.request.parameters.tokenId;
                 const userId = this.stApp.context.request.parameters.userId;
-                if (userId) {
+                if (integrationId || userId || tokenId) {
                     // set the initial values for when script params are set in the URL
-                    formFieldValues.push({ name: 'custom_users', value: [userId] });
                     formFieldValues.push({ name: 'custom_dates', value: 'today' });
-                    // log.debug({
-                    //   title: 'SuiteToolsController:renderUserLoginsForm() formFieldValues =',
-                    //   details: formFieldValues,
-                    // });
+                    if (integrationId) {
+                        formFieldValues.push({ name: 'custom_integration', value: integrationId });
+                    }
+                    if (tokenId) {
+                        formFieldValues.push({ name: 'custom_token', value: tokenId });
+                    }
+                    if (userId) {
+                        formFieldValues.push({ name: 'custom_users', value: [userId] });
+                    }
                 }
                 else {
-                    // Set the default initial values for when no script params are set in the URL
+                    // set the default initial values for when no script params are set in the URL
                     formFieldValues.push({ name: 'custom_dates', value: '60' });
                 }
             }
@@ -1116,13 +1181,17 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                 // POST - get values from POSTed fields
                 formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
             }
+            // log.debug({
+            //   title: 'SuiteToolsController:renderLoginsForm() formFieldValues =',
+            //   details: formFieldValues,
+            // });
             const rows = this.getPostedField('custom_rows', formFieldValues);
             const status = this.getPostedField('custom_status', formFieldValues);
+            const integration = this.getPostedField('custom_integration', formFieldValues);
+            const token = this.getPostedField('custom_token', formFieldValues);
             const users = this.getPostedField('custom_users', formFieldValues);
             const dates = this.getPostedField('custom_dates', formFieldValues);
-            // const title = this.getPostedField('custom_title', formFieldValues);
-            // const detail = this.getPostedField('custom_detail', formFieldValues);
-            const results = this.stApp.stModel.getUserLogins(rows, status, users, dates);
+            const results = this.stApp.stModel.getUserLogins(rows, status, integration, token, users, dates);
             const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/logins.html');
             const resultsValues = {};
             resultsValues['scriptUrl'] = this.stApp.scriptUrl;
@@ -1131,6 +1200,81 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/logins.html');
             const bodyValues = {};
+            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
+            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+            bodyValues['optionValues'] = optionValues;
+            bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+            if (integrationMode) {
+                bodyValues['integrationElement'] = this.stApp.stView.getElementHtml('integration');
+                bodyValues['tokenElement'] = this.stApp.stView.getElementHtml('token');
+            }
+            bodyValues['results'] = resultsContent;
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
+         * Renders the Employees form.
+         */
+        renderEmployeesForm() {
+            log.debug({ title: 'SuiteToolsController:renderEmployeesForm() initiated', details: '' });
+            // set form input option values dynamically
+            // roles
+            const roleOptions = this.getOptionValues(this.stApp.stModel.getRoleList());
+            // supervisors
+            const supervisorOptions = this.getOptionValues(this.stApp.stModel.getEmployeeList());
+            // option values
+            const optionValuesObj = {
+                options: [
+                    {
+                        field: 'custom_role',
+                        values: roleOptions,
+                    },
+                    {
+                        field: 'custom_supervisor',
+                        values: supervisorOptions,
+                    },
+                ],
+            };
+            // const formData = this.stApp.stLib.stLibNs.generateFormData();
+            const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+            // get the results
+            let formFieldValues = [];
+            let results = null;
+            if (this.stApp.context.request.method == 'GET') {
+                // WERE SCRIPT PARAMS SET IN THE URL?
+                const roleId = this.stApp.context.request.parameters.roleId;
+                if (roleId) {
+                    // set the initial values for when script params are set in the URL
+                    formFieldValues.push({ name: 'custom_role', value: roleId });
+                }
+                else {
+                    // set the default initial values for when no script params are set in the URL
+                    formFieldValues.push({ name: 'custom_active', value: 'T' });
+                }
+            }
+            else {
+                // POST - get values from POSTed fields
+                formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+            }
+            const active = this.getPostedField('custom_active', formFieldValues);
+            const role = this.getPostedField('custom_role', formFieldValues);
+            const supervisor = this.getPostedField('custom_supervisor', formFieldValues);
+            let resultsTemplate = '';
+            // if (active == 'U') {
+            //   results = this.stApp.stModel.getUsers(role, supervisor);
+            //   resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/users.html');
+            // } else {
+            results = this.stApp.stModel.getEmployees(active, role, supervisor);
+            resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/employees.html');
+            // }
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results, true);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/employees.html');
+            const bodyValues = {};
+            bodyValues['employeeModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/employee.html');
+            bodyValues['roleModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/role.html');
             bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
@@ -1160,18 +1304,31 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             log.debug({ title: 'SuiteToolsController:renderEmployeeForm() filename =', details: filename });
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
-            bodyValues['id'] = record.id;
-            bodyValues['entityid'] = record.entityid;
-            bodyValues['firstname'] = record.firstname;
-            bodyValues['lastname'] = record.lastname;
-            bodyValues['email'] = record.email;
-            bodyValues['supervisorname'] = record.supervisorname;
-            bodyValues['supervisorurl'] = record.supervisorurl;
-            bodyValues['title'] = record.title;
-            bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
-            bodyValues['url'] = this.stApp.scriptUrl + '&action=employee&id=' + record.id;
-            bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=userLogins&userId=' + record.id;
-            // bodyValues['urlRoles'] = this.stApp.scriptUrl + '&action=employees&roleId=' + ???; - not 1 to 1
+            if (record) {
+                // determine last login
+                const lastLoginSQL = `SELECT
+          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+        FROM
+          LoginAudit
+        WHERE
+          LoginAudit.user = '${record.id}'
+        GROUP BY LoginAudit.user`;
+                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // set the values
+                bodyValues['id'] = record.id;
+                bodyValues['entityid'] = record.entityid;
+                bodyValues['firstname'] = record.firstname;
+                bodyValues['lastname'] = record.lastname;
+                bodyValues['email'] = record.email;
+                bodyValues['supervisorname'] = record.supervisorname;
+                bodyValues['supervisorurl'] = record.supervisorurl;
+                bodyValues['title'] = record.title;
+                bodyValues['lastLogin'] = lastLogin;
+                bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
+                bodyValues['url'] = this.stApp.scriptUrl + '&action=employee&id=' + record.id;
+                bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsEmployee&userId=' + record.id;
+                // bodyValues['urlRoles'] = this.stApp.scriptUrl + '&action=employees&roleId=' + ???; - not 1 to 1
+            }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
         /**
@@ -1272,7 +1429,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     });
                 }
                 else {
-                    // Set the default initial values for when no script params are set in the URL
+                    // set the default initial values for when no script params are set in the URL
                     formFieldValues.push({ name: 'custom_levels', value: ['ERROR', 'EMERGENCY', 'SYSTEM'] });
                     formFieldValues.push({ name: 'custom_dates', value: '15' });
                 }
@@ -1403,10 +1560,14 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     const rlcauthflagFind = details.filter((detail) => detail['name'] == 'rlcauthflag');
                     const rlcauthflag = rlcauthflagFind.length > 0 ? rlcauthflagFind[0].values : [];
                     // standardize the integration field names (e.g. camelCase and remove spaces)
+                    let integrationName = integration['Name'];
+                    if (integrationName === 'SuiteCloud IDE & CLI') {
+                        integrationName = 'SuiteCloud Development Integration';
+                    }
                     standardizedValues.push({
                         id: id,
-                        name: integration['Name'],
-                        nameId: integration['Name'] + ' (' + integration['Internal ID'] + ')',
+                        name: integrationName,
+                        nameId: integrationName + ' (' + integration['Internal ID'] + ')',
                         integrationId: integration['Application ID'],
                         active: integration['State'] == 'Enabled' ? 'T' : 'F',
                         createdOn: integration['Created On'],
@@ -1440,7 +1601,11 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() token', details: token });
                     // add integrationId and integrationNameId
                     //   TODO: handle case where multiple integrations have the same name
-                    const foundIntegration = integrationList.find((integration) => integration.name.trim() === token['Application']);
+                    let integrationName = token['Application'];
+                    if (integrationName === 'SuiteCloud IDE & CLI') {
+                        integrationName = 'SuiteCloud Development Integration';
+                    }
+                    const foundIntegration = integrationList.find((integration) => integration.name.trim() === integrationName);
                     const integrationId = foundIntegration ? foundIntegration.id : null;
                     const integrationNameId = foundIntegration ? foundIntegration.nameId : null;
                     // add roleId
@@ -1451,20 +1616,27 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     //   TODO: handle case where multiple users have the same name
                     const foundUser = userList.find((user) => user.name.trim() === token['User']);
                     const userId = foundUser ? foundUser.id : null;
+                    // add createdById
+                    //   TODO: handle case where multiple users have the same name
+                    const foundCreatedBy = userList.find((user) => user.name.trim() === token['Created By']);
+                    const createdById = foundCreatedBy ? foundCreatedBy.id : null;
                     // add the standardized field and values including data cleansing to the array
                     standardizedValues.push({
                         id: token['Internal ID'],
                         active: token['Inactive'] == 'No' ? 'T' : 'F',
+                        name: token['Token name'],
                         nameId: token['Token name'] + ' (' + token['Internal ID'] + ')',
-                        integration: token['Application'],
+                        integration: integrationName,
                         integrationId: integrationId,
                         integrationNameId: integrationNameId,
                         role: token['Role'],
                         roleId: roleId,
                         user: token['User'],
+                        userNameId: token['User'] + ' (' + userId + ')',
                         userId: userId,
                         createdOn: token['Created'],
                         createdBy: token['Created By'],
+                        createdByNameId: token['Created By'] + ' (' + createdById + ')',
                     });
                 }
                 if (standardizedValues.length > 0) {
@@ -1479,58 +1651,52 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     updateSettings.push({ custrecord_idev_st_config_tokens: JSON.stringify(standardizedValues) });
                 }
             }
+            // user last logins
+            // this worked in the Sandbox, but not in Production
+            // const lastLoginsSql =
+            //   'SELECT LoginAudit.User, MAX(LoginAudit.Date) AS lastLogin FROM LoginAudit GROUP BY LoginAudit.User';
+            // const lastLogins = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(lastLoginsSql);
+            // we can not use the search module because it does not support the LoginAudit table
+            // const lastLogins = this.stApp.stLib.stLibNs.stLibNsSearch.run('customsearch_idev_user_last_login');
+            // so therefore we have scraped this data from the saved search
+            const lastLogins = [];
+            results = value.filter((result) => result.name == 'lastLogins');
+            if (results.length > 0) {
+                log.audit({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins', details: results });
+                // standardize the last login field names (e.g. camelCase and remove spaces)
+                for (const lastLogin of results[0].values) {
+                    log.audit({ title: 'SuiteToolsController:updateIntegrationsData() lastLogin', details: lastLogin });
+                    // add the standardized field and values including data cleansing to the array
+                    lastLogins.push({
+                        user: lastLogin['User'],
+                        email: lastLogin['Email Address'],
+                        date: lastLogin['Maximum of Date'],
+                    });
+                }
+                if (lastLogins.length > 0) {
+                    // remove last record of lastLogins since it contains the the header row
+                    lastLogins.pop();
+                    log.audit({
+                        title: 'SuiteToolsController:updateIntegrationsData() lastLogins',
+                        details: lastLogins,
+                    });
+                }
+            }
+            else {
+                log.error({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins not found', details: '' });
+            }
             // users
-            // this is code to get the user list from NetSuite's Manage Users page (/app/setup/listusers.nl)
-            // standardizedValues = [];
-            // results = value.filter((result) => result.name == 'users');
-            // if (results.length > 0) {
-            //   // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() users', details: results });
-            //   const users = this.stApp.stModel.getUsers('T', null, null);
-            //   log.debug({ title: 'SuiteToolsController:updateIntegrationsData() users', details: users });
-            //   // standardize the integration field names (e.g. camelCase and remove spaces)
-            //   for (const user of results[0].values) {
-            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
-            //     // add additional user info
-            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user Email', details: user['Email'] });
-            //     // get userRecord email
-            //     const foundUser = users.find((record) => record['email'] == user['Email']);
-            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundUser', details: foundUser });
-            //     const userId = foundUser ? foundUser.id : null;
-            //     // add the standardized field and values including data cleansing to the array
-            //     standardizedValues.push({
-            //       id: userId,
-            //       name: user['Name'],
-            //       email: user['Email'],
-            //       role: user['Role'],
-            //     });
-            //   }
-            //   if (standardizedValues.length > 0) {
-            //     // remove last record of standardizedValues since it contains the the header row
-            //     standardizedValues.pop();
-            //     // log.debug({
-            //     //   title: 'SuiteToolsController:updateIntegrationsData() users standardizedValues',
-            //     //   details: standardizedValues,
-            //     // });
-            //     // sort the array by name
-            //     standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
-            //     updateSettings.push({ custrecord_idev_st_config_users: JSON.stringify(standardizedValues) });
-            //   }
-            // }
-            // find example to lookup user by email
-            // const foundUser = users.find((record) => record['email'] == user['Email']);
             standardizedValues = [];
-            const users = this.stApp.stModel.getEmployees('T', null, null);
+            const users = this.stApp.stModel.getEmployees('U', null, null);
             const usersRoles = this.stApp.stModel.getUsersRoles();
             // standardize the integration field names (e.g. camelCase and remove spaces)
-            const lastLoginsSql = 'SELECT LoginAudit.User, MAX(LoginAudit.Date) AS lastLogin FROM LoginAudit GROUP BY LoginAudit.User';
-            const lastLogins = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(lastLoginsSql);
             for (const user of users) {
-                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
+                log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
                 // add additional user info
                 // last login
-                const foundLogin = lastLogins.find((record) => record['user'] == user['id']);
-                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLogin', details: foundLogin });
-                const lastlogin = foundLogin ? foundLogin.lastlogin : null;
+                const foundLastLogin = lastLogins.find((record) => record['email'] == user['email']);
+                log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
+                const lastLoginDate = foundLastLogin ? foundLastLogin.date : '';
                 // roles
                 const roleIds = [];
                 const roles = [];
@@ -1549,7 +1715,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     supervisorid: user.supervisorid,
                     supervisor: user.supervisor == ' ()' ? '' : user.supervisor,
                     title: user.title ? user.title : '',
-                    lastlogin: lastlogin ? lastlogin : '',
+                    lastlogin: lastLoginDate,
                     roleIds: JSON.stringify(roleIds),
                     roles: roles.join(', '),
                 });
@@ -1557,7 +1723,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // sort the array by name
             standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
             updateSettings.push({ custrecord_idev_st_config_users: JSON.stringify(standardizedValues) });
-            // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() returning', details: updateSettings });
+            log.debug({ title: 'SuiteToolsController:updateIntegrationsData() returning', details: updateSettings });
             return updateSettings;
         }
         /**

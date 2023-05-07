@@ -25,16 +25,17 @@
 						return "No";
 					}
 				}},
-				{ title: "Name", field: "nameId", cellClick:function(e, cell, value, data){
+				{ title: "Token Name", field: "nameId", cellClick:function(e, cell, value, data){
 					showModal(scriptUrl, ModalType.Token, cell.getValue()) }, sorter: "string" },
 				{ title: "Integration", field: "integrationNameId",  cellClick:function(e, cell, value, data){
 					showModal(scriptUrl, ModalType.Integration, cell.getValue()) }, sorter: "string"},
-				{ title: "User", field: "user", cellClick:function(e, cell, value, data){
+				{ title: "User", field: "userNameId", cellClick:function(e, cell, value, data){
 					showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
 				{ title: "Role", field: "role", cellClick:function(e, cell, value, data){
 					showModal(scriptUrl, ModalType.Role, cell.getValue()) }, sorter: "string" },
 				{ title: "Created On", field: "createdOn", sorter: "string"},
-				{ title: "CreatedBy", field: "createdBy", sorter: "string" },
+				{ title: "CreatedBy", field: "createdByNameId", cellClick:function(e, cell, value, data){
+					showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
 			],
 		});
 		// trigger XLSX file download

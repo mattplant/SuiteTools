@@ -703,7 +703,8 @@ export class SuiteToolsModel {
       employee.firstname,
       employee.lastname,
       employee.email,
-      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      BUILTIN.DF( employee.supervisor ) AS supervisorname,
+      employee.supervisor AS supervisorid,
       employee.title,
       employee.isinactive,
     FROM
@@ -717,9 +718,56 @@ export class SuiteToolsModel {
     } else {
       result = sqlResults[0];
     }
+
+    // const results = this.stApp.stAppSettings.users;
+    // log.debug({ title: 'SuiteToolsModel:getUser() unfiltered users', details: results });
+    // const resultsFiltered = results.filter((result) => result.id == id);
+    // const result = resultsFiltered ? resultsFiltered[0] : null;
+    // if (!result) {
+    //   this.stApp.setAlert('No results found that matched criteria.');
+    // }
+
     log.debug({ title: 'SuiteToolsModel:getUser() returning', details: result });
 
     return result;
+  }
+
+  /**
+   * Get users from integation data.
+   *
+   * @returns results
+   */
+  public getUsersIntegration(
+    role: string,
+    supervisor: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsModel:getUsersIntegration() initiated`,
+      details: { role: role, supervisor: supervisor },
+    });
+
+    let results = this.stApp.stAppSettings.users;
+    log.debug({ title: 'SuiteToolsModel:getUsersIntegration() unfiltered users', details: results });
+    if (role) {
+      const tempResults = [];
+      for (const result of results) {
+        // add user if role id of (role) is present
+        const roleIdsObj = JSON.parse(result.roleIds);
+        roleIdsObj.forEach((roleId) => {
+          if (roleId == role) {
+            tempResults.push(result);
+          }
+        });
+      }
+      results = tempResults;
+    }
+    if (supervisor) {
+      results = results.filter((result) => result.supervisorid == supervisor);
+    }
+    log.debug({ title: 'SuiteToolsModel:getUsersIntegration() returning', details: results });
+
+    return results;
   }
 
   /**
@@ -765,6 +813,8 @@ export class SuiteToolsModel {
   public getUserLogins(
     rows: string,
     status: string,
+    integration: string,
+    token: string,
     users: string[],
     dates: string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -774,6 +824,8 @@ export class SuiteToolsModel {
       details: {
         rows: rows,
         status: status,
+        integration: integration,
+        token: token,
         users: users,
         dates: dates,
       },
@@ -807,6 +859,36 @@ export class SuiteToolsModel {
       if (status === 'failure') {
         where.push(`LoginAudit.status = 'Failure'`);
       }
+    }
+    if (integration) {
+      // lookup integration name from id
+      const integrations = this.stApp.stModel.getIntegrationList();
+      const foundIntegration = integrations.find((record) => record['id'] == integration);
+      let integrationName: string = foundIntegration ? foundIntegration.name : 'INTEGRATION_NOT_FOUND';
+      // switch integration name to match what is on the login audit record
+      if (integrationName === 'SuiteCloud IDE & CLI') {
+        this.stApp.setAlert(
+          'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
+        );
+        integrationName = 'SuiteCloud Development Integration';
+      }
+      // add integration name to where clause
+      where.push(`LoginAudit.oAuthAppName = '${integrationName}'`);
+    }
+    if (token) {
+      // lookup token name from id
+      const tokens = this.stApp.stModel.getTokenList();
+      const foundToken = tokens.find((record) => record['id'] == token);
+      const tokenName: string = foundToken ? foundToken.name : 'TOKEN_NOT_FOUND';
+      // // switch token name to match what is on the login audit record
+      // if (tokenName === 'SuiteCloud IDE & CLI') {
+      //   this.stApp.setAlert(
+      //     'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
+      //   );
+      //   tokenName = 'SuiteCloud Development Integration';
+      // }
+      // add token name to where clause
+      where.push(`LoginAudit.oAuthAccessTokenName = '${tokenName}'`);
     }
     if (users) {
       if (Array.isArray(users)) {
@@ -1089,13 +1171,20 @@ export class SuiteToolsModel {
     }
     // add where clause
     const where = [];
-    if (active) {
-      if (active === 'T') {
+    switch (active) {
+      case 'U':
+        where.push(`employee.giveaccess = 'T'`);
         where.push(`employee.isinactive = 'F'`);
-      }
-      if (active === 'F') {
+        break;
+      case 'T':
+        where.push(`employee.isinactive = 'F'`);
+        break;
+      case 'F':
         where.push(`employee.isinactive = 'T'`);
-      }
+        break;
+      default:
+        // do not add a filter
+        break;
     }
     if (role) {
       where.push(`role.id = ${role}`);

@@ -1,5 +1,6 @@
 <div class="mb-2">
   <h2 class="text-2xl">Integration Details</h2>
+  <p class="mt-4">From integration data.</p>
   <br>
 	<div class="mb-2">
 		<ul>
@@ -10,12 +11,18 @@
 			<li>tokenauthflag: {{tokenauthflag}}</li>
 			<li>authorizationcodegrant: {{authorizationcodegrant}}</li>
 			<li>rlcauthflag: {{rlcauthflag}}</li>
+			<li>Last Login: {{lastLogin}}</li>
 		</ul>
 	</div>
 	<button onclick="window.open('{{urlNs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Integration Record</button>
+	<button onclick="window.open('{{urlLogins}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Logins</button>
 </div>
 <br>
 <div class="mb-2">
 	<h3 class="text-xl">Tokens</h3>
 </div>
+
+{{{tokenModal}}}
+{{{userModal}}}
+
 {{{results}}}

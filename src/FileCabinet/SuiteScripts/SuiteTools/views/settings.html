@@ -52,6 +52,9 @@
 	 * @returns {object} - the table data
 	 */
 	function getPageTableContent(url, id) {
+
+		// TODO - add ability to get data from multiple pages
+
 		return fetch(url)
 		.then((response) => response.text())
 		.then((pageData) => {
@@ -75,6 +78,12 @@
 	 */
 	async function getNsData(destUrl) {
 		let nsData = [];
+		console.log('getNsData() initated. Loading data from NetSuite...');
+		// last logins
+		// get from saved search - https://XYZ.app.netsuite.com/app/common/search/searchredirect.nl?id=xyz
+		const lastLogins = await getPageTableContent('/app/common/search/searchresults.nl?searchid={{lastLoginSearchId}}', 'div__body');
+		console.log('lastLogins = ' + JSON.stringify(lastLogins));
+		nsData.push({ name: 'lastLogins', values: lastLogins });
 
 		// integrations
 		// get from Integrations page - https://XYZ.app.netsuite.com/app/common/integration/integrapplist.nl

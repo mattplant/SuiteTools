@@ -488,6 +488,42 @@ export class SuiteToolsLibraryNetSuiteSearch {
   }
 
   /**
+   * Runs the Search query.
+   *
+   * @param id
+   * @returns the search results
+   */
+  public run(
+    id: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsLibraryNetSuiteSearch:run() initiated`,
+      details: { id: id },
+    });
+
+    const stSearch = search.load({ id: id });
+
+    // TODO: use run().each() instead of run().getRange() for the 4,000 result limit
+    // var searchResultCount = scriptexecutionlogSearchObj.runPaged().count;
+    // log.debug("scriptexecutionlogSearchObj result count",searchResultCount);
+    // scriptexecutionlogSearchObj.run().each(function(result){
+    // // .run().each has a limit of 4,000 results
+    // return true;
+    // });
+
+    // run the search
+    const searchResults = stSearch.run().getRange({
+      start: 0,
+      end: 1000,
+    });
+
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:run() returning', details: searchResults });
+
+    return searchResults;
+  }
+
+  /**
    * Gets the Saved Search's internal id.
    *
    * @param id - the saved search id (e.g. "customsearch_...")
