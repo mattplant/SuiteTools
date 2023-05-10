@@ -266,6 +266,8 @@ export class SuiteToolsAppSettings {
   private _jsUrl: string;
   private _devMode: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _lastLogins: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _integrations: any[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _tokens: any[];
@@ -286,6 +288,10 @@ export class SuiteToolsAppSettings {
   }
   get devMode(): boolean {
     return this._devMode;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get lastLogins(): any[] {
+    return this._lastLogins;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get integrations(): any[] {
@@ -320,6 +326,7 @@ export class SuiteToolsAppSettings {
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_css_url AS cssUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
+      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_last_logins AS lastLogins,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
       CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_users AS users,
@@ -340,6 +347,7 @@ export class SuiteToolsAppSettings {
       this._cssUrl = sqlResults[0].cssurl;
       this._jsUrl = sqlResults[0].jsurl;
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+      this._lastLogins = JSON.parse(sqlResults[0].lastlogins);
       this._integrations = JSON.parse(sqlResults[0].integrations);
       this._tokens = JSON.parse(sqlResults[0].tokens);
       this._users = JSON.parse(sqlResults[0].users);

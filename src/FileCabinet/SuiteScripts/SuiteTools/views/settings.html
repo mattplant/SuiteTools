@@ -1,31 +1,34 @@
 <div class="mb-2">
-  <h2 class="text-2xl">Settings</h2>
-	<div class="mb-2">
-		<h3 class="text-xl">Configuration</h3>
-		<p>The configuration values change between environments.</p>
-		<ul class="list-disc list-inside ml-4">
-			<li>Record Id: {{recordid}}<br/></li>
-			<li>CSS URL: {{cssurl}}</li>
-			<li>JS URL: {{jsurl}}</li>
-		</ul>
-	</div>
-	<div class="mb-2">
-		<h3 class="text-xl">Application</h3>
-		<p>The application settings.</p>
-		<ul class="ml-4">
-			<li>
-				<label class="relative inline-flex items-center cursor-pointer">
-					<input type="checkbox" id="devmode" value="" class="sr-only peer" checked>
-					<div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-					<span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Dev Mode</span>
-				</label>
-			</li>
-			<li>
-				<button onclick="getNsData('{{{scriptUrl}}}&action=postData');" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Get NetSuite Integrations Data</button>
-			</li>
-		</ul>
-	</div>
-</div>
+	<h2 class="text-2xl">Settings</h2>
+	  <div class="mb-2">
+		  <h3 class="text-xl">Configuration</h3>
+		  <p>The configuration values change between environments.</p>
+		  <ul class="list-disc list-inside ml-4">
+			  <li>Record Id: {{recordid}}<br/></li>
+			  <li>CSS URL: {{cssurl}}</li>
+			  <li>JS URL: {{jsurl}}</li>
+		  </ul>
+	  </div>
+	  <div class="mb-2">
+		  <h3 class="text-xl">Application</h3>
+		  <p>The application settings.</p>
+		  <ul class="ml-4">
+			  <li>
+				  <label class="relative inline-flex items-center cursor-pointer">
+					  <input type="checkbox" id="devmode" value="" class="sr-only peer" checked>
+					  <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+					  <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Dev Mode</span>
+				  </label>
+			  </li>
+			  <li>
+				  <button onclick="getNsIntegrationData('{{{scriptUrl}}}&action=postData');" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Get NetSuite Integrations Data</button>
+			  </li>
+			  <li>
+				  <button onclick="getNsLastLoginData('{{{scriptUrl}}}&action=postData');" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Get Last Login Data</button>
+			  </li>
+		  </ul>
+	  </div>
+  </div>
 
 <!-- load libraries needed to scrape tables on NetSuite pages -->
 <!-- jQuery -->
@@ -72,18 +75,20 @@
 	};
 
 	/**
-	 * Get NetSuite data
+	 * Get NetSuite integration data.
 	 *
 	 * @param {string} destUrl - the destination URL to post the data to
+	 * @returns {void}
 	 */
-	async function getNsData(destUrl) {
+	async function getNsIntegrationData(destUrl) {
 		let nsData = [];
-		console.log('getNsData() initated. Loading data from NetSuite...');
-		// last logins
-		// get from saved search - https://XYZ.app.netsuite.com/app/common/search/searchredirect.nl?id=xyz
-		const lastLogins = await getPageTableContent('/app/common/search/searchresults.nl?searchid={{lastLoginSearchId}}', 'div__body');
-		console.log('lastLogins = ' + JSON.stringify(lastLogins));
-		nsData.push({ name: 'lastLogins', values: lastLogins });
+		console.log('getNsIntegrationData() initated. Loading data from NetSuite...');
+
+		// // last logins
+		// // get from saved search - https://XYZ.app.netsuite.com/app/common/search/searchredirect.nl?id=xyz
+		// const lastLogins = await getPageTableContent('/app/common/search/searchresults.nl?searchid={{lastLoginSearchId}}', 'div__body');
+		// console.log('lastLogins = ' + JSON.stringify(lastLogins));
+		// nsData.push({ name: 'lastLogins', values: lastLogins });
 
 		// integrations
 		// get from Integrations page - https://XYZ.app.netsuite.com/app/common/integration/integrapplist.nl
@@ -131,4 +136,29 @@
 			console.error(`getPageContent Error =\n`, error);
 		});
 	};
+
+	/**
+	 * Get NetSuite last login data.
+	 *
+	 * @param {string} destUrl - the destination URL to post the data to
+	 * @returns {void}
+	 */
+	async function getNsLastLoginData(destUrl) {
+		let nsData = [];
+		console.log('getNsLastLoginData() initated. Loading data from NetSuite...');
+
+		// get list of integrations from Integrations page - /app/common/integration/integrapplist.nl
+		const integrations = await getPageTableContent('/app/common/integration/integrapplist.nl', 'div__body');
+		console.log('integrations = ' + JSON.stringify(integrations));
+		// remove last record since it contains the the header row
+		integrations.pop();
+		nsData.push({ name: 'integrations', values: integrations });
+
+
+
+		// nsData.push({ name: 'integrations', values: 'get' });
+
+		// post integrations data to SuiteTools
+		postData('lastLogins', nsData, destUrl);
+	}
 </script>

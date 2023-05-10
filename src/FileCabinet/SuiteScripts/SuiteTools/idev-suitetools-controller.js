@@ -22,7 +22,7 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], function (require, exports, error, log, idev_suitetools_view_1) {
+define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-view"], function (require, exports, error, log, task, idev_suitetools_view_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SuiteToolsController = void 0;
     /**
@@ -320,9 +320,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     case 'integrations':
                         updateSettings = this.updateIntegrationsData(value);
                         break;
-                    case 'integration':
-                        // test this
-                        this.updateIntegrationData(value);
+                    case 'lastLogins':
+                        this.initiateLastLogins(value);
                         break;
                     default:
                         log.debug({ title: 'SuiteToolsController:processPostedData() invalid name value', details: name });
@@ -1346,7 +1345,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // types
             const typeOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
             // scripts
-            const scriptOptions = this.getOptionValues(this.stApp.stModel.getScriptTypeList());
+            const scriptOptions = this.getOptionValues(this.stApp.stModel.getScriptList());
             // types
             // owners
             //   uses the same options as users
@@ -1542,6 +1541,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             }
             // integrations
             let standardizedValues = [];
+            const lastLogins = this.stApp.stAppSettings.lastLogins;
+            log.debug({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins', details: lastLogins });
             results = value.filter((result) => result.name == 'integrations');
             if (results.length > 0) {
                 // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() integrations', details: results });
@@ -1564,6 +1565,13 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                     if (integrationName === 'SuiteCloud IDE & CLI') {
                         integrationName = 'SuiteCloud Development Integration';
                     }
+                    // add last logins to the integration
+                    const foundLastLogin = lastLogins.find((record) => record['name'] == integrationName);
+                    // log.debug({
+                    //   title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin',
+                    //   details: foundLastLogin,
+                    // });
+                    const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
                     standardizedValues.push({
                         id: id,
                         name: integrationName,
@@ -1571,6 +1579,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
                         integrationId: integration['Application ID'],
                         active: integration['State'] == 'Enabled' ? 'T' : 'F',
                         createdOn: integration['Created On'],
+                        lastlogin: lastLoginDate,
                         tokenauthflag: tokenauthflag == 'Checked' ? 'T' : 'F',
                         authorizationcodegrant: authorizationcodegrant == 'Checked' ? 'T' : 'F',
                         rlcauthflag: rlcauthflag == 'Checked' ? 'T' : 'F',
@@ -1659,32 +1668,33 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             // we can not use the search module because it does not support the LoginAudit table
             // const lastLogins = this.stApp.stLib.stLibNs.stLibNsSearch.run('customsearch_idev_user_last_login');
             // so therefore we have scraped this data from the saved search
-            const lastLogins = [];
-            results = value.filter((result) => result.name == 'lastLogins');
-            if (results.length > 0) {
-                log.audit({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins', details: results });
-                // standardize the last login field names (e.g. camelCase and remove spaces)
-                for (const lastLogin of results[0].values) {
-                    log.audit({ title: 'SuiteToolsController:updateIntegrationsData() lastLogin', details: lastLogin });
-                    // add the standardized field and values including data cleansing to the array
-                    lastLogins.push({
-                        user: lastLogin['User'],
-                        email: lastLogin['Email Address'],
-                        date: lastLogin['Maximum of Date'],
-                    });
-                }
-                if (lastLogins.length > 0) {
-                    // remove last record of lastLogins since it contains the the header row
-                    lastLogins.pop();
-                    log.audit({
-                        title: 'SuiteToolsController:updateIntegrationsData() lastLogins',
-                        details: lastLogins,
-                    });
-                }
-            }
-            else {
-                log.error({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins not found', details: '' });
-            }
+            // lastLogins = [];
+            // results = value.filter((result) => result.name == 'lastLogins');
+            // if (results.length > 0) {
+            //   log.debug({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins', details: results });
+            //   // standardize the last login field names (e.g. camelCase and remove spaces)
+            //   for (const lastLogin of results[0].values) {
+            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() lastLogin', details: lastLogin });
+            //     // add the standardized field and values including data cleansing to the array
+            //     lastLogins.push({
+            //       user: lastLogin['User'],
+            //       email: lastLogin['Email Address'],
+            //       date: lastLogin['Maximum of Date'],
+            //     });
+            //   }
+            //   if (lastLogins.length > 0) {
+            //     // remove last record of lastLogins since it contains the the header row
+            //     lastLogins.pop();
+            //     log.debug({
+            //       title: 'SuiteToolsController:updateIntegrationsData() lastLogins',
+            //       details: lastLogins,
+            //     });
+            //   }
+            // } else {
+            //   log.error({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins not found', details: '' });
+            // }
+            // scraping the data via a saved search is not scalable since the results only return 50 records per page
+            // therefore we are using a map/reduce script to get the data
             // users
             standardizedValues = [];
             const users = this.stApp.stModel.getEmployees('U', null, null);
@@ -1727,17 +1737,64 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-view"], fun
             return updateSettings;
         }
         /**
-         * Update integration data
+         * Initiate last logins script.
          *
          * @param value - the values to update
-         *
-         * @returns integration data
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        updateIntegrationData(value) {
-            log.debug({ title: 'SuiteToolsController:updateIntegrationData() initiated', details: '' });
-            const results = value;
-            log.debug({ title: 'SuiteToolsController:updateIntegrationData() results', details: results });
+        initiateLastLogins(value) {
+            log.debug({ title: 'SuiteToolsController:initiateLastLogins() initiated', details: '' });
+            const updateSettings = [];
+            // get list of integrations
+            const integrations = [];
+            const results = value.filter((result) => result.name == 'integrations');
+            if (results.length > 0) {
+                log.debug({ title: 'SuiteToolsController:initiateLastLogins() integrations list', details: results });
+                // standardize the integration field names (e.g. camelCase and remove spaces)
+                for (const integration of results[0].values) {
+                    log.debug({ title: 'SuiteToolsController:initiateLastLogins() integration', details: integration });
+                    const id = integration['Internal ID'];
+                    let integrationName = integration['Name'];
+                    if (integrationName === 'SuiteCloud IDE & CLI') {
+                        integrationName = 'SuiteCloud Development Integration';
+                    }
+                    integrations.push({
+                        id: id,
+                        name: integrationName,
+                        integrationId: integration['Application ID'],
+                        active: integration['State'] == 'Enabled' ? 'T' : 'F',
+                        createdOn: integration['Created On'],
+                    });
+                }
+                log.debug({
+                    title: 'SuiteToolsController:initiateLastLogins() integrations standardizedValues',
+                    details: integrations,
+                });
+                // sort the array by name
+                integrations.sort((a, b) => (a.name > b.name ? 1 : -1));
+                updateSettings.push({ custrecord_idev_st_config_integrations: JSON.stringify(integrations) });
+            }
+            else {
+                log.error({ title: 'SuiteToolsController:initiateLastLogins() integrations not found', details: '' });
+            }
+            log.debug({ title: 'SuiteToolsController:initiateLastLogins() integrations =', details: integrations });
+            // initiate the last logins map/reduce script
+            // TODO - create a libary function for this
+            const scriptTask = task.create({
+                taskType: task.TaskType.MAP_REDUCE,
+                scriptId: 'customscript_idev_st_mr_lastlogins',
+                deploymentId: 'customdeploy_idev_st_mr_lastlogins',
+                params: {
+                    custscript_idev_st_mr_lastlogins_ints: JSON.stringify(integrations),
+                    custscript_idev_st_mr_lastlogins_set_id: this.stApp.stAppSettings.recordId,
+                },
+            });
+            const scriptTaskId = scriptTask.submit();
+            log.debug({
+                title: 'SuiteToolsController:initiateLastLogins() submitted last logins map/reduce script',
+                details: 'scriptTaskId = ' + scriptTaskId,
+            });
+            // the results are saved in the summary step of the map/reduce script
         }
     }
     exports.SuiteToolsController = SuiteToolsController;

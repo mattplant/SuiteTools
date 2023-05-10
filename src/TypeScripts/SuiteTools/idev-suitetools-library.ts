@@ -220,6 +220,31 @@ export class SuiteToolsLibraryNetSuiteRecord {
   }
 
   /**
+   * Get custom record or list entry
+   *
+   * @param recordType
+   * @param recordId
+   * @returns value
+   */
+  public getCustomRecord(recordType: string, recordId: number): record.Record {
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteRecord:getCustomRecord() initiated',
+      details: { recordType: recordType, recordId: recordId },
+    });
+
+    try {
+      const recordObj = record.load({
+        type: recordType,
+        id: recordId,
+      });
+
+      return recordObj;
+    } catch (e) {
+      log.error({ title: `SuiteToolsLibraryNetSuiteRecord:getCustomRecord - Error on ${recordType}`, details: e });
+    }
+  }
+
+  /**
    * Update custom record or list entry
    *
    * @param recordType
@@ -609,11 +634,11 @@ export class SuiteToolsLibraryNetSuiteSuiteQl {
   public getSqlValue(sql: string, field: string): string {
     let resultField = ''; // default to empty string
     const resultSet = this.query(sql);
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
     // grab the first row if it exists
     if (resultSet.length > 0) {
       const resultJson = resultSet[0];
-      log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultJson = ', details: resultJson });
+      // log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultJson = ', details: resultJson });
       const resultObject = JSON.parse(JSON.stringify(resultJson));
       if (resultObject[field]) {
         // return the field value since it exists
