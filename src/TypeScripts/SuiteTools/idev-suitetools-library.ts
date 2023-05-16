@@ -66,6 +66,7 @@ export class SuiteToolsLibrary {
 export class SuiteToolsLibraryNetSuite {
   private _stApp: SuiteToolsApp;
   private _stLibNsFile: SuiteToolsLibraryNetSuiteFile;
+  private _stLibNsHttp: SuiteToolsLibraryNetSuiteHttp;
   private _stLibNsRecord: SuiteToolsLibraryNetSuiteRecord;
   private _stLibNsScript: SuiteToolsLibraryNetSuiteScript;
   private _stLibNsSearch: SuiteToolsLibraryNetSuiteSearch;
@@ -76,6 +77,9 @@ export class SuiteToolsLibraryNetSuite {
   }
   get stLibNsFile(): SuiteToolsLibraryNetSuiteFile {
     return this._stLibNsFile;
+  }
+  get stLibNsHttp(): SuiteToolsLibraryNetSuiteHttp {
+    return this._stLibNsHttp;
   }
   get stLibNsRecord(): SuiteToolsLibraryNetSuiteRecord {
     return this._stLibNsRecord;
@@ -95,6 +99,7 @@ export class SuiteToolsLibraryNetSuite {
     this._stApp = stApp;
 
     this._stLibNsFile = new SuiteToolsLibraryNetSuiteFile(this.stApp);
+    this._stLibNsHttp = new SuiteToolsLibraryNetSuiteHttp(this.stApp);
     this._stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(this.stApp);
     this._stLibNsScript = new SuiteToolsLibraryNetSuiteScript(this.stApp);
     this._stLibNsSearch = new SuiteToolsLibraryNetSuiteSearch(this.stApp);
@@ -167,6 +172,67 @@ export class SuiteToolsLibraryNetSuiteFile {
 
     return fileObj.url;
   }
+}
+
+/**
+ * SuiteTools NetSuite Http Library
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsLibraryNetSuiteHttp {
+  private _stApp: SuiteToolsApp;
+
+  get stApp(): SuiteToolsApp {
+    return this._stApp;
+  }
+
+  constructor(stApp: SuiteToolsApp) {
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:constructor() initiated', details: null });
+    this._stApp = stApp;
+  }
+
+  // /**
+  //  * Get HTTP page.
+  //  *
+  //  * @param url - the URL to the page to load
+  //  * @returns string
+  //  */
+  // public getPage(url: string): string {
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getPage() initiated', details: { url: url } });
+
+  //   const response = https.get({ url: url });
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getPage() response', details: response });
+  //   const body = response.body;
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getPage() body', details: body });
+
+  //   return body;
+  // }
+
+  // /**
+  //  * Get JSON HTTP page.
+  //  *
+  //  * @param url - the URL to the page to load
+  //  * @returns string
+  //  */
+  // public getJsonPage(url: string): string {
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getJsonPage() initiated', details: { url: url } });
+
+  //   const response = https.get({ url: url });
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getJsonPage() response', details: response });
+
+  //   // check that response code is 200
+  //   if (response.code !== 200) {
+  //     throw new Error(`SuiteToolsLibraryNetSuiteHttp:getJsonPage() response code = ${response.code}`);
+  //   }
+
+  //   const body = response.body;
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getJsonPage() body', details: body });
+
+  //   const results = JSON.parse(body);
+  //   log.debug({ title: 'SuiteToolsController:renderConcurrenciesForm() results =', details: results });
+
+  //   return results;
+  // }
 }
 
 /**
@@ -409,6 +475,39 @@ export class SuiteToolsLibraryNetSuiteScript {
   constructor(stApp: SuiteToolsApp) {
     // log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:constructor() initiated', details: null });
     this._stApp = stApp;
+  }
+
+  /**
+   * Calls the SuiteScript script.
+   *
+   * @param accountId - the account id
+   * @param scriptId - the script id
+   * @param deploymentId - the deployment id
+   * @param parameters - the parameters
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public buildScriptUrl(accountId: string, scriptId: string, deploymentId: string, params: any[]): string {
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteScript:callScript() initiated',
+      details: { scriptId: scriptId, deploymentId: deploymentId, params: params },
+    });
+    const scheme = 'https://';
+    const host = url.resolveDomain({
+      hostType: url.HostType.APPLICATION,
+      accountId: accountId,
+    });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() host', details: host });
+    const path = url.resolveScript({
+      scriptId: scriptId,
+      deploymentId: deploymentId,
+    });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() scriptUrl', details: path });
+    const parameters = '&' + params.join('&');
+    const scriptUrl = scheme + host + path + parameters;
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() parameters', details: parameters });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() returning', details: scriptUrl });
+
+    return scriptUrl;
   }
 
   /**

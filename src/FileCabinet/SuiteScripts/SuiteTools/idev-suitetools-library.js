@@ -24,7 +24,7 @@
  */
 define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/search", "N/url"], function (require, exports, file, log, query, record, redirect, search, url) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibrary = void 0;
+    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibrary = void 0;
     /**
      * SuiteTools Library
      *
@@ -56,6 +56,9 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         get stLibNsFile() {
             return this._stLibNsFile;
         }
+        get stLibNsHttp() {
+            return this._stLibNsHttp;
+        }
         get stLibNsRecord() {
             return this._stLibNsRecord;
         }
@@ -72,6 +75,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             // log.debug({ title: 'SuiteToolsLibraryNetSuite:constructor() initiated', details: null });
             this._stApp = stApp;
             this._stLibNsFile = new SuiteToolsLibraryNetSuiteFile(this.stApp);
+            this._stLibNsHttp = new SuiteToolsLibraryNetSuiteHttp(this.stApp);
             this._stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(this.stApp);
             this._stLibNsScript = new SuiteToolsLibraryNetSuiteScript(this.stApp);
             this._stLibNsSearch = new SuiteToolsLibraryNetSuiteSearch(this.stApp);
@@ -135,6 +139,21 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         }
     }
     exports.SuiteToolsLibraryNetSuiteFile = SuiteToolsLibraryNetSuiteFile;
+    /**
+     * SuiteTools NetSuite Http Library
+     *
+     * @author Matthew Plant <i@idev.systems>
+     */
+    class SuiteToolsLibraryNetSuiteHttp {
+        get stApp() {
+            return this._stApp;
+        }
+        constructor(stApp) {
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:constructor() initiated', details: null });
+            this._stApp = stApp;
+        }
+    }
+    exports.SuiteToolsLibraryNetSuiteHttp = SuiteToolsLibraryNetSuiteHttp;
     /**
      * SuiteTools NetSuite Record Library
      *
@@ -356,6 +375,37 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:constructor() initiated', details: null });
             this._stApp = stApp;
+        }
+        /**
+         * Calls the SuiteScript script.
+         *
+         * @param accountId - the account id
+         * @param scriptId - the script id
+         * @param deploymentId - the deployment id
+         * @param parameters - the parameters
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buildScriptUrl(accountId, scriptId, deploymentId, params) {
+            log.debug({
+                title: 'SuiteToolsLibraryNetSuiteScript:callScript() initiated',
+                details: { scriptId: scriptId, deploymentId: deploymentId, params: params },
+            });
+            const scheme = 'https://';
+            const host = url.resolveDomain({
+                hostType: url.HostType.APPLICATION,
+                accountId: accountId,
+            });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() host', details: host });
+            const path = url.resolveScript({
+                scriptId: scriptId,
+                deploymentId: deploymentId,
+            });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() scriptUrl', details: path });
+            const parameters = '&' + params.join('&');
+            const scriptUrl = scheme + host + path + parameters;
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() parameters', details: parameters });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() returning', details: scriptUrl });
+            return scriptUrl;
         }
         /**
          * Redirects to SuiteScript script.

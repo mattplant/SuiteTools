@@ -1,0 +1,216 @@
+<!-- title -->
+<div class="mb-2">
+  <h2 class="text-2xl">Concurrency Detail</h2>
+</div>
+
+<span id="accountId" style="display: none;">{{accountId}}</span>
+<span id="startDate" style="display: none;">{{startDate}}</span>
+<span id="endDate" style="display: none;">{{endDate}}</span>
+
+<div class="mb-2">
+	<h2 class="text-xl">Detail Table</h2>
+	<div id="detailTable"></div>
+</div>
+
+<div class="mb-2">
+	<h2 class="text-xl">Requests Table</h2>
+	<div id="requestTable"></div>
+</div>
+
+{{{scriptModal}}}
+
+<script>
+	const startDateElement  = document.getElementById("startDate");
+	const startDate = String(startDateElement.textContent);
+	const endDateElement  = document.getElementById("endDate");
+	const endDate = String(endDateElement.textContent);
+	window.onload = function(){ getNsConcurrencyDetailData(startDate, endDate); };
+
+	var scriptUrl = "{{{scriptUrl}}}";
+
+	/**
+	 * Get NetSuite concurrency detail data.
+	 *
+	 * @param {string} startDate - the start date
+	 * @param {string} endDate - the end date
+	 * @returns {void}
+	 */
+	async function getNsConcurrencyDetailData(startDate, endDate) {
+		console.log('getNsConcurrencyDetailData() initiated with ' + JSON.stringify({ startDate: startDate, endDate: endDate }));
+		// get data from NetSuite
+		const accountIdField  = document.getElementById("accountId");
+		const accountId = String(accountIdField.textContent);
+		console.log('accountId = ' + accountId);
+		const url = getConcurrencyDetailUrl(accountId, startDate, endDate);
+		console.log('getNsConcurrencyDetailData() loading data from NetSuite...');
+		const response = await getJsonPageContent(url);
+		const results = response.data.results;
+		// log info
+		console.log('response = ' + JSON.stringify(response));
+		console.log('success = ' + response.success);
+		console.log('message = ' + response.message);
+		console.log('overview = ' + JSON.stringify(response.data.overview));
+		console.log('results = ' + JSON.stringify(results));
+		// format results
+		var formattedResults = [];
+		if (results && results.length > 0) {
+			for (var i = 0; i < results.length; i++) {
+				var result = results[i];
+				// example data payload: {"startTime":1682002800000,"endTime":1682002860000,"averageConcurrency":0,"peakConcurrency":1,"peakConcurrencyTime":"2023-04-20 15:00:24"}
+				var formattedResult = {
+					"startTimeMS": result.startTime,
+					"endTimeMS": result.endTime,
+					"startTime": new Date(result.startTime).toLocaleString(),
+					"endTime": new Date(result.endTime).toLocaleString(),
+					"averageConcurrency": result.averageConcurrency,
+					"peakConcurrency": result.peakConcurrency,
+					"peakConcurrencyTime": result.peakConcurrencyTime,
+				};
+				formattedResults.push(formattedResult);
+			}
+		}
+		// define table
+		var detailTable = new Tabulator("#detailTable", {
+			data:formattedResults,
+			layout:"fitColumns",
+			columns:[
+				{ title:"startTimeMS", field:"startTimeMS", visible:false },
+				{ title:"endTimeMS", field:"endTimeMS", visible:false },
+				{ title:"Start Time", field:"startTime", sorter:"string", width:180 },
+				{ title:"End Time", field:"endTime", sorter:"string", width:180 },
+				{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:180 },
+				{ title:"Peak Concurrency Time", field:"peakConcurrencyTime", width:210 },
+			],
+		});
+		// define row click event function
+		detailTable.on("rowClick", function(e, row){
+			console.log(row.getData());
+			const startTimeMS = row.getData().startTimeMS;
+			const endTimeMS = row.getData().endTimeMS;
+			getNsConcurrencyRequestData(startTimeMS, endTimeMS);
+		});
+	}
+
+	/**
+	 * Build the relative URL to get the concurrency detail.
+	 *
+	 * @param {string} accountId - the NetSuite account ID
+	 * @param {string} startDate - the start date
+	 * @param {string} endDate - the end date
+	 * @returns {string} url - the url to get the concurrency detail
+	 */
+	function getConcurrencyDetailUrl(accountId, startDate, endDate) {
+		console.log('getConcurrencyDetailUrl() initiated with ' + JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }));
+
+		// example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_concurrency_v2&deploy=customdeploy_nsapm_cd_sl_concurrency_v2&testmode=F&startDateMS=1682002800000&endDateMS=1682006400000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
+
+		const path = '/app/site/hosting/scriptlet.nl';
+		params = [];
+		params.push('script=customscript_nsapm_cd_sl_concurrency_v2'); // script (note cd instead of cm)
+		params.push('deploy=customdeploy_nsapm_cd_sl_concurrency_v2'); // deploy (note cd instead of cm)
+		params.push('compfil=' + accountId); // accountId
+		params.push('testmode=F'); // testmode
+		params.push('startDateMS=' + startDate); // startDate
+		params.push('endDateMS=' + endDate); // endDate
+		params.push('concurrencyMode=noallocation'); // concurrencyMode
+		params.push('allocatedList='); // allocatedList
+		params.push('integId='); // integId
+		url = path + '?' + params.join('&');
+		console.log('getConcurrencyDetailUrl() returning ' + url);
+
+		return url;
+	}
+
+	/**
+	 * Get NetSuite concurrency request data.
+	 *
+	 * @returns {void}
+	 */
+	async function getNsConcurrencyRequestData(startTimeMS, endTimeMS) {
+		console.log('getNsConcurrencyRequestData() initiated with ' + JSON.stringify({ startTimeMS: startTimeMS, endTimeMS: endTimeMS }));
+
+		// get data from NetSuite
+		const accountIdField  = document.getElementById("accountId");
+		const accountId = String(accountIdField.textContent);
+		console.log('accountId = ' + accountId);
+		const url = getConcurrencyRequestUrl(accountId, startTimeMS, endTimeMS);
+		console.log('getNsConcurrencyRequestData() loading data from NetSuite...');
+		const response = await getJsonPageContent(url);
+		const results = response.data;
+		// log info
+		console.log('response = ' + JSON.stringify(response));
+		console.log('success = ' + response.success);
+		console.log('message = ' + response.message);
+		console.log('results = ' + JSON.stringify(results));
+		// format results
+		var formattedResults = [];
+		for (var i = 0; i < results.length; i++) {
+			var result = results[i];
+			// example data payload: {"startDate":1683659421675,"type":"WEBSERVICES","integrationId":71608,"operation":"search","endDate":1683659421780,"scriptId":null,"integration":"SPS Commerce Fulfillment","scriptName":"","status":"FINISHED","wouldBeRejected":false
+			var formattedResult = {
+				"startDate": new Date(result.startDate).toLocaleString(),
+				"endDate": new Date(result.endDate).toLocaleString(),
+				"duration": result.endDate - result.startDate + " ms",
+				"type": result.type,
+				"integrationId": result.integrationId,
+				"operation": result.operation,
+				"scriptId": result.scriptId,
+				"integration": result.integration,
+				"scriptName": result.scriptName,
+				"status": result.status,
+				"wouldBeRejected": result.wouldBeRejected,
+			};
+			formattedResults.push(formattedResult);
+		}
+		// update results table
+		var requestTable = new Tabulator("#requestTable", {
+			data:formattedResults,
+			layout:"fitColumns",
+			columns:[
+				{ title:"Rejected?", field:"wouldBeRejected", sorter:"boolean", width:60 },
+				{ title:"Status", field:"status", sorter:"string", width:90 },
+				{ title:"Start Time", field:"startDate", sorter:"string", width:180 },
+				{ title:"End Time", field:"endDate", sorter:"string", width:180 },
+				{ title:"Duration", field:"duration", sorter:"number", width:100 },
+				{ title:"Type", field:"type", sorter:"string", width:120 },
+				{ title:"Integration ID", field:"integrationId", sorter:"number", width:150 },
+				{ title:"Operation", field:"operation", sorter:"string", width:120 },
+				{ title:"Script ID", field:"scriptId", cellClick:function(e, cell, value, data){
+					showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter:"number", width:100 },
+				{ title:"Integration", field:"integration", sorter:"string" },
+				{ title:"Script Name", field:"scriptName", sorter:"string" },
+			],
+		});
+		// requestTable.setData(formattedResults);
+	}
+
+	/**
+	 * Build the relative URL to get the concurrency requests.
+	 *
+	 * @param {string} accountId - the NetSuite account ID
+	 * @returns {string} url - the url to get the concurrency detail
+	 */
+	function getConcurrencyRequestUrl(accountId, startDate, endDate) {
+		console.log('getConcurrencyRequestUrl() initiated with ' + JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }));
+		// example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_instances_v2&deploy=customdeploy_nsapm_cd_sl_instances_v2&testmode=F&startDateMS=1683659400000&endDateMS=1683659460000&compfil=(REDACTED)&allocatedList=&concurrencyMode=noallocation&integId=&sort=startDate&dir=ASC&pageLimit=10&startIndex=0
+		const path = '/app/site/hosting/scriptlet.nl';
+		const pageLimit = 1000;
+		params = [];
+		params.push('script=customscript_nsapm_cd_sl_instances_v2'); // script (note cd instead of cm)
+		params.push('deploy=customdeploy_nsapm_cd_sl_instances_v2'); // deploy (note cd instead of cm)
+		params.push('compfil=' + accountId); // accountId
+		params.push('testmode=F'); // testmode
+		params.push('startDateMS=' + startDate); // startDate
+		params.push('endDateMS=' + endDate); // endDate
+		params.push('concurrencyMode=noallocation'); // concurrencyMode
+		params.push('allocatedList='); // allocatedList
+		params.push('integId='); // integration ID
+		params.push('sort=startDate'); // sort column
+		params.push('dir=ASC'); // sort direction
+		params.push('pageLimit=' + pageLimit); // page limit
+		url = path + '?' + params.join('&');
+		console.log('getConcurrencyRequestUrl() returning ' + url);
+
+		return url;
+	}
+</script>

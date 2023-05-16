@@ -1,0 +1,203 @@
+<!-- title -->
+<div class="mb-2">
+  <h2 class="text-2xl">Concurrency Summary</h2>
+</div>
+
+<span id="accountId" style="display: none;">{{accountId}}</span>
+<span id="concurrencySummaryUrl" style="display: none;">{{concurrencySummaryUrl}}</span>
+
+<!-- <div class="mb-2">
+	<button onclick="getNsConcurrencySummaryData();" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Get Concurrency Summary</button>
+</div>
+ -->
+<div class="mb-2">
+	<h2 class="text-xl">Heat Map</h2>
+	<div id="heatMapPeak"></div>
+</div>
+
+<div class="mb-2">
+	<h2 class="text-xl">Summary Table</h2>
+	<div id="summaryTable"></div>
+</div>
+
+<script>
+	const concurrencySummaryUrl  = document.getElementById("concurrencySummaryUrl");
+	const url = String(concurrencySummaryUrl.textContent);
+	window.onload = function(){ getNsConcurrencySummaryData(url); };
+
+	/**
+	 * Get NetSuite concurrency summary data.
+	 *
+	 * @param {string} url - the URL to get the data from
+	 * @returns {void}
+	 */
+	function getNsConcurrencySummaryData(url) {
+		console.log('getNsConcurrencySummaryData() initiated with ' + JSON.stringify({ }));
+		if (!url) {
+			// get data from NetSuite
+			const accountIdField  = document.getElementById("accountId");
+			const accountId = String(accountIdField.textContent);
+			console.log('accountId = ' + accountId);
+			url = getConcurrencySummaryUrl(accountId);
+		}
+		getNsConcurrencySummaryDataHelper(url);
+	}
+
+	/**
+	 * Get NetSuite concurrency summary data.
+	 *
+	 * @param {string} url - the URL to get the data from
+	 * @returns {void}
+	 */
+	async function getNsConcurrencySummaryDataHelper(url) {
+		console.log('getNsConcurrencySummaryData() initiated with ' + JSON.stringify({ }));
+		// get data
+		console.log('getNsConcurrencySummaryData() loading data from NetSuite...');
+		const response = await getJsonPageContent(url);
+		// log
+		// general info
+		console.log('response = ' + JSON.stringify(response));
+		console.log('success = ' + response.success);
+		console.log('message = ' + response.message);
+		console.log('overview = ' + JSON.stringify(response.data.overview));
+		// heat map data
+		const hours = response.data.xCategories;
+		console.log('hours = ' + JSON.stringify(hours));
+		// peak concurrency
+		const peaks = response.data.series.peak;
+		console.log('peaks = ' + JSON.stringify(peaks))
+		// summary results
+		const results = response.data.results;
+		console.log('results = ' + JSON.stringify(results));
+
+		// BUILD HEATMAP TABLE
+		if (peaks && peaks.length > 0) {
+			// define columns for table
+			let columns = [];
+			columns.push({title: "", field: "date", sorter: "string", headerSort: false});
+			for (var i = 0; i < 24; i++) {
+				const hour = new Date(hours[i]);
+				// value field which is visible
+				const col = {
+					title: hour.toLocaleTimeString('en-US', {timeStyle: 'short'}),
+					field: String(i),
+					sorter: "string",
+					headerSort: false,
+					formatter:"link",
+					formatterParams: {
+						labelField: String(i),
+						urlField: 'link' + String(i),
+						target:"_blank",
+					}
+				};
+				columns.push(col);
+				// link field which is not visible
+				const linkCol = {
+					title: 'link' + String(i),
+					field: 'link' + String(i),
+					visible: false,
+				};
+				columns.push(linkCol);
+			}
+			console.log('columns = ' + JSON.stringify(columns));
+
+			// add row
+			// const rows = [];
+			// loop thru rows
+
+			// loop thru columns
+			const url = '{{{scriptUrl}}}&action=concurDetail'
+			const cols = [];
+			col = {};
+			for (var i = 0; i < peaks.length; i++) {
+				const peak = peaks[i];
+				console.log('peak = ' + JSON.stringify(peak));
+				// example data payload: [0, 0, 75, 1684047600000]
+				// const hour = peak[0];
+				// const ??? = peak[1];
+				const percentage = peak[2];
+				const startDate = peak[3];
+				// endDate is 1 hour after startDate
+				const endDate = startDate + 3600000;
+				col[i] = percentage;
+				col['link' + String(i)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+			}
+			cols.push(col);
+			console.log('cols = ' + JSON.stringify(cols));
+			// rows.push(cols)
+			// console.log('rows = ' + JSON.stringify(rows));
+
+			// define table
+			const heatMapPeak = new Tabulator("#heatMapPeak", {
+				data: cols,
+				ordering: false,
+				layout: "fitColumns",
+				columns: columns,
+			});
+		}
+
+		// BUILD SUMMARY TABLE
+		if (results && results.length > 0) {
+			// format results
+			formattedResults = [];
+			for (var i = 0; i < results.length; i++) {
+				const result = results[i];
+				// example data payload: {"startTime":1683442800000,"endTime":1683446400000,"averageConcurrency":1,"peakConcurrency":8}
+				const formattedResult = {
+					"startTimeMS": result.startTime,
+					"endTimeMS": result.endTime,
+					"startTime": new Date(result.startTime).toLocaleString(),
+					"endTime": new Date(result.endTime).toLocaleString(),
+					"averageConcurrency": result.averageConcurrency,
+					"peakConcurrency": result.peakConcurrency,
+				};
+				formattedResults.push(formattedResult);
+			}
+			// define table
+			const summaryTable = new Tabulator("#summaryTable", {
+				data:formattedResults,
+				layout:"fitColumns",
+				columns:[
+					{ title:"startTimeMS", field:"startTimeMS", visible:false },
+					{ title:"endTimeMS", field:"endTimeMS", visible:false },
+					{ title:"Start Time", field:"startTime", sorter:"string", width:200 },
+					{ title:"End Time", field:"endTime", sorter:"string", width:200 },
+					{ title:"Average Concurrency", field:"averageConcurrency", sorter:"number", width:200 },
+					{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:200 },
+				],
+			});
+			// define row click event function
+			summaryTable.on("rowClick", function(e, row){
+				console.log(row.getData());
+				const startTimeMS = row.getData().startTimeMS;
+				const endTimeMS = row.getData().endTimeMS;
+				// open new tab with concurrency detail
+				window.open('{{{scriptUrl}}}&action=concurDetail' + '&startDate=' + startTimeMS + '&endDate=' + endTimeMS);
+			});
+		}
+	}
+
+	/**
+	 * Build the relative URL to get the concurrency summary.
+	 *
+	 * @param {string} accountId - the NetSuite account ID
+	 * @returns {string} url - the url to get the concurrency summary
+	 */
+	function getConcurrencySummaryUrl(accountId) {
+		console.log('getConcurrencySummaryUrl() initiated with ' + JSON.stringify({ accountId: accountId }));
+		// example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_concurrency_v2&deploy=customdeploy_nsapm_cm_sl_concurrency_v2&compfil=(REDACTED)&testmode=F&startDateMS=1683512580000&endDateMS=1683771780000&integId=&offsetMins=420
+		let path = '/app/site/hosting/scriptlet.nl';
+		params = [];
+		params.push('script=customscript_nsapm_cm_sl_concurrency_v2'); // script (note cm instead of cd)
+		params.push('deploy=customdeploy_nsapm_cm_sl_concurrency_v2'); // deploy (note cm instead of cd)
+		params.push('compfil=' + accountId); // accountId
+		params.push('testmode=F'); // testmode
+		params.push('startDateMS=1683512580000'); // startDate
+		params.push('endDateMS=1683771780000'); // endDate
+		params.push('integId='); // integId
+		params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
+		url = path + '?' + params.join('&');
+		console.log('getConcurrencySummaryUrl() returning ' + url);
+		return url;
+	}
+</script>

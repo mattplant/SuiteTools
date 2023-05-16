@@ -74,6 +74,7 @@ export class SuiteToolsApp {
   // environment values
   private _context: EntryPoints.Suitelet.onRequestContext;
   private _scriptUrl: string;
+  private _scriptFullUrl: string;
 
   // application settings
   get appDir(): string {
@@ -121,6 +122,9 @@ export class SuiteToolsApp {
   get scriptUrl(): string {
     return this._scriptUrl;
   }
+  get scriptFullUrl(): string {
+    return this._scriptFullUrl;
+  }
 
   constructor(context: EntryPoints.Suitelet.onRequestContext) {
     // log.debug({ title: 'SuiteToolsApp:constructor() initiated', details: null });
@@ -154,6 +158,13 @@ export class SuiteToolsApp {
       deploymentId: runtime.getCurrentScript().deploymentId,
       returnExternalUrl: false,
     });
+
+    // get this script's full URL
+    const host = url.resolveDomain({
+      hostType: url.HostType.APPLICATION,
+      accountId: this._stAppNs.runtime.accountId,
+    });
+    this._scriptFullUrl = 'https://' + host + this._scriptUrl;
   }
 
   private route(): void {

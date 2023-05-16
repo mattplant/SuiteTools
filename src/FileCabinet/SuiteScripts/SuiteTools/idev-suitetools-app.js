@@ -92,6 +92,9 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         get scriptUrl() {
             return this._scriptUrl;
         }
+        get scriptFullUrl() {
+            return this._scriptFullUrl;
+        }
         constructor(context) {
             // log.debug({ title: 'SuiteToolsApp:constructor() initiated', details: null });
             // application settings
@@ -124,6 +127,12 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
                 deploymentId: runtime.getCurrentScript().deploymentId,
                 returnExternalUrl: false,
             });
+            // get this script's full URL
+            const host = url.resolveDomain({
+                hostType: url.HostType.APPLICATION,
+                accountId: this._stAppNs.runtime.accountId,
+            });
+            this._scriptFullUrl = 'https://' + host + this._scriptUrl;
         }
         route() {
             // log.debug({ title: 'SuiteToolsApp:route()', details: null });

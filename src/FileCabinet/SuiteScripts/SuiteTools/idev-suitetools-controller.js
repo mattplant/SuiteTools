@@ -114,6 +114,12 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 case 'loginsIntegration':
                     this.renderLoginsForm(true);
                     break;
+                case 'concurSummary':
+                    this.renderConcurrencySummaryForm();
+                    break;
+                case 'concurDetail':
+                    this.renderConcurrencyDetailForm();
+                    break;
                 case 'employees':
                     this.renderEmployeesForm();
                     break;
@@ -735,15 +741,15 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
             if (record) {
-                // determine last login
-                const lastLoginSQL = `SELECT
-          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
-        FROM
-          LoginAudit
-        WHERE
-        oAuthAppName = '${record.name}'
-        GROUP BY LoginAudit.oauthaccesstokenname`;
-                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // // determine last login
+                // const lastLoginSQL = `SELECT
+                //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+                //   FROM
+                //     LoginAudit
+                //   WHERE
+                //   oAuthAppName = '${record.name}'
+                //   GROUP BY LoginAudit.oauthaccesstokenname`;
+                // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
                 // set the values
                 bodyValues['scriptUrl'] = this.stApp.scriptUrl;
                 bodyValues['id'] = record.id;
@@ -754,7 +760,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 bodyValues['tokenauthflag'] = record.tokenauthflag;
                 bodyValues['authorizationcodegrant'] = record.authorizationcodegrant;
                 bodyValues['rlcauthflag'] = record.rlcauthflag;
-                bodyValues['lastLogin'] = lastLogin;
+                // bodyValues['lastLogin'] = lastLogin;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=integration&id=' + record.id;
                 bodyValues['urlNs'] = '/app/common/integration/integrapp.nl?id=' + record.id;
                 bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&integrationId=' + record.id;
@@ -882,15 +888,15 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
             if (record) {
-                // determine last login
-                const lastLoginSQL = `SELECT
-          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
-        FROM
-          LoginAudit
-        WHERE
-          oauthaccesstokenname = '${record.name}'
-        GROUP BY LoginAudit.oauthaccesstokenname`;
-                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // // determine last login
+                // const lastLoginSQL = `SELECT
+                //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+                //   FROM
+                //     LoginAudit
+                //   WHERE
+                //     oauthaccesstokenname = '${record.name}'
+                //   GROUP BY LoginAudit.oauthaccesstokenname`;
+                // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
                 // set the values
                 bodyValues['active'] = record.active == 'T';
                 bodyValues['name'] = record.name;
@@ -903,7 +909,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 bodyValues['urlNs'] = '/app/setup/accesstoken.nl?id=' + record.id;
                 bodyValues['urlIntegration'] = this.stApp.scriptUrl + '&action=integration&id=' + record.integrationId;
                 bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&tokenId=' + record.id;
-                bodyValues['lastLogin'] = lastLogin;
+                // bodyValues['lastLogin'] = lastLogin;
             }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
@@ -1208,6 +1214,87 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 bodyValues['tokenElement'] = this.stApp.stView.getElementHtml('token');
             }
             bodyValues['results'] = resultsContent;
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
+         * Renders the Concurrency Summary form.
+         */
+        renderConcurrencySummaryForm() {
+            log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() initiated', details: null });
+            const endDateMS = Date.now();
+            const startDateMS = endDateMS; // - 86400000; // 1 day ago
+            // minus
+            // TEST to see if we can make a call the the concurrencySummary endpoint from here
+            const scriptId = 'customscript_nsapm_cm_sl_concurrency_v2';
+            const deployId = 'customdeploy_nsapm_cm_sl_concurrency_v2';
+            const accountId = this.stApp.stAppNs.runtime.accountId;
+            const params = [];
+            params.push('compfil=' + accountId); // accountId
+            params.push('testmode=F'); // testmode
+            params.push('startDateMS=' + startDateMS); // startDateMS
+            params.push('endDateMS=' + endDateMS); // endDateMS
+            params.push('integId='); // integId
+            params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
+            const concurrencySummaryUrl = this.stApp.stLib.stLibNs.stLibNsScript.buildScriptUrl(accountId, scriptId, deployId, params);
+            // set form input option values dynamically
+            // const optionValuesObj = {
+            //   options: [],
+            // };
+            // const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+            // get the results
+            // let formFieldValues = [];
+            // if (this.stApp.context.request.method == 'GET') {
+            //   // set the default initial values
+            //   formFieldValues.push({ name: 'custom_status', value: 'T' });
+            // } else {
+            //   // POST - get values from POSTed fields
+            //   formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+            // }
+            // const status = this.getPostedField('custom_status', formFieldValues);
+            // const results = this.stApp.stModel.getConcurrencies(status);
+            // const results = JSON.parse(page.body);
+            // log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() page =', details: page });
+            // const results = [];
+            // const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+            //   'views/partials/results/concurrencySummary.html'
+            // );
+            // const resultsValues = {};
+            // resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            // resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            // const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/concurrencySummary.html');
+            const bodyValues = {};
+            // bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+            //   'views/partials/modals/wrapper/user.html'
+            // );
+            // bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+            //   'views/partials/modals/wrapper/integration.html'
+            // );
+            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+            bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
+            bodyValues['concurrencySummaryUrl'] = concurrencySummaryUrl;
+            // bodyValues['optionValues'] = optionValues;
+            // bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+            // bodyValues['results'] = resultsContent;
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
+         * Renders the Concurrency Detail form.
+         */
+        renderConcurrencyDetailForm() {
+            log.debug({ title: 'SuiteToolsController:renderConcurrencyDetailForm() initiated', details: null });
+            // LOAD SCRIPT PARAMS
+            const startDate = this.stApp.context.request.parameters.startDate;
+            const endDate = this.stApp.context.request.parameters.endDate;
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/concurrencyDetail.html');
+            const bodyValues = {};
+            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+            bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/script.html');
+            bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
+            bodyValues['startDate'] = startDate;
+            bodyValues['endDate'] = endDate;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
