@@ -657,7 +657,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             return result;
         }
         /**
-         * Get users from integation data.
+         * Get users from integration data.
          *
          * @returns results
          */
@@ -1187,25 +1187,40 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 }
             }
             if (dates) {
-                switch (dates) {
-                    case '15':
-                        where.push('date > SYSDATE - ( 15 / 1440 )');
-                        break;
-                    case '60':
-                        where.push('date > SYSDATE - ( 1 / 24 )');
-                        break;
-                    case '240':
-                        where.push('date > SYSDATE - ( 4 / 24 )');
-                        break;
-                    case 'today':
-                        where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-                        break;
-                    case 'yesterday':
-                        where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-                        break;
-                    default:
-                        log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid date option`, details: dates });
-                        break;
+                // check if dates is an object
+                if (typeof dates === 'object') {
+                    // check if dates is an array
+                    if (Array.isArray(dates) && typeof dates[0] === 'string' && typeof dates[1] === 'string') {
+                        where.push(`date BETWEEN TO_DATE( '${dates[0]}', 'YYYY-MM-DD hh24:mi:ss' ) AND TO_DATE( '${dates[1]}', 'YYYY-MM-DD hh24:mi:ss' )`);
+                    }
+                    else {
+                        log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid object date option`, details: dates });
+                    }
+                }
+                else {
+                    switch (dates) {
+                        case '15':
+                            where.push('date > SYSDATE - ( 15 / 1440 )');
+                            break;
+                        case '60':
+                            where.push('date > SYSDATE - ( 1 / 24 )');
+                            break;
+                        case '240':
+                            where.push('date > SYSDATE - ( 4 / 24 )');
+                            break;
+                        case 'today':
+                            where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+                            break;
+                        case 'yesterday':
+                            where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+                            break;
+                        default:
+                            log.error({
+                                title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid string date option`,
+                                details: dates,
+                            });
+                            break;
+                    }
                 }
             }
             if (title) {

@@ -24,7 +24,7 @@
  */
 define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/search", "N/url"], function (require, exports, file, log, query, record, redirect, search, url) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibrary = void 0;
+    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibraryGeneral = exports.SuiteToolsLibrary = void 0;
     /**
      * SuiteTools Library
      *
@@ -34,16 +34,63 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         get stApp() {
             return this._stApp;
         }
+        get stLibGeneral() {
+            return this._stLibGeneral;
+        }
         get stLibNs() {
             return this._stLibNs;
         }
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsLibrary:constructor() initiated', details: null });
             this._stApp = stApp;
+            this._stLibGeneral = new SuiteToolsLibraryGeneral(this.stApp);
             this._stLibNs = new SuiteToolsLibraryNetSuite(this.stApp);
         }
     }
     exports.SuiteToolsLibrary = SuiteToolsLibrary;
+    /**
+     * SuiteTools General Library
+     *
+     * @author Matthew Plant <i@idev.systems>
+     */
+    class SuiteToolsLibraryGeneral {
+        get stApp() {
+            return this._stApp;
+        }
+        constructor(stApp) {
+            // log.debug({ title: 'SuiteToolsLibraryGeneral:constructor() initiated', details: null });
+            this._stApp = stApp;
+        }
+        /**
+         * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
+         *
+         * TODO replace with moment.js
+         *
+         * @param {Date} date - the date object to format
+         * @returns {string} formattedDate - the formatted date string
+         */
+        formatDate(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            let hour = '' + d.getHours();
+            let minute = '' + d.getMinutes();
+            let second = '' + d.getSeconds();
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+            if (hour.length < 2)
+                hour = '0' + hour;
+            if (minute.length < 2)
+                minute = '0' + minute;
+            if (second.length < 2)
+                second = '0' + second;
+            return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
+        }
+    }
+    exports.SuiteToolsLibraryGeneral = SuiteToolsLibraryGeneral;
     /**
      * SuiteTools NetSuite Library
      *

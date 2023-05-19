@@ -60,8 +60,8 @@
 				var formattedResult = {
 					"startTimeMS": result.startTime,
 					"endTimeMS": result.endTime,
-					"startTime": new Date(result.startTime).toLocaleString(),
-					"endTime": new Date(result.endTime).toLocaleString(),
+					"startTime": formatDate(result.startTime),
+					"endTime": formatDate(result.endTime),
 					"averageConcurrency": result.averageConcurrency,
 					"peakConcurrency": result.peakConcurrency,
 					"peakConcurrencyTime": result.peakConcurrencyTime,
@@ -76,10 +76,10 @@
 			columns:[
 				{ title:"startTimeMS", field:"startTimeMS", visible:false },
 				{ title:"endTimeMS", field:"endTimeMS", visible:false },
-				{ title:"Start Time", field:"startTime", sorter:"string", width:180 },
-				{ title:"End Time", field:"endTime", sorter:"string", width:180 },
-				{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:180 },
-				{ title:"Peak Concurrency Time", field:"peakConcurrencyTime", width:210 },
+				{ title:"Start Time", field:"startTime", sorter:"string", width:160 },
+				{ title:"End Time", field:"endTime", sorter:"string", width:160 },
+				{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:160 },
+				{ title:"Peak Concurrency Time", field:"peakConcurrencyTime", width:200 },
 			],
 		});
 		// define row click event function
@@ -148,8 +148,10 @@
 			var result = results[i];
 			// example data payload: {"startDate":1683659421675,"type":"WEBSERVICES","integrationId":71608,"operation":"search","endDate":1683659421780,"scriptId":null,"integration":"SPS Commerce Fulfillment","scriptName":"","status":"FINISHED","wouldBeRejected":false
 			var formattedResult = {
-				"startDate": new Date(result.startDate).toLocaleString(),
-				"endDate": new Date(result.endDate).toLocaleString(),
+				"startDateMS": result.startDate,
+				"endDateMS": result.endDate,
+				"startDate": formatDate(result.startDate),
+				"endDate": formatDate(result.endDate),
 				"duration": result.endDate - result.startDate + " ms",
 				"type": result.type,
 				"integrationId": result.integrationId,
@@ -167,21 +169,42 @@
 			data:formattedResults,
 			layout:"fitColumns",
 			columns:[
+				{ title:"startDateMS", field:"startDateMS", visible:false },
+				{ title:"endDateMS", field:"endDateMS", visible:false },
 				{ title:"Rejected?", field:"wouldBeRejected", sorter:"boolean", width:60 },
 				{ title:"Status", field:"status", sorter:"string", width:90 },
-				{ title:"Start Time", field:"startDate", sorter:"string", width:180 },
-				{ title:"End Time", field:"endDate", sorter:"string", width:180 },
+				{ title:"Start Time", field:"startDate", sorter:"string", width:150 },
+				{ title:"End Time", field:"endDate", sorter:"string", width:150 },
 				{ title:"Duration", field:"duration", sorter:"number", width:100 },
 				{ title:"Type", field:"type", sorter:"string", width:120 },
 				{ title:"Integration ID", field:"integrationId", sorter:"number", width:150 },
 				{ title:"Operation", field:"operation", sorter:"string", width:120 },
-				{ title:"Script ID", field:"scriptId", cellClick:function(e, cell, value, data){
-					showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter:"number", width:100 },
+				{ title:"Script ID", field:"scriptId", sorter:"number", width:100 }, // cellClick:function(e, cell, value, data){showModal(scriptUrl, ModalType.Script, cell.getValue()) }
 				{ title:"Integration", field:"integration", sorter:"string" },
 				{ title:"Script Name", field:"scriptName", sorter:"string" },
 			],
 		});
-		// requestTable.setData(formattedResults);
+		// define row click event function
+		requestTable.on("rowClick", function(e, row){
+			console.log(row.getData());
+			const startDateMS = row.getData().startDateMS; // 1684343700000
+			const endDateMS = row.getData().endDateMS; // 1684344600000
+			const type = row.getData().type;
+			const scriptId = row.getData().scriptId;
+			// determine script type (if applicable)
+			let scriptType = '';
+			switch (type) {
+				case 'RESTLET':
+					scriptType = 'restlet';
+					break;
+				default:
+					console.error('Request type not recognized: ' + type);
+			}
+			if (scriptType) {
+				// open new tab with APM script detail
+				window.open('{{{scriptUrl}}}&action=apmScriptDetail' + '&startDate=' + startDateMS + '&endDate=' + endDateMS + '&scriptType=' + scriptType + '&scriptId=' + scriptId, '_blank');
+			}
+		});
 	}
 
 	/**

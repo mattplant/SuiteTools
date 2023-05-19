@@ -57,6 +57,15 @@ export class SuiteToolsController {
     const { action, id } = this.stApp.context.request.parameters;
     log.debug('SuiteToolsController:getRequestHandle() routing request', { action: action, id: id });
     switch (action) {
+      case 'apmScriptDetail':
+        this.renderApmScriptDetailForm();
+        break;
+      case 'apmConcurSummary':
+        this.renderApmConcurrencySummaryForm();
+        break;
+      case 'apmConcurDetail':
+        this.renderApmConcurrencyDetailForm();
+        break;
       // handle pages
       case 'settings':
         this.renderSettingsForm();
@@ -123,12 +132,6 @@ export class SuiteToolsController {
         break;
       case 'loginsIntegration':
         this.renderLoginsForm(true);
-        break;
-      case 'concurSummary':
-        this.renderConcurrencySummaryForm();
-        break;
-      case 'concurDetail':
-        this.renderConcurrencyDetailForm();
         break;
       case 'employees':
         this.renderEmployeesForm();
@@ -399,6 +402,156 @@ export class SuiteToolsController {
   // ---------------------------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------------------------
+
+  /**
+   * Renders the Concurrency Summary form.
+   */
+  public renderApmConcurrencySummaryForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() initiated', details: null });
+
+    const endDateMS = Date.now();
+    const startDateMS = endDateMS - 30 * 86400000; // 30 days ago
+    // minus
+
+    // TEST to see if we can make a call the the concurrencySummary endpoint from here
+    const scriptId = 'customscript_nsapm_cm_sl_concurrency_v2';
+    const deployId = 'customdeploy_nsapm_cm_sl_concurrency_v2';
+    const accountId = this.stApp.stAppNs.runtime.accountId;
+    const params = [];
+    params.push('compfil=' + accountId); // accountId
+    params.push('testmode=F'); // testmode
+    params.push('startDateMS=' + startDateMS); // startDateMS
+    params.push('endDateMS=' + endDateMS); // endDateMS
+    params.push('integId='); // integId
+    params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
+    const concurrencySummaryUrl = this.stApp.stLib.stLibNs.stLibNsScript.buildScriptUrl(
+      accountId,
+      scriptId,
+      deployId,
+      params
+    );
+
+    // set form input option values dynamically
+    // const optionValuesObj = {
+    //   options: [],
+    // };
+    // const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the results
+    // let formFieldValues = [];
+    // if (this.stApp.context.request.method == 'GET') {
+    //   // set the default initial values
+    //   formFieldValues.push({ name: 'custom_status', value: 'T' });
+    // } else {
+    //   // POST - get values from POSTed fields
+    //   formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    // }
+    // const status = this.getPostedField('custom_status', formFieldValues);
+
+    // const results = this.stApp.stModel.getConcurrencies(status);
+    // const results = JSON.parse(page.body);
+    // log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() page =', details: page });
+    // const results = [];
+
+    // const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+    //   'views/partials/results/concurrencySummary.html'
+    // );
+    // const resultsValues = {};
+    // resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+    // resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+    // const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/apm/concurrencySummary.html');
+    const bodyValues = {};
+    // bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+    //   'views/partials/modals/wrapper/user.html'
+    // );
+    // bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+    //   'views/partials/modals/wrapper/integration.html'
+    // );
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
+    bodyValues['concurrencySummaryUrl'] = concurrencySummaryUrl;
+
+    // bodyValues['optionValues'] = optionValues;
+    // bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    // bodyValues['results'] = resultsContent;
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the Concurrency Detail form.
+   */
+  public renderApmConcurrencyDetailForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderConcurrencyDetailForm() initiated', details: null });
+
+    // LOAD SCRIPT PARAMS
+    const startDate = this.stApp.context.request.parameters.startDate;
+    const endDate = this.stApp.context.request.parameters.endDate;
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/apm/concurrencyDetail.html');
+    const bodyValues = {};
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/wrapper/script.html'
+    );
+    bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
+    bodyValues['startDate'] = startDate;
+    bodyValues['endDate'] = endDate;
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the APM Script Detail data.
+   */
+  public renderApmScriptDetailForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderApmScriptDetailForm() initiated', details: null });
+
+    // LOAD SCRIPT PARAMS
+    const startDate = this.stApp.context.request.parameters.startDate;
+    const endDate = this.stApp.context.request.parameters.endDate;
+    const scriptType = this.stApp.context.request.parameters.scriptType;
+    const scriptId = this.stApp.context.request.parameters.scriptId;
+
+    // load the script execution data
+    const results = this.stApp.stModel.getScriptLogsViaSuiteQL(
+      null,
+      null,
+      null,
+      [scriptId],
+      null,
+      [
+        this.stApp.stLib.stLibGeneral.formatDate(Number(startDate)),
+        this.stApp.stLib.stLibGeneral.formatDate(Number(endDate)),
+      ],
+      null,
+      null
+    );
+    const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/results/scriptLogs.html'
+    );
+    const resultsValues = {};
+    resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+    resultsValues['tableData'] = this.stApp.stView.generateTableData(results, true);
+    const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/apm/scriptDetail.html');
+    const bodyValues = {};
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/wrapper/script.html'
+    );
+    bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
+    bodyValues['startDate'] = startDate;
+    bodyValues['endDate'] = endDate;
+    bodyValues['scriptType'] = scriptType;
+    bodyValues['scriptId'] = scriptId;
+    bodyValues['results'] = resultsContent;
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
 
   /**
    * Gets dashboard page content.
@@ -684,7 +837,7 @@ export class SuiteToolsController {
     const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/scripts.html');
     const resultsValues = {};
     resultsValues['scriptUrl'] = this.stApp.scriptUrl;
-    resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+    resultsValues['tableData'] = this.stApp.stView.generateTableData(results, true);
     const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
 
     // display the form
@@ -1343,106 +1496,6 @@ export class SuiteToolsController {
   }
 
   /**
-   * Renders the Concurrency Summary form.
-   */
-  public renderConcurrencySummaryForm(): void {
-    log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() initiated', details: null });
-
-    const endDateMS = Date.now();
-    const startDateMS = endDateMS; // - 86400000; // 1 day ago
-    // minus
-
-    // TEST to see if we can make a call the the concurrencySummary endpoint from here
-    const scriptId = 'customscript_nsapm_cm_sl_concurrency_v2';
-    const deployId = 'customdeploy_nsapm_cm_sl_concurrency_v2';
-    const accountId = this.stApp.stAppNs.runtime.accountId;
-    const params = [];
-    params.push('compfil=' + accountId); // accountId
-    params.push('testmode=F'); // testmode
-    params.push('startDateMS=' + startDateMS); // startDateMS
-    params.push('endDateMS=' + endDateMS); // endDateMS
-    params.push('integId='); // integId
-    params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
-    const concurrencySummaryUrl = this.stApp.stLib.stLibNs.stLibNsScript.buildScriptUrl(
-      accountId,
-      scriptId,
-      deployId,
-      params
-    );
-
-    // set form input option values dynamically
-    // const optionValuesObj = {
-    //   options: [],
-    // };
-    // const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-
-    // get the results
-    // let formFieldValues = [];
-    // if (this.stApp.context.request.method == 'GET') {
-    //   // set the default initial values
-    //   formFieldValues.push({ name: 'custom_status', value: 'T' });
-    // } else {
-    //   // POST - get values from POSTed fields
-    //   formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
-    // }
-    // const status = this.getPostedField('custom_status', formFieldValues);
-
-    // const results = this.stApp.stModel.getConcurrencies(status);
-    // const results = JSON.parse(page.body);
-    // log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() page =', details: page });
-    // const results = [];
-
-    // const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-    //   'views/partials/results/concurrencySummary.html'
-    // );
-    // const resultsValues = {};
-    // resultsValues['scriptUrl'] = this.stApp.scriptUrl;
-    // resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
-    // const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/concurrencySummary.html');
-    const bodyValues = {};
-    // bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-    //   'views/partials/modals/wrapper/user.html'
-    // );
-    // bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-    //   'views/partials/modals/wrapper/integration.html'
-    // );
-    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-    bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
-    bodyValues['concurrencySummaryUrl'] = concurrencySummaryUrl;
-
-    // bodyValues['optionValues'] = optionValues;
-    // bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-    // bodyValues['results'] = resultsContent;
-    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
-  }
-
-  /**
-   * Renders the Concurrency Detail form.
-   */
-  public renderConcurrencyDetailForm(): void {
-    log.debug({ title: 'SuiteToolsController:renderConcurrencyDetailForm() initiated', details: null });
-
-    // LOAD SCRIPT PARAMS
-    const startDate = this.stApp.context.request.parameters.startDate;
-    const endDate = this.stApp.context.request.parameters.endDate;
-
-    // display the form
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/concurrencyDetail.html');
-    const bodyValues = {};
-    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-    bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-      'views/partials/modals/wrapper/script.html'
-    );
-    bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
-    bodyValues['startDate'] = startDate;
-    bodyValues['endDate'] = endDate;
-    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
-  }
-
-  /**
    * Renders the Employees form.
    */
   public renderEmployeesForm(): void {
@@ -1745,8 +1798,13 @@ export class SuiteToolsController {
         );
       }
     }
-
-    // TODO - have this form also use the results template after fixing sporadic encoding issue
+    const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/results/scriptLogs.html'
+    );
+    const resultsValues = {};
+    resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+    resultsValues['tableData'] = this.stApp.stView.generateTableData(results, true);
+    const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
 
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/scriptLogs.html');
@@ -1760,7 +1818,7 @@ export class SuiteToolsController {
     bodyValues['scriptUrl'] = this.stApp.scriptUrl;
     bodyValues['optionValues'] = optionValues;
     bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-    bodyValues['tableData'] = this.stApp.stView.generateTableData(results, true);
+    bodyValues['results'] = resultsContent;
     this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
 
@@ -2076,7 +2134,7 @@ export class SuiteToolsController {
     log.debug({ title: 'SuiteToolsController:initiateLastLogins() integrations =', details: integrations });
 
     // initiate the last logins map/reduce script
-    // TODO - create a libary function for this
+    // TODO - create a library function for this
     const scriptTask = task.create({
       taskType: task.TaskType.MAP_REDUCE,
       scriptId: 'customscript_idev_st_mr_lastlogins',

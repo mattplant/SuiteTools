@@ -74,7 +74,8 @@
 		if (peaks && peaks.length > 0) {
 			// define columns for table
 			let columns = [];
-			columns.push({title: "", field: "date", sorter: "string", headerSort: false});
+			columns.push({title: "", field: "date", sorter: "string", headerSort: false, width: 80, hozAlign:"center",
+});
 			for (var i = 0; i < 24; i++) {
 				const hour = new Date(hours[i]);
 				// value field which is visible
@@ -88,7 +89,8 @@
 						labelField: String(i),
 						urlField: 'link' + String(i),
 						target:"_blank",
-					}
+					},
+					hozAlign:"center",
 				};
 				columns.push(col);
 				// link field which is not visible
@@ -101,15 +103,12 @@
 			}
 			console.log('columns = ' + JSON.stringify(columns));
 
-			// add row
-			// const rows = [];
-			// loop thru rows
-
 			// loop thru columns
-			const url = '{{{scriptUrl}}}&action=concurDetail'
-			const cols = [];
-			col = {};
+			const url = '{{{scriptUrl}}}&action=apmConcurDetail'
+			const rows = [];
+			let col = {};
 			for (var i = 0; i < peaks.length; i++) {
+				// load data
 				const peak = peaks[i];
 				console.log('peak = ' + JSON.stringify(peak));
 				// example data payload: [0, 0, 75, 1684047600000]
@@ -119,17 +118,34 @@
 				const startDate = peak[3];
 				// endDate is 1 hour after startDate
 				const endDate = startDate + 3600000;
-				col[i] = percentage;
-				col['link' + String(i)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+				// create new row every 24 columns
+
+				// set column values
+				const colPosition = i % 24;
+				// console.log('colPosition = ' + colPosition);
+				if (colPosition == 0) {
+					if (i > 0) {
+						// create new row
+						// console.log('creating new row when i = ' + i);
+						rows.push(col);
+						col = {};
+					}
+					// add in date column
+					col['date'] = new Date(startDate).toLocaleDateString();
+					console.log('setting startDate to ' + col['date']);
+				}
+				col[colPosition] = percentage;
+				col['link' + String(colPosition)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
 			}
-			cols.push(col);
-			console.log('cols = ' + JSON.stringify(cols));
-			// rows.push(cols)
-			// console.log('rows = ' + JSON.stringify(rows));
+			// if last row is not full, add it
+			if (col && Object.keys(col).length > 0) {
+				rows.push(col);
+			}
+			console.log('rows = ' + JSON.stringify(rows));
 
 			// define table
 			const heatMapPeak = new Tabulator("#heatMapPeak", {
-				data: cols,
+				data: rows,
 				ordering: false,
 				layout: "fitColumns",
 				columns: columns,
@@ -146,8 +162,8 @@
 				const formattedResult = {
 					"startTimeMS": result.startTime,
 					"endTimeMS": result.endTime,
-					"startTime": new Date(result.startTime).toLocaleString(),
-					"endTime": new Date(result.endTime).toLocaleString(),
+					"startTime": formatDate(result.startTime),
+					"endTime": formatDate(result.endTime),
 					"averageConcurrency": result.averageConcurrency,
 					"peakConcurrency": result.peakConcurrency,
 				};
@@ -160,8 +176,8 @@
 				columns:[
 					{ title:"startTimeMS", field:"startTimeMS", visible:false },
 					{ title:"endTimeMS", field:"endTimeMS", visible:false },
-					{ title:"Start Time", field:"startTime", sorter:"string", width:200 },
-					{ title:"End Time", field:"endTime", sorter:"string", width:200 },
+					{ title:"Start Time", field:"startTime", sorter:"string", width:160 },
+					{ title:"End Time", field:"endTime", sorter:"string", width:160 },
 					{ title:"Average Concurrency", field:"averageConcurrency", sorter:"number", width:200 },
 					{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:200 },
 				],
@@ -172,7 +188,7 @@
 				const startTimeMS = row.getData().startTimeMS;
 				const endTimeMS = row.getData().endTimeMS;
 				// open new tab with concurrency detail
-				window.open('{{{scriptUrl}}}&action=concurDetail' + '&startDate=' + startTimeMS + '&endDate=' + endTimeMS);
+				window.open('{{{scriptUrl}}}&action=apmConcurDetail' + '&startDate=' + startTimeMS + '&endDate=' + endTimeMS);
 			});
 		}
 	}

@@ -278,3 +278,25 @@ function postData(name, data, url) {
         .then(response => response.text())
         .catch(error => console.error('postData Error =\n', error));
 }
+
+	/**
+	 * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
+	 *
+	 * @param {Date} date - the date object to format
+	 * @returns {string} formattedDate - the formatted date string
+	 */
+	function formatDate(date) {
+		var d = new Date(date);
+		var month = '' + (d.getMonth() + 1);
+		var day = '' + d.getDate();
+		var year = d.getFullYear();
+		var hour = '' + d.getHours();
+		var minute = '' + d.getMinutes();
+		var second = '' + d.getSeconds();
+		if (month.length < 2) month = '0' + month;
+		if (day.length < 2) day = '0' + day;
+		if (hour.length < 2) hour = '0' + hour;
+		if (minute.length < 2) minute = '0' + minute;
+		if (second.length < 2) second = '0' + second;
+		return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
+	}
