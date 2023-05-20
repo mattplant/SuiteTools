@@ -3,9 +3,9 @@
   <h2 class="text-2xl">Concurrency Detail</h2>
 </div>
 
-<span id="accountId" style="display: none;">{{accountId}}</span>
-<span id="startDate" style="display: none;">{{startDate}}</span>
-<span id="endDate" style="display: none;">{{endDate}}</span>
+<div>
+
+</div>
 
 <div class="mb-2">
 	<h2 class="text-xl">Detail Table</h2>
@@ -19,29 +19,33 @@
 
 {{{scriptModal}}}
 
+<span id="accountId" style="display: none;">{{accountId}}</span>
+<span id="startDate" style="display: none;">{{startDate}}</span>
+<span id="endDate" style="display: none;">{{endDate}}</span>
+
 <script>
+	const accountIdField  = document.getElementById("accountId");
+	const accountId = String(accountIdField.textContent);
 	const startDateElement  = document.getElementById("startDate");
 	const startDate = String(startDateElement.textContent);
 	const endDateElement  = document.getElementById("endDate");
 	const endDate = String(endDateElement.textContent);
-	window.onload = function(){ getNsConcurrencyDetailData(startDate, endDate); };
+	window.onload = function(){
+		const url = getConcurrencyDetailUrl(accountId, startDate, endDate);
+		getNsConcurrencyDetailData(url);
+	};
 
-	var scriptUrl = "{{{scriptUrl}}}";
+	const scriptUrl = "{{{scriptUrl}}}";
 
 	/**
 	 * Get NetSuite concurrency detail data.
 	 *
-	 * @param {string} startDate - the start date
-	 * @param {string} endDate - the end date
+	 * @param {string} url - the URL to the data from
 	 * @returns {void}
 	 */
-	async function getNsConcurrencyDetailData(startDate, endDate) {
-		console.log('getNsConcurrencyDetailData() initiated with ' + JSON.stringify({ startDate: startDate, endDate: endDate }));
-		// get data from NetSuite
-		const accountIdField  = document.getElementById("accountId");
-		const accountId = String(accountIdField.textContent);
-		console.log('accountId = ' + accountId);
-		const url = getConcurrencyDetailUrl(accountId, startDate, endDate);
+	async function getNsConcurrencyDetailData(url) {
+		console.log('getNsConcurrencyDetailData() initiated with ' + JSON.stringify({ url: url }));
+		// get data from NetSuite APM service
 		console.log('getNsConcurrencyDetailData() loading data from NetSuite...');
 		const response = await getJsonPageContent(url);
 		const results = response.data.results;
@@ -52,12 +56,12 @@
 		console.log('overview = ' + JSON.stringify(response.data.overview));
 		console.log('results = ' + JSON.stringify(results));
 		// format results
-		var formattedResults = [];
+		let formattedResults = [];
 		if (results && results.length > 0) {
-			for (var i = 0; i < results.length; i++) {
-				var result = results[i];
+			for (let i = 0; i < results.length; i++) {
+				const result = results[i];
 				// example data payload: {"startTime":1682002800000,"endTime":1682002860000,"averageConcurrency":0,"peakConcurrency":1,"peakConcurrencyTime":"2023-04-20 15:00:24"}
-				var formattedResult = {
+				const formattedResult = {
 					"startTimeMS": result.startTime,
 					"endTimeMS": result.endTime,
 					"startTime": formatDate(result.startTime),
@@ -70,7 +74,7 @@
 			}
 		}
 		// define table
-		var detailTable = new Tabulator("#detailTable", {
+		let detailTable = new Tabulator("#detailTable", {
 			data:formattedResults,
 			layout:"fitColumns",
 			columns:[
@@ -143,11 +147,11 @@
 		console.log('message = ' + response.message);
 		console.log('results = ' + JSON.stringify(results));
 		// format results
-		var formattedResults = [];
-		for (var i = 0; i < results.length; i++) {
-			var result = results[i];
+		let formattedResults = [];
+		for (let i = 0; i < results.length; i++) {
+			const result = results[i];
 			// example data payload: {"startDate":1683659421675,"type":"WEBSERVICES","integrationId":71608,"operation":"search","endDate":1683659421780,"scriptId":null,"integration":"SPS Commerce Fulfillment","scriptName":"","status":"FINISHED","wouldBeRejected":false
-			var formattedResult = {
+			const formattedResult = {
 				"startDateMS": result.startDate,
 				"endDateMS": result.endDate,
 				"startDate": formatDate(result.startDate),
@@ -165,7 +169,7 @@
 			formattedResults.push(formattedResult);
 		}
 		// update results table
-		var requestTable = new Tabulator("#requestTable", {
+		let requestTable = new Tabulator("#requestTable", {
 			data:formattedResults,
 			layout:"fitColumns",
 			columns:[

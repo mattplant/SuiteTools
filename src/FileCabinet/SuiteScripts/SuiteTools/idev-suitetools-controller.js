@@ -376,15 +376,14 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
         /**
          * Renders the Concurrency Summary form.
          */
-        renderApmConcurrencySummaryForm() {
+        renderApmConcurrencySummaryForm(days = 3) {
             log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() initiated', details: null });
-            const endDateMS = Date.now();
-            const startDateMS = endDateMS - 30 * 86400000; // 30 days ago
-            // minus
-            // TEST to see if we can make a call the the concurrencySummary endpoint from here
+            // build url
             const scriptId = 'customscript_nsapm_cm_sl_concurrency_v2';
             const deployId = 'customdeploy_nsapm_cm_sl_concurrency_v2';
             const accountId = this.stApp.stAppNs.runtime.accountId;
+            const endDateMS = Date.now();
+            const startDateMS = endDateMS - days * 86400000; // x days ago
             const params = [];
             params.push('compfil=' + accountId); // accountId
             params.push('testmode=F'); // testmode

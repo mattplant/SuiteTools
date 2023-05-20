@@ -56,12 +56,12 @@
 		console.log('total = ' + response.total); // total number of results
 		console.log('results = ' + JSON.stringify(results));
 		// format results
-		var formattedResults = [];
+		let formattedResults = [];
 		if (results && results.length > 0) {
-			for (var i = 0; i < results.length; i++) {
-				var result = results[i];
+			for (let i = 0; i < results.length; i++) {
+				const result = results[i];
 				// example data payload: {"date":1684343738734,"entityid":13107880,"email":"shopify@bulletproof.com","role":1050,"recordid":null,"totaltime":181.185,"usagecount":1007,"urlrequests":0,"searches":1,"records":101,"errorcode":"","context":"suitelet","operationId":"b74e0bed-d054-41f0-a6fd-90759dd7a0a4","frhtId":"7dc30dde-74ec-453f-b6a2-3d73d95a75c4"}
-				var formattedResult = {
+				const formattedResult = {
 					"dateMS": result.date,
 					"date": formatDate(result.date),
 					"entityid": result.entityid, // user ID
@@ -82,7 +82,7 @@
 			}
 		}
 		// define table
-		var detailTable = new Tabulator("#detailTable", {
+		let detailTable = new Tabulator("#detailTable", {
 			data:formattedResults,
 			layout:"fitColumns",
 			columns:[
