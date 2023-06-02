@@ -199,6 +199,24 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:constructor() initiated', details: null });
             this._stApp = stApp;
         }
+        /**
+         * Builds the NetSuite record URL.
+         *
+         * @param recordType - the record type
+         * @param recordId - the record id
+         */
+        buildRecordUrl(recordType, recordId) {
+            log.debug({
+                title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() initiated',
+                details: { recordType: recordType, recordId: recordId },
+            });
+            const path = url.resolveRecord({
+                recordType: recordType,
+                recordId: recordId,
+            });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() returning', details: path });
+            return path;
+        }
     }
     exports.SuiteToolsLibraryNetSuiteHttp = SuiteToolsLibraryNetSuiteHttp;
     /**
@@ -424,7 +442,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             this._stApp = stApp;
         }
         /**
-         * Calls the SuiteScript script.
+         * Builds the SuiteScript script URL.
          *
          * @param accountId - the account id
          * @param scriptId - the script id

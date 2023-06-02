@@ -32,7 +32,27 @@
 						return cell.getValue();
 					}
 				}},
-				{ title: "Last Login", field: "lastlogin", sorter: "string" },
+				{ title: "Last Login", field: "lastLogin", sorter: "string" },
+				{ title: "Tokens", field: "tokenAuthFlag", hozAlign:"center", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "F") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "OAuth Code", field: "authorizationCodeGrant", hozAlign:"center", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "F") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "OAuth Client", field: "oauth2ClientCredentials", hozAlign:"center", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "F") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "User Creds", field: "rlcAuthFlag", hozAlign:"center", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "F") {
+						return cell.getValue();
+					}
+				}},
 				{ title: "Created On", field: "createdOn", sorter: "string", formatter:function(cell, formatterParams, onRendered){
 					if (cell.getValue() != "null") {
 						return cell.getValue();

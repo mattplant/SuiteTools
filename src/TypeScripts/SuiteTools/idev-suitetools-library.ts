@@ -238,6 +238,26 @@ export class SuiteToolsLibraryNetSuiteHttp {
     this._stApp = stApp;
   }
 
+  /**
+   * Builds the NetSuite record URL.
+   *
+   * @param recordType - the record type
+   * @param recordId - the record id
+   */
+  public buildRecordUrl(recordType: string, recordId: string): string {
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() initiated',
+      details: { recordType: recordType, recordId: recordId },
+    });
+    const path = url.resolveRecord({
+      recordType: recordType,
+      recordId: recordId,
+    });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() returning', details: path });
+
+    return path;
+  }
+
   // /**
   //  * Get HTTP page.
   //  *
@@ -525,7 +545,7 @@ export class SuiteToolsLibraryNetSuiteScript {
   }
 
   /**
-   * Calls the SuiteScript script.
+   * Builds the SuiteScript script URL.
    *
    * @param accountId - the account id
    * @param scriptId - the script id

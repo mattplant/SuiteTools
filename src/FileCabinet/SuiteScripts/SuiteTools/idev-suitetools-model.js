@@ -372,7 +372,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 },
             });
             let results = this.stApp.stAppSettings.integrations;
-            if (status) {
+            if (results && status) {
                 // filter results for status
                 results = results.filter((result) => result.active == status);
             }
@@ -409,7 +409,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
         getTokenList(activeOnly = false) {
             // log.debug({ title: `SuiteToolsModel:getTokenList() initiated`, details: { activeOnly: activeOnly } });
             let results = this.stApp.stAppSettings.tokens;
-            if (activeOnly) {
+            if (results && activeOnly) {
                 results = results.filter((result) => result.active == 'T');
             }
             // log.debug({ title: 'SuiteToolsModel:getIntegrationList returning', details: results });
@@ -435,34 +435,36 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             });
             let tokens = this.stApp.stModel.getTokenList();
             // log.debug({ title: `SuiteToolsModel:getTokens() unfiltered tokens =`, details: tokens });
-            if (active) {
-                tokens = tokens.filter((result) => result.active == active);
+            if (tokens) {
+                if (active) {
+                    tokens = tokens.filter((result) => result.active == active);
+                }
+                if (integration) {
+                    tokens = tokens.filter((result) => result.integrationId == integration);
+                }
+                if (user) {
+                    // // do we have a numeric id or a string name
+                    // if (!isNaN(parseInt(user))) {
+                    //   // build the name string
+                    //   // TODO optimize this
+                    //   const userObj = this.getUser(user);
+                    //   if (userObj) {
+                    //     log.debug({ title: `SuiteToolsModel:getTokens() userObj =`, details: userObj });
+                    //     // need to handle the case where the user has no first or last name
+                    //     const firstName = userObj.firstname ? userObj.firstname : '';
+                    //     const lastName = userObj.lastname ? userObj.lastname : '';
+                    //     user = `${firstName} ${lastName}`.trim();
+                    //     user += ` (${userObj.id})`;
+                    //   }
+                    // }
+                    log.debug({ title: `SuiteToolsModel:getTokens() filtering for user`, details: user });
+                    tokens = tokens.filter((result) => result.userId == user);
+                }
+                if (role) {
+                    tokens = tokens.filter((result) => result.roleId == role);
+                }
+                log.debug({ title: 'SuiteToolsModel:getTokens() returning', details: tokens });
             }
-            if (integration) {
-                tokens = tokens.filter((result) => result.integrationId == integration);
-            }
-            if (user) {
-                // // do we have a numeric id or a string name
-                // if (!isNaN(parseInt(user))) {
-                //   // build the name string
-                //   // TODO optimize this
-                //   const userObj = this.getUser(user);
-                //   if (userObj) {
-                //     log.debug({ title: `SuiteToolsModel:getTokens() userObj =`, details: userObj });
-                //     // need to handle the case where the user has no first or last name
-                //     const firstName = userObj.firstname ? userObj.firstname : '';
-                //     const lastName = userObj.lastname ? userObj.lastname : '';
-                //     user = `${firstName} ${lastName}`.trim();
-                //     user += ` (${userObj.id})`;
-                //   }
-                // }
-                log.debug({ title: `SuiteToolsModel:getTokens() filtering for user`, details: user });
-                tokens = tokens.filter((result) => result.userId == user);
-            }
-            if (role) {
-                tokens = tokens.filter((result) => result.roleId == role);
-            }
-            log.debug({ title: 'SuiteToolsModel:getTokens() returning', details: tokens });
             return tokens;
         }
         /**
@@ -752,7 +754,7 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
       LoginAudit.requestUri,
       LoginAudit.detail,
       LoginAudit.secChallenge,
-      LoginAudit.userAgent,
+      LoginAudit.userAgent
     FROM
       LoginAudit`;
             // add where clause

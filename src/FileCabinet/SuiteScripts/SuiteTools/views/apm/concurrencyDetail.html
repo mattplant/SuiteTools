@@ -1,20 +1,20 @@
-<!-- title -->
-<div class="mb-2">
-  <h2 class="text-2xl">Concurrency Detail</h2>
+<div id="spinner" class="grid place-content-center">
+	<span class="h-7 w-7 block rounded-full border-4 border-t-blue-500 animate-spin"></span>
 </div>
+<div id="results" style="display: none;">
+	<div class="mb-2">
+		<h2 class="text-2xl">Concurrency Detail</h2>
+	</div>
 
-<div>
+	<div class="mb-2">
+		<h2 class="text-xl">Detail Table</h2>
+		<div id="detailTable"></div>
+	</div>
 
-</div>
-
-<div class="mb-2">
-	<h2 class="text-xl">Detail Table</h2>
-	<div id="detailTable"></div>
-</div>
-
-<div class="mb-2">
-	<h2 class="text-xl">Requests Table</h2>
-	<div id="requestTable"></div>
+	<div class="mb-2">
+		<h2 class="text-xl">Requests Table</h2>
+		<div id="requestTable"></div>
+	</div>
 </div>
 
 {{{scriptModal}}}
@@ -30,6 +30,8 @@
 	const startDate = String(startDateElement.textContent);
 	const endDateElement  = document.getElementById("endDate");
 	const endDate = String(endDateElement.textContent);
+	const spinnerElement = document.getElementById("spinner");
+	const resultsElement = document.getElementById("results");
 	window.onload = function(){
 		const url = getConcurrencyDetailUrl(accountId, startDate, endDate);
 		getNsConcurrencyDetailData(url);
@@ -93,6 +95,9 @@
 			const endTimeMS = row.getData().endTimeMS;
 			getNsConcurrencyRequestData(startTimeMS, endTimeMS);
 		});
+		// show results
+		spinnerElement.style.display = "none";
+		resultsElement.style.display = "block";
 	}
 
 	/**

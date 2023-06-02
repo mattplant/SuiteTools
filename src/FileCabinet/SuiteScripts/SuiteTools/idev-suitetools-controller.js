@@ -392,47 +392,12 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             params.push('integId='); // integId
             params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
             const concurrencySummaryUrl = this.stApp.stLib.stLibNs.stLibNsScript.buildScriptUrl(accountId, scriptId, deployId, params);
-            // set form input option values dynamically
-            // const optionValuesObj = {
-            //   options: [],
-            // };
-            // const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
-            // get the results
-            // let formFieldValues = [];
-            // if (this.stApp.context.request.method == 'GET') {
-            //   // set the default initial values
-            //   formFieldValues.push({ name: 'custom_status', value: 'T' });
-            // } else {
-            //   // POST - get values from POSTed fields
-            //   formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
-            // }
-            // const status = this.getPostedField('custom_status', formFieldValues);
-            // const results = this.stApp.stModel.getConcurrencies(status);
-            // const results = JSON.parse(page.body);
-            // log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() page =', details: page });
-            // const results = [];
-            // const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-            //   'views/partials/results/concurrencySummary.html'
-            // );
-            // const resultsValues = {};
-            // resultsValues['scriptUrl'] = this.stApp.scriptUrl;
-            // resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
-            // const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/apm/concurrencySummary.html');
             const bodyValues = {};
-            // bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-            //   'views/partials/modals/wrapper/user.html'
-            // );
-            // bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-            //   'views/partials/modals/wrapper/integration.html'
-            // );
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
             bodyValues['concurrencySummaryUrl'] = concurrencySummaryUrl;
-            // bodyValues['optionValues'] = optionValues;
-            // bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
-            // bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -515,15 +480,14 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
          * @param appError - issues with the application that prevent it from running properly
          */
         renderAppErrorForm(e, devMode) {
-            log.debug({ title: 'SuiteToolsController:renderAppErrorForm() initiated', details: null });
+            log.debug({ title: 'SuiteToolsController:renderAppErrorForm() initiated', details: e });
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/appError.html');
             const bodyValues = {};
             bodyValues['id'] = e.id;
             bodyValues['name'] = e.name;
             bodyValues['message'] = e.message;
-            if (devMode) {
-                // only display stack if in dev mode
+            if (devMode && Array.isArray(e.stack) && e.stack.length > 0) {
                 const stackLines = e.stack[0];
                 log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLines', details: stackLines });
                 const stackLinesArray = stackLines.split('at');
@@ -537,17 +501,19 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
          */
         renderSettingsForm() {
             log.debug({ title: 'SuiteToolsController:renderSettingsForm() initiated', details: '' });
+            const recordType = 'customrecord_idev_suitetools_settings';
+            const recordId = this.stApp.stAppSettings.recordId;
+            const recordUrl = this.stApp.stLib.stLibNs.stLibNsHttp.buildRecordUrl(recordType, String(recordId));
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/settings.html');
             const bodyValues = {};
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
-            bodyValues['recordid'] = this.stApp.stAppSettings.recordId;
+            bodyValues['recordid'] = `${recordId} <a href="${recordUrl}" target="_blank">View</a>`;
             bodyValues['cssurl'] = this.stApp.stAppSettings.cssUrl;
             bodyValues['jsurl'] = this.stApp.stAppSettings.jsUrl;
             bodyValues['devmode'] = this.stApp.stAppSettings.devMode;
             bodyValues['urlIntegrations'] = this.stApp.scriptUrl + '&action=getIntegrations';
             bodyValues['integrations'] = this.stApp.stAppSettings.integrations;
-            bodyValues['lastLoginSearchId'] = this.stApp.stLib.stLibNs.stLibNsSearch.getSearchInternalId('customsearch_idev_user_last_login');
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
@@ -857,15 +823,6 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
             const bodyValues = {};
             if (record) {
-                // // determine last login
-                // const lastLoginSQL = `SELECT
-                //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
-                //   FROM
-                //     LoginAudit
-                //   WHERE
-                //   oAuthAppName = '${record.name}'
-                //   GROUP BY LoginAudit.oauthaccesstokenname`;
-                // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
                 // set the values
                 bodyValues['scriptUrl'] = this.stApp.scriptUrl;
                 bodyValues['id'] = record.id;
@@ -873,10 +830,11 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 bodyValues['name'] = record.name;
                 bodyValues['integrationId'] = record.integrationId;
                 bodyValues['createdOn'] = record.createdOn;
-                bodyValues['tokenauthflag'] = record.tokenauthflag;
-                bodyValues['authorizationcodegrant'] = record.authorizationcodegrant;
-                bodyValues['rlcauthflag'] = record.rlcauthflag;
-                // bodyValues['lastLogin'] = lastLogin;
+                bodyValues['tokenAuthFlag'] = record.tokenAuthFlag;
+                bodyValues['authorizationCodeGrant'] = record.authorizationCodeGrant;
+                bodyValues['oauth2ClientCredentials'] = record.oauth2ClientCredentials;
+                bodyValues['rlcAuthFlag'] = record.rlcAuthFlag;
+                bodyValues['lastLogin'] = record.lastLogin;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=integration&id=' + record.id;
                 bodyValues['urlNs'] = '/app/common/integration/integrapp.nl?id=' + record.id;
                 bodyValues['urlTokens'] = this.stApp.scriptUrl + '&action=tokens&integrationId=' + record.id;
@@ -1213,7 +1171,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 // bodyValues['supervisorName'] = `<a href="${this.stApp.scriptUrl}&action=user&id=${record.supervisorid}">${record.supervisorname}</a>`;
                 bodyValues['supervisorName'] = record.supervisorname;
                 bodyValues['title'] = record.title;
-                bodyValues['lastlogin'] = lastLogin;
+                bodyValues['lastLogin'] = lastLogin;
                 bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + record.id;
                 bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&userId=' + record.id;
@@ -1230,7 +1188,10 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
          * @param [integrationMode]
          */
         renderLoginsForm(integrationMode = false) {
-            log.debug({ title: 'SuiteToolsController:renderLoginsForm() initiated', details: null });
+            log.debug({
+                title: 'SuiteToolsController:renderLoginsForm() initiated',
+                details: { integrationMode: integrationMode },
+            });
             // set form input option values dynamically
             // rows
             const rowOptions = this.stApp.stView.getRowOptions();
@@ -1282,7 +1243,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 const userId = this.stApp.context.request.parameters.userId;
                 if (integrationId || userId || tokenId) {
                     // set the initial values for when script params are set in the URL
-                    formFieldValues.push({ name: 'custom_dates', value: 'today' });
+                    formFieldValues.push({ name: 'custom_dates', value: '15' });
                     if (integrationId) {
                         formFieldValues.push({ name: 'custom_integration', value: integrationId });
                     }
@@ -1292,6 +1253,9 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     if (userId) {
                         formFieldValues.push({ name: 'custom_users', value: [userId] });
                     }
+                    // TODO - improve this if possible
+                    // temporarily set rows to only 50 since this is running very slow in PROD
+                    formFieldValues.push({ name: 'custom_rows', value: '50' });
                 }
                 else {
                     // set the default initial values for when no script params are set in the URL
@@ -1312,6 +1276,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const token = this.getPostedField('custom_token', formFieldValues);
             const users = this.getPostedField('custom_users', formFieldValues);
             const dates = this.getPostedField('custom_dates', formFieldValues);
+            // TODO - getUserLogins does not scale for production
             const results = this.stApp.stModel.getUserLogins(rows, status, integration, token, users, dates);
             const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/logins.html');
             const resultsValues = {};
@@ -1636,12 +1601,14 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             log.debug({ title: 'SuiteToolsController:getOptionValues() initiated', details: null });
             const optionsOut = [];
             optionsOut.push({ value: '', text: 'All' });
-            values.forEach((option) => {
-                optionsOut.push({
-                    value: option.id,
-                    text: option.name,
+            if (values && Array.isArray(values) && values.length > 0) {
+                values.forEach((option) => {
+                    optionsOut.push({
+                        value: option.id,
+                        text: option.name,
+                    });
                 });
-            });
+            }
             log.debug({ title: 'SuiteToolsController:getOptionValues() returning', details: optionsOut });
             return optionsOut;
         }
@@ -1678,14 +1645,18 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     // add integration details to the integration
                     let details = integrationsDetails.filter((detail) => detail['name'] == id);
                     details = results.length > 0 ? details[0].values : [];
-                    // tokenauthflag
-                    const tokenauthflagFind = details.filter((detail) => detail['name'] == 'tokenauthflag');
-                    const tokenauthflag = tokenauthflagFind.length > 0 ? tokenauthflagFind[0].values : [];
-                    // authorizationcodegrant
-                    const authorizationcodegrantFind = details.filter((detail) => detail['name'] == 'authorizationcodegrant');
-                    const authorizationcodegrant = authorizationcodegrantFind.length > 0 ? authorizationcodegrantFind[0].values : [];
-                    const rlcauthflagFind = details.filter((detail) => detail['name'] == 'rlcauthflag');
-                    const rlcauthflag = rlcauthflagFind.length > 0 ? rlcauthflagFind[0].values : [];
+                    // Tokens - tokenAuthFlag
+                    const tokenAuthFlagFind = details.filter((detail) => detail['name'] == 'tokenauthflag');
+                    const tokenAuthFlag = tokenAuthFlagFind.length > 0 ? tokenAuthFlagFind[0].values : [];
+                    // OAuth 2.0 authorizationCodeGrant
+                    const authorizationCodeGrantFind = details.filter((detail) => detail['name'] == 'authorizationcodegrant');
+                    const authorizationCodeGrant = authorizationCodeGrantFind.length > 0 ? authorizationCodeGrantFind[0].values : [];
+                    // OAuth 2.0 oauth2ClientCredentials
+                    const oauth2ClientCredentialsFind = details.filter((detail) => detail['name'] == 'oauth2clientcredentials');
+                    const oauth2ClientCredentials = oauth2ClientCredentialsFind.length > 0 ? oauth2ClientCredentialsFind[0].values : [];
+                    // User Credentials - rlcAuthFlag
+                    const rlcAuthFlagFind = details.filter((detail) => detail['name'] == 'rlcauthflag');
+                    const rlcAuthFlag = rlcAuthFlagFind.length > 0 ? rlcAuthFlagFind[0].values : [];
                     // standardize the integration field names (e.g. camelCase and remove spaces)
                     let integrationName = integration['Name'];
                     if (integrationName === 'SuiteCloud IDE & CLI') {
@@ -1693,10 +1664,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     }
                     // add last logins to the integration
                     const foundLastLogin = lastLogins.find((record) => record['name'] == integrationName);
-                    // log.debug({
-                    //   title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin',
-                    //   details: foundLastLogin,
-                    // });
+                    // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
                     const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
                     standardizedValues.push({
                         id: id,
@@ -1705,10 +1673,11 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                         integrationId: integration['Application ID'],
                         active: integration['State'] == 'Enabled' ? 'T' : 'F',
                         createdOn: integration['Created On'],
-                        lastlogin: lastLoginDate,
-                        tokenauthflag: tokenauthflag == 'Checked' ? 'T' : 'F',
-                        authorizationcodegrant: authorizationcodegrant == 'Checked' ? 'T' : 'F',
-                        rlcauthflag: rlcauthflag == 'Checked' ? 'T' : 'F',
+                        lastLogin: lastLoginDate ? lastLoginDate : '',
+                        tokenAuthFlag: tokenAuthFlag == 'Checked' ? 'T' : 'F',
+                        authorizationCodeGrant: authorizationCodeGrant == 'Checked' ? 'T' : 'F',
+                        oauth2ClientCredentials: oauth2ClientCredentials == 'Checked' ? 'T' : 'F',
+                        rlcAuthFlag: rlcAuthFlag == 'Checked' ? 'T' : 'F',
                     });
                 }
                 if (standardizedValues.length > 0) {
@@ -1786,52 +1755,17 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     updateSettings.push({ custrecord_idev_st_config_tokens: JSON.stringify(standardizedValues) });
                 }
             }
-            // user last logins
-            // this worked in the Sandbox, but not in Production
-            // const lastLoginsSql =
-            //   'SELECT LoginAudit.User, MAX(LoginAudit.Date) AS lastLogin FROM LoginAudit GROUP BY LoginAudit.User';
-            // const lastLogins = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(lastLoginsSql);
-            // we can not use the search module because it does not support the LoginAudit table
-            // const lastLogins = this.stApp.stLib.stLibNs.stLibNsSearch.run('customsearch_idev_user_last_login');
-            // so therefore we have scraped this data from the saved search
-            // lastLogins = [];
-            // results = value.filter((result) => result.name == 'lastLogins');
-            // if (results.length > 0) {
-            //   log.debug({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins', details: results });
-            //   // standardize the last login field names (e.g. camelCase and remove spaces)
-            //   for (const lastLogin of results[0].values) {
-            //     log.debug({ title: 'SuiteToolsController:updateIntegrationsData() lastLogin', details: lastLogin });
-            //     // add the standardized field and values including data cleansing to the array
-            //     lastLogins.push({
-            //       user: lastLogin['User'],
-            //       email: lastLogin['Email Address'],
-            //       date: lastLogin['Maximum of Date'],
-            //     });
-            //   }
-            //   if (lastLogins.length > 0) {
-            //     // remove last record of lastLogins since it contains the the header row
-            //     lastLogins.pop();
-            //     log.debug({
-            //       title: 'SuiteToolsController:updateIntegrationsData() lastLogins',
-            //       details: lastLogins,
-            //     });
-            //   }
-            // } else {
-            //   log.error({ title: 'SuiteToolsController:updateIntegrationsData() lastLogins not found', details: '' });
-            // }
-            // scraping the data via a saved search is not scalable since the results only return 50 records per page
-            // therefore we are using a map/reduce script to get the data
             // users
             standardizedValues = [];
             const users = this.stApp.stModel.getEmployees('U', null, null);
             const usersRoles = this.stApp.stModel.getUsersRoles();
             // standardize the integration field names (e.g. camelCase and remove spaces)
             for (const user of users) {
-                log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
                 // add additional user info
                 // last login
                 const foundLastLogin = lastLogins.find((record) => record['email'] == user['email']);
-                log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
                 const lastLoginDate = foundLastLogin ? foundLastLogin.date : '';
                 // roles
                 const roleIds = [];
@@ -1851,7 +1785,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     supervisorid: user.supervisorid,
                     supervisor: user.supervisor == ' ()' ? '' : user.supervisor,
                     title: user.title ? user.title : '',
-                    lastlogin: lastLoginDate,
+                    lastLogin: lastLoginDate,
                     roleIds: JSON.stringify(roleIds),
                     roles: roles.join(', '),
                 });
@@ -1920,7 +1854,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 title: 'SuiteToolsController:initiateLastLogins() submitted last logins map/reduce script',
                 details: 'scriptTaskId = ' + scriptTaskId,
             });
-            // the results are saved in the summary step of the map/reduce script
+            // NOTE: the results are saved in the summary step of the map/reduce script
         }
     }
     exports.SuiteToolsController = SuiteToolsController;

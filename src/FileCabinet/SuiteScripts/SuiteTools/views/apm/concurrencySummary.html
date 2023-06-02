@@ -3,52 +3,55 @@
   <h2 class="text-2xl">Concurrency Summary</h2>
 </div>
 
-<div class="mb-2">
-	<label for="dateRange" class="mb-2 pr-2 font-medium text-gray-900">Date Range</label>
+<div>
+	<label for="dateRange" class="pr-2 font-medium text-gray-900">Date Range</label>
 	<select id="dateRange" onchange="changeDateRange()" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 px-2 py-0.5">
 		<option value="3">Last 3 Days</option>
 		<option value="7">Last 7 Days</option>
 		<option value="14">Last 14 Days</option>
 		<option value="30">Last 30 Days</option>
 	</select>
+	<span id="spinner" class="align-top h-7 w-7 inline-block rounded-full border-4 border-t-blue-500 animate-spin"></span>
 </div>
 
- <div class="py-2 px-2 mx-auto text-center">
-	<div class="flex bg-gray-50 rounded-lg shadow">
-		<div class="flex-1 p-5">
-			<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Concurrency Limit</h3>
-			<h1 id="concurrencyLimit" class="text-3xl text-gray-500 p-2"></h1>
-		</div>
-		<div class="flex-1 p-5">
-			<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Peak Concurrency</h3>
-			<h1 id="peakConcurrency" class="text-3xl text-gray-500 p-2"></h1>
-			<span id="peakConcurrencyDate" class="text-gray-500"></span>
-		</div>
-		<div class="flex-1 p-5">
-			<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Close to the Limit</h3>
-			<h1 id="closeToLimitRate" class="text-3xl text-gray-500 p-2"></h1>
-			<span id="closeToLimitRange" class="text-gray-500"></span>
-		</div>
-		<div class="flex-1 p-5">
-			<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Over the Limit</h3>
-			<h1 id="overLimitRate" class="text-3xl text-gray-500 p-2"></h1>
-			<span id="overLimitRange" class="text-gray-500"></span>
-		</div>
-		<div class="flex-1 p-5">
-			<h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Error Rate</h1>
-			<span id="errorRate" class="text-3xl text-gray-500 p-2"></span>
+<div id="results" style="display: none;">
+	<div class="py-2 px-2 mx-auto text-center">
+		<div class="flex bg-gray-50 rounded-lg shadow">
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Concurrency Limit</h3>
+				<h1 id="concurrencyLimit" class="text-3xl text-gray-500 p-2"></h1>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Peak Concurrency</h3>
+				<h1 id="peakConcurrency" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="peakConcurrencyDate" class="text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Close to the Limit</h3>
+				<h1 id="closeToLimitRate" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="closeToLimitRange" class="text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Over the Limit</h3>
+				<h1 id="overLimitRate" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="overLimitRange" class="text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Error Rate</h1>
+				<span id="errorRate" class="text-3xl text-gray-500 p-2"></span>
+			</div>
 		</div>
 	</div>
-</div>
 
-<div class="mb-2">
-	<h2 class="text-xl">Heat Map</h2>
-	<div id="heatMapPeak"></div>
-</div>
+	<div class="mb-2">
+		<h2 class="text-xl">Heat Map</h2>
+		<div id="heatMapPeak"></div>
+	</div>
 
-<div class="mb-2">
-	<h2 class="text-xl">Summary Table</h2>
-	<div id="summaryTable"></div>
+	<div class="mb-2">
+		<h2 class="text-xl">Summary Table</h2>
+		<div id="summaryTable"></div>
+	</div>
 </div>
 
 <span id="accountId" style="display: none;">{{accountId}}</span>
@@ -59,6 +62,8 @@
 	const accountId = String(accountIdField.textContent);
 	const urlField  = document.getElementById("concurrencySummaryUrl");
 	const url = String(urlField.textContent);
+	const spinnerElement = document.getElementById("spinner");
+	const resultsElement = document.getElementById("results");
 	window.onload = function(){ getNsConcurrencySummaryData(url); };
 
 	function changeDateRange(){
@@ -75,6 +80,9 @@
 	 */
 	async function getNsConcurrencySummaryData(url) {
 		console.log('getNsConcurrencySummaryData() initiated with ' + JSON.stringify({ }));
+		// show spinner
+		spinnerElement.style.visibility = "visible";
+		resultsElement.style.display = "none";
 		// get data from NetSuite APM service
 		console.log('getNsConcurrencySummaryData() loading data from NetSuite...');
 		const response = await getJsonPageContent(url);
@@ -237,6 +245,9 @@
 				window.open('{{{scriptUrl}}}&action=apmConcurDetail' + '&startDate=' + startTimeMS + '&endDate=' + endTimeMS);
 			});
 		}
+		// show results
+		spinnerElement.style.visibility = "hidden";
+		resultsElement.style.display = "block";
 	}
 
 	/**

@@ -1,28 +1,211 @@
-<div class="mb-2">
-  <h2 class="text-2xl">Integration Details</h2>
-  <p class="mt-4">From integration data.</p>
-  <br>
+<div>
 	<div class="mb-2">
-		<ul>
-			<li>Name: {{name}}</li>
-			<li><b>{{#if active}}Enabled{{else}}Blocked{{/if}}</b></li>
-			<li>Integration ID: {{integrationId}}</li>
-			<li>Created On: {{createdOn}}</li>
-			<li>tokenauthflag: {{tokenauthflag}}</li>
-			<li>authorizationcodegrant: {{authorizationcodegrant}}</li>
-			<li>rlcauthflag: {{rlcauthflag}}</li>
-			<li>Last Login: {{lastLogin}}</li>
-		</ul>
+	<h2 class="text-2xl">Integration Details</h2>
+	<p class="mt-4">From integration data.</p>
+	<br>
+		<div class="mb-2">
+			<ul>
+				<li>Name: {{name}}</li>
+				<li><b>{{#if active}}Enabled<span id="active" style="display: none;"> and Active</span>{{else}}Blocked{{/if}}</b></li>
+				<li>Integration ID: {{integrationId}}</li>
+				<li>Last Login: {{lastLogin}}</li>
+				<li>Token-Based Authentication: {{tokenAuthFlag}}</li>
+				<li>OAuth 2.0 Authorization Code Grant: {{authorizationCodeGrant}}</li>
+				<li>OAuth 2.0 Client Credentials: {{oauth2ClientCredentials}}</li>
+				<li>User Credentials: {{rlcAuthFlag}}</li>
+				<li>Created On: {{createdOn}}</li>
+			</ul>
+		</div>
+		<button onclick="window.open('{{urlNs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Integration Record</button>
+		<button onclick="window.open('{{urlLogins}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Logins</button>
 	</div>
-	<button onclick="window.open('{{urlNs}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Integration Record</button>
-	<button onclick="window.open('{{urlLogins}}', '_blank')" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">View Logins</button>
-</div>
-<br>
-<div class="mb-2">
-	<h3 class="text-xl">Tokens</h3>
+	<br>
+	<div class="mb-2">
+		<h3 class="text-xl">Tokens</h3>
+	</div>
+
+	{{{tokenModal}}}
+	{{{userModal}}}
+
+	{{{results}}}
+
+	<div class="mb-2">
+		<h2 class="text-2xl">Execution Log</h2>
+		<div id="spinner" class="grid place-content-center">
+			<span class="h-7 w-7 block rounded-full border-4 border-t-blue-500 animate-spin"></span>
+		</div>
+		<div id="postLoadResults" style="display: none;">
+			<div class="mb-2">
+				<h3 class="text-xl">SOAP Web Services</h3>
+				<div id="soapLogTable"></div>
+			</div>
+			<div class="mb-2">
+				<h3 class="text-xl">REST Web Services</h3>
+				<div id="restLogTable">TBD</div>
+			</div>
+			<div class="mb-2">
+				<h3 class="text-xl">RESTlets</h3>
+				<div id="restletLogTable"></div>
+			</div>
+		</div>
+	</div>
 </div>
 
-{{{tokenModal}}}
-{{{userModal}}}
+<span id="integrationId" style="display: none;">{{id}}</span>
 
-{{{results}}}
+<!-- load libraries needed to scrape tables on NetSuite pages -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- table-to-json -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/table-to-json/1.0.0/jquery.tabletojson.min.js" integrity="sha512-kq3madMG50UJqYNMbXKO3loD85v8Mtv6kFqj7U9MMpLXHGNO87v0I26anynXAuERIM08MHNof1SDaasfw9hXjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+	const integrationIdElement  = document.getElementById("integrationId");
+	const integrationId = String(integrationIdElement.textContent);
+	const spinnerElement = document.getElementById("spinner");
+	const resultsElement = document.getElementById("postLoadResults");
+	const activeElement = document.getElementById("active");
+	window.onload = function(){
+		getNsIntegrationLogData(integrationId);
+	};
+
+	/**
+	 * Get NetSuite integration execution log data.
+	 * if (NS.form.isInited() && NS.form.isValid()) ShowTab("executionlog",false); return false;"
+	 */
+	async function getNsIntegrationLogData(integrationId) {
+		let nsData = [];
+		console.log('getNsIntegrationLogData() initiated. Loading data from NetSuite...');
+
+		// SOAP Web Services Execution Logs
+		let soapLog = await getPageTableContent(`/app/common/integration/integrapp.nl?id=${integrationId}`, 'soaplog_div');
+		console.log('soapLog = ' + JSON.stringify(soapLog));
+		// format results
+		let formattedResults = [];
+		if (soapLog && soapLog.length > 0) {
+			if (soapLog[0]["Time"] == "No records to show.") {
+				// no results
+				soapLog = [];
+			} else {
+				for (let i = 0; i < soapLog.length; i++) {
+					const result = soapLog[i];
+					const formattedResult = {
+						"time": result["Time"],
+						"duration": result["Duration (Secs)"],
+						"action": result["Action"],
+						"apiVersion": result["API Version"],
+						"status": result["Status"],
+						"userEmail": result["User Email"],
+						"recordsFinished": result["Records Finished"],
+						"recordsFailed": result["Records Failed"],
+						"recordsReturnedInQuery": result["Records Returned in Query"],
+						"request": result["Request"],
+						"response": result["Response"],
+					};
+					formattedResults.push(formattedResult);
+				}
+			}
+		}
+		console.log('formattedResults = ' + JSON.stringify(formattedResults));
+		// define table
+		let soapLogTable = new Tabulator("#soapLogTable", {
+			data:formattedResults,
+			layout:"fitColumns",
+			columns:[
+				{ title:"Time", field:"time", sorter:"string", width:160 },
+				{ title:"Duration", field:"duration", sorter:"string", width:160 },
+				{ title:"Action", field:"action", sorter:"string", width:160 },
+				{ title:"API Version", field:"apiVersion", sorter:"string", width:160 },
+				{ title:"Status", field:"status", sorter:"string", width:160 },
+				{ title:"User Email", field:"userEmail", sorter:"string", width:160 },
+				{ title:"Records Finished", field:"recordsFinished", sorter:"string", width:160 },
+				{ title:"Records Failed", field:"recordsFailed", sorter:"string", width:160 },
+				{ title:"Records Returned in Query", field:"recordsReturnedInQuery", sorter:"string", width:160 },
+				{ title:"Request", field:"request", sorter:"string", width:160 },
+				{ title:"Response", field:"response", sorter:"string", width:160 },
+			],
+		});
+
+		// REST Web Services Execution Logs
+		// TODO
+
+		// RESTlets Execution Logs
+		let restletLog = await getPageTableContent(`/app/common/integration/integrapp.nl?id=${integrationId}`, 'restletlog_div');
+		console.log('restletLog = ' + JSON.stringify(restletLog));
+		// format results
+		formattedResults = [];
+		if (restletLog && restletLog.length > 0) {
+			if (restletLog[0]["Time"] == "No records to show.") {
+				// no results
+				restletLog = [];
+			} else {
+				for (let i = 0; i < restletLog.length; i++) {
+					const result = restletLog[i];
+					const formattedResult = {
+						"time": result["Time"],
+						"duration": result["Duration (Secs)"],
+						"action": result["Action"],
+						"baseUnit": result["Base Unit"],
+						"scriptId": result["Script ID"],
+						"deploymentId": result["Deployment ID"],
+						"status": result["Status"],
+						"userEmail": result["User Email"],
+					};
+					formattedResults.push(formattedResult);
+				}
+			}
+		}
+		console.log('formattedResults = ' + JSON.stringify(formattedResults));
+		// define table
+		let restletLogTable = new Tabulator("#restletLogTable", {
+			data:formattedResults,
+			layout:"fitColumns",
+			columns:[
+				{ title:"Time", field:"time", sorter:"string", width:160 },
+				{ title:"Duration", field:"duration", sorter:"string", width:160 },
+				{ title:"Action", field:"action", sorter:"string", width:160 },
+				{ title:"Base Unit", field:"baseUnit", sorter:"string", width:160 },
+				{ title:"Script ID", field:"scriptId", sorter:"string", width:160 },
+				{ title:"Deployment ID", field:"deploymentId", sorter:"string", width:160 },
+				{ title:"Status", field:"status", sorter:"string", width:160 },
+				{ title:"User Email", field:"userEmail", sorter:"string", width:160 },
+			],
+		});
+
+		// show results
+		spinnerElement.style.display = "none";
+		resultsElement.style.display = "block";
+		if ((soapLog && soapLog.length > 0) || (restletLog && restletLog.length > 0)) {
+			// show active text
+			activeElement.style.display = "inline";
+		}
+	}
+
+	/**
+	 * Get page table content
+	 * @author Matthew Plant
+	 *
+	 * @requires jQuery and tableToJSON
+	 *
+	 * @param {string} url - the endpoint to get data from
+	 * @param {string} id - the id of the table element to get
+	 * @returns {object} - the table data
+	 */
+	function getPageTableContent(url, id) {
+		return fetch(url)
+		.then((response) => response.text())
+		.then((pageData) => {
+			console.log('pageData = ' + pageData);
+			const parser = new DOMParser();
+			const domPage = parser.parseFromString(pageData, 'text/html');
+			const table = domPage.getElementById(id).innerHTML;
+			const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
+			console.log(tableJson);
+
+			return tableJson;
+		})
+		.catch((error) => {
+			console.error(`getPageTableContent() Error =\n`, error);
+		});
+	};
+</script>
