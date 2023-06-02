@@ -34,12 +34,12 @@ define(["require", "exports", "N/error", "N/log", "N/runtime", "../idev-suitetoo
     function getInputData(context) {
         log.debug('*START*', '<------------------- START ------------------->');
         log.debug('getInputData() initiated with', JSON.stringify(context));
-        let integrations = null;
+        let identityRecords = null;
         try {
-            // get the integration list from the script parameter
-            integrations = JSON.parse(String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_lastlogins_ints' })));
-            log.debug('getInputData() integrations =', integrations);
-            return integrations;
+            // get the identity records list from the script parameter
+            identityRecords = JSON.parse(String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_lastlogins_ints' })));
+            log.debug('getInputData() identity records =', identityRecords);
+            return identityRecords;
         }
         catch (e) {
             log.error('getInputData() error', JSON.stringify(e));
@@ -54,32 +54,46 @@ define(["require", "exports", "N/error", "N/log", "N/runtime", "../idev-suitetoo
      */
     function reduce(context) {
         // log.debug('reduce() initiated', null);
-        let integrationName = null;
+        let identityRecordName = null;
+        let identityRecordType = null;
         try {
             // get the required values
             const contextObj = JSON.parse(context.values[0]);
             log.debug('reduce() contextObj = ', JSON.stringify(contextObj));
-            // get the integration name
-            integrationName = contextObj.name;
+            // get the identity record type
+            identityRecordType = contextObj.type;
+            // get the identity record name
+            identityRecordName = contextObj.name;
             // determine last login
-            const lastLoginSQL = `SELECT
-        MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
-      FROM
-        LoginAudit
-      WHERE
-      oAuthAppName = '${integrationName}'
-      GROUP BY LoginAudit.oauthaccesstokenname`;
-            const lastLogin = stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
-            // return the result
-            context.write({
-                key: integrationName,
-                value: lastLogin,
-            });
+            let whereClause = null;
+            switch (identityRecordType) {
+                case 'integration':
+                    whereClause = `WHERE oAuthAppName = '${identityRecordName}'`;
+                    break;
+                case 'token':
+                    whereClause = `WHERE oAuthAccessTokenName = '${identityRecordName}'`;
+                    break;
+                case 'user':
+                    whereClause = `WHERE emailAddress = '${identityRecordName}'`;
+                    break;
+                default:
+                    log.error('reduce() error', `Unknown identity record type: ${identityRecordType}`);
+            }
+            if (whereClause) {
+                const lastLoginSQL = `SELECT MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+      FROM LoginAudit ${whereClause}`;
+                const lastLogin = stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // return the result
+                context.write({
+                    key: identityRecordName,
+                    value: lastLogin,
+                });
+            }
         }
         catch (e) {
             log.error('reduce() error', e);
             // add an audit log entry for the failure
-            const msg = `Error in looking up last login for ${integrationName}`;
+            const msg = `Error in looking up last login for "${identityRecordName}" ${identityRecordType}`;
             log.audit('FAILURE', msg);
             // throw new error so that it get's added to the summary and sent in the notification
             throw error.create({
@@ -98,18 +112,18 @@ define(["require", "exports", "N/error", "N/log", "N/runtime", "../idev-suitetoo
     function summarize(context) {
         try {
             log.debug('summarize() context = ', JSON.stringify(context));
-            // get the SuiteTools applicaiton settings record id
+            // get the SuiteTools application settings record id
             const appSettingsRecordId = JSON.parse(String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_lastlogins_set_id' })));
             log.debug('summarize() appSettingsRecordId =', appSettingsRecordId);
             // collect the results
-            const integrations = [];
+            const identityRecords = [];
             context.output.iterator().each(function (key, value) {
-                integrations.push({ name: key, lastLogin: value });
+                identityRecords.push({ name: key, lastLogin: value });
                 return true;
             });
             // write the results to the SuiteTools application settings record
-            const updateSettings = { custrecord_idev_st_config_last_logins: JSON.stringify(integrations) };
-            log.debug('summarize() updateSettings = ', JSON.stringify(integrations));
+            const updateSettings = { custrecord_idev_st_config_last_logins: JSON.stringify(identityRecords) };
+            log.debug('summarize() updateSettings = ', JSON.stringify(identityRecords));
             const success = stLibNsRecord.updateCustomRecord('customrecord_idev_suitetools_settings', appSettingsRecordId, updateSettings);
             log.debug({ title: `getInputData() saved last logins successfully?`, details: success });
             // generate and log standard summary
@@ -123,7 +137,7 @@ define(["require", "exports", "N/error", "N/log", "N/runtime", "../idev-suitetoo
                 return true;
             });
             if (scriptErrors.length > 0) {
-                log.error('summarize() ' + scriptErrors.length + ' error(s) occured', scriptErrors.join('\n'));
+                log.error('summarize() ' + scriptErrors.length + ' error(s) occurred', scriptErrors.join('\n'));
             }
             else {
                 log.debug('summarize()', 'Script completed without errors.');

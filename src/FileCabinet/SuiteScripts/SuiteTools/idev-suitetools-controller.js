@@ -983,7 +983,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 bodyValues['urlNs'] = '/app/setup/accesstoken.nl?id=' + record.id;
                 bodyValues['urlIntegration'] = this.stApp.scriptUrl + '&action=integration&id=' + record.integrationId;
                 bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&tokenId=' + record.id;
-                // bodyValues['lastLogin'] = lastLogin;
+                bodyValues['lastLogin'] = record.lastLogin;
             }
             this.stApp.stView.render(renderType, body, bodyValues);
         }
@@ -1154,14 +1154,19 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const bodyValues = {};
             if (record) {
                 // determine last login
-                const lastLoginSQL = `SELECT
-          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
-        FROM
-          LoginAudit
-        WHERE
-          LoginAudit.user = '${record.id}'
-        GROUP BY LoginAudit.user`;
-                const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                // const lastLoginSQL = `SELECT
+                //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+                //   FROM
+                //     LoginAudit
+                //   WHERE
+                //     LoginAudit.user = '${record.id}'
+                //   GROUP BY LoginAudit.user`;
+                // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+                const lastLogins = this.stApp.stAppSettings.lastLogins;
+                // add last login to the integration
+                const foundLastLogin = lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
+                // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
+                const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
                 // set the values
                 bodyValues['id'] = record.id;
                 bodyValues['entityid'] = record.entityid;
@@ -1171,7 +1176,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 // bodyValues['supervisorName'] = `<a href="${this.stApp.scriptUrl}&action=user&id=${record.supervisorid}">${record.supervisorname}</a>`;
                 bodyValues['supervisorName'] = record.supervisorname;
                 bodyValues['title'] = record.title;
-                bodyValues['lastLogin'] = lastLogin;
+                bodyValues['lastLogin'] = lastLoginDate;
                 bodyValues['urlNs'] = '/app/common/entity/employee.nl?id=' + record.id;
                 bodyValues['url'] = this.stApp.scriptUrl + '&action=user&id=' + record.id;
                 bodyValues['urlLogins'] = this.stApp.scriptUrl + '&action=loginsIntegration&userId=' + record.id;
@@ -1657,15 +1662,16 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     // User Credentials - rlcAuthFlag
                     const rlcAuthFlagFind = details.filter((detail) => detail['name'] == 'rlcauthflag');
                     const rlcAuthFlag = rlcAuthFlagFind.length > 0 ? rlcAuthFlagFind[0].values : [];
-                    // standardize the integration field names (e.g. camelCase and remove spaces)
+                    // determine integration name
                     let integrationName = integration['Name'];
                     if (integrationName === 'SuiteCloud IDE & CLI') {
                         integrationName = 'SuiteCloud Development Integration';
                     }
-                    // add last logins to the integration
+                    // add last login to the integration
                     const foundLastLogin = lastLogins.find((record) => record['name'] == integrationName);
                     // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
                     const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
+                    // add the standardized field and values including data cleansing to the array
                     standardizedValues.push({
                         id: id,
                         name: integrationName,
@@ -1687,8 +1693,9 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     //   title: 'SuiteToolsController:updateIntegrationsData() integrations standardizedValues',
                     //   details: standardizedValues,
                     // });
-                    // sort the array by name
-                    standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+                    // sort the array by last login DESC
+                    standardizedValues.sort((a, b) => (a.lastLogin > b.lastLogin ? -1 : 1));
+                    // save data
                     updateSettings.push({ custrecord_idev_st_config_integrations: JSON.stringify(standardizedValues) });
                 }
             }
@@ -1700,7 +1707,6 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             results = value.filter((result) => result.name == 'tokens');
             if (results.length > 0) {
                 // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() tokens', details: results });
-                // standardize the integration field names (e.g. camelCase and remove spaces)
                 for (const token of results[0].values) {
                     // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() token', details: token });
                     // add integrationId and integrationNameId
@@ -1724,12 +1730,17 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     //   TODO: handle case where multiple users have the same name
                     const foundCreatedBy = userList.find((user) => user.name.trim() === token['Created By']);
                     const createdById = foundCreatedBy ? foundCreatedBy.id : null;
+                    const tokenName = token['Token name'];
+                    // add last login to the token
+                    const foundLastLogin = lastLogins.find((record) => record['name'] == tokenName);
+                    // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
+                    const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
                     // add the standardized field and values including data cleansing to the array
                     standardizedValues.push({
                         id: token['Internal ID'],
                         active: token['Inactive'] == 'No' ? 'T' : 'F',
-                        name: token['Token name'],
-                        nameId: token['Token name'] + ' (' + token['Internal ID'] + ')',
+                        name: tokenName,
+                        nameId: tokenName + ' (' + token['Internal ID'] + ')',
                         integration: integrationName,
                         integrationId: integrationId,
                         integrationNameId: integrationNameId,
@@ -1741,6 +1752,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                         createdOn: token['Created'],
                         createdBy: token['Created By'],
                         createdByNameId: token['Created By'] + ' (' + createdById + ')',
+                        lastLogin: lastLoginDate ? lastLoginDate : '',
                     });
                 }
                 if (standardizedValues.length > 0) {
@@ -1750,8 +1762,9 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     //   title: 'SuiteToolsController:updateIntegrationsData() tokens standardizedValues',
                     //   details: standardizedValues,
                     // });
-                    // sort the array by name
-                    standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+                    // sort the array by last login DESC
+                    standardizedValues.sort((a, b) => (a.lastLogin > b.lastLogin ? -1 : 1));
+                    // save data
                     updateSettings.push({ custrecord_idev_st_config_tokens: JSON.stringify(standardizedValues) });
                 }
             }
@@ -1759,14 +1772,14 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             standardizedValues = [];
             const users = this.stApp.stModel.getEmployees('U', null, null);
             const usersRoles = this.stApp.stModel.getUsersRoles();
-            // standardize the integration field names (e.g. camelCase and remove spaces)
+            // standardize the user field names (e.g. camelCase and remove spaces)
             for (const user of users) {
                 // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() user', details: user });
                 // add additional user info
                 // last login
-                const foundLastLogin = lastLogins.find((record) => record['email'] == user['email']);
+                const foundLastLogin = lastLogins.find((record) => record['name'] == user['email']);
                 // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
-                const lastLoginDate = foundLastLogin ? foundLastLogin.date : '';
+                const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
                 // roles
                 const roleIds = [];
                 const roles = [];
@@ -1785,13 +1798,14 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     supervisorid: user.supervisorid,
                     supervisor: user.supervisor == ' ()' ? '' : user.supervisor,
                     title: user.title ? user.title : '',
-                    lastLogin: lastLoginDate,
+                    lastLogin: lastLoginDate ? lastLoginDate : '',
                     roleIds: JSON.stringify(roleIds),
                     roles: roles.join(', '),
                 });
             }
-            // sort the array by name
-            standardizedValues.sort((a, b) => (a.name > b.name ? 1 : -1));
+            // sort the array by last login DESC
+            standardizedValues.sort((a, b) => (a.lastLogin > b.lastLogin ? -1 : 1));
+            // save data
             updateSettings.push({ custrecord_idev_st_config_users: JSON.stringify(standardizedValues) });
             log.debug({ title: 'SuiteToolsController:updateIntegrationsData() returning', details: updateSettings });
             return updateSettings;
@@ -1804,48 +1818,81 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initiateLastLogins(value) {
             log.debug({ title: 'SuiteToolsController:initiateLastLogins() initiated', details: '' });
-            const updateSettings = [];
-            // get list of integrations
-            const integrations = [];
-            const results = value.filter((result) => result.name == 'integrations');
+            const identityRecords = [];
+            // integrations
+            let results = value.filter((result) => result.name == 'integrations');
             if (results.length > 0) {
                 log.debug({ title: 'SuiteToolsController:initiateLastLogins() integrations list', details: results });
                 // standardize the integration field names (e.g. camelCase and remove spaces)
                 for (const integration of results[0].values) {
                     log.debug({ title: 'SuiteToolsController:initiateLastLogins() integration', details: integration });
-                    const id = integration['Internal ID'];
                     let integrationName = integration['Name'];
                     if (integrationName === 'SuiteCloud IDE & CLI') {
                         integrationName = 'SuiteCloud Development Integration';
                     }
-                    integrations.push({
-                        id: id,
+                    identityRecords.push({
+                        type: 'integration',
                         name: integrationName,
-                        integrationId: integration['Application ID'],
-                        active: integration['State'] == 'Enabled' ? 'T' : 'F',
-                        createdOn: integration['Created On'],
                     });
                 }
                 log.debug({
-                    title: 'SuiteToolsController:initiateLastLogins() integrations standardizedValues',
-                    details: integrations,
+                    title: 'SuiteToolsController:initiateLastLogins() identity records standardizedValues',
+                    details: identityRecords,
                 });
-                // sort the array by name
-                integrations.sort((a, b) => (a.name > b.name ? 1 : -1));
-                updateSettings.push({ custrecord_idev_st_config_integrations: JSON.stringify(integrations) });
             }
             else {
                 log.error({ title: 'SuiteToolsController:initiateLastLogins() integrations not found', details: '' });
             }
-            log.debug({ title: 'SuiteToolsController:initiateLastLogins() integrations =', details: integrations });
+            log.debug({ title: 'SuiteToolsController:initiateLastLogins() identity records =', details: identityRecords });
+            // tokens
+            results = value.filter((result) => result.name == 'tokens');
+            if (results.length > 0) {
+                log.debug({ title: 'SuiteToolsController:initiateLastLogins() tokens list', details: results });
+                // standardize the token field names (e.g. camelCase and remove spaces)
+                for (const token of results[0].values) {
+                    log.debug({ title: 'SuiteToolsController:initiateLastLogins() token', details: token });
+                    identityRecords.push({
+                        type: 'token',
+                        name: token['Token name'],
+                    });
+                }
+                log.debug({
+                    title: 'SuiteToolsController:initiateLastLogins() identity records standardizedValues',
+                    details: identityRecords,
+                });
+            }
+            else {
+                log.error({ title: 'SuiteToolsController:initiateLastLogins() tokens not found', details: '' });
+            }
+            // users
+            results = this.stApp.stModel.getEmployees('U', null, null);
+            if (results.length > 0) {
+                log.debug({ title: 'SuiteToolsController:initiateLastLogins() users list', details: results });
+                // standardize the user field names (e.g. camelCase and remove spaces)
+                for (const user of results) {
+                    log.debug({ title: 'SuiteToolsController:initiateLastLogins() user', details: user });
+                    identityRecords.push({
+                        type: 'user',
+                        name: user['email'],
+                    });
+                }
+                log.debug({
+                    title: 'SuiteToolsController:initiateLastLogins() identity records standardizedValues',
+                    details: identityRecords,
+                });
+            }
+            else {
+                log.error({ title: 'SuiteToolsController:initiateLastLogins() users not found', details: '' });
+            }
+            // identityRecords.push({ type: 'token', name: 'Amazon Celigo Connection (1st) - 20230509' });
+            log.debug({ title: 'SuiteToolsController:initiateLastLogins() identity records =', details: identityRecords });
             // initiate the last logins map/reduce script
-            // TODO - create a library function for this
             const scriptTask = task.create({
                 taskType: task.TaskType.MAP_REDUCE,
                 scriptId: 'customscript_idev_st_mr_lastlogins',
                 deploymentId: 'customdeploy_idev_st_mr_lastlogins',
                 params: {
-                    custscript_idev_st_mr_lastlogins_ints: JSON.stringify(integrations),
+                    custscript_idev_st_mr_lastlogins_ints: JSON.stringify(identityRecords),
                     custscript_idev_st_mr_lastlogins_set_id: this.stApp.stAppSettings.recordId,
                 },
             });

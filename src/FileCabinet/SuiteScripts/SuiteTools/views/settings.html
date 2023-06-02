@@ -51,35 +51,6 @@
 	});
 
 	/**
-	 * Get page table content
-	 *
-	 * @requires jQuery and tableToJSON
-	 *
-	 * @param {string} url - the endpoint to get data from
-	 * @param {string} id - the id of the table element to get
-	 * @returns {object} - the table data
-	 */
-	function getPageTableContent(url, id) {
-
-		// TODO - add ability to get data from multiple pages
-
-		return fetch(url)
-		.then((response) => response.text())
-		.then((pageData) => {
-			const parser = new DOMParser();
-			const domPage = parser.parseFromString(pageData, 'text/html');
-			const table = domPage.getElementById(id).innerHTML;
-			const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
-			console.log(tableJson);
-
-			return tableJson;
-		})
-		.catch((error) => {
-			console.error(`getPageTableContent Error =\n`, error);
-		});
-	};
-
-	/**
 	 * Get NetSuite integration data.
 	 *
 	 * @param {string} destUrl - the destination URL to post the data to
@@ -143,6 +114,8 @@
 	/**
 	 * Get NetSuite last login data.
 	 *
+	 * Retrieve the identity records for looking up their last login date.
+	 *
 	 * @param {string} destUrl - the destination URL to post the data to
 	 * @returns {void}
 	 */
@@ -152,14 +125,24 @@
 
 		loginSpinnerElement.style.visibility = "visible";
 
-		// get list of integrations from NetSuite Integrations page
+		// integrations
 		const integrations = await getPageTableContent('/app/common/integration/integrapplist.nl', 'div__body');
 		console.log('integrations = ' + JSON.stringify(integrations));
 		// remove last record since it contains the the header row
 		integrations.pop();
 		nsData.push({ name: 'integrations', values: integrations });
 
-		// post integrations data to SuiteTools
+		// tokens
+		const tokens = await getPageTableContent('/app/setup/accesstokens.nl', 'div__body');
+		console.log('tokens = ' + JSON.stringify(tokens));
+		// remove last record since it contains the the header row
+		tokens.pop();
+		nsData.push({ name: 'tokens', values: tokens });
+
+		// users
+		// no need to scrape page since we can use SuiteQL to get the users
+
+		// post data to SuiteTools
 		postData('lastLogins', nsData, destUrl);
 
 		loginSpinnerElement.style.visibility = "hidden";

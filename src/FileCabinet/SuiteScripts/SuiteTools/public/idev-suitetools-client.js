@@ -262,6 +262,34 @@ function getJsonPageContent(url) {
 };
 
 /**
+ * Get page table content
+ * @author Matthew Plant
+ *
+ * @requires jQuery and tableToJSON
+ *
+ * @param {string} url - the endpoint to get data from
+ * @param {string} id - the id of the table element to get
+ * @returns {object} - the table data
+ */
+function getPageTableContent(url, id) {
+    return fetch(url)
+    .then((response) => response.text())
+    .then((pageData) => {
+        // console.log('pageData = ' + pageData);
+        const parser = new DOMParser();
+        const domPage = parser.parseFromString(pageData, 'text/html');
+        const table = domPage.getElementById(id).innerHTML;
+        const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
+        console.log(tableJson);
+
+        return tableJson;
+    })
+    .catch((error) => {
+        console.error(`getPageTableContent() Error =\n`, error);
+    });
+};
+
+/**
  * Post data to an endpoint.
  * @author Matthew Plant
  * @param name - the name of the data
