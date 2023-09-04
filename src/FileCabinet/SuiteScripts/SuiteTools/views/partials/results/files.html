@@ -1,0 +1,60 @@
+<!-- files results -->
+<div id="results" class="w-full h-full flex-grow p-3 overflow-auto">
+  <div>
+		<button id="download-xlsx" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download XLSX</button>
+		<button id="download-csv" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download CSV</button>
+		<button id="download-json" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download JSON</button>
+	</div>
+	<br />
+	<div id="resultsTable"></div>
+	<script>
+		var scriptUrl = "{{{scriptUrl}}}";
+		{{{tableData}}}
+		var table = new Tabulator("#resultsTable", {
+			data: tabledata,
+			columnDefaults: {
+				headerFilter: true,
+			},
+			columns: [
+				{ title: "Active", field: "isinactive", headerFilter:false, hozAlign:"center", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "T") {
+						return "Yes";
+					} else {
+						return "No";
+					}
+				}},
+				{ title: "folder", field: "folder", sorter: "string" },
+				{ title: "createddate", field: "createddate", hozAlign:"center", sorter: "string" },
+				{ title: "lastmodifieddate", field: "lastmodifieddate", sorter: "string" },
+				{ title: "Type", field: "filetypename", sorter: "string" },
+				{ title: "Name", field:"name", cellClick:function(e, cell, value, data){ showModal(scriptUrl, ModalType.File, cell.getValue()) }, sorter:"string"},
+				{ title: "File Size", field: "filesize", sorter: "string" },
+				{ title: "Description", field: "description", sorter: "string", formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+				{ title: "URL", field: "url", sorter: "string",  formatter:function(cell, formatterParams, onRendered){
+					if (cell.getValue() != "null") {
+						return cell.getValue();
+					}
+				}},
+			],
+		});
+		// trigger XLSX file download
+		document.getElementById("download-xlsx").addEventListener("click", function () {
+			table.download("xlsx", "files.xlsx", { sheetName: "Files" });
+			NS.form.setInited(false);
+		});
+		// trigger CSV file download
+		document.getElementById("download-csv").addEventListener("click", function () {
+			table.download("csv", "files.csv");
+			NS.form.setInited(false);
+		});
+		// trigger json file download
+		document.getElementById("download-json").addEventListener("click", function () {
+			table.download("json", "files.json");
+			NS.form.setInited(false);
+		});
+	</script>
+</div>

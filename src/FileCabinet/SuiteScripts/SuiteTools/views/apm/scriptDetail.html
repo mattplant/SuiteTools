@@ -1,0 +1,152 @@
+<!-- title -->
+<div class="mb-2">
+  <h2 class="text-2xl">Script Detail</h2>
+</div>
+
+<div class="mb-2">
+	<h2 class="text-xl">APM Detail Table</h2>
+	<div id="spinner" class="grid place-content-center">
+		<span class="h-7 w-7 block rounded-full border-4 border-t-blue-500 animate-spin"></span>
+	</div>
+	<div id="detailTable" style="display: none;"></div>
+</div>
+
+<div class="mb-2">
+	<h2 class="text-xl">Execution Logs</h2>
+</div>
+{{{results}}}
+
+<span id="accountId" style="display: none;">{{accountId}}</span>
+<span id="startDate" style="display: none;">{{startDate}}</span>
+<span id="endDate" style="display: none;">{{endDate}}</span>
+<span id="scriptType" style="display: none;">{{scriptType}}</span>
+<span id="scriptId" style="display: none;">{{scriptId}}</span>
+
+<script>
+	const accountIdElement  = document.getElementById("accountId");
+	const accountId = String(accountIdElement.textContent);
+	const startDateElement  = document.getElementById("startDate");
+	const startDate = String(startDateElement.textContent);
+	const endDateElement  = document.getElementById("endDate");
+	const endDate = String(endDateElement.textContent);
+	const scriptTypeElement  = document.getElementById("scriptType");
+	const scriptType = String(scriptTypeElement.textContent);
+	const scriptIdElement  = document.getElementById("scriptId");
+	const scriptId = String(scriptIdElement.textContent);
+	const spinnerElement = document.getElementById("spinner");
+	const detailTableElement = document.getElementById("detailTable");
+
+	window.onload = function(){
+		let scriptDetailUrl = getScriptDetailUrl(accountId, startDate, endDate, scriptType, scriptId)
+		getNsScriptDetailData(scriptDetailUrl);
+	};
+
+	/**
+	 * Get NetSuite script detail data.
+	 *
+	 * @param {string} url - the URL to get the data from
+	 * @returns {void}
+	 */
+	async function getNsScriptDetailData(url) {
+		console.log('getNsScriptDetailData() initiated with ' + url);
+		// get data from NetSuite
+		console.log('getNsScriptDetailData() loading data from NetSuite...');
+		const response = await getJsonPageContent(url);
+		const results = response.data;
+		// log info
+		console.log('response = ' + JSON.stringify(response));
+		console.log('success = ' + response.success);
+		console.log('message = ' + response.message);
+		console.log('total = ' + response.total); // total number of results
+		console.log('results = ' + JSON.stringify(results));
+		// format results
+		let formattedResults = [];
+		if (results && results.length > 0) {
+			for (let i = 0; i < results.length; i++) {
+				const result = results[i];
+				// example data payload: {"date":1684343738734,"entityid":13107880,"email":"shopify@bulletproof.com","role":1050,"recordid":null,"totaltime":181.185,"usagecount":1007,"urlrequests":0,"searches":1,"records":101,"errorcode":"","context":"suitelet","operationId":"b74e0bed-d054-41f0-a6fd-90759dd7a0a4","frhtId":"7dc30dde-74ec-453f-b6a2-3d73d95a75c4"}
+				const formattedResult = {
+					"dateMS": result.date,
+					"date": formatDate(result.date),
+					"entityid": result.entityid, // user ID
+					"userRole": result.email + ' (' + result.role + ')', // user (role)
+					"recordid": result.recordid,
+					"totaltime": result.totaltime, // seconds
+					"usagecount": result.usagecount,
+					"urlrequests": result.urlrequests,
+					"searches": result.searches,
+					"records": result.records,
+					"errorcode": result.errorcode,
+					"context": result.context,
+					"operationId": result.operationId,
+					"frhtId": result.frhtId,
+				};
+				formattedResults.push(formattedResult);
+			}
+		}
+		// define table
+		let detailTable = new Tabulator("#detailTable", {
+			data:formattedResults,
+			layout:"fitColumns",
+			columns:[
+				{ title:"dateMS", field:"dateMS", visible:false },
+				{ title:"Date", field:"date", sorter:"string", width:160 },
+				// { title:"Entity", field:"entityid", sorter:"number", width:90 },
+				{ title:"User (Role)", field:"userRole", sorter:"string", width:250 },
+				{ title:"Context", field:"context", sorter:"string", width:90 },
+				{ title:"Record", field:"recordid", sorter:"number", width:90 },
+				{ title:"Time", field:"totaltime", sorter:"number", width:80, hozAlign:"center" },
+				{ title:"Usage", field:"usagecount", sorter:"number", width:80, hozAlign:"center" },
+				{ title:"URLs", field:"urlrequests", sorter:"number", width:100, hozAlign:"center" },
+				{ title:"Searches", field:"searches", sorter:"number", width:100, hozAlign:"center" },
+				{ title:"Records", field:"records", sorter:"number", width:100, hozAlign:"center" },
+				{ title:"Error Code", field:"errorcode", sorter:"string", width:120 },
+				{ title:"Operation ID", field:"operationId", sorter:"string" },
+				{ title:"frhtId", field:"frhtId", sorter:"string" },
+			],
+		});
+		// show results
+		spinnerElement.style.display = "none";
+		detailTableElement.style.display = "block";
+	}
+
+	/**
+	 * Build the relative URL to get the script detail.
+	 *
+	 * @param {string} accountId - the NetSuite account ID
+	 * @param {string} startDate - the start date
+	 * @param {string} endDate - the end date
+	 * @param {string} scriptType - the script type
+	 * @param {string} scriptId - the script ID
+	 * @returns {string} url - the url to get the script detail
+	 */
+	function getScriptDetailUrl(accountId, startDate, endDate, scriptType, scriptId) {
+		console.log('getScriptDetailUrl() initiated with ' + JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate, scriptType: scriptType, scriptId: scriptId }));
+
+		// example URL: https: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_ssa_sl_details_v2&deploy=customdeploy_nsapm_ssa_sl_details_v2&testmode=F&startDateMS=1684343700000&endDateMS=1684344600000&scriptType=restlet&scriptId=237&context=&clientEventType=&mapReduceStage=&compfil=3866611&sort=date&dir=ASC&pageLimit=1000&startIndex=0
+
+		const path = '/app/site/hosting/scriptlet.nl';
+		params = [];
+		// ssa = suitelet script analytics
+		params.push('script=customscript_nsapm_ssa_sl_details_v2');
+		params.push('deploy=customdeploy_nsapm_ssa_sl_details_v2');
+		params.push('compfil=' + accountId); // accountId
+		params.push('testmode=F'); // testmode
+		params.push('startDateMS=' + startDate); // startDate
+		params.push('endDateMS=' + endDate); // endDate
+		params.push('scriptType=' + scriptType); // script type
+		params.push('scriptId=' + scriptId ); // script ID
+		params.push('context='); //
+		params.push('clientEventType='); //
+		params.push('mapReduceStage'); //
+		params.push('sort=date'); // sort field
+		params.push('dir=ASC'); // sort direction
+		params.push('pageLimit=1000'); // page limit
+		params.push('startIndex=0'); //
+		url = path + '?' + params.join('&');
+		console.log('getScriptDetailUrl() returning ' + url);
+
+		return url;
+	}
+
+</script>

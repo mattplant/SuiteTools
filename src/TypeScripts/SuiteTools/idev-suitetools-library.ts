@@ -40,10 +40,15 @@ import { SuiteToolsApp } from './idev-suitetools-app';
  */
 export class SuiteToolsLibrary {
   private _stApp: SuiteToolsApp;
+  private _stLibGeneral: SuiteToolsLibraryGeneral;
   private _stLibNs: SuiteToolsLibraryNetSuite;
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
+  }
+
+  get stLibGeneral(): SuiteToolsLibraryGeneral {
+    return this._stLibGeneral;
   }
 
   get stLibNs(): SuiteToolsLibraryNetSuite {
@@ -53,8 +58,50 @@ export class SuiteToolsLibrary {
   constructor(stApp: SuiteToolsApp) {
     // log.debug({ title: 'SuiteToolsLibrary:constructor() initiated', details: null });
     this._stApp = stApp;
-
+    this._stLibGeneral = new SuiteToolsLibraryGeneral(this.stApp);
     this._stLibNs = new SuiteToolsLibraryNetSuite(this.stApp);
+  }
+}
+
+/**
+ * SuiteTools General Library
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsLibraryGeneral {
+  private _stApp: SuiteToolsApp;
+
+  get stApp(): SuiteToolsApp {
+    return this._stApp;
+  }
+
+  constructor(stApp: SuiteToolsApp) {
+    // log.debug({ title: 'SuiteToolsLibraryGeneral:constructor() initiated', details: null });
+    this._stApp = stApp;
+  }
+
+  /**
+   * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
+   *
+   * TODO replace with moment.js
+   *
+   * @param {Date} date - the date object to format
+   * @returns {string} formattedDate - the formatted date string
+   */
+  public formatDate(date) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+    let hour = '' + d.getHours();
+    let minute = '' + d.getMinutes();
+    let second = '' + d.getSeconds();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    if (hour.length < 2) hour = '0' + hour;
+    if (minute.length < 2) minute = '0' + minute;
+    if (second.length < 2) second = '0' + second;
+    return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
   }
 }
 
@@ -66,6 +113,7 @@ export class SuiteToolsLibrary {
 export class SuiteToolsLibraryNetSuite {
   private _stApp: SuiteToolsApp;
   private _stLibNsFile: SuiteToolsLibraryNetSuiteFile;
+  private _stLibNsHttp: SuiteToolsLibraryNetSuiteHttp;
   private _stLibNsRecord: SuiteToolsLibraryNetSuiteRecord;
   private _stLibNsScript: SuiteToolsLibraryNetSuiteScript;
   private _stLibNsSearch: SuiteToolsLibraryNetSuiteSearch;
@@ -76,6 +124,9 @@ export class SuiteToolsLibraryNetSuite {
   }
   get stLibNsFile(): SuiteToolsLibraryNetSuiteFile {
     return this._stLibNsFile;
+  }
+  get stLibNsHttp(): SuiteToolsLibraryNetSuiteHttp {
+    return this._stLibNsHttp;
   }
   get stLibNsRecord(): SuiteToolsLibraryNetSuiteRecord {
     return this._stLibNsRecord;
@@ -95,6 +146,7 @@ export class SuiteToolsLibraryNetSuite {
     this._stApp = stApp;
 
     this._stLibNsFile = new SuiteToolsLibraryNetSuiteFile(this.stApp);
+    this._stLibNsHttp = new SuiteToolsLibraryNetSuiteHttp(this.stApp);
     this._stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(this.stApp);
     this._stLibNsScript = new SuiteToolsLibraryNetSuiteScript(this.stApp);
     this._stLibNsSearch = new SuiteToolsLibraryNetSuiteSearch(this.stApp);
@@ -170,6 +222,87 @@ export class SuiteToolsLibraryNetSuiteFile {
 }
 
 /**
+ * SuiteTools NetSuite Http Library
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsLibraryNetSuiteHttp {
+  private _stApp: SuiteToolsApp;
+
+  get stApp(): SuiteToolsApp {
+    return this._stApp;
+  }
+
+  constructor(stApp: SuiteToolsApp) {
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:constructor() initiated', details: null });
+    this._stApp = stApp;
+  }
+
+  /**
+   * Builds the NetSuite record URL.
+   *
+   * @param recordType - the record type
+   * @param recordId - the record id
+   */
+  public buildRecordUrl(recordType: string, recordId: string): string {
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() initiated',
+      details: { recordType: recordType, recordId: recordId },
+    });
+    const path = url.resolveRecord({
+      recordType: recordType,
+      recordId: recordId,
+    });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() returning', details: path });
+
+    return path;
+  }
+
+  // /**
+  //  * Get HTTP page.
+  //  *
+  //  * @param url - the URL to the page to load
+  //  * @returns string
+  //  */
+  // public getPage(url: string): string {
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getPage() initiated', details: { url: url } });
+
+  //   const response = https.get({ url: url });
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getPage() response', details: response });
+  //   const body = response.body;
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getPage() body', details: body });
+
+  //   return body;
+  // }
+
+  // /**
+  //  * Get JSON HTTP page.
+  //  *
+  //  * @param url - the URL to the page to load
+  //  * @returns string
+  //  */
+  // public getJsonPage(url: string): string {
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getJsonPage() initiated', details: { url: url } });
+
+  //   const response = https.get({ url: url });
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getJsonPage() response', details: response });
+
+  //   // check that response code is 200
+  //   if (response.code !== 200) {
+  //     throw new Error(`SuiteToolsLibraryNetSuiteHttp:getJsonPage() response code = ${response.code}`);
+  //   }
+
+  //   const body = response.body;
+  //   log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:getJsonPage() body', details: body });
+
+  //   const results = JSON.parse(body);
+  //   log.debug({ title: 'SuiteToolsController:renderConcurrenciesForm() results =', details: results });
+
+  //   return results;
+  // }
+}
+
+/**
  * SuiteTools NetSuite Record Library
  *
  * @author Matthew Plant <i@idev.systems>
@@ -217,6 +350,31 @@ export class SuiteToolsLibraryNetSuiteRecord {
     }
 
     return success;
+  }
+
+  /**
+   * Get custom record or list entry
+   *
+   * @param recordType
+   * @param recordId
+   * @returns value
+   */
+  public getCustomRecord(recordType: string, recordId: number): record.Record {
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteRecord:getCustomRecord() initiated',
+      details: { recordType: recordType, recordId: recordId },
+    });
+
+    try {
+      const recordObj = record.load({
+        type: recordType,
+        id: recordId,
+      });
+
+      return recordObj;
+    } catch (e) {
+      log.error({ title: `SuiteToolsLibraryNetSuiteRecord:getCustomRecord - Error on ${recordType}`, details: e });
+    }
   }
 
   /**
@@ -387,6 +545,39 @@ export class SuiteToolsLibraryNetSuiteScript {
   }
 
   /**
+   * Builds the SuiteScript script URL.
+   *
+   * @param accountId - the account id
+   * @param scriptId - the script id
+   * @param deploymentId - the deployment id
+   * @param parameters - the parameters
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public buildScriptUrl(accountId: string, scriptId: string, deploymentId: string, params: any[]): string {
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteScript:callScript() initiated',
+      details: { scriptId: scriptId, deploymentId: deploymentId, params: params },
+    });
+    const scheme = 'https://';
+    const host = url.resolveDomain({
+      hostType: url.HostType.APPLICATION,
+      accountId: accountId,
+    });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() host', details: host });
+    const path = url.resolveScript({
+      scriptId: scriptId,
+      deploymentId: deploymentId,
+    });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() scriptUrl', details: path });
+    const parameters = '&' + params.join('&');
+    const scriptUrl = scheme + host + path + parameters;
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() parameters', details: parameters });
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() returning', details: scriptUrl });
+
+    return scriptUrl;
+  }
+
+  /**
    * Redirects to SuiteScript script.
    *
    * @param scriptId - the script id
@@ -488,6 +679,42 @@ export class SuiteToolsLibraryNetSuiteSearch {
   }
 
   /**
+   * Runs the Search query.
+   *
+   * @param id
+   * @returns the search results
+   */
+  public run(
+    id: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any[] {
+    log.debug({
+      title: `SuiteToolsLibraryNetSuiteSearch:run() initiated`,
+      details: { id: id },
+    });
+
+    const stSearch = search.load({ id: id });
+
+    // TODO: use run().each() instead of run().getRange() for the 4,000 result limit
+    // var searchResultCount = scriptexecutionlogSearchObj.runPaged().count;
+    // log.debug("scriptexecutionlogSearchObj result count",searchResultCount);
+    // scriptexecutionlogSearchObj.run().each(function(result){
+    // // .run().each has a limit of 4,000 results
+    // return true;
+    // });
+
+    // run the search
+    const searchResults = stSearch.run().getRange({
+      start: 0,
+      end: 1000,
+    });
+
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:run() returning', details: searchResults });
+
+    return searchResults;
+  }
+
+  /**
    * Gets the Saved Search's internal id.
    *
    * @param id - the saved search id (e.g. "customsearch_...")
@@ -573,11 +800,11 @@ export class SuiteToolsLibraryNetSuiteSuiteQl {
   public getSqlValue(sql: string, field: string): string {
     let resultField = ''; // default to empty string
     const resultSet = this.query(sql);
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
     // grab the first row if it exists
     if (resultSet.length > 0) {
       const resultJson = resultSet[0];
-      log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultJson = ', details: resultJson });
+      // log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultJson = ', details: resultJson });
       const resultObject = JSON.parse(JSON.stringify(resultJson));
       if (resultObject[field]) {
         // return the field value since it exists

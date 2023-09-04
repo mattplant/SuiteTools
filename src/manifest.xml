@@ -4,6 +4,7 @@
   <dependencies>
     <features>
       <feature required="true">SERVERSIDESCRIPTING</feature>
+      <feature required="true">EXTREMELIST</feature>
     </features>
   </dependencies>
 </manifest>

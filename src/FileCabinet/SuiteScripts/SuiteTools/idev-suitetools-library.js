@@ -24,7 +24,7 @@
  */
 define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/search", "N/url"], function (require, exports, file, log, query, record, redirect, search, url) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibrary = void 0;
+    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibraryGeneral = exports.SuiteToolsLibrary = void 0;
     /**
      * SuiteTools Library
      *
@@ -34,16 +34,63 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         get stApp() {
             return this._stApp;
         }
+        get stLibGeneral() {
+            return this._stLibGeneral;
+        }
         get stLibNs() {
             return this._stLibNs;
         }
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsLibrary:constructor() initiated', details: null });
             this._stApp = stApp;
+            this._stLibGeneral = new SuiteToolsLibraryGeneral(this.stApp);
             this._stLibNs = new SuiteToolsLibraryNetSuite(this.stApp);
         }
     }
     exports.SuiteToolsLibrary = SuiteToolsLibrary;
+    /**
+     * SuiteTools General Library
+     *
+     * @author Matthew Plant <i@idev.systems>
+     */
+    class SuiteToolsLibraryGeneral {
+        get stApp() {
+            return this._stApp;
+        }
+        constructor(stApp) {
+            // log.debug({ title: 'SuiteToolsLibraryGeneral:constructor() initiated', details: null });
+            this._stApp = stApp;
+        }
+        /**
+         * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
+         *
+         * TODO replace with moment.js
+         *
+         * @param {Date} date - the date object to format
+         * @returns {string} formattedDate - the formatted date string
+         */
+        formatDate(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            let hour = '' + d.getHours();
+            let minute = '' + d.getMinutes();
+            let second = '' + d.getSeconds();
+            if (month.length < 2)
+                month = '0' + month;
+            if (day.length < 2)
+                day = '0' + day;
+            if (hour.length < 2)
+                hour = '0' + hour;
+            if (minute.length < 2)
+                minute = '0' + minute;
+            if (second.length < 2)
+                second = '0' + second;
+            return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
+        }
+    }
+    exports.SuiteToolsLibraryGeneral = SuiteToolsLibraryGeneral;
     /**
      * SuiteTools NetSuite Library
      *
@@ -55,6 +102,9 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         }
         get stLibNsFile() {
             return this._stLibNsFile;
+        }
+        get stLibNsHttp() {
+            return this._stLibNsHttp;
         }
         get stLibNsRecord() {
             return this._stLibNsRecord;
@@ -72,6 +122,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             // log.debug({ title: 'SuiteToolsLibraryNetSuite:constructor() initiated', details: null });
             this._stApp = stApp;
             this._stLibNsFile = new SuiteToolsLibraryNetSuiteFile(this.stApp);
+            this._stLibNsHttp = new SuiteToolsLibraryNetSuiteHttp(this.stApp);
             this._stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(this.stApp);
             this._stLibNsScript = new SuiteToolsLibraryNetSuiteScript(this.stApp);
             this._stLibNsSearch = new SuiteToolsLibraryNetSuiteSearch(this.stApp);
@@ -136,6 +187,39 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
     }
     exports.SuiteToolsLibraryNetSuiteFile = SuiteToolsLibraryNetSuiteFile;
     /**
+     * SuiteTools NetSuite Http Library
+     *
+     * @author Matthew Plant <i@idev.systems>
+     */
+    class SuiteToolsLibraryNetSuiteHttp {
+        get stApp() {
+            return this._stApp;
+        }
+        constructor(stApp) {
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:constructor() initiated', details: null });
+            this._stApp = stApp;
+        }
+        /**
+         * Builds the NetSuite record URL.
+         *
+         * @param recordType - the record type
+         * @param recordId - the record id
+         */
+        buildRecordUrl(recordType, recordId) {
+            log.debug({
+                title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() initiated',
+                details: { recordType: recordType, recordId: recordId },
+            });
+            const path = url.resolveRecord({
+                recordType: recordType,
+                recordId: recordId,
+            });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteHttp:buildRecordUrl() returning', details: path });
+            return path;
+        }
+    }
+    exports.SuiteToolsLibraryNetSuiteHttp = SuiteToolsLibraryNetSuiteHttp;
+    /**
      * SuiteTools NetSuite Record Library
      *
      * @author Matthew Plant <i@idev.systems>
@@ -178,6 +262,29 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
                 log.error({ title: `SuiteToolsLibraryNetSuiteRecord:createCustomRecord - Error on ${recordType}`, details: e });
             }
             return success;
+        }
+        /**
+         * Get custom record or list entry
+         *
+         * @param recordType
+         * @param recordId
+         * @returns value
+         */
+        getCustomRecord(recordType, recordId) {
+            log.debug({
+                title: 'SuiteToolsLibraryNetSuiteRecord:getCustomRecord() initiated',
+                details: { recordType: recordType, recordId: recordId },
+            });
+            try {
+                const recordObj = record.load({
+                    type: recordType,
+                    id: recordId,
+                });
+                return recordObj;
+            }
+            catch (e) {
+                log.error({ title: `SuiteToolsLibraryNetSuiteRecord:getCustomRecord - Error on ${recordType}`, details: e });
+            }
         }
         /**
          * Update custom record or list entry
@@ -335,6 +442,37 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             this._stApp = stApp;
         }
         /**
+         * Builds the SuiteScript script URL.
+         *
+         * @param accountId - the account id
+         * @param scriptId - the script id
+         * @param deploymentId - the deployment id
+         * @param parameters - the parameters
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        buildScriptUrl(accountId, scriptId, deploymentId, params) {
+            log.debug({
+                title: 'SuiteToolsLibraryNetSuiteScript:callScript() initiated',
+                details: { scriptId: scriptId, deploymentId: deploymentId, params: params },
+            });
+            const scheme = 'https://';
+            const host = url.resolveDomain({
+                hostType: url.HostType.APPLICATION,
+                accountId: accountId,
+            });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() host', details: host });
+            const path = url.resolveScript({
+                scriptId: scriptId,
+                deploymentId: deploymentId,
+            });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() scriptUrl', details: path });
+            const parameters = '&' + params.join('&');
+            const scriptUrl = scheme + host + path + parameters;
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() parameters', details: parameters });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() returning', details: scriptUrl });
+            return scriptUrl;
+        }
+        /**
          * Redirects to SuiteScript script.
          *
          * @param scriptId - the script id
@@ -420,6 +558,35 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
             return searchResults;
         }
         /**
+         * Runs the Search query.
+         *
+         * @param id
+         * @returns the search results
+         */
+        run(id
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ) {
+            log.debug({
+                title: `SuiteToolsLibraryNetSuiteSearch:run() initiated`,
+                details: { id: id },
+            });
+            const stSearch = search.load({ id: id });
+            // TODO: use run().each() instead of run().getRange() for the 4,000 result limit
+            // var searchResultCount = scriptexecutionlogSearchObj.runPaged().count;
+            // log.debug("scriptexecutionlogSearchObj result count",searchResultCount);
+            // scriptexecutionlogSearchObj.run().each(function(result){
+            // // .run().each has a limit of 4,000 results
+            // return true;
+            // });
+            // run the search
+            const searchResults = stSearch.run().getRange({
+                start: 0,
+                end: 1000,
+            });
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:run() returning', details: searchResults });
+            return searchResults;
+        }
+        /**
          * Gets the Saved Search's internal id.
          *
          * @param id - the saved search id (e.g. "customsearch_...")
@@ -497,11 +664,11 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         getSqlValue(sql, field) {
             let resultField = ''; // default to empty string
             const resultSet = this.query(sql);
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
             // grab the first row if it exists
             if (resultSet.length > 0) {
                 const resultJson = resultSet[0];
-                log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultJson = ', details: resultJson });
+                // log.debug({ title: 'SuiteToolsLibraryNetSuiteSuiteQl:getSqlValue() resultJson = ', details: resultJson });
                 const resultObject = JSON.parse(JSON.stringify(resultJson));
                 if (resultObject[field]) {
                     // return the field value since it exists

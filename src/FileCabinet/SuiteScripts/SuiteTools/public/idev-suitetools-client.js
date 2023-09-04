@@ -93,13 +93,30 @@ function postPage(multiselectIds, pageUrl) {
     // xhttp.send();
 }
 
+/**
+ * Get the core id from a string
+ *
+ * @param {string | number} id which could include a name with the actual id inside the parentheses at the end
+ * @returns {string | number} id
+ */
+function getCoreId(id) {
+    // if id is inside paretheses at end then set id to just that
+    var str = id.toString();
+    var matches = str.match(/\((-?\d+)\)$/);
+    if (matches) {
+        id = matches[1];
+    }
+    return id;
+}
+
 const ModalType = Object.freeze({
-    "File": 1,
-    "Integration": 2,
-    "Role": 3,
-    "Script": 4,
-    "Token": 5,
-    "User": 6,
+    "Employee": 1,
+    "File": 2,
+    "Integration": 3,
+    "Role": 4,
+    "Script": 5,
+    "Token": 6,
+    "User": 7,
 });
 
 /**
@@ -112,6 +129,10 @@ const ModalType = Object.freeze({
 function showModal(scriptUrl, modalType, id) {
     // determine the modal id and page url
     switch (modalType) {
+        case ModalType.Employee:
+            modalId = 'employee-modal';
+            action = 'employeeModal';
+            break;
         case ModalType.File:
             modalId = 'file-modal';
             action = 'fileModal';
@@ -132,20 +153,18 @@ function showModal(scriptUrl, modalType, id) {
             modalId = 'token-modal';
             action = 'tokenModal';
             break;
-        default:
         case ModalType.User:
             modalId = 'user-modal';
             action = 'userModal';
-        break;
+            break;
+        default:
             console.error('Invalid modal type "' + modalType + '" provided.');
             return;
     }
-    // determine id replacing id if number in parentheses is found at end
-    var str = id.toString();
-    var matches = str.match(/\((-?\d+)\)$/);
-    if (matches) {
-        id = matches[1];
-    }
+
+    // // determine id replacing id if number in parentheses is found at end
+    id = getCoreId(id);
+
     // build the page url
     pageUrl = scriptUrl + '&action=' + action + '&id=' + id;
     // get the page
@@ -218,4 +237,108 @@ function setFormSelections(data) {
             }
         }
     }
+}
+
+/**
+ * Get page content
+ * @author Matthew Plant
+ * @param {string} url - the endpoint to get data from
+ * @param {string} id - the id of the element to get
+ */
+function getPageContent(url, id) {
+    return fetch(url)
+    .then((response) => response.text())
+    .then((pageData) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(pageData, 'text/html');
+        const content = doc.getElementById(id).innerHTML;
+        return content;
+    })
+    .catch((error) => {
+        console.error(`getPageContent Error =\n`, error);
+    });
+};
+
+/**
+ * Get JSON page content
+ * @author Matthew Plant
+ * @param {string} url - the endpoint to get data from
+ */
+function getJsonPageContent(url) {
+    return fetch(url)
+    .then((response) => response.text())
+    .then((pageData) => {
+        return JSON.parse(pageData);
+    })
+    .catch((error) => {
+        console.error(`getPageContent Error =\n`, error);
+    });
+};
+
+/**
+ * Get page table content
+ * @author Matthew Plant
+ *
+ * @requires jQuery and tableToJSON
+ *
+ * @param {string} url - the endpoint to get data from
+ * @param {string} id - the id of the table element to get
+ * @returns {object} - the table data
+ */
+function getPageTableContent(url, id) {
+    return fetch(url)
+    .then((response) => response.text())
+    .then((pageData) => {
+        // console.log('pageData = ' + pageData);
+        const parser = new DOMParser();
+        const domPage = parser.parseFromString(pageData, 'text/html');
+        const table = domPage.getElementById(id).innerHTML;
+        const tableJson = jQuery(table).tableToJSON({ignoreHiddenRows: false});
+        console.log(tableJson);
+
+        return tableJson;
+    })
+    .catch((error) => {
+        console.error(`getPageTableContent() Error =\n`, error);
+    });
+};
+
+/**
+ * Post data to an endpoint.
+ * @author Matthew Plant
+ * @param name - the name of the data
+ * @param data - the data to post
+ * @param {string} url - the endpoint to post to
+ */
+function postData(name, data, url) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, value: data })
+    };
+    return fetch(url, requestOptions)
+        .then(response => response.text())
+        .catch(error => console.error('postData Error =\n', error));
+}
+
+/**
+ * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
+ *
+ * @param {Date} date - the date object to format
+ * @returns {string} formattedDate - the formatted date string
+ */
+function formatDate(date) {
+    var d = new Date(date);
+    var month = '' + (d.getMonth() + 1);
+    var day = '' + d.getDate();
+    var year = d.getFullYear();
+    var hour = '' + d.getHours();
+    var minute = '' + d.getMinutes();
+    var second = '' + d.getSeconds();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    if (hour.length < 2) hour = '0' + hour;
+    if (minute.length < 2) minute = '0' + minute;
+    if (second.length < 2) second = '0' + second;
+    return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
 }

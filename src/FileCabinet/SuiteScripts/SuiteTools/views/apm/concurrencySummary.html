@@ -1,0 +1,516 @@
+<div class="mb-2">
+	<h2 class="text-2xl">Concurrency Summary</h2>
+</div>
+
+<div>
+	<label for="dateRange" class="pr-2 font-medium text-gray-900">Date Range</label>
+	<select id="dateRange" onchange="changeDateRange()" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 px-2 py-0.5">
+		<option value="3">Last 3 Days</option>
+		<option value="7">Last 7 Days</option>
+		<option value="14">Last 14 Days</option>
+		<option value="29">Last 30 Days</option>
+	</select>
+	<span id="spinner" class="align-top h-7 w-7 inline-block rounded-full border-4 border-t-blue-500 animate-spin"></span>
+</div>
+
+<div id="results" style="display: none;">
+	<div class="py-2 px-2 mx-auto text-center">
+		<div class="flex bg-gray-50 rounded-lg shadow">
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Concurrency Limit</h3>
+				<h1 id="concurrencyLimit" class="text-3xl text-gray-500 p-2"></h1>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Peak Concurrency</h3>
+				<h1 id="peakConcurrency" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="peakConcurrencyDate" class="text-sm text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Close to the Limit</h3>
+				<h1 id="closeToLimitRate" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="closeToLimitRange" class="text-sm text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Over the Limit</h3>
+				<h1 id="overLimitRate" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="overLimitRange" class="text-sm text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-red-700">Error Rate</h3>
+				<h1 id="errorRate" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="errorRateDetail" class="text-sm text-gray-500"></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="mb-2">
+		<h2 class="text-xl">Heat Map</h2>
+		<span class="text-sm">The darker shade of blue, the highest percentage of concurrent users for that hour. Red indicates that there were concurrency request errors. Note that NetSuite rounds up in 25% increments.</span>
+		<div id="heatMapPeakTable"></div>
+	</div>
+
+	<div class="mb-2">
+		<h2 class="text-xl">Peak Concurrency</h2>
+		<span class="text-sm">Click on the desired cell to view the concurrency details. From there you can further drill in to see all the incoming requests for each minute. Where applicable, you can further drill into a particular request and see the execution logs for the script during the request duration.</span>
+		<div id="peakConcurrencyTable"></div>
+	</div>
+
+	<div class="mb-2">
+		<h2 class="text-xl">Average Concurrency</h2>
+		<span class="text-sm">Helps identify optimal integration schedules.</span>
+		<div id="averageConcurrencyTable"></div>
+	</div>
+
+	<!-- <div class="mb-2">
+		<h2 class="text-xl">Summary Table</h2>
+		<div id="summaryTable"></div>
+	</div> -->
+</div>
+
+<span id="accountId" style="display: none;">{{accountId}}</span>
+
+<script>
+	const accountIdField  = document.getElementById("accountId");
+	const accountId = String(accountIdField.textContent);
+	const spinnerElement = document.getElementById("spinner");
+	const resultsElement = document.getElementById("results");
+
+	// load data on page load
+	window.onload = function(){ getNsConcurrencyData(); };
+
+	function changeDateRange(){
+		getNsConcurrencyData();
+	};
+
+	function getNsConcurrencyData(){
+		const dateRange = document.getElementById("dateRange").value;
+		const concurrencySummaryUrl = getConcurrencySummaryUrl(accountId, dateRange);
+		const concurrencyViolationsUrl = getConcurrencyViolationsUrl(accountId, dateRange);
+		getNsConcurrencyDataCore(concurrencySummaryUrl, concurrencyViolationsUrl);
+	};
+
+	/**
+	 * Get NetSuite concurrency summary data core.
+	 *
+	 * Note that for 30 day average concurrency the last week will be zero as the data is not available.
+	 *
+	 * @param concurrencySummaryUrl - the URL to get the concurrency summary data from
+	 * @param concurrencyViolationsUrl - the URL to get the concurrency violation data from
+	 * @returns {void}
+	 */
+	async function getNsConcurrencyDataCore(concurrencySummaryUrl, concurrencyViolationsUrl) {
+		console.log('getNsConcurrencyDataCore() initiated.', concurrencySummaryUrl, concurrencyViolationsUrl);
+		// show spinner
+		spinnerElement.style.visibility = "visible";
+		resultsElement.style.display = "none";
+		console.log('getNsConcurrencyDataCore() loading data from NetSuite...');
+
+		// get concurrency violation data from NetSuite's APM service
+		const violationResponse = await getJsonPageContent(concurrencyViolationsUrl);
+		console.log('violationResponse = ' + JSON.stringify(violationResponse));
+		const violations = violationResponse.data.series.violation;
+		console.log('violations = ' + JSON.stringify(violations));
+
+		// get concurrency summary data from NetSuite's APM service
+		response = await getJsonPageContent(concurrencySummaryUrl);
+		console.log('response = ' + JSON.stringify(response));
+		// console.log('success = ' + response.success);
+		// console.log('message = ' + response.message);
+		// console.log('overview = ' + JSON.stringify(response.data.overview));
+		// heat map data
+		const hours = response.data.xCategories;
+		// console.log('hours = ' + JSON.stringify(hours));
+		// peak concurrency
+		const peaks = response.data.series.peak;
+		// console.log('peaks = ' + JSON.stringify(peaks))
+		// summary results
+		const results = response.data.results;
+		// console.log('results = ' + JSON.stringify(results));
+
+		// OVERVIEW SECTION
+		// define variables
+		const concurrencyLimit = response.data.overview.concurrencyLimit;
+		const peakConcurrency = response.data.overview.peakConcurrency.value;
+		const peakConcurrencyDate = formatDate(response.data.overview.peakConcurrency.dateMS);
+		const closeToLimitRate = response.data.overview.timeCloseToLimit.value + '%';
+		const closeToLimitRange = 'Requests between ' + response.data.overview.timeCloseToLimit.lowerRange + ' and ' + response.data.overview.timeCloseToLimit.upperRange;
+		const overLimitRate = response.data.overview.timeOverLimit.value + '%';
+		const overLimitRange = 'Requests over ' + response.data.overview.timeOverLimit.range;
+		// calculate error rate percentage
+		const errorRate = violationResponse.data.overview.totalViolations / violationResponse.data.overview.totalRequests * 100;
+		const errorRateRounded = Math.round(errorRate * 100) / 100 + '%';
+		const errorRateDetail = violationResponse.data.overview.totalViolations + ' violations in ' + violationResponse.data.overview.totalRequests + ' requests';
+
+		// set values
+		document.getElementById("concurrencyLimit").textContent = concurrencyLimit;
+		document.getElementById("peakConcurrency").textContent = peakConcurrency;
+		document.getElementById("peakConcurrencyDate").textContent = peakConcurrencyDate;
+		document.getElementById("closeToLimitRate").textContent = closeToLimitRate;
+		document.getElementById("closeToLimitRange").textContent = closeToLimitRange;
+		document.getElementById("overLimitRate").textContent = overLimitRate;
+		document.getElementById("overLimitRange").textContent = overLimitRange;
+		document.getElementById("errorRate").textContent = errorRateRounded;
+		document.getElementById("errorRateDetail").textContent = errorRateDetail;
+
+		// BUILD HEATMAP TABLE
+		if (peaks && peaks.length > 0) {
+			// define columns for table
+			let columns = [];
+			columns.push({title: "", field: "date", sorter: "string", headerSort: false, width: 80, hozAlign:"center",
+});
+			for (let i = 0; i < 24; i++) {
+				const hour = new Date(hours[i]);
+				// value field which is visible
+				const col = {
+					title: hour.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
+					field: String(i),
+					sorter: "string",
+					headerSort: false,
+					formatter: function(cell, formatterParams) {
+						let cellValue = cell.getValue();
+						if (cellValue < 0) {
+							cell.getElement().style.backgroundColor = "#B85B5B";
+							cellValue = -cellValue;
+						} else if (cellValue > 100) {
+							cell.getElement().style.backgroundColor = "#B87241";
+						} else if (cellValue > 75) {
+							cell.getElement().style.backgroundColor = "#A3C8E8";
+						} else if (cellValue > 50) {
+							cell.getElement().style.backgroundColor = "#BAD6EE";
+						} else if (cellValue > 25) {
+							cell.getElement().style.backgroundColor = "#D1E4F4";
+						} else {
+							cell.getElement().style.backgroundColor = "#E8F1F9";
+						}
+						return cellValue;
+					},
+					headerHozAlign:"center",
+					hozAlign:"center",
+					minWidth: 52,
+				};
+				columns.push(col);
+				// link field which is not visible
+				const linkCol = {
+					title: 'link' + String(i),
+					field: 'link' + String(i),
+					visible: false,
+				};
+				columns.push(linkCol);
+			}
+			// console.log('columns = ' + JSON.stringify(columns));
+
+			// loop thru columns
+			const url = '{{{scriptUrl}}}&action=apmConcurDetail'
+			const rows = [];
+			let col = {};
+			for (let i = 0; i < peaks.length; i++) {
+				// load data
+				const peak = peaks[i];
+				// console.log('peak = ' + JSON.stringify(peak));
+				// example data payload: [0, 0, 75, 1684047600000]
+				// const hour = peak[0];
+				// const ??? = peak[1];
+				const startDate = peak[3];
+				// endDate is 1 hour after startDate
+				const endDate = startDate + 3600000;
+				let percentage = peak[2];
+				// if startDate is in violations, then signify that
+				if (violations[startDate]) {
+					percentage = -percentage;
+				}
+				// create new row every 24 columns
+				const colPosition = i % 24;
+				// console.log('colPosition = ' + colPosition);
+				if (colPosition == 0) {
+					if (i > 0) {
+						// console.log('creating new row when i = ' + i);
+						rows.push(col);
+						col = {};
+					}
+					// add in date column
+					col['date'] = new Date(startDate).toLocaleDateString();
+					// console.log('setting startDate to ' + col['date']);
+				}
+				col[colPosition] = percentage;
+				col['link' + String(colPosition)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+			}
+			// if last row is not full, add it
+			if (col && Object.keys(col).length > 0) {
+				rows.push(col);
+			}
+			// console.log('rows = ' + JSON.stringify(rows));
+
+			// define table
+			const heatMapPeakTable = new Tabulator("#heatMapPeakTable", {
+				data: rows,
+				ordering: false,
+				layout: "fitColumns",
+				columns: columns,
+			});
+		}
+
+		// BUILD PEAK CONCURRENCY TABLE
+		if (results && results.length > 0) {
+			// define columns for table
+			let columns = [];
+			columns.push({title: "", field: "date", sorter: "string", headerSort: false, width: 80, hozAlign:"center",
+});
+			for (let i = 0; i < 24; i++) {
+				const hour = new Date(hours[i]);
+				// value field which is visible
+				const col = {
+					title: hour.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
+					field: String(i),
+					sorter: "string",
+					headerSort: false,
+					formatter:"link",
+					formatterParams: {
+						labelField: String(i),
+						urlField: 'link' + String(i),
+						target:"_blank",
+					},
+					headerHozAlign:"center",
+					hozAlign:"center",
+					minWidth: 52,
+				};
+				columns.push(col);
+				// link field which is not visible
+				const linkCol = {
+					title: 'link' + String(i),
+					field: 'link' + String(i),
+					visible: false,
+				};
+				columns.push(linkCol);
+			}
+			// console.log('columns = ' + JSON.stringify(columns));
+
+			// loop thru columns
+			const url = '{{{scriptUrl}}}&action=apmConcurDetail'
+			const rows = [];
+			let col = {};
+			for (let i = 0; i < results.length; i++) {
+				// load data
+				const result = results[i];
+				// console.log('result = ' + JSON.stringify(result));
+				// example data payload: {"startTime":1683442800000,"endTime":1683446400000,"averageConcurrency":1,"peakConcurrency":8}
+				const peakConcurrency = result.peakConcurrency;
+				const startDate = result.startTime;
+				const endDate = result.endTime;
+				// create new row every 24 columns
+				const colPosition = i % 24;
+				// console.log('colPosition = ' + colPosition);
+				if (colPosition == 0) {
+					if (i > 0) {
+						// console.log('creating new row when i = ' + i);
+						rows.push(col);
+						col = {};
+					}
+					// add in date column
+					col['date'] = new Date(startDate).toLocaleDateString();
+					// console.log('setting startDate to ' + col['date']);
+				}
+				col[colPosition] = peakConcurrency;
+				col['link' + String(colPosition)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+			}
+			// if last row is not full, add it
+			if (col && Object.keys(col).length > 0) {
+				rows.push(col);
+			}
+			// console.log('rows = ' + JSON.stringify(rows));
+
+			// define table
+			const peakConcurrencyTable = new Tabulator("#peakConcurrencyTable", {
+				data: rows,
+				ordering: false,
+				layout: "fitColumns",
+				columns: columns,
+			});
+		}
+
+		// BUILD AVERAGE CONCURRENCY TABLE
+		if (results && results.length > 0) {
+			// define columns for table
+			let columns = [];
+			columns.push({title: "", field: "date", sorter: "string", headerSort: false, width: 80, hozAlign:"center",
+});
+			for (let i = 0; i < 24; i++) {
+				const hour = new Date(hours[i]);
+				// value field which is visible
+				const col = {
+					title: hour.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true}),
+					field: String(i),
+					sorter: "string",
+					headerSort: false,
+					formatter:"link",
+					formatterParams: {
+						labelField: String(i),
+						urlField: 'link' + String(i),
+						target:"_blank",
+					},
+					headerHozAlign:"center",
+					hozAlign:"center",
+					minWidth: 52,
+				};
+				columns.push(col);
+				// link field which is not visible
+				const linkCol = {
+					title: 'link' + String(i),
+					field: 'link' + String(i),
+					visible: false,
+				};
+				columns.push(linkCol);
+			}
+			// console.log('columns = ' + JSON.stringify(columns));
+
+			// loop thru columns
+			const url = '{{{scriptUrl}}}&action=apmConcurDetail'
+			const rows = [];
+			let col = {};
+			for (let i = 0; i < results.length; i++) {
+				// load data
+				const result = results[i];
+				// console.log('result = ' + JSON.stringify(result));
+				// example data payload: {"startTime":1683442800000,"endTime":1683446400000,"averageConcurrency":1,"peakConcurrency":8}
+				const averageConcurrency = result.averageConcurrency;
+				const startDate = result.startTime;
+				const endDate = result.endTime;
+				// create new row every 24 columns
+				const colPosition = i % 24;
+				// console.log('colPosition = ' + colPosition);
+				if (colPosition == 0) {
+					if (i > 0) {
+						// console.log('creating new row when i = ' + i);
+						rows.push(col);
+						col = {};
+					}
+					// add in date column
+					col['date'] = new Date(startDate).toLocaleDateString();
+					// console.log('setting startDate to ' + col['date']);
+				}
+				col[colPosition] = averageConcurrency;
+				col['link' + String(colPosition)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+			}
+			// if last row is not full, add it
+			if (col && Object.keys(col).length > 0) {
+				rows.push(col);
+			}
+			// console.log('rows = ' + JSON.stringify(rows));
+
+			// define table
+			const averageConcurrencyTable = new Tabulator("#averageConcurrencyTable", {
+				data: rows,
+				ordering: false,
+				layout: "fitColumns",
+				columns: columns,
+			});
+		}
+
+		// // BUILD SUMMARY TABLE
+		// if (results && results.length > 0) {
+		// 	// format results
+		// 	formattedResults = [];
+		// 	for (let i = 0; i < results.length; i++) {
+		// 		const result = results[i];
+		// 		// example data payload: {"startTime":1683442800000,"endTime":1683446400000,"averageConcurrency":1,"peakConcurrency":8}
+		// 		const formattedResult = {
+		// 			"startTimeMS": result.startTime,
+		// 			"endTimeMS": result.endTime,
+		// 			"startTime": formatDate(result.startTime),
+		// 			"endTime": formatDate(result.endTime),
+		// 			"averageConcurrency": result.averageConcurrency,
+		// 			"peakConcurrency": result.peakConcurrency,
+		// 		};
+		// 		formattedResults.push(formattedResult);
+		// 	}
+		// 	// define table
+		// 	const summaryTable = new Tabulator("#summaryTable", {
+		// 		data:formattedResults,
+		// 		layout:"fitColumns",
+		// 		columns:[
+		// 			{ title:"startTimeMS", field:"startTimeMS", visible:false },
+		// 			{ title:"endTimeMS", field:"endTimeMS", visible:false },
+		// 			{ title:"Start Time", field:"startTime", sorter:"string", width:160 },
+		// 			{ title:"End Time", field:"endTime", sorter:"string", width:160 },
+		// 			{ title:"Average Concurrency", field:"averageConcurrency", sorter:"number", width:200 },
+		// 			{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:200 },
+		// 		],
+		// 	});
+		// 	// define row click event function
+		// 	summaryTable.on("rowClick", function(e, row){
+		// 		console.log(row.getData());
+		// 		const startTimeMS = row.getData().startTimeMS;
+		// 		const endTimeMS = row.getData().endTimeMS;
+		// 		// open new tab with concurrency detail
+		// 		window.open('{{{scriptUrl}}}&action=apmConcurDetail' + '&startDate=' + startTimeMS + '&endDate=' + endTimeMS);
+		// 	});
+		// }
+
+		// show results
+		spinnerElement.style.visibility = "hidden";
+		resultsElement.style.display = "block";
+	}
+
+	/**
+	 * Build the relative URL to get the concurrency summary.
+	 *
+	 * @param accountId - the NetSuite account ID
+	 * @param days - the number of days to get the summary for
+	 * @returns url - the url to get the concurrency summary
+	 */
+	function getConcurrencySummaryUrl(accountId, days) {
+		console.log('getConcurrencySummaryUrl() initiated with ' + JSON.stringify({ accountId: accountId, days: days }));
+		// example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_concurrency_v2&deploy=customdeploy_nsapm_cm_sl_concurrency_v2&compfil=(REDACTED)&testmode=F&startDateMS=1683512580000&endDateMS=1683771780000&integId=&offsetMins=420
+		const path = '/app/site/hosting/scriptlet.nl';
+		// set end date to tonight at 12:00 AM
+		const endDate = new Date(Date.now());
+		endDate.setDate(endDate.getDate() + 1);
+		endDate.setHours(0, 0, 0, 0);
+		const endDateMS = Number(endDate);
+		// set start date to end date minus x + 1 days
+		const startDateMS = endDateMS - (Number(days) + 1) * 86400000;
+		params = [];
+		params.push('script=customscript_nsapm_cm_sl_concurrency_v2'); // script (note cm instead of cd)
+		params.push('deploy=customdeploy_nsapm_cm_sl_concurrency_v2'); // deploy (note cm instead of cd)
+		params.push('compfil=' + accountId); // account ID
+		params.push('testmode=F'); // test mode
+		params.push('startDateMS=' + startDateMS); // start date
+		params.push('endDateMS=' + endDateMS); // end date
+		params.push('integId='); // integration ID
+		params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
+		const url = path + '?' + params.join('&');
+		console.log('getConcurrencySummaryUrl() returning ' + url);
+		return url;
+	}
+
+	/**
+	 * Build the relative URL to get the violation data.
+	 *
+	 * @param accountId - the NetSuite account ID
+	 * @param days - the number of days to get the data for
+	 * @returns url - the url to get the violation data
+	 */
+	 function getConcurrencyViolationsUrl(accountId, days) {
+		console.log('getConcurrencyViolationsUrl() initiated with ' + JSON.stringify({ accountId: accountId, days: days }));
+		// example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_violations_v2&deploy=customdeploy_nsapm_cm_sl_violations_v2&testmode=F&startDateMS=1686034800000&endDateMS=1686380400000&compfil=(REDACTED)&integId=&allocatedList=
+		const path = '/app/site/hosting/scriptlet.nl';
+		// set end date to tonight at 12:00 AM
+		const endDate = new Date(Date.now());
+		endDate.setDate(endDate.getDate() + 1);
+		endDate.setHours(0, 0, 0, 0);
+		const endDateMS = Number(endDate);
+		// set start date to end date minus x + 1 days
+		const startDateMS = endDateMS - ((Number(days) + 1) * 86400000);
+		params = [];
+		params.push('script=customscript_nsapm_cm_sl_violations_v2'); // script (note cm instead of cd)
+		params.push('deploy=customdeploy_nsapm_cm_sl_violations_v2'); // deploy (note cm instead of cd)
+		params.push('compfil=' + accountId); // account ID
+		params.push('testmode=F'); // test mode
+		params.push('startDateMS=' + startDateMS); // start date
+		params.push('endDateMS=' + endDateMS); // end date
+		params.push('integId='); // integration ID
+		params.push('allocatedList'); // 7 (420/60) hour time offset for PST
+		const url = path + '?' + params.join('&');
+		console.log('getConcurrencyViolationsUrl() returning ' + url);
+		return url;
+	}
+</script>

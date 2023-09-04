@@ -1,0 +1,49 @@
+<!-- script logs results -->
+<div id="results" class="w-full h-full flex-grow p-3 overflow-auto">
+    <div>
+          <button id="download-xlsx" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download XLSX</button>
+          <button id="download-csv" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download CSV</button>
+          <button id="download-json" class="text-white bg-gray-500 hover:bg-grey-800 focus:ring-4 focus:outline-none focus:ring-grey-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center dark:bg-grey-600 dark:hover:bg-grey-300 dark:focus:ring-grey-800">Download JSON</button>
+      </div>
+      <br />
+      <div id="resultsTable"></div>
+      <script>
+          var scriptUrl = "{{{scriptUrl}}}";
+          {{{tableData}}}
+          var table = new Tabulator("#resultsTable", {
+              data: tabledata,
+              columnDefaults: {
+                  headerFilter: true,
+              },
+              columns: [
+                  { title: "ID", field: "id", sorter: "number" },
+                  { title: "Timestamp", field: "timestamp", sorter: "string" },
+                  { title: "Type", field: "type", sorter: "string" },
+                  { title: "User", field: "user", cellClick:function(e, cell, value, data){
+                      showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
+                  { title: "Script Type", field: "scripttype", sorter: "string" },
+                  { title: "Script", field:"scriptname", cellClick:function(e, cell, value, data){
+                      showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter: "string" },
+                  { title: "Owner", field: "owner", cellClick:function(e, cell, value, data){
+                      showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
+                  { title: "Title", field: "title", sorter: "string" },
+                  { title: "Detail", field: "detail", sorter: "string" },
+              ],
+          });
+          // trigger XLSX file download
+          document.getElementById("download-xlsx").addEventListener("click", function () {
+              table.download("xlsx", "scriptLogs.xlsx", { sheetName: "Script Logs" });
+              NS.form.setInited(false);
+          });
+          // trigger CSV file download
+          document.getElementById("download-csv").addEventListener("click", function () {
+              table.download("csv", "scriptLogs.csv");
+              NS.form.setInited(false);
+          });
+          // trigger json file download
+          document.getElementById("download-json").addEventListener("click", function () {
+              table.download("json", "scriptLogs.json");
+              NS.form.setInited(false);
+          });
+      </script>
+  </div>

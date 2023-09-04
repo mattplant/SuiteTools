@@ -46,18 +46,30 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             this._stApp = stApp;
         }
         /**
+         * Builds content section.
+         *
+         * @param body - the templated content
+         * @param [values] - the values to use in the template
+         * @returns HTML content
+         */
+        buildContent(body, values) {
+            log.debug({ title: 'SuiteToolsView:buildContent() initiated', details: null });
+            // populate body content with Handlebars
+            const template = Handlebars.compile(body);
+            const content = template(values);
+            log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
+            return content;
+        }
+        /**
          * Render content
          *
          * @param renderType - the type of render
          * @param body - the templated content
-         * @param [bodyValues] - the values to use in the templates
+         * @param [bodyValues] - the values to use in the template
          * @returns HTML content
          */
         render(renderType, body, bodyValues) {
-            log.debug({
-                title: 'SuiteToolsView:render() initiated',
-                details: { renderType: renderType, bodyValues: bodyValues },
-            });
+            log.debug({ title: 'SuiteToolsView:render() initiated', details: null });
             switch (renderType) {
                 case RenderType.Normal:
                     this.renderNormal(body, bodyValues);
@@ -81,7 +93,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          * Renders the layout with main content.
          *
          * @param body - the templated content
-         * @param [bodyValues] - the values to use in the templates
+         * @param [bodyValues] - the values to use in the template
          * @returns HTML content
          */
         renderNormal(body, bodyValues) {
@@ -119,7 +131,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          * Renders the page without the layout.
          *
          * @param body - the templated content
-         * @param [bodyValues] - the values to use in the templates
+         * @param [bodyValues] - the values to use in the template
          * @returns HTML content
          */
         renderPageOnly(body, bodyValues) {
@@ -279,13 +291,50 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             return tableData;
         }
         /**
+         * Get element html.
+         *
+         * @param element - the form element to build
+         *
+         * @returns form element html
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getElementHtml(element) {
+            log.debug({ title: `SuiteToolsView:getElementHtml() initiated`, details: { element: element } });
+            let result = '';
+            let elementId = '';
+            let elementLabel = '';
+            switch (element) {
+                // CRITERIA
+                case 'integration':
+                    elementId = 'custom_integration';
+                    elementLabel = 'Integration';
+                    break;
+                case 'token':
+                    elementId = 'custom_token';
+                    elementLabel = 'Token';
+                    break;
+                // TODO - add more elements once verified that this works
+                default:
+                    log.error({ title: `SuiteToolsView:getElementHtml() invalid element`, details: element });
+                    break;
+            }
+            if (elementId) {
+                result = `<!-- ${element} -->
+      <div>
+        <label for="${elementId}" class="block mb-2 text-sm font-medium  text-gray-900">${elementLabel}</label><select size=6 name="${elementId}" id="${elementId}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
+      </div>`;
+            }
+            log.debug({ title: `SuiteToolsView:getCriteria() returning`, details: result });
+            return result;
+        }
+        /**
          * Get active options
          *
          * @returns form select options
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getActiveOptions() {
-            // log.debug({ title: `SuiteToolsModel:getActiveOptions() initiated`, details: '' });
+            // log.debug({ title: `SuiteToolsView:getActiveOptions() initiated`, details: '' });
             const options = [];
             options.push({ value: '', text: 'All' });
             options.push({ value: 'T', text: 'Yes' });
@@ -299,13 +348,13 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getApiVersionOptions() {
-            // log.debug({ title: `SuiteToolsModel:getApiVersionOptions() initiated`, details: '' });
+            // log.debug({ title: `SuiteToolsView:getApiVersionOptions() initiated`, details: '' });
             // note: source of truth is: 'SELECT scriptVersion.id, scriptVersion.name FROM scriptVersion ORDER BY name'
             const options = [];
             options.push({ value: '', text: 'All' });
-            options.push({ value: '1.0', text: '1.0' });
-            options.push({ value: '2.0', text: '2.0' });
             options.push({ value: '2.1', text: '2.1' });
+            options.push({ value: '2.0', text: '2.0' });
+            options.push({ value: '1.0', text: '1.0' });
             return options;
         }
         /**
@@ -315,7 +364,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getDateOptions() {
-            // log.debug({ title: `SuiteToolsModel:getDateOptions() initiated`, details: '' });
+            // log.debug({ title: `SuiteToolsView:getDateOptions() initiated`, details: '' });
             const options = [];
             options.push({ value: '', text: 'All' });
             options.push({ value: '15', text: 'Last 15 minutes' });
@@ -333,7 +382,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getLogLevelOptions() {
-            // log.debug({ title: `SuiteToolsModel:getLogLevelOptions() initiated`, details: '' });
+            // log.debug({ title: `SuiteToolsView:getLogLevelOptions() initiated`, details: '' });
             const options = [];
             options.push({ value: '', text: 'All' });
             options.push({ value: 'DEBUG', text: 'Debug' });
@@ -350,7 +399,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getRowOptions() {
-            // log.debug({ title: `SuiteToolsModel:getRowOptions() initiated`, details: '' });
+            // log.debug({ title: `SuiteToolsView:getRowOptions() initiated`, details: '' });
             const options = [];
             options.push({ value: '', text: 'All' });
             options.push({ value: '50', text: '50' });
