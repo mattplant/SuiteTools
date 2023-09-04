@@ -406,35 +406,14 @@ export class SuiteToolsController {
   /**
    * Renders the Concurrency Summary form.
    */
-  public renderApmConcurrencySummaryForm(days = 3): void {
+  public renderApmConcurrencySummaryForm(): void {
     log.debug({ title: 'SuiteToolsController:renderConcurrencySummaryForm() initiated', details: null });
-
-    // build url
-    const scriptId = 'customscript_nsapm_cm_sl_concurrency_v2';
-    const deployId = 'customdeploy_nsapm_cm_sl_concurrency_v2';
-    const accountId = this.stApp.stAppNs.runtime.accountId;
-    const endDateMS = Date.now();
-    const startDateMS = endDateMS - days * 86400000; // x days ago
-    const params = [];
-    params.push('compfil=' + accountId); // accountId
-    params.push('testmode=F'); // testmode
-    params.push('startDateMS=' + startDateMS); // startDateMS
-    params.push('endDateMS=' + endDateMS); // endDateMS
-    params.push('integId='); // integId
-    params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
-    const concurrencySummaryUrl = this.stApp.stLib.stLibNs.stLibNsScript.buildScriptUrl(
-      accountId,
-      scriptId,
-      deployId,
-      params
-    );
 
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/apm/concurrencySummary.html');
     const bodyValues = {};
     bodyValues['scriptUrl'] = this.stApp.scriptUrl;
     bodyValues['accountId'] = this.stApp.stAppNs.runtime.accountId;
-    bodyValues['concurrencySummaryUrl'] = concurrencySummaryUrl;
 
     this.stApp.stView.render(RenderType.Normal, body, bodyValues);
   }
@@ -1091,7 +1070,7 @@ export class SuiteToolsController {
     if (record) {
       // // determine last login
       // const lastLoginSQL = `SELECT
-      //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+      //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS')) AS logindate
       //   FROM
       //     LoginAudit
       //   WHERE
@@ -1306,7 +1285,7 @@ export class SuiteToolsController {
     if (record) {
       // determine last login
       // const lastLoginSQL = `SELECT
-      //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+      //     MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS')) AS logindate
       //   FROM
       //     LoginAudit
       //   WHERE
@@ -1567,7 +1546,7 @@ export class SuiteToolsController {
     if (record) {
       // determine last login
       const lastLoginSQL = `SELECT
-          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+          MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS')) AS logindate
         FROM
           LoginAudit
         WHERE

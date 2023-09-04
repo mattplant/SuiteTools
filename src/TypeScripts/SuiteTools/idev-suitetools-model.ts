@@ -833,7 +833,7 @@ export class SuiteToolsModel {
     });
 
     let sql = `SELECT
-      TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH:MI:SS' ) AS date,
+      TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
       LoginAudit.status,
       LoginAudit.oAuthAppName,
       LoginAudit.oAuthAccessTokenName,
@@ -1286,7 +1286,7 @@ export class SuiteToolsModel {
 
     let sql = `SELECT
       ScriptNote.internalid AS id,
-      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH:MI:SS' ) AS timestamp,
+      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
       ScriptNote.type,
       script.scripttype,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,

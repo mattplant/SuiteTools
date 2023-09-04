@@ -1,9 +1,34 @@
-<div id="spinner" class="grid place-content-center">
-	<span class="h-7 w-7 block rounded-full border-4 border-t-blue-500 animate-spin"></span>
+<div class="mb-2">
+	<h2 class="text-2xl">Concurrency Detail</h2>
 </div>
+
+<div id="spinner" class="grid place-content-center">
+	<span id="spinner" class="align-top h-7 w-7 inline-block rounded-full border-4 border-t-blue-500 animate-spin"></span>
+</div>
+
 <div id="results" style="display: none;">
-	<div class="mb-2">
-		<h2 class="text-2xl">Concurrency Detail</h2>
+	<div class="py-2 px-2 mx-auto text-center">
+		<div class="flex bg-gray-50 rounded-lg shadow">
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Concurrency Limit</h3>
+				<h1 id="concurrencyLimit" class="text-3xl text-gray-500 p-2"></h1>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Peak Concurrency</h3>
+				<h1 id="peakConcurrency" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="peakConcurrencyDate" class="text-sm text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-red-700">Error Rate</h3>
+				<h1 id="errorRate" class="text-3xl text-gray-500 p-2"></h1>
+				<span id="errorRateDetail" class="text-sm text-gray-500"></span>
+			</div>
+			<div class="flex-1 p-5">
+				<h3 class="text-xl font-bold tracking-tight text-gray-900">Top Unallocated Integrations</h3>
+				<span id="topIntegrations" class="text-sm text-gray-500"></span>
+			</div>
+
+		</div>
 	</div>
 
 	<div class="mb-2">
@@ -26,18 +51,21 @@
 <script>
 	const accountIdField  = document.getElementById("accountId");
 	const accountId = String(accountIdField.textContent);
-	const startDateElement  = document.getElementById("startDate");
-	const startDate = String(startDateElement.textContent);
-	const endDateElement  = document.getElementById("endDate");
-	const endDate = String(endDateElement.textContent);
 	const spinnerElement = document.getElementById("spinner");
 	const resultsElement = document.getElementById("results");
-	window.onload = function(){
-		const url = getConcurrencyDetailUrl(accountId, startDate, endDate);
-		getNsConcurrencyDetailData(url);
-	};
+	window.onload = function(){ getNsConcurrencyDetail(); };
 
 	const scriptUrl = "{{{scriptUrl}}}";
+
+	function getNsConcurrencyDetail(){
+		const startDateElement  = document.getElementById("startDate");
+		const startDate = String(startDateElement.textContent);
+		const endDateElement  = document.getElementById("endDate");
+		const endDate = String(endDateElement.textContent);
+		const summaryUrl = getConcurrencyDetailUrl(accountId, startDate, endDate);
+		const violationsUrl = getConcurrencyViolationsUrl(accountId, startDate, endDate);
+		getNsConcurrencyDetailData(summaryUrl, violationsUrl);
+	};
 
 	/**
 	 * Get NetSuite concurrency detail data.
@@ -45,18 +73,55 @@
 	 * @param {string} url - the URL to the data from
 	 * @returns {void}
 	 */
-	async function getNsConcurrencyDetailData(url) {
-		console.log('getNsConcurrencyDetailData() initiated with ' + JSON.stringify({ url: url }));
-		// get data from NetSuite APM service
+	async function getNsConcurrencyDetailData(summaryUrl, violationsUrl) {
+		console.log('getNsConcurrencyDetailData() initiated with ' + JSON.stringify({ summaryUrl: summaryUrl, violationsUrl: violationsUrl }));
 		console.log('getNsConcurrencyDetailData() loading data from NetSuite...');
-		const response = await getJsonPageContent(url);
+
+		// get concurrency violation data from NetSuite's APM service
+		const violationResponse = await getJsonPageContent(violationsUrl);
+		console.log('violationResponse = ' + JSON.stringify(violationResponse));
+		const topIntegrations = violationResponse.data.overview.topIntegrations;
+		console.log('topIntegrations = ' + JSON.stringify(topIntegrations));
+		const violations = violationResponse.data.indices;
+		console.log('violations = ' + JSON.stringify(violations));
+
+		// get concurrency detail data from NetSuite's APM service
+		const response = await getJsonPageContent(summaryUrl);
 		const results = response.data.results;
-		// log info
 		console.log('response = ' + JSON.stringify(response));
 		console.log('success = ' + response.success);
 		console.log('message = ' + response.message);
 		console.log('overview = ' + JSON.stringify(response.data.overview));
 		console.log('results = ' + JSON.stringify(results));
+
+		// OVERVIEW SECTION
+		// define variables
+		const concurrencyLimit = response.data.overview.concurrencyLimit;
+		const peakConcurrency = response.data.overview.peakConcurrency.value;
+		const peakConcurrencyDate = formatDate(response.data.overview.peakConcurrency.dateMS);
+		// calculate error rate percentage
+		const errorRate = violationResponse.data.overview.totalViolations / violationResponse.data.overview.totalRequests * 100;
+		const errorRateRounded = Math.round(errorRate * 100) / 100 + '%';
+		const errorRateDetail = violationResponse.data.overview.totalViolations + ' violations in ' + violationResponse.data.overview.totalRequests + ' requests';
+		// get top integration names
+		let topIntegrationsArray = [];
+		if (topIntegrations && topIntegrations.length > 0) {
+			for (let i = 0; i < topIntegrations.length; i++) {
+				const topIntegration = topIntegrations[i];
+				topIntegrationsArray.push(topIntegration.name + ' - ' + topIntegration.value + ' requests');
+			}
+		}
+		const topIntegrationsContent = topIntegrationsArray.join('\n');
+
+		// set values
+		document.getElementById("concurrencyLimit").textContent = concurrencyLimit;
+		document.getElementById("peakConcurrency").textContent = peakConcurrency;
+		document.getElementById("peakConcurrencyDate").textContent = peakConcurrencyDate;
+		document.getElementById("errorRate").textContent = errorRateRounded;
+		document.getElementById("errorRateDetail").textContent = errorRateDetail;
+		document.getElementById("topIntegrations").innerText = topIntegrationsContent;
+
+		// BUILD DETAIL DATA
 		// format results
 		let formattedResults = [];
 		if (results && results.length > 0) {
@@ -82,10 +147,11 @@
 			columns:[
 				{ title:"startTimeMS", field:"startTimeMS", visible:false },
 				{ title:"endTimeMS", field:"endTimeMS", visible:false },
-				{ title:"Start Time", field:"startTime", sorter:"string", width:160 },
-				{ title:"End Time", field:"endTime", sorter:"string", width:160 },
-				{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:160 },
-				{ title:"Peak Concurrency Time", field:"peakConcurrencyTime", width:200 },
+				{ title:"Start Time", field:"startTime", sorter:"string", width:160, hozAlign:"center" },
+				{ title:"End Time", field:"endTime", sorter:"string", width:160, hozAlign:"center" },
+				// { title:"Average Concurrency", field:"averageConcurrency", sorter:"number", width:185, hozAlign:"center" },
+				{ title:"Peak Concurrency", field:"peakConcurrency", sorter:"number", width:170, hozAlign:"center" },
+				{ title:"Peak Concurrency", field:"peakConcurrencyTime", width:170, hozAlign:"center" },
 			],
 		});
 		// define row click event function
@@ -117,17 +183,59 @@
 		params = [];
 		params.push('script=customscript_nsapm_cd_sl_concurrency_v2'); // script (note cd instead of cm)
 		params.push('deploy=customdeploy_nsapm_cd_sl_concurrency_v2'); // deploy (note cd instead of cm)
-		params.push('compfil=' + accountId); // accountId
-		params.push('testmode=F'); // testmode
-		params.push('startDateMS=' + startDate); // startDate
-		params.push('endDateMS=' + endDate); // endDate
-		params.push('concurrencyMode=noallocation'); // concurrencyMode
-		params.push('allocatedList='); // allocatedList
-		params.push('integId='); // integId
+		params.push('compfil=' + accountId); // account ID
+		params.push('testmode=F'); // test mode
+		params.push('startDateMS=' + startDate); // start date
+		params.push('endDateMS=' + endDate); // end date
+		params.push('concurrencyMode=noallocation'); // concurrency mode
+		params.push('allocatedList='); // allocated list
+		params.push('integId='); // integration ID
 		url = path + '?' + params.join('&');
 		console.log('getConcurrencyDetailUrl() returning ' + url);
 
 		return url;
+	}
+
+	/**
+	 * Build the relative URL to get the violation data.
+	 *
+	 * @param accountId - the NetSuite account ID
+	 * @param days - the number of days to get the data for
+	 * @returns url - the url to get the violation data
+	 */
+	 function getConcurrencyViolationsUrl(accountId, startDate, endDate) {
+		console.log('getConcurrencyViolationsUrl() initiated with ' + JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }));
+		// example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_violations_v2&deploy=customdeploy_nsapm_cd_sl_violations_v2&testmode=F&startDateMS=1685383200000&endDateMS=1685386800000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
+		const path = '/app/site/hosting/scriptlet.nl';
+		params = [];
+		params.push('script=customscript_nsapm_cd_sl_violations_v2'); // script (note cm instead of cd)
+		params.push('deploy=customdeploy_nsapm_cd_sl_violations_v2'); // deploy (note cm instead of cd)
+		params.push('startDateMS=' + startDate); // start date
+		params.push('endDateMS=' + endDate); // end date
+		params.push('integId='); // integration ID
+		params.push('compfil=' + accountId); // accountId
+		params.push('allocatedList'); // 7 (420/60) hour time offset for PST
+		const url = path + '?' + params.join('&');
+		console.log('getConcurrencyViolationsUrl() returning ' + url);
+		return url;
+	}
+
+	/**
+	 * Get the core id from a string
+	 *
+	 * TODO - Move to a utility file.  Currently this is also in the idev-suitetools-client.js file.
+	 *
+	 * @param {string | number} id which could include a name with the actual id inside the parentheses at the end
+	 * @returns {string | number} id
+	 */
+	function getCoreId(id) {
+		// if id is inside paretheses at end then set id to just that
+		var str = id.toString();
+		var matches = str.match(/\((-?\d+)\)$/);
+		if (matches) {
+			id = matches[1];
+		}
+		return id;
 	}
 
 	/**
@@ -161,13 +269,14 @@
 				"endDateMS": result.endDate,
 				"startDate": formatDate(result.startDate),
 				"endDate": formatDate(result.endDate),
-				"duration": result.endDate - result.startDate + " ms",
+				"duration": (result.endDate - result.startDate) / 1000,
 				"type": result.type,
-				"integrationId": result.integrationId,
+				// "integrationId": result.integrationId,
 				"operation": result.operation,
-				"scriptId": result.scriptId,
-				"integration": result.integration,
-				"scriptName": result.scriptName,
+				// "scriptId": result.scriptId,
+				"integration": result.integration + ' (' + result.integrationId + ')',
+				// "scriptName": result.scriptName,
+				"script": result.scriptName + ' (' + result.scriptId + ')',
 				"status": result.status,
 				"wouldBeRejected": result.wouldBeRejected,
 			};
@@ -180,18 +289,23 @@
 			columns:[
 				{ title:"startDateMS", field:"startDateMS", visible:false },
 				{ title:"endDateMS", field:"endDateMS", visible:false },
-				{ title:"Rejected?", field:"wouldBeRejected", sorter:"boolean", width:60 },
-				{ title:"Status", field:"status", sorter:"string", width:90 },
-				{ title:"Start Time", field:"startDate", sorter:"string", width:150 },
-				{ title:"End Time", field:"endDate", sorter:"string", width:150 },
-				{ title:"Duration", field:"duration", sorter:"number", width:100 },
+				{ title:"Rejected?", field:"wouldBeRejected", visible:false },
+				{ title:"Status", field:"status", sorter:"string", width:110 },
+				{ title:"Start Time", field:"startDate", sorter:"string", width:160, hozAlign:"center" },
+				{ title:"End Time", field:"endDate", sorter:"string", width:160, hozAlign:"center" },
+				{ title:"Duration", field:"duration", sorter:"number", width:130, hozAlign:"center" },
 				{ title:"Type", field:"type", sorter:"string", width:120 },
-				{ title:"Integration ID", field:"integrationId", sorter:"number", width:150 },
 				{ title:"Operation", field:"operation", sorter:"string", width:120 },
-				{ title:"Script ID", field:"scriptId", sorter:"number", width:100 }, // cellClick:function(e, cell, value, data){showModal(scriptUrl, ModalType.Script, cell.getValue()) }
 				{ title:"Integration", field:"integration", sorter:"string" },
-				{ title:"Script Name", field:"scriptName", sorter:"string" },
+				{ title:"Script", field:"script", sorter:"string" },
 			],
+			rowFormatter:function(row) {
+				let rowValues = row.getData();
+				console.log('rowValues = ' + JSON.stringify(rowValues));
+				if (rowValues["wouldBeRejected"]) {
+					row.getElement().style.backgroundColor = "#B85B5B";
+				}
+			}
 		});
 		// define row click event function
 		requestTable.on("rowClick", function(e, row){
@@ -199,7 +313,7 @@
 			const startDateMS = row.getData().startDateMS; // 1684343700000
 			const endDateMS = row.getData().endDateMS; // 1684344600000
 			const type = row.getData().type;
-			const scriptId = row.getData().scriptId;
+			const scriptId = getCoreId(row.getData().script);
 			// determine script type (if applicable)
 			let scriptType = '';
 			switch (type) {
@@ -230,12 +344,12 @@
 		params = [];
 		params.push('script=customscript_nsapm_cd_sl_instances_v2'); // script (note cd instead of cm)
 		params.push('deploy=customdeploy_nsapm_cd_sl_instances_v2'); // deploy (note cd instead of cm)
-		params.push('compfil=' + accountId); // accountId
+		params.push('compfil=' + accountId); // account ID
 		params.push('testmode=F'); // testmode
-		params.push('startDateMS=' + startDate); // startDate
-		params.push('endDateMS=' + endDate); // endDate
-		params.push('concurrencyMode=noallocation'); // concurrencyMode
-		params.push('allocatedList='); // allocatedList
+		params.push('startDateMS=' + startDate); // start date
+		params.push('endDateMS=' + endDate); // end date
+		params.push('concurrencyMode=noallocation'); // concurrency mode
+		params.push('allocatedList='); // allocated list
 		params.push('integId='); // integration ID
 		params.push('sort=startDate'); // sort column
 		params.push('dir=ASC'); // sort direction

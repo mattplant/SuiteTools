@@ -92,7 +92,7 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
         log.error('reduce() error', `Unknown identity record type: ${identityRecordType}`);
     }
     if (whereClause) {
-      const lastLoginSQL = `SELECT MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH:MI:SS')) AS logindate
+      const lastLoginSQL = `SELECT MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS')) AS logindate
       FROM LoginAudit ${whereClause}`;
       const lastLogin = stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
       // return the result

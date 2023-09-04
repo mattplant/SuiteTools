@@ -22,10 +22,10 @@
                   { title: "User", field: "user", cellClick:function(e, cell, value, data){
                       showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
                   { title: "Script Type", field: "scripttype", sorter: "string" },
-                  { title: "Owner", field: "owner", cellClick:function(e, cell, value, data){
-                      showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
                   { title: "Script", field:"scriptname", cellClick:function(e, cell, value, data){
                       showModal(scriptUrl, ModalType.Script, cell.getValue()) }, sorter: "string" },
+                  { title: "Owner", field: "owner", cellClick:function(e, cell, value, data){
+                      showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },
                   { title: "Title", field: "title", sorter: "string" },
                   { title: "Detail", field: "detail", sorter: "string" },
               ],

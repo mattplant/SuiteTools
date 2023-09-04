@@ -69,8 +69,7 @@
 					"dateMS": result.date,
 					"date": formatDate(result.date),
 					"entityid": result.entityid, // user ID
-					"email": result.email, // user email
-					"role": result.role, // user role
+					"userRole": result.email + ' (' + result.role + ')', // user (role)
 					"recordid": result.recordid,
 					"totaltime": result.totaltime, // seconds
 					"usagecount": result.usagecount,
@@ -92,17 +91,16 @@
 			columns:[
 				{ title:"dateMS", field:"dateMS", visible:false },
 				{ title:"Date", field:"date", sorter:"string", width:160 },
-				{ title:"Entity ID", field:"entityid", sorter:"string", width:90 },
-				{ title:"Email", field:"email", sorter:"string", width:180 },
-				{ title:"Role", field:"role", sorter:"string", width:50 },
-				{ title:"Record ID", field:"recordid", sorter:"string", width:90 },
-				{ title:"Total Time", field:"totaltime", sorter:"string", width:90 },
-				{ title:"Usage Count", field:"usagecount", sorter:"string", width:120 },
-				{ title:"URL Requests", field:"urlrequests", sorter:"string", width:120 },
-				{ title:"Searches", field:"searches", sorter:"string", width:120 },
-				{ title:"Records", field:"records", sorter:"string", width:120 },
-				{ title:"Error Code", field:"errorcode", sorter:"string", width:120 },
+				// { title:"Entity", field:"entityid", sorter:"number", width:90 },
+				{ title:"User (Role)", field:"userRole", sorter:"string", width:250 },
 				{ title:"Context", field:"context", sorter:"string", width:90 },
+				{ title:"Record", field:"recordid", sorter:"number", width:90 },
+				{ title:"Time", field:"totaltime", sorter:"number", width:80, hozAlign:"center" },
+				{ title:"Usage", field:"usagecount", sorter:"number", width:80, hozAlign:"center" },
+				{ title:"URLs", field:"urlrequests", sorter:"number", width:100, hozAlign:"center" },
+				{ title:"Searches", field:"searches", sorter:"number", width:100, hozAlign:"center" },
+				{ title:"Records", field:"records", sorter:"number", width:100, hozAlign:"center" },
+				{ title:"Error Code", field:"errorcode", sorter:"string", width:120 },
 				{ title:"Operation ID", field:"operationId", sorter:"string" },
 				{ title:"frhtId", field:"frhtId", sorter:"string" },
 			],

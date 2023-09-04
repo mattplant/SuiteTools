@@ -93,6 +93,22 @@ function postPage(multiselectIds, pageUrl) {
     // xhttp.send();
 }
 
+/**
+ * Get the core id from a string
+ *
+ * @param {string | number} id which could include a name with the actual id inside the parentheses at the end
+ * @returns {string | number} id
+ */
+function getCoreId(id) {
+    // if id is inside paretheses at end then set id to just that
+    var str = id.toString();
+    var matches = str.match(/\((-?\d+)\)$/);
+    if (matches) {
+        id = matches[1];
+    }
+    return id;
+}
+
 const ModalType = Object.freeze({
     "Employee": 1,
     "File": 2,
@@ -145,12 +161,10 @@ function showModal(scriptUrl, modalType, id) {
             console.error('Invalid modal type "' + modalType + '" provided.');
             return;
     }
-    // determine id replacing id if number in parentheses is found at end
-    var str = id.toString();
-    var matches = str.match(/\((-?\d+)\)$/);
-    if (matches) {
-        id = matches[1];
-    }
+
+    // // determine id replacing id if number in parentheses is found at end
+    id = getCoreId(id);
+
     // build the page url
     pageUrl = scriptUrl + '&action=' + action + '&id=' + id;
     // get the page
