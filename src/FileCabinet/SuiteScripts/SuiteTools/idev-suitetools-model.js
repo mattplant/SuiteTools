@@ -95,10 +95,6 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
                 // limit to specified number of rows
                 where.push(`RowNum <= ${rows}`);
             }
-            else {
-                // default to 50 rows
-                where.push(`RowNum <= 50`);
-            }
             if (types) {
                 if (Array.isArray(types)) {
                     types = types.map((type) => {
@@ -1154,10 +1150,6 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             if (rows) {
                 // limit to specified number of rows
                 where.push(`RowNum <= ${rows}`);
-            }
-            else {
-                // default to 50 rows
-                where.push(`RowNum <= 50`);
             }
             if (levels) {
                 if (Array.isArray(levels)) {

@@ -64,6 +64,12 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 case 'system':
                     this.renderSystemForm();
                     break;
+                case 'jobs':
+                    this.renderJobsForm();
+                    break;
+                case 'jobModal':
+                    this.renderIntegrationForm(idev_suitetools_view_1.RenderType.Modal, id);
+                    break;
                 // objects
                 case 'files':
                     this.renderFilesForm();
@@ -82,6 +88,9 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     break;
                 case 'script':
                     this.renderScriptForm(idev_suitetools_view_1.RenderType.Normal, id);
+                    break;
+                case 'timestampModal':
+                    this.renderTimestampModal(id);
                     break;
                 // reports
                 case 'integrations':
@@ -502,6 +511,43 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
+         * Renders the Jobs form.
+         */
+        renderJobsForm() {
+            log.debug({ title: 'SuiteToolsController:renderJobsForm() initiated', details: null });
+            // set form input option values dynamically
+            const optionValuesObj = {
+                options: [],
+            };
+            const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+            // get the results
+            let formFieldValues = [];
+            if (this.stApp.context.request.method == 'GET') {
+                // set the default initial values
+                formFieldValues.push({ name: 'custom_status', value: 'T' });
+            }
+            else {
+                // POST - get values from POSTed fields
+                formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+            }
+            const status = this.getPostedField('custom_status', formFieldValues);
+            const results = this.stApp.stModel.getIntegrations(status);
+            const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/jobs.html');
+            const resultsValues = {};
+            resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+            resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+            const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/jobs.html');
+            const bodyValues = {};
+            bodyValues['jobsModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/job.html');
+            bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+            bodyValues['optionValues'] = optionValues;
+            bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+            bodyValues['results'] = resultsContent;
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
          * Renders the System form.
          */
         renderSystemForm() {
@@ -750,6 +796,23 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             this.stApp.stView.render(renderType, body, bodyValues);
         }
         /**
+         * Renders the Timestamp form.
+         *
+         * @param id - the internal ID of the record
+         */
+        renderTimestampModal(id) {
+            log.debug({
+                title: 'SuiteToolsController:renderTimestampModal() initiated',
+                details: { id: id },
+            });
+            // display the form
+            const filename = 'views/partials/modals/content/timestamp.html';
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+            const bodyValues = {};
+            bodyValues['urlLogs'] = '/app/common/scripting/script.nl?id=' + 'FILLIN';
+            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Modal, body, bodyValues);
+        }
+        /**
          * Renders the Integrations form
          */
         renderIntegrationsForm() {
@@ -779,7 +842,6 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             // display the form
             const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/integrations.html');
             const bodyValues = {};
-            bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/integration.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
@@ -1149,7 +1211,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
                 const lastLogins = this.stApp.stAppSettings.lastLogins;
                 // add last login to the integration
-                const foundLastLogin = lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
+                const foundLastLogin = lastLogins && lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
                 // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
                 const lastLoginDate = foundLastLogin ? foundLastLogin.lastLogin : '';
                 // set the values
@@ -1559,6 +1621,7 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const bodyValues = {};
             bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/script.html');
+            bodyValues['timestampModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/timestamp.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);

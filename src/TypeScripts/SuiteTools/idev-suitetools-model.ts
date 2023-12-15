@@ -106,9 +106,6 @@ export class SuiteToolsModel {
     if (rows) {
       // limit to specified number of rows
       where.push(`RowNum <= ${rows}`);
-    } else {
-      // default to 50 rows
-      where.push(`RowNum <= 50`);
     }
     if (types) {
       if (Array.isArray(types)) {
@@ -1300,9 +1297,6 @@ export class SuiteToolsModel {
     if (rows) {
       // limit to specified number of rows
       where.push(`RowNum <= ${rows}`);
-    } else {
-      // default to 50 rows
-      where.push(`RowNum <= 50`);
     }
     if (levels) {
       if (Array.isArray(levels)) {

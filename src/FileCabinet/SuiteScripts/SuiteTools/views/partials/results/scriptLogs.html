@@ -17,7 +17,8 @@
               },
               columns: [
                   { title: "ID", field: "id", sorter: "number" },
-                  { title: "Timestamp", field: "timestamp", sorter: "string" },
+                  { title: "Timestamp", field: "timestamp", cellClick:function(e, cell, value, data){
+                      showModal(scriptUrl, ModalType.Timestamp, "TESTING") }, sorter: "string" },
                   { title: "Type", field: "type", sorter: "string" },
                   { title: "User", field: "user", cellClick:function(e, cell, value, data){
                       showModal(scriptUrl, ModalType.User, cell.getValue()) }, sorter: "string" },

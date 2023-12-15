@@ -74,6 +74,12 @@ export class SuiteToolsController {
       case 'system':
         this.renderSystemForm();
         break;
+      case 'jobs':
+        this.renderJobsForm();
+        break;
+      case 'jobModal':
+        this.renderIntegrationForm(RenderType.Modal, id);
+        break;
       // objects
       case 'files':
         this.renderFilesForm();
@@ -92,6 +98,9 @@ export class SuiteToolsController {
         break;
       case 'script':
         this.renderScriptForm(RenderType.Normal, id);
+        break;
+      case 'timestampModal':
+        this.renderTimestampModal(id);
         break;
       // reports
       case 'integrations':
@@ -566,6 +575,48 @@ export class SuiteToolsController {
   }
 
   /**
+   * Renders the Jobs form.
+   */
+  public renderJobsForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderJobsForm() initiated', details: null });
+
+    // set form input option values dynamically
+    const optionValuesObj = {
+      options: [],
+    };
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the results
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // set the default initial values
+      formFieldValues.push({ name: 'custom_status', value: 'T' });
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const status = this.getPostedField('custom_status', formFieldValues);
+    const results = this.stApp.stModel.getIntegrations(status);
+    const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/jobs.html');
+    const resultsValues = {};
+    resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+    resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+    const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/jobs.html');
+    const bodyValues = {};
+    bodyValues['jobsModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/wrapper/job.html'
+    );
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['results'] = resultsContent;
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
    * Renders the System form.
    */
   public renderSystemForm(): void {
@@ -842,6 +893,25 @@ export class SuiteToolsController {
   }
 
   /**
+   * Renders the Timestamp form.
+   *
+   * @param id - the internal ID of the record
+   */
+  public renderTimestampModal(id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderTimestampModal() initiated',
+      details: { id: id },
+    });
+
+    // display the form
+    const filename = 'views/partials/modals/content/timestamp.html';
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    bodyValues['urlLogs'] = '/app/common/scripting/script.nl?id=' + 'FILLIN';
+    this.stApp.stView.render(RenderType.Modal, body, bodyValues);
+  }
+
+  /**
    * Renders the Integrations form
    */
   public renderIntegrationsForm(): void {
@@ -875,9 +945,6 @@ export class SuiteToolsController {
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/integrations.html');
     const bodyValues = {};
-    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-      'views/partials/modals/wrapper/user.html'
-    );
     bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
       'views/partials/modals/wrapper/integration.html'
     );
@@ -1294,7 +1361,7 @@ export class SuiteToolsController {
       // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
       const lastLogins = this.stApp.stAppSettings.lastLogins;
       // add last login to the integration
-      const foundLastLogin = lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
+      const foundLastLogin = lastLogins && lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
       // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
       const lastLoginDate: string = foundLastLogin ? foundLastLogin.lastLogin : '';
 
@@ -1760,6 +1827,9 @@ export class SuiteToolsController {
     );
     bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
       'views/partials/modals/wrapper/script.html'
+    );
+    bodyValues['timestampModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/wrapper/timestamp.html'
     );
     bodyValues['scriptUrl'] = this.stApp.scriptUrl;
     bodyValues['optionValues'] = optionValues;

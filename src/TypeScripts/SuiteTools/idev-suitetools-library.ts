@@ -23,6 +23,7 @@
  * @NApiVersion 2.1
  */
 
+import email = require('N/email');
 import file = require('N/file');
 import log = require('N/log');
 import query = require('N/query');
@@ -112,6 +113,7 @@ export class SuiteToolsLibraryGeneral {
  */
 export class SuiteToolsLibraryNetSuite {
   private _stApp: SuiteToolsApp;
+  private _stLibNsEmail: SuiteToolsLibraryNetSuiteEmail;
   private _stLibNsFile: SuiteToolsLibraryNetSuiteFile;
   private _stLibNsHttp: SuiteToolsLibraryNetSuiteHttp;
   private _stLibNsRecord: SuiteToolsLibraryNetSuiteRecord;
@@ -121,6 +123,9 @@ export class SuiteToolsLibraryNetSuite {
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
+  }
+  get stLibNsEmail(): SuiteToolsLibraryNetSuiteEmail {
+    return this._stLibNsEmail;
   }
   get stLibNsFile(): SuiteToolsLibraryNetSuiteFile {
     return this._stLibNsFile;
@@ -145,12 +150,60 @@ export class SuiteToolsLibraryNetSuite {
     // log.debug({ title: 'SuiteToolsLibraryNetSuite:constructor() initiated', details: null });
     this._stApp = stApp;
 
+    this._stLibNsEmail = new SuiteToolsLibraryNetSuiteEmail(this.stApp);
     this._stLibNsFile = new SuiteToolsLibraryNetSuiteFile(this.stApp);
     this._stLibNsHttp = new SuiteToolsLibraryNetSuiteHttp(this.stApp);
     this._stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(this.stApp);
     this._stLibNsScript = new SuiteToolsLibraryNetSuiteScript(this.stApp);
     this._stLibNsSearch = new SuiteToolsLibraryNetSuiteSearch(this.stApp);
     this._stLibNsSuiteQl = new SuiteToolsLibraryNetSuiteSuiteQl(this.stApp);
+  }
+}
+
+/**
+ * SuiteTools NetSuite Email Library
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsLibraryNetSuiteEmail {
+  private _stApp: SuiteToolsApp;
+
+  get stApp(): SuiteToolsApp {
+    return this._stApp;
+  }
+
+  constructor(stApp: SuiteToolsApp) {
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteEmail:constructor() initiated', details: null });
+    this._stApp = stApp;
+  }
+
+  /**
+   * Send Email Notification
+   *
+   * @param subject - email subject
+   * @param content - email core content
+   */
+  public sendNotification(subject: string, content: string) {
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteEmail:sendNotification() initiated', details: { subject: subject } });
+
+    // override values as needed
+    const author = 14671395; // Matt Plant
+    const replyTo = 'matt.plant@bulletproof.com';
+
+    // TODO add recipient logic
+    const recipients: string | string[] = replyTo; // default to replyTo
+    // recipients = replyTo;
+    // log.debug('sendNotification() recipients', recipients);
+
+    // TODO add wrapper content around content
+    const body = content;
+
+    // send email
+    email.send({ author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body });
+    log.debug({
+      title: 'SuiteToolsLibraryNetSuiteEmail:sendNotification() email sent',
+      details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject },
+    });
   }
 }
 

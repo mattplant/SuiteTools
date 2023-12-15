@@ -57,7 +57,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             // populate body content with Handlebars
             const template = Handlebars.compile(body);
             const content = template(values);
-            log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
+            // log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
             return content;
         }
         /**
@@ -262,7 +262,10 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         generateTableData(records, cleanData = false) {
-            // log.debug({ title: 'SuiteToolsView:generateTableData() initiated with ', details: { records: records, cleanData: cleanData } });
+            log.debug({
+                title: 'SuiteToolsView:generateTableData() initiated with ',
+                details: { records: records, cleanData: cleanData },
+            });
             // generate the table data
             let tableData = '';
             if (records === null || records.length == 0) {

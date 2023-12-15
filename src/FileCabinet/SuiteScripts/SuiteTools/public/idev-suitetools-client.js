@@ -100,7 +100,7 @@ function postPage(multiselectIds, pageUrl) {
  * @returns {string | number} id
  */
 function getCoreId(id) {
-    // if id is inside paretheses at end then set id to just that
+    // if id is inside parentheses at end then set id to just that
     var str = id.toString();
     var matches = str.match(/\((-?\d+)\)$/);
     if (matches) {
@@ -113,10 +113,12 @@ const ModalType = Object.freeze({
     "Employee": 1,
     "File": 2,
     "Integration": 3,
-    "Role": 4,
-    "Script": 5,
-    "Token": 6,
-    "User": 7,
+    "Job": 4,
+    "Role": 5,
+    "Script": 6,
+    "Timestamp": 7,
+    "Token": 8,
+    "User": 9,
 });
 
 /**
@@ -141,6 +143,10 @@ function showModal(scriptUrl, modalType, id) {
             modalId = 'integration-modal';
             action = 'integrationModal';
             break;
+        case ModalType.Job:
+            modalId = 'job-modal';
+            action = 'jobModal';
+            break;
         case ModalType.Role:
             modalId = 'role-modal';
             action = 'roleModal';
@@ -148,6 +154,10 @@ function showModal(scriptUrl, modalType, id) {
         case ModalType.Script:
             modalId = 'script-modal';
             action = 'scriptModal';
+            break;
+        case ModalType.Timestamp:
+            modalId = 'timestamp-modal';
+            action = 'timestampModal';
             break;
         case ModalType.Token:
             modalId = 'token-modal';
