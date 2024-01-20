@@ -22,9 +22,9 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/search", "N/url"], function (require, exports, file, log, query, record, redirect, search, url) {
+define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/search", "N/url"], function (require, exports, email, file, log, query, record, redirect, search, url) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibraryGeneral = exports.SuiteToolsLibrary = void 0;
+    exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuiteEmail = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibraryGeneral = exports.SuiteToolsLibrary = void 0;
     /**
      * SuiteTools Library
      *
@@ -100,6 +100,9 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         get stApp() {
             return this._stApp;
         }
+        get stLibNsEmail() {
+            return this._stLibNsEmail;
+        }
         get stLibNsFile() {
             return this._stLibNsFile;
         }
@@ -121,6 +124,7 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsLibraryNetSuite:constructor() initiated', details: null });
             this._stApp = stApp;
+            this._stLibNsEmail = new SuiteToolsLibraryNetSuiteEmail(this.stApp);
             this._stLibNsFile = new SuiteToolsLibraryNetSuiteFile(this.stApp);
             this._stLibNsHttp = new SuiteToolsLibraryNetSuiteHttp(this.stApp);
             this._stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(this.stApp);
@@ -130,6 +134,46 @@ define(["require", "exports", "N/file", "N/log", "N/query", "N/record", "N/redir
         }
     }
     exports.SuiteToolsLibraryNetSuite = SuiteToolsLibraryNetSuite;
+    /**
+     * SuiteTools NetSuite Email Library
+     *
+     * @author Matthew Plant <i@idev.systems>
+     */
+    class SuiteToolsLibraryNetSuiteEmail {
+        get stApp() {
+            return this._stApp;
+        }
+        constructor(stApp) {
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteEmail:constructor() initiated', details: null });
+            this._stApp = stApp;
+        }
+        /**
+         * Send Email Notification
+         *
+         * @param subject - email subject
+         * @param content - email core content
+         */
+        sendNotification(subject, content) {
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteEmail:sendNotification() initiated', details: { subject: subject } });
+            // TODO lookup instead of hardcode these
+            // override values as needed
+            const author = 14671395; // Matt Plant
+            const replyTo = 'matt.plant@bulletproof.com';
+            // TODO add recipient logic
+            const recipients = replyTo; // default to replyTo
+            // recipients = replyTo;
+            // log.debug('sendNotification() recipients', recipients);
+            // TODO add wrapper content around content
+            const body = content;
+            // send email
+            email.send({ author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body });
+            log.debug({
+                title: 'SuiteToolsLibraryNetSuiteEmail:sendNotification() email sent',
+                details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject },
+            });
+        }
+    }
+    exports.SuiteToolsLibraryNetSuiteEmail = SuiteToolsLibraryNetSuiteEmail;
     /**
      * SuiteTools NetSuite File Library
      *

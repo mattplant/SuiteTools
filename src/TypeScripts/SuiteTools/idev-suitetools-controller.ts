@@ -70,9 +70,22 @@ export class SuiteToolsController {
       case 'settings':
         this.renderSettingsForm();
         break;
+      // NetSuite
+      case 'netsuite':
+        this.renderNsHomePage();
+        break;
       // tools
       case 'system':
         this.renderSystemForm();
+        break;
+      case 'jobs':
+        this.renderJobsForm();
+        break;
+      case 'jobModal':
+        this.renderJobForm(RenderType.Modal, id);
+        break;
+      case 'job':
+        this.renderJobForm(RenderType.Normal, id);
         break;
       // objects
       case 'files':
@@ -177,6 +190,9 @@ export class SuiteToolsController {
           this.processPostedData();
           break;
         // handle pages
+        case 'jobs':
+          this.renderJobsForm();
+          break;
         case 'files':
           this.renderFilesForm();
           break;
@@ -566,6 +582,103 @@ export class SuiteToolsController {
   }
 
   /**
+   * Renders the NetSuite Home page.
+   */
+  public renderNsHomePage(): void {
+    log.debug({ title: 'SuiteToolsController:renderSettingsForm() initiated', details: '' });
+
+    const url = '/app/center/card.nl?sc=-29&whence=';
+    this.stApp.stView.redirect(url);
+  }
+
+  /**
+   * Renders the Jobs form.
+   */
+  public renderJobsForm(): void {
+    log.debug({ title: 'SuiteToolsController:renderJobsForm() initiated', details: null });
+
+    // set form input option values dynamically
+    // active
+    const activeOptions = this.stApp.stView.getActiveOptions();
+    // option values
+    const optionValuesObj = {
+      options: [
+        {
+          field: 'custom_active',
+          values: activeOptions,
+        },
+      ],
+    };
+    const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
+
+    // get the results
+    let formFieldValues = [];
+    if (this.stApp.context.request.method == 'GET') {
+      // set the default initial values
+      formFieldValues.push({ name: 'custom_active', value: 'T' });
+    } else {
+      // POST - get values from POSTed fields
+      formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
+    }
+    const active = this.getPostedField('custom_active', formFieldValues);
+    const results = this.stApp.stModel.getJobs(active);
+    const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/jobs.html');
+    const resultsValues = {};
+    resultsValues['scriptUrl'] = this.stApp.scriptUrl;
+    resultsValues['tableData'] = this.stApp.stView.generateTableData(results);
+    const resultsContent = this.stApp.stView.buildContent(resultsTemplate, resultsValues);
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/jobs.html');
+    const bodyValues = {};
+    bodyValues['jobsModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
+      'views/partials/modals/wrapper/job.html'
+    );
+    bodyValues['scriptUrl'] = this.stApp.scriptUrl;
+    bodyValues['optionValues'] = optionValues;
+    bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
+    bodyValues['results'] = resultsContent;
+    this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the Job form.
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderJobForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderJobForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getJob(id);
+
+    // display the form
+    let filename = 'views/job.html';
+    if (renderType === RenderType.Modal) {
+      filename = 'views/partials/modals/content/job.html';
+    }
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    if (record) {
+      bodyValues['id'] = record.id;
+      bodyValues['isinactive'] = record.isinactive == 'T';
+      bodyValues['name'] = record.name;
+      bodyValues['type'] = record.type;
+      bodyValues['params'] = record.params;
+      bodyValues['url'] = this.stApp.scriptUrl + '&action=job&id=' + record.id;
+      if (renderType === RenderType.Normal) {
+        // TODO add additional fields
+      }
+    }
+    this.stApp.stView.render(renderType, body, bodyValues);
+  }
+
+  /**
    * Renders the System form.
    */
   public renderSystemForm(): void {
@@ -875,9 +988,6 @@ export class SuiteToolsController {
     // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/integrations.html');
     const bodyValues = {};
-    bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-      'views/partials/modals/wrapper/user.html'
-    );
     bodyValues['integrationModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
       'views/partials/modals/wrapper/integration.html'
     );
@@ -1294,7 +1404,7 @@ export class SuiteToolsController {
       // const lastLogin = this.stApp.stLib.stLibNs.stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
       const lastLogins = this.stApp.stAppSettings.lastLogins;
       // add last login to the integration
-      const foundLastLogin = lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
+      const foundLastLogin = lastLogins && lastLogins.find((loginRecord) => loginRecord['name'] == record.email);
       // log.debug({ title: 'SuiteToolsController:updateIntegrationsData() foundLastLogin', details: foundLastLogin });
       const lastLoginDate: string = foundLastLogin ? foundLastLogin.lastLogin : '';
 

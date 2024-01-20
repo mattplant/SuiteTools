@@ -24,11 +24,9 @@
  */
 
 import log = require('N/log');
-// ignore local Handlebars import error since we just need it run on NetSuite
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+import redirect = require('N/redirect');
+// @ts-expect-error TS2307: Cannot find module since it is relative to the JavaScript file being deployed to NetSuite
 import Handlebars = require('./handlebars.min');
-
 import { SuiteToolsApp } from './idev-suitetools-app';
 
 export enum RenderType {
@@ -56,6 +54,17 @@ export class SuiteToolsView {
   }
 
   /**
+   * Redirect to URL
+   *
+   * @param url - the URL
+   */
+  public redirect(url: string): void {
+    log.debug({ title: 'SuiteToolsView:render() redirect', details: url });
+
+    redirect.redirect({ url: url, parameters: {} });
+  }
+
+  /**
    * Builds content section.
    *
    * @param body - the templated content
@@ -68,7 +77,7 @@ export class SuiteToolsView {
     // populate body content with Handlebars
     const template = Handlebars.compile(body);
     const content = template(values);
-    log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
+    // log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
 
     return content;
   }
@@ -300,7 +309,10 @@ export class SuiteToolsView {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public generateTableData(records: any[], cleanData = false): string {
-    // log.debug({ title: 'SuiteToolsView:generateTableData() initiated with ', details: { records: records, cleanData: cleanData } });
+    log.debug({
+      title: 'SuiteToolsView:generateTableData() initiated with ',
+      details: { records: records, cleanData: cleanData },
+    });
 
     // generate the table data
     let tableData = '';

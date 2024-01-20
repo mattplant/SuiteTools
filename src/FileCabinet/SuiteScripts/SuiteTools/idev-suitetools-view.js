@@ -22,7 +22,7 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/log", "./handlebars.min"], function (require, exports, log, Handlebars) {
+define(["require", "exports", "N/log", "N/redirect", "./handlebars.min"], function (require, exports, log, redirect, Handlebars) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SuiteToolsView = exports.RenderType = void 0;
     var RenderType;
@@ -46,6 +46,15 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             this._stApp = stApp;
         }
         /**
+         * Redirect to URL
+         *
+         * @param url - the URL
+         */
+        redirect(url) {
+            log.debug({ title: 'SuiteToolsView:render() redirect', details: url });
+            redirect.redirect({ url: url, parameters: {} });
+        }
+        /**
          * Builds content section.
          *
          * @param body - the templated content
@@ -57,7 +66,7 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
             // populate body content with Handlebars
             const template = Handlebars.compile(body);
             const content = template(values);
-            log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
+            // log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
             return content;
         }
         /**
@@ -262,7 +271,10 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         generateTableData(records, cleanData = false) {
-            // log.debug({ title: 'SuiteToolsView:generateTableData() initiated with ', details: { records: records, cleanData: cleanData } });
+            log.debug({
+                title: 'SuiteToolsView:generateTableData() initiated with ',
+                details: { records: records, cleanData: cleanData },
+            });
             // generate the table data
             let tableData = '';
             if (records === null || records.length == 0) {

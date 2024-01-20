@@ -1,0 +1,25 @@
+<scheduledscript scriptid="customscript_idev_sc_jobs_initiator">
+  <description>This script initiates the SuiteTools jobs.</description>
+  <isinactive>F</isinactive>
+  <name>SuiteTools Jobs Initiator</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <scriptfile>[/SuiteScripts/SuiteTools/helpers/idev-st-sc-jobs-initiator.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_idev_sc_jobs_initiator">
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <status>SCHEDULED</status>
+      <title>SuiteTools Jobs Initiator</title>
+      <recurrence>
+        <daily>
+          <everyxdays>1</everyxdays>
+          <repeat>PT15M</repeat>
+          <startdate>2023-09-27</startdate>
+          <starttime>07:00:00Z</starttime>
+        </daily>
+      </recurrence>
+    </scriptdeployment>
+  </scriptdeployments>
+</scheduledscript>

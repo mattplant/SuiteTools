@@ -33,14 +33,14 @@
             <div class="flex flex-wrap justify-between items-center">
                 <!-- left menu -->
                 <div class="flex items-start">
-                    <!-- dashboard menu item -->
-                    <!-- <a href="{{scriptUrl}}" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <!-- NetSuite menu item -->
+                    <a href="{{scriptUrl}}&action=netsuite" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                         <svg aria-hidden="true" class="w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                             <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                         </svg>
-                        <span class="ml-3">Dashboard</span>
-                    </a> -->
+                        <span class="ml-3">NetSuite</span>
+                    </a>
                     <!-- tools menu item -->
                     <button type="button" class="flex items-center p-2 mr-1 text-gray-900 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-controls="dropdown-tools" data-dropdown-toggle="dropdown-tools" >
                         <svg aria-hidden="true" class="flex-shrink-0 w-6 h-6 text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -55,6 +55,9 @@
                     <div class="hidden overflow-hidden z-50 my-4 max-w-sm text-base list-none bg-white rounded divide-y divide-gray-100 shadow-lg dark:divide-gray-600 dark:bg-gray-700" id="dropdown-tools">
                         <div class="block py-2 px-0 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <a href="{{scriptUrl}}&action=system" class="flex items-center py-2 px-4 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">System</a>
+                        </div>
+                        <div class="block py-2 px-0 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <a href="{{scriptUrl}}&action=jobs" class="flex items-center py-2 px-4 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Jobs</a>
                         </div>
                     </div>
                     <!-- integrations menu item -->

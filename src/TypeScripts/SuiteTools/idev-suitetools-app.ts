@@ -126,18 +126,8 @@ export class SuiteToolsApp {
     return this._scriptFullUrl;
   }
 
-  constructor(context: EntryPoints.Suitelet.onRequestContext) {
+  constructor(context: EntryPoints.Suitelet.onRequestContext | null = null) {
     // log.debug({ title: 'SuiteToolsApp:constructor() initiated', details: null });
-
-    // initialize the SuiteTools application
-    this.initialize(context);
-
-    // route the request
-    this.route();
-  }
-
-  private initialize(context: EntryPoints.Suitelet.onRequestContext): void {
-    // log.debug({ title: 'SuiteToolsApp:initialize()', details: null });
 
     // add the libraries
     this._stLib = new SuiteToolsLibrary(this);
@@ -146,25 +136,42 @@ export class SuiteToolsApp {
     this._stAppSettings = new SuiteToolsAppSettings(this);
     this._stAppNs = new SuiteToolsAppNetSuite();
     this._stModel = new SuiteToolsModel(this);
-    this._stView = new SuiteToolsView(this);
-    this._stController = new SuiteToolsController(this);
 
-    // set the context
-    this._context = context;
+    if (context) {
+      // configure to run as application
 
-    // get this script's URL
-    this._scriptUrl = url.resolveScript({
-      scriptId: runtime.getCurrentScript().id,
-      deploymentId: runtime.getCurrentScript().deploymentId,
-      returnExternalUrl: false,
-    });
+      // build this script's URLs (dynamically)
+      this._scriptUrl = url.resolveScript({
+        scriptId: runtime.getCurrentScript().id,
+        deploymentId: runtime.getCurrentScript().deploymentId,
+        returnExternalUrl: false,
+      });
+      const host = url.resolveDomain({
+        hostType: url.HostType.APPLICATION,
+        accountId: this._stAppNs.runtime.accountId,
+      });
+      this._scriptFullUrl = 'https://' + host + this._scriptUrl;
 
-    // get this script's full URL
-    const host = url.resolveDomain({
-      hostType: url.HostType.APPLICATION,
-      accountId: this._stAppNs.runtime.accountId,
-    });
-    this._scriptFullUrl = 'https://' + host + this._scriptUrl;
+      // bootstrap the application
+      this._context = context;
+      this._stController = new SuiteToolsController(this);
+      this._stView = new SuiteToolsView(this);
+      this.route();
+    } else {
+      // configure to use as a library
+
+      // build this script's URLs (statically)
+      this._scriptUrl = url.resolveScript({
+        scriptId: 'customscript_idev_suitetools_app',
+        deploymentId: 'customdeploy_idev_suitetools_app',
+        returnExternalUrl: false,
+      });
+      const host = url.resolveDomain({
+        hostType: url.HostType.APPLICATION,
+        accountId: this._stAppNs.runtime.accountId,
+      });
+      this._scriptFullUrl = 'https://' + host + this._scriptUrl;
+    }
   }
 
   private route(): void {
@@ -173,24 +180,35 @@ export class SuiteToolsApp {
     const devMode = this.stAppSettings.devMode;
     log.debug({ title: 'SuiteToolsApp:route() dev mode = ', details: devMode });
 
-    try {
-      const appIssues = this.performChecks();
-      if (appIssues.length > 0) {
-        // tell user about the issues
-        this._stController.renderAppIssuesForm(appIssues);
-      } else {
-        if (this._context.request.method === 'GET') {
-          this._stController.getRequestHandler();
-        } else {
-          this._stController.postRequestHandler();
-        }
+    if (devMode) {
+      // do not catch errors in dev mode so that we can see where the error is occurring
+      this.routeHelper();
+    } else {
+      // catch errors in production mode so that we can show a user friendly error form
+      try {
+        this.routeHelper();
+      } catch (e) {
+        log.error({ title: 'SuiteToolsApp:route() caught error', details: e });
+        // show an error form
+        this._stController.renderAppErrorForm(e, devMode);
       }
-    } catch (e) {
-      log.error({ title: 'SuiteToolsApp:route() caught error', details: e });
-      // show an error form
-      this._stController.renderAppErrorForm(e, devMode);
     }
   }
+
+  private routeHelper(): void {
+    const appIssues = this.performChecks();
+    if (appIssues.length > 0) {
+      // tell user about the issues
+      this._stController.renderAppIssuesForm(appIssues);
+    } else {
+      if (this._context.request.method === 'GET') {
+        this._stController.getRequestHandler();
+      } else {
+        this._stController.postRequestHandler();
+      }
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private performChecks(): any[] {
     // log.debug({ title: 'SuiteToolsApp:performChecks() initiated', details: null });
@@ -402,7 +420,7 @@ export class SuiteToolsAppSettings {
    * Helper function for updateCoreConfigs() and createCoreConfigs()
    */
   private determineCoreConfigs(): object {
-    // log.debug({ title: `SuiteToolsAppSettings:initializeCoreConfigs() initiated`, details: '' });
+    // log.debug({ title: `SuiteToolsAppSettings:determineCoreConfigs() initiated`, details: '' });
 
     const coreConfigs = {
       custrecord_idev_st_config_css_url: this.stApp.stLib.stLibNs.stLibNsFile.getFileURL('output.css'),
