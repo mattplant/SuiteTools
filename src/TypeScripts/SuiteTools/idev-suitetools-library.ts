@@ -186,6 +186,7 @@ export class SuiteToolsLibraryNetSuiteEmail {
   public sendNotification(subject: string, content: string) {
     log.debug({ title: 'SuiteToolsLibraryNetSuiteEmail:sendNotification() initiated', details: { subject: subject } });
 
+    // TODO lookup instead of hardcode these
     // override values as needed
     const author = 14671395; // Matt Plant
     const replyTo = 'matt.plant@bulletproof.com';

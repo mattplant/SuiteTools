@@ -6,8 +6,38 @@
   <notifyemails></notifyemails>
   <notifyowner>T</notifyowner>
   <scriptfile>[/SuiteScripts/SuiteTools/helpers/idev-st-sc-jobs-search.js]</scriptfile>
+  <scriptcustomfields>
+    <scriptcustomfield scriptid="custscript_idev_st_sc_jobs_search_id">
+      <accesslevel>2</accesslevel>
+      <applyformatting>F</applyformatting>
+      <checkspelling>F</checkspelling>
+      <defaultchecked>F</defaultchecked>
+      <defaultselection></defaultselection>
+      <defaultvalue></defaultvalue>
+      <description>The saved search id for the jobs search script.</description>
+      <displayheight></displayheight>
+      <displaytype>NORMAL</displaytype>
+      <displaywidth></displaywidth>
+      <dynamicdefault></dynamicdefault>
+      <fieldtype>TEXT</fieldtype>
+      <help>The saved search id for the jobs search script.</help>
+      <isformula>F</isformula>
+      <ismandatory>F</ismandatory>
+      <label>Saved Search Id</label>
+      <linktext></linktext>
+      <maxlength></maxlength>
+      <maxvalue></maxvalue>
+      <minvalue></minvalue>
+      <onparentdelete></onparentdelete>
+      <searchlevel>2</searchlevel>
+      <selectrecordtype></selectrecordtype>
+      <setting></setting>
+      <storevalue>T</storevalue>
+    </scriptcustomfield>
+  </scriptcustomfields>
   <scriptdeployments>
     <scriptdeployment scriptid="customdeploy_idev_st_sc_jobs_search">
+      <custscript_idev_st_sc_jobs_search_id></custscript_idev_st_sc_jobs_search_id>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <status>NOTSCHEDULED</status>

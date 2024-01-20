@@ -70,6 +70,10 @@ export class SuiteToolsController {
       case 'settings':
         this.renderSettingsForm();
         break;
+      // NetSuite
+      case 'netsuite':
+        this.renderNsHomePage();
+        break;
       // tools
       case 'system':
         this.renderSystemForm();
@@ -78,7 +82,10 @@ export class SuiteToolsController {
         this.renderJobsForm();
         break;
       case 'jobModal':
-        this.renderIntegrationForm(RenderType.Modal, id);
+        this.renderJobForm(RenderType.Modal, id);
+        break;
+      case 'job':
+        this.renderJobForm(RenderType.Normal, id);
         break;
       // objects
       case 'files':
@@ -98,9 +105,6 @@ export class SuiteToolsController {
         break;
       case 'script':
         this.renderScriptForm(RenderType.Normal, id);
-        break;
-      case 'timestampModal':
-        this.renderTimestampModal(id);
         break;
       // reports
       case 'integrations':
@@ -186,6 +190,9 @@ export class SuiteToolsController {
           this.processPostedData();
           break;
         // handle pages
+        case 'jobs':
+          this.renderJobsForm();
+          break;
         case 'files':
           this.renderFilesForm();
           break;
@@ -575,14 +582,32 @@ export class SuiteToolsController {
   }
 
   /**
+   * Renders the NetSuite Home page.
+   */
+  public renderNsHomePage(): void {
+    log.debug({ title: 'SuiteToolsController:renderSettingsForm() initiated', details: '' });
+
+    const url = '/app/center/card.nl?sc=-29&whence=';
+    this.stApp.stView.redirect(url);
+  }
+
+  /**
    * Renders the Jobs form.
    */
   public renderJobsForm(): void {
     log.debug({ title: 'SuiteToolsController:renderJobsForm() initiated', details: null });
 
     // set form input option values dynamically
+    // active
+    const activeOptions = this.stApp.stView.getActiveOptions();
+    // option values
     const optionValuesObj = {
-      options: [],
+      options: [
+        {
+          field: 'custom_active',
+          values: activeOptions,
+        },
+      ],
     };
     const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
 
@@ -590,13 +615,13 @@ export class SuiteToolsController {
     let formFieldValues = [];
     if (this.stApp.context.request.method == 'GET') {
       // set the default initial values
-      formFieldValues.push({ name: 'custom_status', value: 'T' });
+      formFieldValues.push({ name: 'custom_active', value: 'T' });
     } else {
       // POST - get values from POSTed fields
       formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
     }
-    const status = this.getPostedField('custom_status', formFieldValues);
-    const results = this.stApp.stModel.getIntegrations(status);
+    const active = this.getPostedField('custom_active', formFieldValues);
+    const results = this.stApp.stModel.getJobs(active);
     const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/jobs.html');
     const resultsValues = {};
     resultsValues['scriptUrl'] = this.stApp.scriptUrl;
@@ -614,6 +639,43 @@ export class SuiteToolsController {
     bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
     bodyValues['results'] = resultsContent;
     this.stApp.stView.render(RenderType.Normal, body, bodyValues);
+  }
+
+  /**
+   * Renders the Job form.
+   *
+   * @param renderType - the type of render
+   * @param id - the internal ID of the record
+   */
+  public renderJobForm(renderType: RenderType, id: string): void {
+    log.debug({
+      title: 'SuiteToolsController:renderJobForm() initiated',
+      details: { renderType: renderType, id: id },
+    });
+
+    // get the record
+    const record = this.stApp.stModel.getJob(id);
+
+    // display the form
+    let filename = 'views/job.html';
+    if (renderType === RenderType.Modal) {
+      filename = 'views/partials/modals/content/job.html';
+    }
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+    const bodyValues = {};
+    if (record) {
+      bodyValues['id'] = record.id;
+      bodyValues['isinactive'] = record.isinactive == 'T';
+      bodyValues['name'] = record.name;
+      bodyValues['type'] = record.type;
+      bodyValues['params'] = record.params;
+      bodyValues['url'] = this.stApp.scriptUrl + '&action=job&id=' + record.id;
+      if (renderType === RenderType.Normal) {
+        // TODO add additional fields
+      }
+    }
+    this.stApp.stView.render(renderType, body, bodyValues);
   }
 
   /**
@@ -890,25 +952,6 @@ export class SuiteToolsController {
       }
     }
     this.stApp.stView.render(renderType, body, bodyValues);
-  }
-
-  /**
-   * Renders the Timestamp form.
-   *
-   * @param id - the internal ID of the record
-   */
-  public renderTimestampModal(id: string): void {
-    log.debug({
-      title: 'SuiteToolsController:renderTimestampModal() initiated',
-      details: { id: id },
-    });
-
-    // display the form
-    const filename = 'views/partials/modals/content/timestamp.html';
-    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
-    const bodyValues = {};
-    bodyValues['urlLogs'] = '/app/common/scripting/script.nl?id=' + 'FILLIN';
-    this.stApp.stView.render(RenderType.Modal, body, bodyValues);
   }
 
   /**
@@ -1827,9 +1870,6 @@ export class SuiteToolsController {
     );
     bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
       'views/partials/modals/wrapper/script.html'
-    );
-    bodyValues['timestampModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(
-      'views/partials/modals/wrapper/timestamp.html'
     );
     bodyValues['scriptUrl'] = this.stApp.scriptUrl;
     bodyValues['optionValues'] = optionValues;

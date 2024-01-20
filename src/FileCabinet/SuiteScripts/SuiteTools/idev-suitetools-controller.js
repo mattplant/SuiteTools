@@ -60,6 +60,10 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 case 'settings':
                     this.renderSettingsForm();
                     break;
+                // NetSuite
+                case 'netsuite':
+                    this.renderNsHomePage();
+                    break;
                 // tools
                 case 'system':
                     this.renderSystemForm();
@@ -68,7 +72,10 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     this.renderJobsForm();
                     break;
                 case 'jobModal':
-                    this.renderIntegrationForm(idev_suitetools_view_1.RenderType.Modal, id);
+                    this.renderJobForm(idev_suitetools_view_1.RenderType.Modal, id);
+                    break;
+                case 'job':
+                    this.renderJobForm(idev_suitetools_view_1.RenderType.Normal, id);
                     break;
                 // objects
                 case 'files':
@@ -88,9 +95,6 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                     break;
                 case 'script':
                     this.renderScriptForm(idev_suitetools_view_1.RenderType.Normal, id);
-                    break;
-                case 'timestampModal':
-                    this.renderTimestampModal(id);
                     break;
                 // reports
                 case 'integrations':
@@ -174,6 +178,9 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                         this.processPostedData();
                         break;
                     // handle pages
+                    case 'jobs':
+                        this.renderJobsForm();
+                        break;
                     case 'files':
                         this.renderFilesForm();
                         break;
@@ -511,27 +518,43 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
         }
         /**
+         * Renders the NetSuite Home page.
+         */
+        renderNsHomePage() {
+            log.debug({ title: 'SuiteToolsController:renderSettingsForm() initiated', details: '' });
+            const url = '/app/center/card.nl?sc=-29&whence=';
+            this.stApp.stView.redirect(url);
+        }
+        /**
          * Renders the Jobs form.
          */
         renderJobsForm() {
             log.debug({ title: 'SuiteToolsController:renderJobsForm() initiated', details: null });
             // set form input option values dynamically
+            // active
+            const activeOptions = this.stApp.stView.getActiveOptions();
+            // option values
             const optionValuesObj = {
-                options: [],
+                options: [
+                    {
+                        field: 'custom_active',
+                        values: activeOptions,
+                    },
+                ],
             };
             const optionValues = 'var optionValues = ' + JSON.stringify(optionValuesObj);
             // get the results
             let formFieldValues = [];
             if (this.stApp.context.request.method == 'GET') {
                 // set the default initial values
-                formFieldValues.push({ name: 'custom_status', value: 'T' });
+                formFieldValues.push({ name: 'custom_active', value: 'T' });
             }
             else {
                 // POST - get values from POSTed fields
                 formFieldValues = this.getPostedFields(this.stApp.context.request.parameters);
             }
-            const status = this.getPostedField('custom_status', formFieldValues);
-            const results = this.stApp.stModel.getIntegrations(status);
+            const active = this.getPostedField('custom_active', formFieldValues);
+            const results = this.stApp.stModel.getJobs(active);
             const resultsTemplate = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/results/jobs.html');
             const resultsValues = {};
             resultsValues['scriptUrl'] = this.stApp.scriptUrl;
@@ -546,6 +569,40 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);
             bodyValues['results'] = resultsContent;
             this.stApp.stView.render(idev_suitetools_view_1.RenderType.Normal, body, bodyValues);
+        }
+        /**
+         * Renders the Job form.
+         *
+         * @param renderType - the type of render
+         * @param id - the internal ID of the record
+         */
+        renderJobForm(renderType, id) {
+            log.debug({
+                title: 'SuiteToolsController:renderJobForm() initiated',
+                details: { renderType: renderType, id: id },
+            });
+            // get the record
+            const record = this.stApp.stModel.getJob(id);
+            // display the form
+            let filename = 'views/job.html';
+            if (renderType === idev_suitetools_view_1.RenderType.Modal) {
+                filename = 'views/partials/modals/content/job.html';
+            }
+            // display the form
+            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
+            const bodyValues = {};
+            if (record) {
+                bodyValues['id'] = record.id;
+                bodyValues['isinactive'] = record.isinactive == 'T';
+                bodyValues['name'] = record.name;
+                bodyValues['type'] = record.type;
+                bodyValues['params'] = record.params;
+                bodyValues['url'] = this.stApp.scriptUrl + '&action=job&id=' + record.id;
+                if (renderType === idev_suitetools_view_1.RenderType.Normal) {
+                    // TODO add additional fields
+                }
+            }
+            this.stApp.stView.render(renderType, body, bodyValues);
         }
         /**
          * Renders the System form.
@@ -794,23 +851,6 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
                 }
             }
             this.stApp.stView.render(renderType, body, bodyValues);
-        }
-        /**
-         * Renders the Timestamp form.
-         *
-         * @param id - the internal ID of the record
-         */
-        renderTimestampModal(id) {
-            log.debug({
-                title: 'SuiteToolsController:renderTimestampModal() initiated',
-                details: { id: id },
-            });
-            // display the form
-            const filename = 'views/partials/modals/content/timestamp.html';
-            const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents(filename);
-            const bodyValues = {};
-            bodyValues['urlLogs'] = '/app/common/scripting/script.nl?id=' + 'FILLIN';
-            this.stApp.stView.render(idev_suitetools_view_1.RenderType.Modal, body, bodyValues);
         }
         /**
          * Renders the Integrations form
@@ -1621,7 +1661,6 @@ define(["require", "exports", "N/error", "N/log", "N/task", "./idev-suitetools-v
             const bodyValues = {};
             bodyValues['userModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/user.html');
             bodyValues['scriptModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/script.html');
-            bodyValues['timestampModal'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/partials/modals/wrapper/timestamp.html');
             bodyValues['scriptUrl'] = this.stApp.scriptUrl;
             bodyValues['optionValues'] = optionValues;
             bodyValues['formSelections'] = this.stApp.stView.generateFormSelections(formFieldValues);

@@ -21,7 +21,7 @@
  * @NScriptType ScheduledScript
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/log", "../idev-suitetools-app"], function (require, exports, log, idev_suitetools_app_1) {
+define(["require", "exports", "N/log", "N/runtime", "../idev-suitetools-app"], function (require, exports, log, runtime, idev_suitetools_app_1) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.execute = void 0;
     /**
@@ -34,8 +34,10 @@ define(["require", "exports", "N/log", "../idev-suitetools-app"], function (requ
             log.debug('*START*', '<------------------- START ------------------->');
             log.debug('execute() initiated with', JSON.stringify(context));
             const stApp = new idev_suitetools_app_1.SuiteToolsApp();
-            // TODO grab saved search id from script parameter
-            const searchId = 'customsearch_bp_server_script_errors';
+            const searchId = String(runtime.getCurrentScript().getParameter({
+                name: 'custscript_idev_st_sc_jobs_search_id',
+            }));
+            log.debug('execute() scriptParameter', JSON.stringify(searchId));
             const searchResults = stApp.stLib.stLibNs.stLibNsSearch.run(searchId);
             log.debug('execute() searchResults', JSON.stringify(searchResults));
             // are there any results?

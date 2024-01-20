@@ -116,9 +116,8 @@ const ModalType = Object.freeze({
     "Job": 4,
     "Role": 5,
     "Script": 6,
-    "Timestamp": 7,
-    "Token": 8,
-    "User": 9,
+    "Token": 7,
+    "User": 8,
 });
 
 /**
@@ -154,10 +153,6 @@ function showModal(scriptUrl, modalType, id) {
         case ModalType.Script:
             modalId = 'script-modal';
             action = 'scriptModal';
-            break;
-        case ModalType.Timestamp:
-            modalId = 'timestamp-modal';
-            action = 'timestampModal';
             break;
         case ModalType.Token:
             modalId = 'token-modal';

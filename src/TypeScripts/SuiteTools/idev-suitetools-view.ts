@@ -24,6 +24,7 @@
  */
 
 import log = require('N/log');
+import redirect = require('N/redirect');
 // @ts-expect-error TS2307: Cannot find module since it is relative to the JavaScript file being deployed to NetSuite
 import Handlebars = require('./handlebars.min');
 import { SuiteToolsApp } from './idev-suitetools-app';
@@ -50,6 +51,17 @@ export class SuiteToolsView {
   constructor(stApp: SuiteToolsApp) {
     // log.debug({ title: 'SuiteToolsView:constructor() initiated', details: null });
     this._stApp = stApp;
+  }
+
+  /**
+   * Redirect to URL
+   *
+   * @param url - the URL
+   */
+  public redirect(url: string): void {
+    log.debug({ title: 'SuiteToolsView:render() redirect', details: url });
+
+    redirect.redirect({ url: url, parameters: {} });
   }
 
   /**

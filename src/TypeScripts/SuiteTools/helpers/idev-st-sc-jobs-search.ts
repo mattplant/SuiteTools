@@ -24,6 +24,7 @@
 
 import { EntryPoints } from 'N/types';
 import log = require('N/log');
+import runtime = require('N/runtime');
 
 import { SuiteToolsApp } from '../idev-suitetools-app';
 
@@ -39,8 +40,13 @@ export function execute(context: EntryPoints.Scheduled.executeContext): boolean 
 
     const stApp = new SuiteToolsApp();
 
-    // TODO grab saved search id from script parameter
-    const searchId = 'customsearch_bp_server_script_errors';
+    const searchId = String(
+      runtime.getCurrentScript().getParameter({
+        name: 'custscript_idev_st_sc_jobs_search_id',
+      })
+    );
+    log.debug('execute() scriptParameter', JSON.stringify(searchId));
+
     const searchResults = stApp.stLib.stLibNs.stLibNsSearch.run(searchId);
     log.debug('execute() searchResults', JSON.stringify(searchResults));
 

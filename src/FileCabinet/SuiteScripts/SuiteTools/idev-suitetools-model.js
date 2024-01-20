@@ -38,6 +38,78 @@ define(["require", "exports", "N/log", "N/search"], function (require, exports, 
             // log.debug({ title: 'SuiteToolsModel:constructor() initiated', details: null });
             this._stApp = stApp;
         }
+        /**
+         * Get Jobs
+         *
+         * @param active - the active flag
+         * @returns roles
+         */
+        getJobs(active
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ) {
+            log.debug({
+                title: `SuiteToolsModel:getJobs() initiated`,
+                details: {
+                    active: active,
+                },
+            });
+            let sql = `SELECT
+      id,
+      isinactive,
+      name || ' (' || id  || ')' AS name,
+      custrecord_st_job_run_type AS type,
+      custrecord_st_job_run_params AS params,
+    FROM
+      customrecord_idev_suitetools_job`;
+            // add where clause
+            const where = [];
+            if (active) {
+                if (active === 'T') {
+                    where.push(`isinactive = 'F'`);
+                }
+                if (active === 'F') {
+                    where.push(`isinactive = 'T'`);
+                }
+            }
+            if (where.length > 0) {
+                sql += ` WHERE ${where.join(' AND ')}`;
+            }
+            // add order by
+            sql += ` ORDER BY name`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            log.debug({ title: 'SuiteToolsModel:getJobs() returning', details: results });
+            return results;
+        }
+        /**
+         * Get Job
+         *
+         * @param id - the record to return
+         * @returns results
+         */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getJob(id) {
+            log.debug({ title: `SuiteToolsModel:getJob() initiated`, details: { id: id } });
+            const sql = `SELECT
+      id,
+      isinactive,
+      name,
+      custrecord_st_job_run_type AS type,
+      custrecord_st_job_run_params AS params,
+    FROM
+      customrecord_idev_suitetools_job
+    WHERE
+      id = ${id}`;
+            const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            let result = null;
+            if (sqlResults.length === 0) {
+                this.stApp.setAlert('No results found that matched criteria.');
+            }
+            else {
+                result = sqlResults[0];
+            }
+            log.debug({ title: 'SuiteToolsModel:getJob() returning', details: result });
+            return result;
+        }
         // Get Folders SQL
         // let sql = `SELECT
         // 	MediaItemFolder.id,

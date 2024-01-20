@@ -22,7 +22,7 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/log", "./handlebars.min"], function (require, exports, log, Handlebars) {
+define(["require", "exports", "N/log", "N/redirect", "./handlebars.min"], function (require, exports, log, redirect, Handlebars) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SuiteToolsView = exports.RenderType = void 0;
     var RenderType;
@@ -44,6 +44,15 @@ define(["require", "exports", "N/log", "./handlebars.min"], function (require, e
         constructor(stApp) {
             // log.debug({ title: 'SuiteToolsView:constructor() initiated', details: null });
             this._stApp = stApp;
+        }
+        /**
+         * Redirect to URL
+         *
+         * @param url - the URL
+         */
+        redirect(url) {
+            log.debug({ title: 'SuiteToolsView:render() redirect', details: url });
+            redirect.redirect({ url: url, parameters: {} });
         }
         /**
          * Builds content section.

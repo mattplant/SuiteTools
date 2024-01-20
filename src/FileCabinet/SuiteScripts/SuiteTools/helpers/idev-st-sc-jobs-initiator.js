@@ -39,9 +39,7 @@ define(["require", "exports", "N/log", "N/task"], function (require, exports, lo
                 taskType: task.TaskType.SCHEDULED_SCRIPT,
                 scriptId: 'customscript_idev_st_sc_jobs_search',
                 deploymentId: 'customdeploy_idev_st_sc_jobs_search',
-                params: {
-                // custscript_bp_mr_odw_bg_export_orders: JSON.stringify(uniqueOrderIds),
-                },
+                params: {},
             });
             const scriptTaskId = scriptTask.submit();
             log.audit({
