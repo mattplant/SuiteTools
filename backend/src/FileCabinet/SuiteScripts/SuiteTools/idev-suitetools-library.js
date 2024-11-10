@@ -22,7 +22,8 @@
  *
  * @NApiVersion 2.1
  */
-define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/search", "N/url"], function (require, exports, email, file, log, query, record, redirect, search, url) {
+define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record", "N/redirect", "N/runtime", "N/search", "N/url"], function (require, exports, email, file, log, query, record, redirect, runtime, search, url) {
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SuiteToolsLibraryNetSuiteSuiteQl = exports.SuiteToolsLibraryNetSuiteSearch = exports.SuiteToolsLibraryNetSuiteScript = exports.SuiteToolsLibraryNetSuiteRecord = exports.SuiteToolsLibraryNetSuiteHttp = exports.SuiteToolsLibraryNetSuiteFile = exports.SuiteToolsLibraryNetSuiteEmail = exports.SuiteToolsLibraryNetSuite = exports.SuiteToolsLibraryGeneral = exports.SuiteToolsLibrary = void 0;
     /**
@@ -280,15 +281,15 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
          * Create custom record or list entry
          *
          * @param recordType
-         * @param recordId
-         * @returns true if successful else false
+         * @param values
+         * @returns record id of newly created record if successful else 0
          */
         createCustomRecord(recordType, values) {
             log.debug({
                 title: 'SuiteToolsLibraryNetSuiteRecord:createCustomRecord() initiated',
                 details: { recordType: recordType, values: values },
             });
-            let success = false;
+            let recordId = 0;
             try {
                 const recordObj = record.create({
                     type: recordType,
@@ -296,16 +297,15 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
                 for (const field in values) {
                     recordObj.setValue({ fieldId: field, value: values[field] });
                 }
-                recordObj.save({
+                recordId = recordObj.save({
                     enableSourcing: false,
                     ignoreMandatoryFields: true,
                 });
-                success = true;
             }
             catch (e) {
                 log.error({ title: `SuiteToolsLibraryNetSuiteRecord:createCustomRecord - Error on ${recordType}`, details: e });
             }
-            return success;
+            return recordId;
         }
         /**
          * Get custom record or list entry
@@ -517,6 +517,14 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
             return scriptUrl;
         }
         /**
+         * Redirects to SuiteTools script.
+         *
+         * @param parameters - the parameters
+         */
+        redirectToSuiteTools(params) {
+            this.redirectToScript(runtime.getCurrentScript().id, runtime.getCurrentScript().deploymentId, params);
+        }
+        /**
          * Redirects to SuiteScript script.
          *
          * @param scriptId - the script id
@@ -568,9 +576,7 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
          * @param [setSession]
          * @returns the search results
          */
-        search(type, columns, filters, rows, setSession = false
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ) {
+        search(type, columns, filters, rows, setSession = false) {
             log.debug({
                 title: `SuiteToolsLibraryNetSuiteSearch:search() initiated`,
                 details: { type: type, columns: columns, filters: filters, rows: rows, setSession: setSession },
@@ -607,9 +613,7 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
          * @param id
          * @returns the search results
          */
-        run(id
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ) {
+        run(id) {
             log.debug({
                 title: `SuiteToolsLibraryNetSuiteSearch:run() initiated`,
                 details: { id: id },

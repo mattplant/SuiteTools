@@ -29,6 +29,7 @@ import log = require('N/log');
 import query = require('N/query');
 import record = require('N/record');
 import redirect = require('N/redirect');
+import runtime = require('N/runtime');
 import search = require('N/search');
 import url = require('N/url');
 
@@ -377,15 +378,15 @@ export class SuiteToolsLibraryNetSuiteRecord {
    * Create custom record or list entry
    *
    * @param recordType
-   * @param recordId
-   * @returns true if successful else false
+   * @param values
+   * @returns record id of newly created record if successful else 0
    */
-  public createCustomRecord(recordType: string, values: object): boolean {
+  public createCustomRecord(recordType: string, values: object): number {
     log.debug({
       title: 'SuiteToolsLibraryNetSuiteRecord:createCustomRecord() initiated',
       details: { recordType: recordType, values: values },
     });
-    let success = false;
+    let recordId = 0;
 
     try {
       const recordObj = record.create({
@@ -394,16 +395,15 @@ export class SuiteToolsLibraryNetSuiteRecord {
       for (const field in values) {
         recordObj.setValue({ fieldId: field, value: values[field] });
       }
-      recordObj.save({
+      recordId = recordObj.save({
         enableSourcing: false,
         ignoreMandatoryFields: true,
       });
-      success = true;
     } catch (e) {
       log.error({ title: `SuiteToolsLibraryNetSuiteRecord:createCustomRecord - Error on ${recordType}`, details: e });
     }
 
-    return success;
+    return recordId;
   }
 
   /**
@@ -607,7 +607,7 @@ export class SuiteToolsLibraryNetSuiteScript {
    * @param parameters - the parameters
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public buildScriptUrl(accountId: string, scriptId: string, deploymentId: string, params: any[]): string {
+  buildScriptUrl(accountId: string, scriptId: string, deploymentId: string, params: any[]): string {
     log.debug({
       title: 'SuiteToolsLibraryNetSuiteScript:callScript() initiated',
       details: { scriptId: scriptId, deploymentId: deploymentId, params: params },
@@ -629,6 +629,15 @@ export class SuiteToolsLibraryNetSuiteScript {
     log.debug({ title: 'SuiteToolsLibraryNetSuiteScript:callScript() returning', details: scriptUrl });
 
     return scriptUrl;
+  }
+
+  /**
+   * Redirects to SuiteTools script.
+   *
+   * @param parameters - the parameters
+   */
+  public redirectToSuiteTools(params: object): void {
+    this.redirectToScript(runtime.getCurrentScript().id, runtime.getCurrentScript().deploymentId, params);
   }
 
   /**
@@ -691,7 +700,7 @@ export class SuiteToolsLibraryNetSuiteSearch {
     columns: string[] | search.Column[],
     filters: search.Filter[],
     rows: string,
-    setSession = false
+    setSession = false,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     log.debug({
@@ -739,7 +748,7 @@ export class SuiteToolsLibraryNetSuiteSearch {
    * @returns the search results
    */
   public run(
-    id: string
+    id: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
     log.debug({

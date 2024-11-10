@@ -8,9 +8,8 @@
     "module": "amd",
     "moduleResolution": "node",
     "newLine": "LF",
-    "noImplicitUseStrict": true,
     "noUnusedLocals": true,
-    "outDir": "./src/FileCabinet/SuiteScripts",
+    "outDir": "./src/FileCabinet/SuiteScripts/SuiteTools",
     "paths": {
       "N": ["node_modules/@hitc/netsuite-types/N"],
       "N/*": ["node_modules/@hitc/netsuite-types/N/*"]

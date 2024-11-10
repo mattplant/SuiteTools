@@ -36,5 +36,8 @@ Thumbs.db
 # Output of 'npm pack'
 *.tgz
 
-# Project config
+# NetSuite SDF project config
 project.json
+
+# SuiteTools frontend dist files that are built by the frontend build process
+dist

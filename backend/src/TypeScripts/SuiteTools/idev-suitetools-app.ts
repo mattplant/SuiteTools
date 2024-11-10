@@ -1,7 +1,5 @@
 /**
- * SuiteTools Controller
- *
- * This script handles routing and application settings.
+ * SuiteTools SuiteToolsApp
  *
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
@@ -20,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @NScriptName SuiteTools Controller
+ * @NScriptName SuiteTools SuiteToolsApp
  * @NScriptType Suitelet
  * @NApiVersion 2.1
  */
@@ -31,9 +29,8 @@ import runtime = require('N/runtime');
 import url = require('N/url');
 
 import { SuiteToolsModel } from './idev-suitetools-model';
-import { SuiteToolsView } from './idev-suitetools-view';
-import { SuiteToolsController } from './idev-suitetools-controller';
 import { SuiteToolsLibrary } from './idev-suitetools-library';
+import { SuiteToolsView } from './idev-suitetools-view';
 
 /**
  * Suitelet onRequest event handler
@@ -56,13 +53,20 @@ export function onRequest(context: EntryPoints.Suitelet.onRequestContext): void 
  */
 export class SuiteToolsApp {
   // application settings
-  private _appDir = 'SuiteTools'; // the folder name in the /SuiteScripts folder
-  private _appName = 'SuiteTools';
-  private _appVersion = '0.1.0';
-  private _appBuiltWith =
-    'Built with <a href="https://github.com/mattplant/netsuite-typescript-sdf/" target="_blank">NetSuite TypeScript SDF Project Template</a>.';
-  private _appFooter = `${this.appName} &bull; ${this.appBuiltWith}`;
-  private _hideNavBar = true;
+  // these are needed when we use the SuiteToolsApp as either an application or a library
+  private _appDir = 'SuiteTools'; // the application folder name in the /SuiteScripts folder
+  private _appSettingsCustomRecord = 'customrecord_idev_suitetools_settings'; // the application settings custom record
+  // these are needed when we use the SuiteToolsApp as an application
+  private _appApiScriptId = 'customscript_idev_suitetools_api'; // the SuiteTools API script id
+  private _appApiDeploymentId = 'customdeploy_idev_suitetools_api'; // the SuiteTools API deployment id
+  private _apiUrl: string;
+  private _appCssFile = 'dist/output.css'; // the SPA site's CSS file
+  private _appJsFile = 'dist/app-bundle.js'; // the SPA site's JS file
+  // these are needed when we use the SuiteToolsApp as a library
+  //   the SuiteTools application script id and deployment id
+  private _appScriptId = 'customscript_idev_suitetools_app';
+  private _appDeploymentId = 'customdeploy_idev_suitetools_app';
+
   // libraries
   private _stLib: SuiteToolsLibrary;
   // classes
@@ -70,7 +74,6 @@ export class SuiteToolsApp {
   private _stAppSettings: SuiteToolsAppSettings;
   private _stModel: SuiteToolsModel;
   private _stView: SuiteToolsView;
-  private _stController: SuiteToolsController;
   // environment values
   private _context: EntryPoints.Suitelet.onRequestContext;
   private _scriptUrl: string;
@@ -80,20 +83,14 @@ export class SuiteToolsApp {
   get appDir(): string {
     return this._appDir;
   }
-  get appName(): string {
-    return this._appName;
+  get appSettingsCustomRecord(): string {
+    return this._appSettingsCustomRecord;
   }
-  get appVersion(): string {
-    return this._appVersion;
+  get appCssFile(): string {
+    return this._appCssFile;
   }
-  get appBuiltWith(): string {
-    return this._appBuiltWith;
-  }
-  get appFooter(): string {
-    return this._appFooter;
-  }
-  get hideNavBar(): boolean {
-    return this._hideNavBar;
+  get appJsFile(): string {
+    return this._appJsFile;
   }
   // libraries
   get stLib(): SuiteToolsLibrary {
@@ -112,9 +109,6 @@ export class SuiteToolsApp {
   get stView(): SuiteToolsView {
     return this._stView;
   }
-  get stController(): SuiteToolsController {
-    return this._stController;
-  }
   // environment values
   get context(): EntryPoints.Suitelet.onRequestContext {
     return this._context;
@@ -125,9 +119,12 @@ export class SuiteToolsApp {
   get scriptFullUrl(): string {
     return this._scriptFullUrl;
   }
+  get apiUrl(): string {
+    return this._apiUrl;
+  }
 
   constructor(context: EntryPoints.Suitelet.onRequestContext | null = null) {
-    // log.debug({ title: 'SuiteToolsApp:constructor() initiated', details: null });
+    log.debug({ title: 'SuiteToolsApp:constructor() initiated', details: null });
 
     // add the libraries
     this._stLib = new SuiteToolsLibrary(this);
@@ -136,88 +133,86 @@ export class SuiteToolsApp {
     this._stAppSettings = new SuiteToolsAppSettings(this);
     this._stAppNs = new SuiteToolsAppNetSuite();
     this._stModel = new SuiteToolsModel(this);
+    this._stView = new SuiteToolsView(this);
+
+    const host = url.resolveDomain({
+      hostType: url.HostType.APPLICATION,
+      accountId: this._stAppNs.runtime.accountId,
+    });
 
     if (context) {
-      // configure to run as application
-
+      // configure to run as APPLICATION
+      log.debug({ title: 'SuiteToolsApp:constructor() initiated as an application', details: null });
+      this._context = context;
       // build this script's URLs (dynamically)
       this._scriptUrl = url.resolveScript({
         scriptId: runtime.getCurrentScript().id,
         deploymentId: runtime.getCurrentScript().deploymentId,
         returnExternalUrl: false,
       });
-      const host = url.resolveDomain({
-        hostType: url.HostType.APPLICATION,
-        accountId: this._stAppNs.runtime.accountId,
-      });
       this._scriptFullUrl = 'https://' + host + this._scriptUrl;
-
-      // bootstrap the application
-      this._context = context;
-      this._stController = new SuiteToolsController(this);
-      this._stView = new SuiteToolsView(this);
-      this.route();
-    } else {
-      // configure to use as a library
-
-      // build this script's URLs (statically)
-      this._scriptUrl = url.resolveScript({
-        scriptId: 'customscript_idev_suitetools_app',
-        deploymentId: 'customdeploy_idev_suitetools_app',
+      // get the SuiteTools API URL
+      this._apiUrl = url.resolveScript({
+        scriptId: this._appApiScriptId,
+        deploymentId: this._appApiDeploymentId,
         returnExternalUrl: false,
       });
-      const host = url.resolveDomain({
-        hostType: url.HostType.APPLICATION,
-        accountId: this._stAppNs.runtime.accountId,
+      // get the settings
+      this.stAppSettings.getSettings();
+      // bootstrap the SPA page
+      this.bootstrapSpa();
+    } else {
+      // configure to use as a LIBRARY
+      log.debug({ title: 'SuiteToolsApp:constructor() initiated as a library', details: null });
+      // build this script's URLs (statically)
+      this._scriptUrl = url.resolveScript({
+        scriptId: this._appScriptId,
+        deploymentId: this._appDeploymentId,
+        returnExternalUrl: false,
       });
       this._scriptFullUrl = 'https://' + host + this._scriptUrl;
     }
   }
 
-  private route(): void {
-    // log.debug({ title: 'SuiteToolsApp:route()', details: null });
+  private bootstrapSpa(): void {
+    log.debug({ title: 'SuiteToolsApp:bootstrapSpa()', details: null });
 
     const devMode = this.stAppSettings.devMode;
-    log.debug({ title: 'SuiteToolsApp:route() dev mode = ', details: devMode });
-
+    log.debug({ title: 'SuiteToolsApp:bootstrapSpa() dev mode = ', details: devMode });
     if (devMode) {
       // do not catch errors in dev mode so that we can see where the error is occurring
-      this.routeHelper();
+      this.bootstrapHelper();
     } else {
       // catch errors in production mode so that we can show a user friendly error form
       try {
-        this.routeHelper();
+        this.bootstrapHelper();
       } catch (e) {
-        log.error({ title: 'SuiteToolsApp:route() caught error', details: e });
+        log.error({ title: 'SuiteToolsApp:bootstrapSpa() caught error', details: e });
         // show an error form
-        this._stController.renderAppErrorForm(e, devMode);
+        this.stView.renderAppErrorForm(e, devMode);
       }
     }
   }
 
-  private routeHelper(): void {
+  private bootstrapHelper(): void {
     const appIssues = this.performChecks();
     if (appIssues.length > 0) {
       // tell user about the issues
-      this._stController.renderAppIssuesForm(appIssues);
+      this.stView.renderAppIssuesForm(appIssues);
     } else {
-      if (this._context.request.method === 'GET') {
-        this._stController.getRequestHandler();
-      } else {
-        this._stController.postRequestHandler();
-      }
+      this.stView.renderSpa();
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private performChecks(): any[] {
-    // log.debug({ title: 'SuiteToolsApp:performChecks() initiated', details: null });
+    log.debug({ title: 'SuiteToolsApp:performChecks() initiated', details: null });
     const results = [];
 
     // check that core configs are set
     if (!this._stAppSettings.cssUrl || !this._stAppSettings.jsUrl) {
       results.push(
-        'Core config settings were not set. SuiteTools has tried to fix issue. Please refresh the page. If issue persists, please contact your administrator.'
+        'Core config settings were not set. SuiteTools has tried to fix issue. Please refresh the page. If issue persists, please contact your administrator.',
       );
     }
 
@@ -231,6 +226,8 @@ export class SuiteToolsApp {
   /**
    * Sets alert
    *
+   * TODO: Do we need this?
+   *
    * @param message
    */
   public setAlert(message: string): void {
@@ -239,20 +236,15 @@ export class SuiteToolsApp {
     this.setSession('alert', message);
   }
 
+  // TODO: Do we need this?
   public getAlert(): string {
-    // // get it
-    // const alert = this.stAppNs.currentSession.get({ name: 'alert' });
-    // // clear it
-    // this.stAppNs.currentSession.set({ name: 'alert', value: null });
-    // log.debug({ title: 'SuiteToolsApp:getAlert() returning', details: alert });
-
-    // return alert;
-
     return this.getSession('alert');
   }
 
   /**
    * Set session value.
+   *
+   * TODO: move to SuiteToolsAppNetSuite?
    *
    * @param key - name of session variable
    * @param value - value of session variable
@@ -268,6 +260,8 @@ export class SuiteToolsApp {
 
   /**
    * Get session value.
+   *
+   * TODO: move to SuiteToolsAppNetSuite?
    *
    * @param key
    * @returns session key
@@ -336,36 +330,33 @@ export class SuiteToolsAppSettings {
   }
 
   constructor(stApp: SuiteToolsApp) {
-    // log.debug({ title: 'SuiteToolsAppSettings:constructor() initiated', details: null });
+    log.debug({ title: 'SuiteToolsAppSettings:constructor() initiated', details: null });
     this._stApp = stApp;
-
-    // get the settings
-    this.getSettings();
   }
 
   /**
    * Get Settings
    */
   public getSettings(): void {
-    // log.debug({ title: `SuiteToolsAppSettings:getSettings() initiated`, details: '' });
+    log.debug({ title: `SuiteToolsAppSettings:getSettings() initiated`, details: '' });
 
     const sql = `
     SELECT
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.id,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_css_url AS cssUrl,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_js_url AS jsUrl,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_setting_dev_mode AS devMode,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_last_logins AS lastLogins,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_integrations AS integrations,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_tokens AS tokens,
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS.custrecord_idev_st_config_users AS users,
+      ${this.stApp.appSettingsCustomRecord}.id,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_config_css_url AS cssUrl,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_config_js_url AS jsUrl,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_setting_dev_mode AS devMode,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_config_last_logins AS lastLogins,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_config_integrations AS integrations,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_config_tokens AS tokens,
+      ${this.stApp.appSettingsCustomRecord}.custrecord_idev_st_config_users AS users,
     FROM
-      CUSTOMRECORD_IDEV_SUITETOOLS_SETTINGS
+      ${this.stApp.appSettingsCustomRecord}
     WHERE
       isInactive = 'F'
     `;
     const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    // log.debug({ title: `SuiteToolsAppSettings:getSettings() sqlResults = `, details: sqlResults });
+    log.debug({ title: `SuiteToolsAppSettings:getSettings() sqlResults = `, details: sqlResults });
 
     if (sqlResults.length === 0) {
       // since no results then create core configs
@@ -394,9 +385,9 @@ export class SuiteToolsAppSettings {
 
     const coreConfigs = this.determineCoreConfigs();
     const success = this.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
-      'customrecord_idev_suitetools_settings',
+      this.stApp.appSettingsCustomRecord,
       this._recordId,
-      coreConfigs
+      coreConfigs,
     );
 
     log.debug({ title: `SuiteToolsAppSettings:saveCoreConfigs() completed successfully?`, details: success });
@@ -406,12 +397,9 @@ export class SuiteToolsAppSettings {
     log.debug({ title: `SuiteToolsAppSettings:createCoreConfigs() initiated`, details: '' });
 
     const coreConfigs = this.determineCoreConfigs();
-    const success = this.stApp.stLib.stLibNs.stLibNsRecord.createCustomRecord(
-      'customrecord_idev_suitetools_settings',
-      coreConfigs
-    );
+    this.stApp.stLib.stLibNs.stLibNsRecord.createCustomRecord(this.stApp.appSettingsCustomRecord, coreConfigs);
 
-    log.debug({ title: `SuiteToolsAppSettings:createCoreConfigs() completed successfully?`, details: success });
+    log.debug({ title: `SuiteToolsAppSettings:createCoreConfigs() completed`, details: null });
   }
 
   /**
@@ -423,10 +411,8 @@ export class SuiteToolsAppSettings {
     // log.debug({ title: `SuiteToolsAppSettings:determineCoreConfigs() initiated`, details: '' });
 
     const coreConfigs = {
-      custrecord_idev_st_config_css_url: this.stApp.stLib.stLibNs.stLibNsFile.getFileURL('output.css'),
-      custrecord_idev_st_config_js_url: this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(
-        'public/idev-suitetools-client.js'
-      ),
+      custrecord_idev_st_config_css_url: this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appCssFile),
+      custrecord_idev_st_config_js_url: this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appJsFile),
     };
     log.debug({ title: `SuiteToolsAppSettings:determineCoreConfigs() returning`, details: coreConfigs });
 

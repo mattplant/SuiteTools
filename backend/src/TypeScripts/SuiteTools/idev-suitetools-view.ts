@@ -23,18 +23,11 @@
  * @NApiVersion 2.1
  */
 
+import error = require('N/error');
 import log = require('N/log');
-import redirect = require('N/redirect');
 // @ts-expect-error TS2307: Cannot find module since it is relative to the JavaScript file being deployed to NetSuite
 import Handlebars = require('./handlebars.min');
 import { SuiteToolsApp } from './idev-suitetools-app';
-
-export enum RenderType {
-  Normal = 1, // page with layout
-  PageOnly, // page only
-  Modal, // modal dialog
-  Iframe, // iframe
-}
 
 /**
  * SuiteTools View
@@ -54,90 +47,28 @@ export class SuiteToolsView {
   }
 
   /**
-   * Redirect to URL
+   * Render SPA page
    *
-   * @param url - the URL
-   */
-  public redirect(url: string): void {
-    log.debug({ title: 'SuiteToolsView:render() redirect', details: url });
-
-    redirect.redirect({ url: url, parameters: {} });
-  }
-
-  /**
-   * Builds content section.
-   *
-   * @param body - the templated content
-   * @param [values] - the values to use in the template
    * @returns HTML content
    */
-  public buildContent(body: string, values?: object): void {
-    log.debug({ title: 'SuiteToolsView:buildContent() initiated', details: null });
+  public renderSpa(): void {
+    log.debug({ title: 'SuiteToolsView:renderSpa() initiated', details: null });
 
-    // populate body content with Handlebars
-    const template = Handlebars.compile(body);
-    const content = template(values);
-    // log.debug({ title: 'SuiteToolsView:buildContent() returning', details: content });
-
-    return content;
-  }
-
-  /**
-   * Render content
-   *
-   * @param renderType - the type of render
-   * @param body - the templated content
-   * @param [bodyValues] - the values to use in the template
-   * @returns HTML content
-   */
-  public render(renderType: RenderType, body: string, bodyValues?: object): void {
-    log.debug({ title: 'SuiteToolsView:render() initiated', details: null });
-
-    switch (renderType) {
-      case RenderType.Normal:
-        this.renderNormal(body, bodyValues);
-        break;
-      case RenderType.PageOnly:
-      case RenderType.Modal:
-        this.renderPageOnly(body, bodyValues);
-        break;
-      case RenderType.Iframe:
-        this.renderIframe(body);
-        break;
-      default:
-        // log error since invalid render type
-        log.error({
-          title: 'SuiteToolsView:render() invalid render type',
-          details: { renderType: renderType },
-        });
-    }
-  }
-
-  /**
-   * Renders the layout with main content.
-   *
-   * @param body - the templated content
-   * @param [bodyValues] - the values to use in the template
-   * @returns HTML content
-   */
-  private renderNormal(body: string, bodyValues?: object): void {
-    // log.debug({ title: 'SuiteToolsView:Render() initiated', details: null });
-
-    // populate body content with Handlebars
-    const bodyTemplate = Handlebars.compile(body);
-    const bodyContent = bodyTemplate(bodyValues);
-
-    // populate layout content with Handlebars
     const layoutValues = {};
-    layoutValues['css'] = this.stApp.stAppSettings.cssUrl;
-    layoutValues['js'] = this.stApp.stAppSettings.jsUrl;
-    layoutValues['title'] = this.stApp.appName;
-    layoutValues['body'] = bodyContent;
+
+    // TODO verify that this does not negatively impact and then remove the values from settings
+    // layoutValues['css'] = this.stApp.stAppSettings.cssUrl;
+    // layoutValues['js'] = this.stApp.stAppSettings.jsUrl;
+    (layoutValues['css'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appCssFile)),
+      (layoutValues['js'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appJsFile));
+
     layoutValues['scriptUrl'] = this.stApp.scriptUrl;
-    layoutValues['appFooter'] = this.stApp.appFooter;
     layoutValues['userName'] = this.stApp.stAppNs.runtime.getCurrentUser().name;
     layoutValues['userEmail'] = this.stApp.stAppNs.runtime.getCurrentUser().email;
+
+    // TODO move this to client side
     layoutValues['alert'] = this.stApp.getAlert();
+
     if (this.stApp.stAppSettings.devMode) {
       layoutValues['remainingUsage'] =
         this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() +
@@ -148,10 +79,55 @@ export class SuiteToolsView {
       layoutValues['sql'] = this.stApp.getSession('sql');
       layoutValues['search'] = this.stApp.getSession('search');
     }
-    const layout = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/layouts/main.html');
+
+    // populate layout content with Handlebars
+    const layout = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('pages/index.html');
     const layoutTemplate = Handlebars.compile(layout);
-    const content = layoutTemplate(layoutValues);
+    let content = layoutTemplate(layoutValues);
+    content += this.getPageFooterComments();
+
+    // write content to response
     this.stApp.context.response.write(content);
+  }
+
+  /**
+   * Renders the Application Error form.
+   *
+   * @param appError - issues with the application that prevent it from running properly
+   */
+  public renderAppErrorForm(e: error.SuiteScriptError, devMode: boolean): void {
+    log.debug({ title: 'SuiteToolsView:renderAppErrorForm() initiated', details: e });
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('pages/appError.html');
+    const bodyValues = {};
+    bodyValues['id'] = e.id;
+    bodyValues['name'] = e.name;
+    bodyValues['message'] = e.message;
+    if (devMode && Array.isArray(e.stack) && e.stack.length > 0) {
+      const stackLines = e.stack[0];
+      log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLines', details: stackLines });
+      const stackLinesArray = stackLines.split('at');
+      log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLinesArray', details: stackLinesArray });
+      bodyValues['stack'] = stackLinesArray;
+    }
+    this.renderPageOnly(body, bodyValues);
+  }
+
+  /**
+   * Renders the Application Issues form.
+   *
+   * @param issues - issues with the application that prevent it from running properly
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public renderAppIssuesForm(issues: any[]): void {
+    log.debug({ title: 'SuiteToolsView:renderAppIssuesForm() initiated', details: { issues: issues } });
+
+    // display the form
+    const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('pages/appIssues.html');
+    const bodyValues = {};
+    bodyValues['issues'] = issues;
+    this.renderPageOnly(body, bodyValues);
   }
 
   /**
@@ -170,317 +146,14 @@ export class SuiteToolsView {
     this.stApp.context.response.write(bodyContent);
   }
 
-  /**
-   * Renders the layout with a NetSuite Saved Search in an iFrame.
-   *
-   * @param id - the NetSuite Saved Search ID (e.g. "customsearch_...")
-   * @void writes the HTML content to the response
-   */
-  public renderIframeSearch(id: string): void {
-    log.debug({ title: 'SuiteToolsView:renderIframe() initiated', details: { id: id } });
+  private getPageFooterComments(): string {
+    log.debug({ title: 'SuiteToolsView:getPageFooterComments() initiated', details: null });
 
-    // get the internal ID of the saved search
-    const internalId = this.stApp.stLib.stLibNs.stLibNsSearch.getSearchInternalId(
-      'customsearch_idev_web_services_logs'
-    );
-
-    this.renderIframe('/app/common/search/searchresults.nl?searchid=' + internalId);
-  }
-
-  /**
-   * Renders the layout with an iFrame.
-   *
-   * @param url
-   * @void writes the HTML content to the response
-   */
-  public renderIframe(url: string): void {
-    log.debug({ title: 'SuiteToolsView:renderIframe() initiated', details: { url: url } });
-
-    // populate body content with iFrame element
-    const bodyContent = this.stApp.stView.createIframeElement(url);
-
-    // populate layout content with Handlebars
-    const layoutValues = {};
-    layoutValues['css'] = this.stApp.stAppSettings.cssUrl;
-    layoutValues['js'] = this.stApp.stAppSettings.jsUrl;
-    layoutValues['title'] = this.stApp.appName;
-    layoutValues['body'] = bodyContent;
-    layoutValues['scriptUrl'] = this.stApp.scriptUrl;
-    layoutValues['userName'] = this.stApp.stAppNs.runtime.getCurrentUser().name;
-    layoutValues['userEmail'] = this.stApp.stAppNs.runtime.getCurrentUser().email;
-    const layout = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('views/layouts/main.html');
-    const layoutTemplate = Handlebars.compile(layout);
-    const content = layoutTemplate(layoutValues);
-    this.stApp.context.response.write(content);
-  }
-
-  /**
-   * Creates an iFrame element with the specified URL, width and height.
-   *
-   * @param url - the URL to load in the iFrame
-   * @param [width] - the width of the iFrame
-   * @param [height] - the height of the iFrame
-   * @returns an iFrame element
-   */
-  private createIframeElement(url: string, width = '1350px', height = '100%'): string {
-    log.debug({ title: 'SuiteToolsView:createIframeElement() initiated', details: { url, width, height } });
-
-    // const title = `${Library.appName} iFrame`;
-    const title = `SuiteTools iFrame`;
-
-    // TODO: fix temporary workaround for iFrame height
-    // const content = `<iframe src="${url}" name="embed" height="${height}" width="${width}" title="${title}"></iframe>`;
-    const content = `<iframe src="${url}" name="embed" class="h-screen w-full" style="padding-bottom:60px; margin-bottom:-84px" title="${title}"></iframe>`;
-
-    return content;
-  }
-
-  // ---------------------------------------------------------------------------
-  // Supporting Functions
-  // ---------------------------------------------------------------------------
-
-  // /**
-  //  * Generates form data form the values.
-  //  *
-  //  * @param values - the values
-  //  * @returns the form data
-  //  */
-  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // static generateFormData(values: any[]): string {
-  //   log.debug({ title: 'SuiteToolsView:generateFormData() initiated with ', details: { values: values } });
-
-  //   // build form data
-  //   let formData = '';
-  //   if (values === null || values.length == 0) {
-  //     formData = 'var formData = [];';
-  //   } else {
-  //     formData = 'var formData = [';
-  //     for (let i = 0; i < values.length; i++) {
-  //       const object = values[i];
-  //       const key = object.name;
-  //       // log.debug({ title: 'generateFormData() key', details: key });
-  //       const value = object.value;
-  //       // log.debug({ title: 'generateFormData() value', details: value });
-  //       formData += `{${key}: "${value}"},`;
-  //     }
-  //     formData += '];';
-  //   }
-  //   log.debug({ title: 'generateFormData() returning', details: formData });
-
-  //   return formData;
-  // }
-
-  /**
-   * Generates the form's select elements selections.
-   *
-   * @param values
-   * @returns the select element selections
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public generateFormSelections(values: any): string {
-    log.debug({ title: 'SuiteToolsView:generateFormSelections() initiated with ', details: { values: values } });
-
-    // build form data
-    let formSelections = '';
-    if (values === null || values.length == 0) {
-      formSelections = 'var formSelections = [];';
-    } else {
-      formSelections = 'var formSelections = [';
-      for (let i = 0; i < values.length; i++) {
-        const object = values[i];
-        const key = object.name;
-        // log.debug({ title: 'SuiteToolsView:generateFormSelections() key', details: key });
-        const value = object.value;
-        // log.debug({ title: 'SuiteToolsView:generateFormSelections() value', details: value });
-        formSelections += `{${key}: "${value}"},`;
-      }
-      formSelections += '];';
-    }
-    log.debug({ title: 'SuiteToolsView:generateFormSelections() returning', details: formSelections });
-
-    return formSelections;
-  }
-
-  /**
-   * Generate table data from records array
-   * @param records - the input records
-   * @param cleanData - clean data?
-   * @returns {string} table data
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public generateTableData(records: any[], cleanData = false): string {
-    log.debug({
-      title: 'SuiteToolsView:generateTableData() initiated with ',
-      details: { records: records, cleanData: cleanData },
-    });
-
-    // generate the table data
-    let tableData = '';
-
-    if (records === null || records.length == 0) {
-      tableData = 'var tabledata = [];';
-    } else {
-      const columns = Object.keys(records[0]);
-      tableData = 'var tabledata = [';
-      records.forEach((row) => {
-        tableData += '{';
-        columns.forEach((col) => {
-          // clean data?
-          if (cleanData && row[col]) {
-            // remove line endings from row[col]
-            row[col] = row[col].toString().replace(/(\r\n|\n|\r)/gm, ' ');
-            // replace double quotes with single quotes
-            row[col] = row[col].toString().replace(/"/g, "'");
-          }
-          tableData += ` ${col}: "${row[col]}",`;
-        });
-        tableData += ' },';
-      });
-      tableData += '];';
-    }
-    // log.debug({ title: 'SuiteToolsView:generateTableData() returning', details: tableData });
-
-    return tableData;
-  }
-
-  /**
-   * Get element html.
-   *
-   * @param element - the form element to build
-   *
-   * @returns form element html
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getElementHtml(element: string): string {
-    log.debug({ title: `SuiteToolsView:getElementHtml() initiated`, details: { element: element } });
-
-    let result = '';
-    let elementId = '';
-    let elementLabel = '';
-    switch (element) {
-      // CRITERIA
-      case 'integration':
-        elementId = 'custom_integration';
-        elementLabel = 'Integration';
-        break;
-      case 'token':
-        elementId = 'custom_token';
-        elementLabel = 'Token';
-        break;
-
-      // TODO - add more elements once verified that this works
-
-      default:
-        log.error({ title: `SuiteToolsView:getElementHtml() invalid element`, details: element });
-        break;
-    }
-
-    if (elementId) {
-      result = `<!-- ${element} -->
-      <div>
-        <label for="${elementId}" class="block mb-2 text-sm font-medium  text-gray-900">${elementLabel}</label><select size=6 name="${elementId}" id="${elementId}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></select>
-      </div>`;
-    }
-    log.debug({ title: `SuiteToolsView:getCriteria() returning`, details: result });
-
-    return result;
-  }
-
-  /**
-   * Get active options
-   *
-   * @returns form select options
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getActiveOptions(): any[] {
-    // log.debug({ title: `SuiteToolsView:getActiveOptions() initiated`, details: '' });
-
-    const options = [];
-    options.push({ value: '', text: 'All' });
-    options.push({ value: 'T', text: 'Yes' });
-    options.push({ value: 'F', text: 'No' });
-
-    return options;
-  }
-
-  /**
-   * Get API version options
-   *
-   * @returns form select options
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getApiVersionOptions(): any[] {
-    // log.debug({ title: `SuiteToolsView:getApiVersionOptions() initiated`, details: '' });
-
-    // note: source of truth is: 'SELECT scriptVersion.id, scriptVersion.name FROM scriptVersion ORDER BY name'
-
-    const options = [];
-    options.push({ value: '', text: 'All' });
-    options.push({ value: '2.1', text: '2.1' });
-    options.push({ value: '2.0', text: '2.0' });
-    options.push({ value: '1.0', text: '1.0' });
-
-    return options;
-  }
-
-  /**
-   * Get date options
-   *
-   * @returns form select options
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getDateOptions(): any[] {
-    // log.debug({ title: `SuiteToolsView:getDateOptions() initiated`, details: '' });
-
-    const options = [];
-    options.push({ value: '', text: 'All' });
-    options.push({ value: '15', text: 'Last 15 minutes' });
-    options.push({ value: '60', text: 'Last hour' });
-    options.push({ value: '240', text: 'Last 4 hours' });
-    options.push({ value: 'today', text: 'Today' });
-    options.push({ value: 'yesterday', text: 'Yesterday' });
-    options.push({ value: 'lastweektodate', text: 'Last 7 Days' });
-
-    return options;
-  }
-
-  /**
-   * Get log level options
-   *
-   * @returns form select options
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getLogLevelOptions(): any[] {
-    // log.debug({ title: `SuiteToolsView:getLogLevelOptions() initiated`, details: '' });
-
-    const options = [];
-    options.push({ value: '', text: 'All' });
-    options.push({ value: 'DEBUG', text: 'Debug' });
-    options.push({ value: 'AUDIT', text: 'Audit' });
-    options.push({ value: 'ERROR', text: 'Error' });
-    options.push({ value: 'EMERGENCY', text: 'Emergency' });
-    options.push({ value: 'SYSTEM', text: 'System' });
-
-    return options;
-  }
-
-  /**
-   * Get row options
-   *
-   * @returns form select options
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getRowOptions(): any[] {
-    // log.debug({ title: `SuiteToolsView:getRowOptions() initiated`, details: '' });
-
-    const options = [];
-    options.push({ value: '', text: 'All' });
-    options.push({ value: '50', text: '50' });
-    options.push({ value: '250', text: '250' });
-    options.push({ value: '1000', text: '1000' });
-    options.push({ value: '2000', text: '2000' });
-    options.push({ value: '4000', text: '4000' });
-
-    return options;
+    const lines = [];
+    lines.push('<!-- SuiteTools Application' + ' -->');
+    lines.push('<!-- ScriptUrl: ' + this.stApp.scriptUrl + ' -->');
+    lines.push('<!-- ApiUrl: ' + this.stApp.apiUrl + ' -->');
+    lines.push('<!-- NetSuite -->');
+    return lines.join('\n');
   }
 }
