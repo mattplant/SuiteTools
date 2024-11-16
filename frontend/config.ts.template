@@ -1,0 +1,13 @@
+// TASK
+//  - Update the apiBase URL value below and save file config.ts
+//  - Rename this file to config.ts
+
+// SuiteTools configuration file
+//
+// apiBaseUrl
+// - This is how the SPA front end access your NetSuite API RESTlet.
+// - The value is in "URL" field of the SuiteTools API RESTlet deployment record.
+
+export default {
+  apiBaseUrl: '/app/site/hosting/restlet.nl?script=12234&deploy=1&compid=1234567',
+};
