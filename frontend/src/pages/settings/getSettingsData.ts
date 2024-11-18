@@ -1,15 +1,17 @@
-import { getData } from '../../utils/api';
+import { getData } from '../../utils/api/api';
 import { SettingsData, assertIsSettings } from './types';
 
 export async function getSettingsData(): Promise<SettingsData> {
   const localTestData = {
-    recordId: 1,
-    cssUrl: 'https://example.com/style.css',
-    jsUrl: 'https://example.com/script.js',
-    devMode: true,
+    data: {
+      recordId: 1,
+      cssUrl: 'https://example.com/style.css',
+      jsUrl: 'https://example.com/script.js',
+      devMode: true,
+    },
   };
-  const data = await getData(localTestData, 'settings');
-  assertIsSettings(data);
+  const response = await getData(localTestData, 'settings');
+  assertIsSettings(response.data);
 
-  return data;
+  return response.data;
 }

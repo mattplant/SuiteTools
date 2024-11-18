@@ -326,21 +326,21 @@ export class SuiteToolsModel {
    * @param [activeOnly]
    * @returns scripts
    */
-  // public getScriptList(activeOnly?: boolean) {
-  //   log.debug({ title: `SuiteToolsModel:getScriptList() initiated`, details: { activeOnly: activeOnly } });
-  //   let sql = `SELECT
-  //     script.id,
-  //     script.name
-  //   FROM
-  //     script`;
-  //   if (activeOnly) {
-  //     sql += ` WHERE isinactive = 'F'`;
-  //   }
-  //   sql += ` ORDER BY name ASC`;
-  //   const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  public getScriptList(activeOnly?: boolean) {
+    log.debug({ title: `SuiteToolsModel:getScriptList() initiated`, details: { activeOnly: activeOnly } });
+    let sql = `SELECT
+      script.id,
+      script.name
+    FROM
+      script`;
+    if (activeOnly) {
+      sql += ` WHERE isinactive = 'F'`;
+    }
+    sql += ` ORDER BY name ASC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
 
-  //   return results;
-  // }
+    return results;
+  }
 
   /**
    * Get Scripts
@@ -409,7 +409,7 @@ export class SuiteToolsModel {
         scripts = scripts.map((script) => {
           return `'${script.toUpperCase()}'`;
         });
-        where.push(`id IN (${scripts.join(',')})`);
+        where.push(`script.id IN (${scripts.join(',')})`);
       }
     }
     if (owners) {
@@ -466,11 +466,11 @@ export class SuiteToolsModel {
       script.id = ${id}`;
     const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
     let result = null;
-    if (sqlResults.length === 0) {
-      this.stApp.setAlert('No results found that matched criteria.');
-    } else {
-      result = sqlResults[0];
-    }
+    // if (sqlResults.length === 0) {
+    //   this.stApp.setAlert('No results found that matched criteria.');
+    // } else {
+    result = sqlResults[0];
+    // }
     log.debug({ title: 'SuiteToolsModel:getScript() returning', details: result });
 
     return result;

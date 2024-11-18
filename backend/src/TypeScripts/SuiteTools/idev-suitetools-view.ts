@@ -56,37 +56,36 @@ export class SuiteToolsView {
 
     const layoutValues = {};
 
-    // TODO verify that this does not negatively impact and then remove the values from settings
-    // layoutValues['css'] = this.stApp.stAppSettings.cssUrl;
-    // layoutValues['js'] = this.stApp.stAppSettings.jsUrl;
-    (layoutValues['css'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appCssFile)),
-      (layoutValues['js'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appJsFile));
+    // // TODO verify that this does not negatively impact and then remove the values from settings
+    // (layoutValues['css'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appCssFile)),
+    //   (layoutValues['js'] = this.stApp.stLib.stLibNs.stLibNsFile.getFileURL(this.stApp.appJsFile));
+    layoutValues['css'] = this.stApp.stAppSettings.cssUrl;
+    layoutValues['js'] = this.stApp.stAppSettings.jsUrl;
 
-    layoutValues['scriptUrl'] = this.stApp.scriptUrl;
-    layoutValues['userName'] = this.stApp.stAppNs.runtime.getCurrentUser().name;
-    layoutValues['userEmail'] = this.stApp.stAppNs.runtime.getCurrentUser().email;
+    // layoutValues['scriptUrl'] = this.stApp.scriptUrl;
+    // layoutValues['userName'] = this.stApp.stAppNs.runtime.getCurrentUser().name;
+    // layoutValues['userEmail'] = this.stApp.stAppNs.runtime.getCurrentUser().email;
 
     // TODO move this to client side
-    layoutValues['alert'] = this.stApp.getAlert();
+    // layoutValues['alert'] = this.stApp.getAlert();
 
-    if (this.stApp.stAppSettings.devMode) {
-      layoutValues['remainingUsage'] =
-        this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() +
-        ' units' +
-        ' (' +
-        this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() / 10 +
-        '%)';
-      layoutValues['sql'] = this.stApp.getSession('sql');
-      layoutValues['search'] = this.stApp.getSession('search');
-    }
+    // TODO move this to client side
+    // if (this.stApp.stAppSettings.devMode) {
+    //   layoutValues['remainingUsage'] =
+    //     this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() +
+    //     ' units' +
+    //     ' (' +
+    //     this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() / 10 +
+    //     '%)';
+    //   layoutValues['sql'] = this.stApp.getSession('sql');
+    //   layoutValues['search'] = this.stApp.getSession('search');
+    // }
 
-    // populate layout content with Handlebars
     const layout = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('pages/index.html');
     const layoutTemplate = Handlebars.compile(layout);
     let content = layoutTemplate(layoutValues);
     content += this.getPageFooterComments();
 
-    // write content to response
     this.stApp.context.response.write(content);
   }
 
@@ -98,7 +97,6 @@ export class SuiteToolsView {
   public renderAppErrorForm(e: error.SuiteScriptError, devMode: boolean): void {
     log.debug({ title: 'SuiteToolsView:renderAppErrorForm() initiated', details: e });
 
-    // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('pages/appError.html');
     const bodyValues = {};
     bodyValues['id'] = e.id;
@@ -123,7 +121,6 @@ export class SuiteToolsView {
   public renderAppIssuesForm(issues: any[]): void {
     log.debug({ title: 'SuiteToolsView:renderAppIssuesForm() initiated', details: { issues: issues } });
 
-    // display the form
     const body = this.stApp.stLib.stLibNs.stLibNsFile.getFileContents('pages/appIssues.html');
     const bodyValues = {};
     bodyValues['issues'] = issues;
@@ -140,7 +137,6 @@ export class SuiteToolsView {
   private renderPageOnly(body: string, bodyValues?: object): void {
     log.debug({ title: 'SuiteToolsView:RenderPage() initiated', details: null });
 
-    // populate body content with Handlebars
     const bodyTemplate = Handlebars.compile(body);
     const bodyContent = bodyTemplate(bodyValues);
     this.stApp.context.response.write(bodyContent);

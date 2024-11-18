@@ -54,10 +54,9 @@ export class SuiteToolsApi {
  * @param requestParams The request parameters.
  * @returns The response.
  */
-export function get(requestParams: EntryPoints.RESTlet.get): Response {
+export function get(requestParams: EntryPoints.RESTlet.get): string {
   log.debug({ title: 'SuiteToolsApi:get() initiated', details: requestParams });
 
-  // initialize the SuiteTools API
   const stApi = new SuiteToolsApi();
 
   // verify that the required parameters are present
@@ -71,22 +70,29 @@ export function get(requestParams: EntryPoints.RESTlet.get): Response {
     });
   }
 
-  // handle the request
+  const response = { data: {}, remainingUsage: 0 };
   switch (endpoint) {
     case 'optionValues':
-      return getOptionValues(stApi, requestParams);
+      response.data = getOptionValues(stApi, requestParams);
+      break;
     case 'scriptLog':
-      return getScriptLog(stApi, requestParams);
+      response.data = getScriptLog(stApi, requestParams);
+      break;
     case 'scriptLogs':
-      return getScriptLogs(stApi, requestParams);
+      response.data = getScriptLogs(stApi, requestParams);
+      break;
     case 'script':
-      return getScript(stApi, requestParams);
+      response.data = getScript(stApi, requestParams);
+      break;
     case 'scripts':
-      return getScripts(stApi, requestParams);
+      response.data = getScripts(stApi, requestParams);
+      break;
     case 'settings':
-      return getSettings(stApi, requestParams);
+      response.data = getSettings(stApi, requestParams);
+      break;
     case 'system':
-      return getSystem(stApi, requestParams);
+      response.data = getSystem(stApi, requestParams);
+      break;
     default:
       throw error.create({
         name: 'SUITE_TOOLS_INVALID_PARAMETER',
@@ -94,6 +100,9 @@ export function get(requestParams: EntryPoints.RESTlet.get): Response {
         notifyOff: true,
       });
   }
+  response.remainingUsage = stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
+
+  return JSON.stringify(response);
 }
 
 /**
@@ -102,10 +111,9 @@ export function get(requestParams: EntryPoints.RESTlet.get): Response {
  * @param postParams The request parameters.
  * @returns The response.
  */
-export function post(postParams: EntryPoints.RESTlet.post): Response {
+export function post(postParams: EntryPoints.RESTlet.post): string {
   log.debug({ title: 'SuiteToolsApi:post() initiated', details: postParams });
 
-  // initialize the SuiteTools API
   // const stApi = new SuiteToolsApi();
 
   // verify that the required parameters are present
@@ -137,10 +145,9 @@ export function post(postParams: EntryPoints.RESTlet.post): Response {
  * @param requestParams The request parameters.
  * @returns The response.
  */
-export function put(requestBody: EntryPoints.RESTlet.put): Response {
+export function put(requestBody: EntryPoints.RESTlet.put): string {
   log.debug({ title: 'SuiteToolsApi:put() initiated', details: requestBody });
 
-  // initialize the SuiteTools API
   const stApi = new SuiteToolsApi();
 
   // TODO remove this line
@@ -156,10 +163,9 @@ export function put(requestBody: EntryPoints.RESTlet.put): Response {
   //   });
   // }
 
-  // handle the request
   switch (endpoint) {
     case 'settings':
-      return putSettings(stApi, requestBody);
+      return JSON.stringify(putSettings(stApi, requestBody));
     default:
       throw error.create({
         name: 'SUITE_TOOLS_INVALID_PARAMETER',
@@ -171,10 +177,11 @@ export function put(requestBody: EntryPoints.RESTlet.put): Response {
 
 /**
  * Get Server Script Log
+ *
  * @param requestParams
  * @returns settings
  */
-function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getScriptLog() initiated', details: requestParams });
 
   // verify that the required parameters are present
@@ -188,11 +195,9 @@ function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.g
     });
   }
 
-  const data = stApi.stApp.stModel.getScriptLog(id);
-  const result = JSON.stringify(data);
+  const result = stApi.stApp.stModel.getScriptLog(id);
   log.debug({ title: 'SuiteToolsApi:getScriptLog() returning', details: result });
 
-  // @ts-ignore-next-line
   return result;
 }
 
@@ -202,7 +207,7 @@ function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.g
  * @param requestParams
  * @returns settings
  */
-function getScriptLogs(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getScriptLogs(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getScriptLogs() initiated', details: requestParams });
 
   const rows = requestParams['rows'] ? requestParams['rows'] : '50';
@@ -212,21 +217,19 @@ function getScriptLogs(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.
   const owner = convertMultiSelectToArray(requestParams['owner']);
   const date = requestParams['date'] ? requestParams['date'] : '15';
 
-  // retrieve the script logs data
-  const data = stApi.stApp.stModel.getScriptLogsViaSuiteQL(rows, levels, scripttype, null, owner, date, '', '');
-  const result = JSON.stringify(data);
+  const result = stApi.stApp.stModel.getScriptLogsViaSuiteQL(rows, levels, scripttype, null, owner, date, '', '');
   log.debug({ title: 'SuiteToolsApi:getScriptLogs() returning', details: result });
 
-  // @ts-ignore-next-line
   return result;
 }
 
 /**
  * Get Server Script Log
+ *
  * @param requestParams
  * @returns settings
  */
-function getScript(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getScript(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getScript() initiated', details: requestParams });
 
   // verify that the required parameters are present
@@ -240,11 +243,9 @@ function getScript(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get)
     });
   }
 
-  const data = stApi.stApp.stModel.getScript(id);
-  const result = JSON.stringify(data);
+  const result = stApi.stApp.stModel.getScript(id);
   log.debug({ title: 'SuiteToolsApi:getScript() returning', details: result });
 
-  // @ts-ignore-next-line
   return result;
 }
 
@@ -254,23 +255,19 @@ function getScript(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get)
  * @param requestParams
  * @returns settings
  */
-function getScripts(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getScripts(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getScripts() initiated', details: requestParams });
 
-  // const active = requestParams["active"] ? requestParams["active"] : "yes";
-  // const versions = convertMultiSelectToArray(requestParams["versions"]);
+  const active = requestParams['active'];
+  const version = convertMultiSelectToArray(requestParams['version']);
   const scripttype = convertMultiSelectToArray(requestParams['scripttype']);
-  // const scripts = convertMultiSelectToArray(requestParams["scripts"]);
+  const scripts = convertMultiSelectToArray(requestParams['scriptrecord']);
   const owner = convertMultiSelectToArray(requestParams['owner']);
   // const file or files
 
-  // retrieve the scripts
-  const data = stApi.stApp.stModel.getScripts(null, null, scripttype, null, owner, null);
-
-  const result = JSON.stringify(data);
+  const result = stApi.stApp.stModel.getScripts(active, version, scripttype, scripts, owner, null);
   log.debug({ title: 'SuiteToolsApi:getScripts() returning', details: result });
 
-  // @ts-ignore-next-line
   return result;
 }
 
@@ -279,21 +276,18 @@ function getScripts(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get
  * @param requestParams
  * @returns settings
  */
-function getSettings(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getSettings(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getSettings() initiated', details: requestParams });
 
-  // return the settings
   stApi.stApp.stAppSettings.getSettings();
-  const settings = {
+  const result = {
     recordId: stApi.stApp.stAppSettings.recordId,
     cssUrl: stApi.stApp.stAppSettings.cssUrl,
     jsUrl: stApi.stApp.stAppSettings.jsUrl,
     devMode: stApi.stApp.stAppSettings.devMode,
   };
-  const result = JSON.stringify(settings);
   log.debug({ title: 'SuiteToolsApi:getSettings() returning', details: result });
 
-  // @ts-ignore-next-line
   return result;
 }
 
@@ -302,7 +296,7 @@ function getSettings(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.ge
  * @param requestParams
  * @returns settings
  */
-function putSettings(stApi: SuiteToolsApi, requestBody: EntryPoints.RESTlet.put): Response {
+function putSettings(stApi: SuiteToolsApi, requestBody: EntryPoints.RESTlet.put): object {
   log.debug({ title: 'SuiteToolsApi:putSettings() initiated', details: requestBody });
 
   // @ts-ignore-next-line
@@ -316,11 +310,10 @@ function putSettings(stApi: SuiteToolsApi, requestBody: EntryPoints.RESTlet.put)
   );
   log.debug({ title: `SuiteToolsApi:putSettings() saved successfully?`, details: success });
 
-  // @ts-ignore-next-line
-  return JSON.stringify({
+  return {
     status: 200,
     data: 'Settings updated',
-  });
+  };
 }
 
 /**
@@ -328,11 +321,10 @@ function putSettings(stApi: SuiteToolsApi, requestBody: EntryPoints.RESTlet.put)
  * @param requestParams
  * @returns system
  */
-function getSystem(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getSystem(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getSystem() initiated', details: requestParams });
 
-  // return the settings
-  const system = {
+  const result = {
     // system
     accountId: stApi.stApp.stAppNs.runtime.accountId,
     envType: stApi.stApp.stAppNs.runtime.envType,
@@ -351,10 +343,8 @@ function getSystem(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get)
     isAdmin: stApi.stApp.stAppNs.isAdmin,
     userSubsidiary: stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
   };
-  const result = JSON.stringify(system);
   log.debug({ title: 'SuiteToolsApi:getSystem() returning', details: result });
 
-  // @ts-ignore-next-line
   return result;
 }
 
@@ -375,10 +365,10 @@ interface OptionValues {
  * @param requestParams
  * @returns settings
  */
-function getOptionValues(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): Response {
+function getOptionValues(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
   log.debug({ title: 'SuiteToolsApi:getOptionValues() initiated', details: requestParams });
   let data: unknown = '';
-  let result = '';
+  let result = {};
 
   // verify that the required parameters are present
   // @ts-ignore-next-line
@@ -395,6 +385,9 @@ function getOptionValues(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTle
   switch (type) {
     case 'owner':
       data = stApi.stApp.stModel.getEmployeeList(true);
+      break;
+    case 'script':
+      data = stApi.stApp.stModel.getScriptList();
       break;
     case 'scripttype':
       data = stApi.stApp.stModel.getScriptTypeList();
@@ -417,11 +410,10 @@ function getOptionValues(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTle
   if (optionValues.length === 0) {
     log.error({ title: 'SuiteToolsApi:getOptionValues() no results', details: '' });
   } else {
-    result = JSON.stringify(optionValues);
+    result = optionValues;
     log.debug({ title: 'SuiteToolsApi:getOptionValues() returning', details: result });
   }
 
-  // @ts-ignore-next-line
   return result;
 }
 

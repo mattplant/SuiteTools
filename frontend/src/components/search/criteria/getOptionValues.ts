@@ -1,36 +1,52 @@
-import { getData } from '../../../utils/api';
+import { getData } from '../../../utils/api/api';
 import { OptionValues, OptionValuesTypes } from './types';
 
 export async function getOptionValues(type: OptionValuesTypes): Promise<OptionValues[]> {
-  let localTestData: OptionValues[] = [];
+  let localTestData: object = {};
   switch (type) {
     case OptionValuesTypes.OWNER:
-      localTestData = [
-        { value: '1', text: 'Celigo' },
-        { value: '2', text: 'Matt Plant' },
-        { value: '3', text: 'Shopify' },
-      ];
+      localTestData = {
+        data: [
+          { value: '1', text: 'Celigo' },
+          { value: '2', text: 'Matt Plant' },
+          { value: '3', text: 'Shopify' },
+        ],
+      };
+      break;
+    case OptionValuesTypes.SCRIPT:
+      localTestData = {
+        data: [
+          { value: 'SCRIPT-1', text: 'Script One' },
+          { value: 'SCRIPT-2', text: 'Script Two' },
+          { value: 'SCRIPT-3', text: 'Script Three' },
+          { value: 'SCRIPT-4', text: 'Script Four' },
+        ],
+      };
       break;
     case OptionValuesTypes.SCRIPTTYPE:
-      localTestData = [
-        { value: 'MAPREDUCE', text: 'Map/Reduce' },
-        { value: 'RESTLET', text: 'RESTlet' },
-        { value: 'SCHEDULED', text: 'Scheduled' },
-        { value: 'USEREVENT', text: 'User Event' },
-      ];
+      localTestData = {
+        data: [
+          { value: 'MAPREDUCE', text: 'Map/Reduce' },
+          { value: 'RESTLET', text: 'RESTlet' },
+          { value: 'SCHEDULED', text: 'Scheduled' },
+          { value: 'USEREVENT', text: 'User Event' },
+        ],
+      };
       break;
     case OptionValuesTypes.USER:
-      localTestData = [
-        { value: '1', text: 'Celigo' },
-        { value: '2', text: 'Matt Plant' },
-        { value: '3', text: 'Shopify' },
-      ];
+      localTestData = {
+        data: [
+          { value: '1', text: 'Celigo' },
+          { value: '2', text: 'Matt Plant' },
+          { value: '3', text: 'Shopify' },
+        ],
+      };
       break;
   }
-  const data = await getData(localTestData, 'optionValues', { type: type });
-  assertIsOptionValues(data);
+  const response = await getData(localTestData, 'optionValues', { type: type });
+  assertIsOptionValues(response.data);
 
-  return data;
+  return response.data;
 }
 
 export function assertIsOptionValues(data: unknown): asserts data is OptionValues[] {

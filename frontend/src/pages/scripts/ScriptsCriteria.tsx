@@ -1,7 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../../components/search/criteria/types';
+import { SearchCriteriaActive } from '../../components/search/criteria/SearchCriteriaActive';
 import { SearchCriteriaOwner } from '../../components/search/criteria/SearchCriteriaOwner';
+import { SearchCriteriaScript } from '../../components/search/criteria/SearchCriteriaScript';
 import { SearchCriteriaScriptType } from '../../components/search/criteria/SearchCriteriaScriptType';
+import { SearchCriteriaVersion } from '../../components/search/criteria/SearchCriteriaVersion';
 
 interface ScriptsCriteriaProps {
   setCriteria: (criteria: CriteriaFields) => void;
@@ -9,12 +12,13 @@ interface ScriptsCriteriaProps {
 
 export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
   const defaultCriteria: CriteriaFields = {
-      scripttype: [""],
-      owner: [""],
+    active: '',
+    script: [''],
+    scripttype: [''],
+    owner: [''],
+    version: [''],
   };
-  const { register, handleSubmit } = useForm<CriteriaFields>(
-    { defaultValues: defaultCriteria }
-  );
+  const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {
     console.log('Submitted details:', criteria);
@@ -30,7 +34,10 @@ export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
         Get Scripts
       </button>
       <div className="flex gap-4 p-2.5">
+        <SearchCriteriaActive register={register} />
+        <SearchCriteriaVersion register={register} />
         <SearchCriteriaScriptType register={register} />
+        <SearchCriteriaScript register={register} />
         <SearchCriteriaOwner register={register} />
       </div>
     </form>

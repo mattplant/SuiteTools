@@ -25,7 +25,8 @@
 define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-model", "./idev-suitetools-library", "./idev-suitetools-view"], function (require, exports, log, runtime, url, idev_suitetools_model_1, idev_suitetools_library_1, idev_suitetools_view_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsAppNetSuite = exports.SuiteToolsAppSettings = exports.SuiteToolsApp = exports.onRequest = void 0;
+    exports.SuiteToolsAppNetSuite = exports.SuiteToolsAppSettings = exports.SuiteToolsApp = void 0;
+    exports.onRequest = onRequest;
     /**
      * Suitelet onRequest event handler
      *
@@ -38,7 +39,6 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         // initialize the SuiteTools application
         new SuiteToolsApp(context);
     }
-    exports.onRequest = onRequest;
     /**
      * This is the SuiteTools Application.
      *
@@ -90,7 +90,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         }
         constructor(context = null) {
             // application settings
-            // these are needed when we use the SuiteToolsApp as either an application or a library
+            // these below are needed when we use the SuiteToolsApp as either an application or a library
             this._appDir = 'SuiteTools'; // the application folder name in the /SuiteScripts folder
             this._appSettingsCustomRecord = 'customrecord_idev_suitetools_settings'; // the application settings custom record
             // these are needed when we use the SuiteToolsApp as an application
@@ -98,7 +98,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
             this._appApiDeploymentId = 'customdeploy_idev_suitetools_api'; // the SuiteTools API deployment id
             this._appCssFile = 'dist/output.css'; // the SPA site's CSS file
             this._appJsFile = 'dist/app-bundle.js'; // the SPA site's JS file
-            // these are needed when we use the SuiteToolsApp as a library
+            // these below are only needed when we use the SuiteToolsApp as a library
             //   the SuiteTools application script id and deployment id
             this._appScriptId = 'customscript_idev_suitetools_app';
             this._appDeploymentId = 'customdeploy_idev_suitetools_app';
@@ -192,24 +192,9 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
             return results;
         }
         /**
-         * Sets alert
-         *
-         * TODO: Do we need this?
-         *
-         * @param message
-         */
-        setAlert(message) {
-            log.debug({ title: 'SuiteToolsApp:setAlert() initiated with', details: { message: message } });
-            this.setSession('alert', message);
-        }
-        // TODO: Do we need this?
-        getAlert() {
-            return this.getSession('alert');
-        }
-        /**
          * Set session value.
          *
-         * TODO: move to SuiteToolsAppNetSuite?
+         * TODO: if still used move to SuiteToolsAppNetSuite?
          *
          * @param key - name of session variable
          * @param value - value of session variable
@@ -224,7 +209,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         /**
          * Get session value.
          *
-         * TODO: move to SuiteToolsAppNetSuite?
+         * TODO: if still used move to SuiteToolsAppNetSuite?
          *
          * @param key
          * @returns session key

@@ -7,8 +7,11 @@ import { ScriptsResults } from './ScriptsResults.tsx';
 
 export function ScriptsPage() {
   const [criteria, setCriteria] = useState<CriteriaFields>({
+    active: '',
+    script: [''],
     scripttype: [''],
     owner: [''],
+    version: [''],
   });
   const [results, setResults] = useState<Script[]>([]);
 

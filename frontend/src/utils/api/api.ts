@@ -1,37 +1,11 @@
+import { Response, SavedEndpoint, SaveMethod, SavedData, assertIsResponse, assertIsSavedData } from './types';
+
 // grab the apiBaseUrl from the config file
-import config from '../../config.js';
+import config from '../../../config.js';
 const apiBaseUrl = config.apiBaseUrl;
 console.log('apiBaseUrl = ', apiBaseUrl);
 
-export enum SavedEndpoint {
-  SETTINGS = 'settings',
-}
-
-export enum SaveMethod {
-  PUT = 'PUT',
-  POST = 'POST',
-}
-
-export type SavedData = {
-  status: number;
-};
-
-export function assertIsSavedData(data: unknown): asserts data is SavedData {
-  // check if the data is an object
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Saved data is not an object');
-  }
-  // check the data for the required fields
-  // status
-  if (!('status' in data)) {
-    throw new Error('Saved data is missing the "status" field');
-  }
-  if (typeof data.status !== 'number') {
-    throw new Error('Saved data "status" field is not a number');
-  }
-}
-
-export async function getData(localTestData: object, endpoint: string, urlParams: object = {}): Promise<unknown> {
+export async function getData(localTestData: object, endpoint: string, urlParams: object = {}): Promise<Response> {
   console.log('getData() initiated', { localTestData, endpoint, urlParams });
 
   // check to see if any of the used script params are in the urlParams object
@@ -47,6 +21,7 @@ export async function getData(localTestData: object, endpoint: string, urlParams
     // use dummy data for local development, but delay the response to simulate network latency
     const data = await new Promise((resolve) => setTimeout(() => resolve(localTestData), 1000));
     console.log(`getData() local ${endpoint} data`, data);
+    assertIsResponse(data);
 
     return data;
   } else {
@@ -60,6 +35,7 @@ export async function getData(localTestData: object, endpoint: string, urlParams
     const response = await fetch(apiUrl);
     const data = (await response.json()) as unknown;
     console.log(`getData() server ${endpoint} data`, data);
+    assertIsResponse(data);
 
     return data;
   }

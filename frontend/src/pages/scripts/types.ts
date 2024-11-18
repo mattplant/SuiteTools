@@ -95,77 +95,7 @@ export function assertIsScripts(data: unknown): asserts data is Script[] {
   if (!Array.isArray(data)) {
     throw new Error('Script data is not an array');
   }
-  if (data.length === 0) {
-    throw new Error('Script data is empty');
+  if (data.length > 0) {
+    assertIsScript(data[0]);
   }
-  // id
-  if (!('id' in data[0])) {
-    throw new Error('Script data is missing the "id" field');
-  }
-  if (typeof data[0].id !== 'number') {
-    throw new Error('Script data "id" field is not a number');
-  }
-  // api version
-  if (!('apiversion' in data[0])) {
-    throw new Error('Script data is missing the "apiversion" field');
-  }
-  if (typeof data[0].apiversion !== 'string') {
-    throw new Error('Script data "apiversion" field is not a string');
-  }
-  // is inactive
-  if (!('isinactive' in data[0])) {
-    throw new Error('Script data is missing the "isinactive" field');
-  }
-  if (typeof data[0].isinactive !== 'string') {
-    throw new Error('Script data "isinactive" field is not a string');
-  }
-  // script type
-  if (!('scripttype' in data[0])) {
-    throw new Error('Script data is missing the "scripttype" field');
-  }
-  if (typeof data[0].scripttype !== 'string') {
-    throw new Error('Script data "scripttype" field is not a string');
-  }
-  // name
-  if (!('name' in data[0])) {
-    throw new Error('Script data is missing the "name" field');
-  }
-  if (typeof data[0].name !== 'string') {
-    throw new Error('Script data "name" field is not a string');
-  }
-  // script id
-  if (!('scriptid' in data[0])) {
-    throw new Error('Script data is missing the "scriptid" field');
-  }
-  if (typeof data[0].scriptid !== 'string') {
-    throw new Error('Script data "scriptid" field is not a string');
-  }
-  // owner
-  if (!('owner' in data[0])) {
-    throw new Error('Script data is missing the "owner" field');
-  }
-  if (typeof data[0].owner !== 'string') {
-    throw new Error('Script data "owner" field is not a string');
-  }
-  // script file
-  if (!('scriptfile' in data[0])) {
-    throw new Error('Script data is missing the "scriptfile" field');
-  }
-  if (typeof data[0].scriptfile !== 'string') {
-    throw new Error('Script data "scriptfile" field is not a string');
-  }
-  // // notify emails
-  // if (!('notifyemails' in data[0])) {
-  //     throw new Error('Script data is missing the "notifyemails" field');
-  // }
-  // if (typeof data[0].notifyemails !== 'string') {
-  //     throw new Error('Script data "notifyemails" field is not a string');
-  // }
-  // // description
-  // if (!('description' in data[0])) {
-  //     throw new Error('Script data is missing the "description" field');
-  // }
-  // if (typeof data[0].description !== 'string') {
-  //     throw new Error('Script data "description" field is not a string');
-  // }
 }

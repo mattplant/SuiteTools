@@ -8,7 +8,7 @@ export default function Header({ user }: Props) {
   return (
     <header className="flex justify-between items-center border-b-2 border-gray-100 py-6">
       <Link to={`/`}>
-        <h2 className="text-xl font-bold">SuiteTools - Refactored</h2>
+        <h2 className="text-xl font-bold">SuiteTools</h2>
       </Link>
       <nav>
         <NavLink

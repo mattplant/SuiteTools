@@ -27,7 +27,10 @@
 define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], function (require, exports, error, log, idev_suitetools_app_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.put = exports.post = exports.get = exports.SuiteToolsApi = void 0;
+    exports.SuiteToolsApi = void 0;
+    exports.get = get;
+    exports.post = post;
+    exports.put = put;
     /**
      * SuiteTools API
      *
@@ -51,7 +54,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      */
     function get(requestParams) {
         log.debug({ title: 'SuiteToolsApi:get() initiated', details: requestParams });
-        // initialize the SuiteTools API
         const stApi = new SuiteToolsApi();
         // verify that the required parameters are present
         // @ts-ignore-next-line
@@ -63,22 +65,29 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                 notifyOff: true,
             });
         }
-        // handle the request
+        const response = { data: {}, remainingUsage: 0 };
         switch (endpoint) {
             case 'optionValues':
-                return getOptionValues(stApi, requestParams);
+                response.data = getOptionValues(stApi, requestParams);
+                break;
             case 'scriptLog':
-                return getScriptLog(stApi, requestParams);
+                response.data = getScriptLog(stApi, requestParams);
+                break;
             case 'scriptLogs':
-                return getScriptLogs(stApi, requestParams);
+                response.data = getScriptLogs(stApi, requestParams);
+                break;
             case 'script':
-                return getScript(stApi, requestParams);
+                response.data = getScript(stApi, requestParams);
+                break;
             case 'scripts':
-                return getScripts(stApi, requestParams);
+                response.data = getScripts(stApi, requestParams);
+                break;
             case 'settings':
-                return getSettings(stApi, requestParams);
+                response.data = getSettings(stApi, requestParams);
+                break;
             case 'system':
-                return getSystem(stApi, requestParams);
+                response.data = getSystem(stApi, requestParams);
+                break;
             default:
                 throw error.create({
                     name: 'SUITE_TOOLS_INVALID_PARAMETER',
@@ -86,8 +95,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                     notifyOff: true,
                 });
         }
+        response.remainingUsage = stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
+        return JSON.stringify(response);
     }
-    exports.get = get;
     /**
      * Handles the POST request event.
      *
@@ -96,7 +106,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      */
     function post(postParams) {
         log.debug({ title: 'SuiteToolsApi:post() initiated', details: postParams });
-        // initialize the SuiteTools API
         // const stApi = new SuiteToolsApi();
         // verify that the required parameters are present
         // @ts-ignore-next-line
@@ -119,7 +128,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                 });
         }
     }
-    exports.post = post;
     /**
      * Handles the PUT request event.
      *
@@ -128,7 +136,6 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      */
     function put(requestBody) {
         log.debug({ title: 'SuiteToolsApi:put() initiated', details: requestBody });
-        // initialize the SuiteTools API
         const stApi = new SuiteToolsApi();
         // TODO remove this line
         const endpoint = 'settings';
@@ -141,10 +148,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
         //     notifyOff: true,
         //   });
         // }
-        // handle the request
         switch (endpoint) {
             case 'settings':
-                return putSettings(stApi, requestBody);
+                return JSON.stringify(putSettings(stApi, requestBody));
             default:
                 throw error.create({
                     name: 'SUITE_TOOLS_INVALID_PARAMETER',
@@ -153,9 +159,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                 });
         }
     }
-    exports.put = put;
     /**
      * Get Server Script Log
+     *
      * @param requestParams
      * @returns settings
      */
@@ -171,10 +177,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                 notifyOff: true,
             });
         }
-        const data = stApi.stApp.stModel.getScriptLog(id);
-        const result = JSON.stringify(data);
+        const result = stApi.stApp.stModel.getScriptLog(id);
         log.debug({ title: 'SuiteToolsApi:getScriptLog() returning', details: result });
-        // @ts-ignore-next-line
         return result;
     }
     /**
@@ -191,15 +195,13 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
         const scripttype = convertMultiSelectToArray(requestParams['scripttype']);
         const owner = convertMultiSelectToArray(requestParams['owner']);
         const date = requestParams['date'] ? requestParams['date'] : '15';
-        // retrieve the script logs data
-        const data = stApi.stApp.stModel.getScriptLogsViaSuiteQL(rows, levels, scripttype, null, owner, date, '', '');
-        const result = JSON.stringify(data);
+        const result = stApi.stApp.stModel.getScriptLogsViaSuiteQL(rows, levels, scripttype, null, owner, date, '', '');
         log.debug({ title: 'SuiteToolsApi:getScriptLogs() returning', details: result });
-        // @ts-ignore-next-line
         return result;
     }
     /**
      * Get Server Script Log
+     *
      * @param requestParams
      * @returns settings
      */
@@ -215,10 +217,8 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
                 notifyOff: true,
             });
         }
-        const data = stApi.stApp.stModel.getScript(id);
-        const result = JSON.stringify(data);
+        const result = stApi.stApp.stModel.getScript(id);
         log.debug({ title: 'SuiteToolsApi:getScript() returning', details: result });
-        // @ts-ignore-next-line
         return result;
     }
     /**
@@ -229,17 +229,14 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      */
     function getScripts(stApi, requestParams) {
         log.debug({ title: 'SuiteToolsApi:getScripts() initiated', details: requestParams });
-        // const active = requestParams["active"] ? requestParams["active"] : "yes";
-        // const versions = convertMultiSelectToArray(requestParams["versions"]);
+        const active = requestParams['active'];
+        const version = convertMultiSelectToArray(requestParams['version']);
         const scripttype = convertMultiSelectToArray(requestParams['scripttype']);
-        // const scripts = convertMultiSelectToArray(requestParams["scripts"]);
+        const scripts = convertMultiSelectToArray(requestParams['scriptrecord']);
         const owner = convertMultiSelectToArray(requestParams['owner']);
         // const file or files
-        // retrieve the scripts
-        const data = stApi.stApp.stModel.getScripts(null, null, scripttype, null, owner, null);
-        const result = JSON.stringify(data);
+        const result = stApi.stApp.stModel.getScripts(active, version, scripttype, scripts, owner, null);
         log.debug({ title: 'SuiteToolsApi:getScripts() returning', details: result });
-        // @ts-ignore-next-line
         return result;
     }
     /**
@@ -249,17 +246,14 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      */
     function getSettings(stApi, requestParams) {
         log.debug({ title: 'SuiteToolsApi:getSettings() initiated', details: requestParams });
-        // return the settings
         stApi.stApp.stAppSettings.getSettings();
-        const settings = {
+        const result = {
             recordId: stApi.stApp.stAppSettings.recordId,
             cssUrl: stApi.stApp.stAppSettings.cssUrl,
             jsUrl: stApi.stApp.stAppSettings.jsUrl,
             devMode: stApi.stApp.stAppSettings.devMode,
         };
-        const result = JSON.stringify(settings);
         log.debug({ title: 'SuiteToolsApi:getSettings() returning', details: result });
-        // @ts-ignore-next-line
         return result;
     }
     /**
@@ -275,11 +269,10 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
         stApi.stApp.stAppSettings.getSettings();
         const success = stApi.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord(stApi.stApp.appSettingsCustomRecord, stApi.stApp.stAppSettings.recordId, updateSettings);
         log.debug({ title: `SuiteToolsApi:putSettings() saved successfully?`, details: success });
-        // @ts-ignore-next-line
-        return JSON.stringify({
+        return {
             status: 200,
             data: 'Settings updated',
-        });
+        };
     }
     /**
      * Get system.
@@ -288,8 +281,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      */
     function getSystem(stApi, requestParams) {
         log.debug({ title: 'SuiteToolsApi:getSystem() initiated', details: requestParams });
-        // return the settings
-        const system = {
+        const result = {
             // system
             accountId: stApi.stApp.stAppNs.runtime.accountId,
             envType: stApi.stApp.stAppNs.runtime.envType,
@@ -308,9 +300,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             isAdmin: stApi.stApp.stAppNs.isAdmin,
             userSubsidiary: stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
         };
-        const result = JSON.stringify(system);
         log.debug({ title: 'SuiteToolsApi:getSystem() returning', details: result });
-        // @ts-ignore-next-line
         return result;
     }
     /**
@@ -323,7 +313,7 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
     function getOptionValues(stApi, requestParams) {
         log.debug({ title: 'SuiteToolsApi:getOptionValues() initiated', details: requestParams });
         let data = '';
-        let result = '';
+        let result = {};
         // verify that the required parameters are present
         // @ts-ignore-next-line
         const type = requestParams.type;
@@ -338,6 +328,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
         switch (type) {
             case 'owner':
                 data = stApi.stApp.stModel.getEmployeeList(true);
+                break;
+            case 'script':
+                data = stApi.stApp.stModel.getScriptList();
                 break;
             case 'scripttype':
                 data = stApi.stApp.stModel.getScriptTypeList();
@@ -359,10 +352,9 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             log.error({ title: 'SuiteToolsApi:getOptionValues() no results', details: '' });
         }
         else {
-            result = JSON.stringify(optionValues);
+            result = optionValues;
             log.debug({ title: 'SuiteToolsApi:getOptionValues() returning', details: result });
         }
-        // @ts-ignore-next-line
         return result;
     }
     function assertIsOptionValuesResponse(data) {

@@ -53,7 +53,7 @@ export function onRequest(context: EntryPoints.Suitelet.onRequestContext): void 
  */
 export class SuiteToolsApp {
   // application settings
-  // these are needed when we use the SuiteToolsApp as either an application or a library
+  // these below are needed when we use the SuiteToolsApp as either an application or a library
   private _appDir = 'SuiteTools'; // the application folder name in the /SuiteScripts folder
   private _appSettingsCustomRecord = 'customrecord_idev_suitetools_settings'; // the application settings custom record
   // these are needed when we use the SuiteToolsApp as an application
@@ -62,7 +62,7 @@ export class SuiteToolsApp {
   private _apiUrl: string;
   private _appCssFile = 'dist/output.css'; // the SPA site's CSS file
   private _appJsFile = 'dist/app-bundle.js'; // the SPA site's JS file
-  // these are needed when we use the SuiteToolsApp as a library
+  // these below are only needed when we use the SuiteToolsApp as a library
   //   the SuiteTools application script id and deployment id
   private _appScriptId = 'customscript_idev_suitetools_app';
   private _appDeploymentId = 'customdeploy_idev_suitetools_app';
@@ -224,27 +224,9 @@ export class SuiteToolsApp {
   }
 
   /**
-   * Sets alert
-   *
-   * TODO: Do we need this?
-   *
-   * @param message
-   */
-  public setAlert(message: string): void {
-    log.debug({ title: 'SuiteToolsApp:setAlert() initiated with', details: { message: message } });
-
-    this.setSession('alert', message);
-  }
-
-  // TODO: Do we need this?
-  public getAlert(): string {
-    return this.getSession('alert');
-  }
-
-  /**
    * Set session value.
    *
-   * TODO: move to SuiteToolsAppNetSuite?
+   * TODO: if still used move to SuiteToolsAppNetSuite?
    *
    * @param key - name of session variable
    * @param value - value of session variable
@@ -261,7 +243,7 @@ export class SuiteToolsApp {
   /**
    * Get session value.
    *
-   * TODO: move to SuiteToolsAppNetSuite?
+   * TODO: if still used move to SuiteToolsAppNetSuite?
    *
    * @param key
    * @returns session key
