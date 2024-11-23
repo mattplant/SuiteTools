@@ -9,10 +9,13 @@ export function ScriptLogsPage() {
   const [criteria, setCriteria] = useState<CriteriaFields>({
     rows: 50,
     level: ['ERROR', 'EMERGENCY', 'SYSTEM'],
-    user: '0',
+    // user: [''],
     scripttype: [''],
+    scriptname: [''],
     owner: [''],
-    date: '15',
+    createddate: '15',
+    title: '',
+    detail: '',
   });
   const [results, setResults] = useState<ScriptLogsLine[]>([]);
 

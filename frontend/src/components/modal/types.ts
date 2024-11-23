@@ -1,6 +1,7 @@
 export enum ModalTypes {
-  SCRIPTLOG = 'scriptlog',
+  FILE = 'file',
   SCRIPT = 'script',
+  SCRIPTLOG = 'scriptlog',
 }
 
 // need to have a base type for ModalResult

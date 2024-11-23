@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from './getOptionValues';
-import { OptionValues, OptionValuesTypes } from './types';
-import { CriteriaFields } from './types';
+import { CriteriaFields, OptionValues, OptionValuesTypes } from './types';
 
 interface SearchCriteriaUserProps {
   register: UseFormRegister<CriteriaFields>;

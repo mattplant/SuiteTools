@@ -32,9 +32,13 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLogsL
   const urlParams = {
     rows: fields.rows,
     level: fields.level,
+    // user: fields.user,
     scripttype: fields.scripttype,
+    scriptname: fields.scriptname,
     owner: fields.owner,
-    date: fields.date,
+    createddate: fields.createddate,
+    title: fields.title,
+    detail: fields.detail,
   };
   const response = await getData(localTestData, 'scriptLogs', urlParams);
   assertIsScriptLogs(response.data);

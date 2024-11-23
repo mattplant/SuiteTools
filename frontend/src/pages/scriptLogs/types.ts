@@ -70,9 +70,9 @@ export function assertIsScriptLog(data: unknown): asserts data is ScriptLogsLine
   if (!('detail' in data)) {
     throw new Error('Script log data is missing the "detail" field');
   }
-  if (typeof data.detail !== 'string') {
-    throw new Error('Script log data "detail" field is not a string');
-  }
+  // if (typeof data.detail !== 'string') {
+  //   throw new Error('Script log data "detail" field is not a string');
+  // }
 }
 
 export function assertIsScriptLogs(data: unknown): asserts data is ScriptLogsLine[] {

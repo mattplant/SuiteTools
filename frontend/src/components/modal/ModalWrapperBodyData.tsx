@@ -1,4 +1,5 @@
 import { ModalTypes } from './types';
+import { assertIsFile } from '../../pages/files/types';
 import { assertIsScript } from '../../pages/scripts/types';
 import { assertIsScriptLog } from '../../pages/scriptLogs/types';
 
@@ -16,6 +17,39 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
   } else {
     // determine modal details based on modal type
     switch (type) {
+      case ModalTypes.FILE:
+        assertIsFile(data);
+        return (
+          <>
+            <p>
+              <b>ID</b>: {data.id}
+            </p>
+            <p>
+              <b>Folder</b>: {data.folder}
+            </p>
+            <p>
+              <b>Created Date</b>: {data.createddate}
+            </p>
+            <p>
+              <b>Lastmodified Date</b>: {data.lastmodifieddate}
+            </p>
+            <p>
+              <b>Type</b>: {data.filetypename}
+            </p>
+            <p>
+              <b>Name</b>: {data.name}
+            </p>
+            <p>
+              <b>File Size</b>: {data.filesize}
+            </p>
+            {/* <p>
+              <b>Description</b>: {data.description}
+            </p> */}
+            <p>
+              <b>URL</b>: {data.url}
+            </p>
+          </>
+        );
       case ModalTypes.SCRIPT:
         assertIsScript(data);
         return (
@@ -83,7 +117,7 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
           </>
         );
       default:
-        console.error('ModalWrapper type not found:', type);
+        console.error('ModalWrapperBodyData type not found:', type);
         break;
     }
   }

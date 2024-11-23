@@ -72,20 +72,26 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
 
   const response = { data: {}, remainingUsage: 0 };
   switch (endpoint) {
+    case 'file':
+      response.data = getFile(stApi, requestParams);
+      break;
+    case 'files':
+      response.data = getFiles(stApi, requestParams);
+      break;
     case 'optionValues':
       response.data = getOptionValues(stApi, requestParams);
-      break;
-    case 'scriptLog':
-      response.data = getScriptLog(stApi, requestParams);
-      break;
-    case 'scriptLogs':
-      response.data = getScriptLogs(stApi, requestParams);
       break;
     case 'script':
       response.data = getScript(stApi, requestParams);
       break;
     case 'scripts':
       response.data = getScripts(stApi, requestParams);
+      break;
+    case 'scriptLog':
+      response.data = getScriptLog(stApi, requestParams);
+      break;
+    case 'scriptLogs':
+      response.data = getScriptLogs(stApi, requestParams);
       break;
     case 'settings':
       response.data = getSettings(stApi, requestParams);
@@ -176,13 +182,13 @@ export function put(requestBody: EntryPoints.RESTlet.put): string {
 }
 
 /**
- * Get Server Script Log
+ * Get File
  *
  * @param requestParams
  * @returns settings
  */
-function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
-  log.debug({ title: 'SuiteToolsApi:getScriptLog() initiated', details: requestParams });
+function getFile(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
+  log.debug({ title: 'SuiteToolsApi:getFile() initiated', details: requestParams });
 
   // verify that the required parameters are present
   // @ts-ignore-next-line
@@ -195,36 +201,33 @@ function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.g
     });
   }
 
-  const result = stApi.stApp.stModel.getScriptLog(id);
-  log.debug({ title: 'SuiteToolsApi:getScriptLog() returning', details: result });
+  const result = stApi.stApp.stModel.getFile(id);
+  log.debug({ title: 'SuiteToolsApi:getFile() returning', details: result });
 
   return result;
 }
 
 /**
- * Get Server Script Logs
+ * Get Files
  *
  * @param requestParams
  * @returns settings
  */
-function getScriptLogs(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
-  log.debug({ title: 'SuiteToolsApi:getScriptLogs() initiated', details: requestParams });
+function getFiles(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
+  log.debug({ title: 'SuiteToolsApi:getFiles() initiated', details: requestParams });
 
-  const rows = requestParams['rows'] ? requestParams['rows'] : '50';
-  const levels = convertMultiSelectToArray(requestParams['level']);
-  // const user = convertMultiSelectToArray(requestParams["user"]);
-  const scripttype = convertMultiSelectToArray(requestParams['scripttype']);
-  const owner = convertMultiSelectToArray(requestParams['owner']);
-  const date = requestParams['date'] ? requestParams['date'] : '15';
-
-  const result = stApi.stApp.stModel.getScriptLogsViaSuiteQL(rows, levels, scripttype, null, owner, date, '', '');
-  log.debug({ title: 'SuiteToolsApi:getScriptLogs() returning', details: result });
+  const row = requestParams['rows'];
+  const types = convertMultiSelectToArray(requestParams['filetype']);
+  const createdDate = requestParams['createddate'];
+  const modifiedDate = requestParams['lastmodifieddate'];
+  const result = stApi.stApp.stModel.getFiles(row, types, createdDate, modifiedDate);
+  log.debug({ title: 'SuiteToolsApi:getFiles() returning', details: result });
 
   return result;
 }
 
 /**
- * Get Server Script Log
+ * Get Script
  *
  * @param requestParams
  * @returns settings
@@ -259,14 +262,64 @@ function getScripts(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get
   log.debug({ title: 'SuiteToolsApi:getScripts() initiated', details: requestParams });
 
   const active = requestParams['active'];
-  const version = convertMultiSelectToArray(requestParams['version']);
-  const scripttype = convertMultiSelectToArray(requestParams['scripttype']);
+  const versions = convertMultiSelectToArray(requestParams['version']);
+  const scripttypes = convertMultiSelectToArray(requestParams['scripttype']);
   const scripts = convertMultiSelectToArray(requestParams['scriptrecord']);
-  const owner = convertMultiSelectToArray(requestParams['owner']);
-  // const file or files
-
-  const result = stApi.stApp.stModel.getScripts(active, version, scripttype, scripts, owner, null);
+  const owners = convertMultiSelectToArray(requestParams['owner']);
+  const files = convertMultiSelectToArray(requestParams['file']);
+  const result = stApi.stApp.stModel.getScripts(active, versions, scripttypes, scripts, owners, files);
   log.debug({ title: 'SuiteToolsApi:getScripts() returning', details: result });
+
+  return result;
+}
+
+/**
+ * Get Server Script Log
+ *
+ * @param requestParams
+ * @returns settings
+ */
+function getScriptLog(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
+  log.debug({ title: 'SuiteToolsApi:getScriptLog() initiated', details: requestParams });
+
+  // verify that the required parameters are present
+  // @ts-ignore-next-line
+  const id = requestParams.id;
+  if (!id) {
+    throw error.create({
+      name: 'SUITE_TOOLS_MISSING_PARAMETER',
+      message: `Missing required parameter: id`,
+      notifyOff: true,
+    });
+  }
+
+  const result = stApi.stApp.stModel.getScriptLog(id);
+  log.debug({ title: 'SuiteToolsApi:getScriptLog() returning', details: result });
+
+  return result;
+}
+
+/**
+ * Get Server Script Logs
+ *
+ * @param requestParams
+ * @returns settings
+ */
+function getScriptLogs(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTlet.get): object {
+  log.debug({ title: 'SuiteToolsApi:getScriptLogs() initiated', details: requestParams });
+
+  const row = requestParams['rows'] ? requestParams['rows'] : '50';
+  const levels = convertMultiSelectToArray(requestParams['level']);
+  // const users = convertMultiSelectToArray(requestParams['user']);
+  const types = convertMultiSelectToArray(requestParams['scripttype']);
+  const scripts = convertMultiSelectToArray(requestParams['scriptname']);
+  const owners = convertMultiSelectToArray(requestParams['owner']);
+  const date = requestParams['createddate'] ? requestParams['createddate'] : '15';
+  const title = requestParams['title'];
+  const detail = requestParams['detail'];
+
+  const result = stApi.stApp.stModel.getScriptLogsViaSuiteQL(row, levels, types, scripts, owners, date, title, detail);
+  log.debug({ title: 'SuiteToolsApi:getScriptLogs() returning', details: result });
 
   return result;
 }
@@ -383,6 +436,12 @@ function getOptionValues(stApi: SuiteToolsApi, requestParams: EntryPoints.RESTle
 
   // determine the SQL query to run
   switch (type) {
+    case 'file':
+      data = stApi.stApp.stModel.getFileList(true);
+      break;
+    case 'filetype':
+      data = stApi.stApp.stModel.getFileTypeList();
+      break;
     case 'owner':
       data = stApi.stApp.stModel.getEmployeeList(true);
       break;

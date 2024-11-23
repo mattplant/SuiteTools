@@ -173,102 +173,105 @@ export class SuiteToolsModel {
   // 	name`;
 
   /**
+   * Get file list
+   *
+   * @param [activeOnly]  - flag for active only else all
+   * @returns files
+   */
+  public getFileList(activeOnly?: boolean) {
+    log.debug({ title: `SuiteToolsModel:getFileList() initiated`, details: { activeOnly: activeOnly } });
+
+    let sql = `SELECT
+      File.id,
+      File.name
+    FROM
+	    File
+    INNER JOIN Script ON
+		  ( Script.ScriptFile = File.ID )
+    WHERE
+      ( File.filetype = 'JAVASCRIPT' )`;
+    if (activeOnly) {
+      sql += ` AND ( Script.isinactive = 'F' )`;
+    }
+    sql += ` ORDER BY file.name ASC`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+
+    return results;
+  }
+
+  /**
+   * Get file type list
+   *
+   * @returns file types
+   */
+  public getFileTypeList() {
+    log.debug({ title: `SuiteToolsModel:getFileTypeList() initiated`, details: null });
+
+    const sql = `SELECT
+      DISTINCT filetype as id,
+      filetype as name
+    FROM file
+    ORDER BY filetype`;
+    const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+
+    return results;
+  }
+
+  /**
    * Get Files
    *
-   * @param rows - the number of rows to return
+   * @param row - the number of rows to return
    * @param types - the file types
-   * @param versions - the API versions
+   * @param createdDate - the created date
+   * @param modifiedDate - the last modified date
    * @returns results
    */
-  // public getFiles(
-  //   rows: string,
-  //   types: string | string[],
-  //   createdDates: string,
-  //   modifiedDates: string
-  // ) {
-  //   log.debug({
-  //     title: `SuiteToolsModel:getFiles() initiated`,
-  //     details: {
-  //       rows: rows,
-  //       types: types,
-  //       createdDates: createdDates,
-  //       modifiedDates: modifiedDates,
-  //     },
-  //   });
-  //   let sql = `SELECT
-  //     file.id,
-  //     file.folder,
-  //     file.createddate,
-  //     file.lastmodifieddate,
-  //     file.filetype,
-  //     BUILTIN.DF(file.filetype) AS filetypename,
-  //     file.name || ' (' || file.id  || ')' AS name,
-  //     file.filesize,
-  //     file.description,
-  //     file.url
-  //   FROM
-  //     file`;
-  //   // add where clause
-  //   const where = [];
-  //   if (rows) {
-  //     // limit to specified number of rows
-  //     where.push(`RowNum <= ${rows}`);
-  //   }
-  //   if (types) {
-  //     if (Array.isArray(types)) {
-  //       types = types.map((type) => {
-  //         return `'${type.toUpperCase()}'`;
-  //       });
-  //       where.push(`filetype IN (${types.join(',')})`);
-  //     }
-  //   }
-  //   if (createdDates) {
-  //     switch (createdDates) {
-  //       case '15':
-  //         where.push('createddate > SYSDATE - ( 15 / 1440 )');
-  //         break;
-  //       case '60':
-  //         where.push('createddate > SYSDATE - ( 1 / 24 )');
-  //         break;
-  //       case 'today':
-  //         where.push("TO_CHAR ( createddate, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-  //         break;
-  //       case 'yesterday':
-  //         where.push("TO_CHAR ( createddate, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-  //         break;
-  //       default:
-  //         log.error({ title: `SuiteToolsModel:getFiles() invalid date option`, details: createdDates });
-  //         break;
-  //     }
-  //   }
-  //   if (modifiedDates) {
-  //     switch (modifiedDates) {
-  //       case '15':
-  //         where.push('lastmodifieddate > SYSDATE - ( 15 / 1440 )');
-  //         break;
-  //       case '60':
-  //         where.push('lastmodifieddate > SYSDATE - ( 1 / 24 )');
-  //         break;
-  //       case 'today':
-  //         where.push("TO_CHAR ( lastmodifieddate, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-  //         break;
-  //       case 'yesterday':
-  //         where.push("TO_CHAR ( lastmodifieddate, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-  //         break;
-  //       default:
-  //         log.error({ title: `SuiteToolsModel:getFiles() invalid date option`, details: modifiedDates });
-  //         break;
-  //     }
-  //   }
-  //   if (where.length > 0) {
-  //     sql += ` WHERE ${where.join(' AND ')}`;
-  //   }
-  //   // add order by
-  //   sql += ` ORDER BY name ASC`;
-  //   const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string) {
+    log.debug({
+      title: `SuiteToolsModel:getFiles() initiated`,
+      details: {
+        rows: row,
+        types: types,
+        createdDate: createdDate,
+        modifiedDate: modifiedDate,
+      },
+    });
+    let sql = `SELECT
+      file.id,
+      file.folder,
+      file.createddate,
+      file.lastmodifieddate,
+      file.filetype,
+      BUILTIN.DF(file.filetype) AS filetypename,
+      file.name || ' (' || file.id  || ')' AS name,
+      file.filesize,
+      file.description,
+      file.url
+    FROM
+      file`;
+    // add where clause
+    const where = [];
+    if (row) {
+      where.push(`RowNum <= ${row}`);
+    }
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`filetype IN (${types.join(',')})`);
+      }
+    }
+    this.addDateFilter(where, 'SuiteToolsModel:getFiles()', 'File', 'createddate', createdDate);
+    this.addDateFilter(where, 'SuiteToolsModel:getFiles()', 'File', 'lastmodifieddate', modifiedDate);
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    sql += ` ORDER BY name ASC`;
+    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
 
-  //   return sqlResults;
-  // }
+    return sqlResults;
+  }
 
   /**
    * Get File
@@ -276,35 +279,35 @@ export class SuiteToolsModel {
    * @param id - the record to return
    * @returns results
    */
-  // public getFile(id: string) {
-  //   log.debug({ title: `SuiteToolsModel:getFile() initiated`, details: { id: id } });
+  public getFile(id: string) {
+    log.debug({ title: `SuiteToolsModel:getFile() initiated`, details: { id: id } });
 
-  //   const sql = `SELECT
-  //     file.id,
-  //     file.isinactive,
-  //     file.folder,
-  //     file.createddate,
-  //     file.lastmodifieddate,
-  //     file.filetype,
-  //     file.name || ' (' || file.id  || ')' AS name,
-  //     file.filesize,
-  //     file.description,
-  //     file.url
-  //   FROM
-  //     file
-  //   WHERE
-  //     file.id = ${id}`;
-  //   const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-  //   let result = null;
-  //   if (sqlResults.length === 0) {
-  //     this.stApp.setAlert('No results found that matched criteria.');
-  //   } else {
-  //     result = sqlResults[0];
-  //   }
-  //   log.debug({ title: 'SuiteToolsModel:getFile() returning', details: result });
+    const sql = `SELECT
+      file.id,
+      file.folder,
+      file.createddate,
+      file.lastmodifieddate,
+      file.filetype,
+      BUILTIN.DF(file.filetype) AS filetypename,
+      file.name || ' (' || file.id  || ')' AS name,
+      file.filesize,
+      file.description,
+      file.url
+    FROM
+      file
+    WHERE
+      file.id = ${id}`;
+    const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+    let result = null;
+    // if (sqlResults.length === 0) {
+    //   this.stApp.setAlert('No results found that matched criteria.');
+    // } else {
+    result = sqlResults[0];
+    // }
+    log.debug({ title: 'SuiteToolsModel:getFile() returning', details: result });
 
-  //   return result;
-  // }
+    return result;
+  }
 
   /**
    * Get script type list
@@ -1373,35 +1376,36 @@ export class SuiteToolsModel {
    *
    * The SuiteQL version can not return the user that triggered the log message, but it can only be filtered by minutes.
    *
-   * @param rows - the number of rows to return
+   * @param row - the number of rows to return
    * @param levels - type of log (e.g. debug, error, ...)
    * @param types - types of script
    * @param scripts - the scripts to return log records for
    * @param owners - the script owners to return log records for
-   * @param dates - the dates to return log records for
+   * @param date - the dates to return log records for
    * @param title - the title contains this string
    * @param detail - the detail contains this string
    * @returns script logs
    */
   public getScriptLogsViaSuiteQL(
-    rows: string,
+    row: string,
     levels: string[],
+    // users: string[], // SuiteQL does not support user filtering. Need to use search instead.
     types: string[],
     scripts: string[],
     owners: string[],
-    dates: string | string[],
+    date: string,
     title: string,
     detail: string,
   ) {
     log.debug({
       title: `SuiteToolsModel:getScriptLogsViaSuiteQL() initiated`,
       details: {
-        rows: rows,
+        rows: row,
         levels: levels,
         types: types,
         scripts: scripts,
         owners: owners,
-        dates: dates,
+        dates: date,
         title: title,
         detail: detail,
       },
@@ -1419,10 +1423,10 @@ export class SuiteToolsModel {
     INNER JOIN script
       ON ScriptNote.scripttype = script.id`;
     // add where clause
-    const where = [];
-    if (rows && rows !== '0') {
+    const where: string[] = [];
+    if (row && row !== '0') {
       // limit to specified number of rows
-      where.push(`RowNum <= ${rows}`);
+      where.push(`RowNum <= ${row}`);
     }
     if (levels) {
       if (Array.isArray(levels)) {
@@ -1453,46 +1457,7 @@ export class SuiteToolsModel {
         where.push(`owner IN (${owners.join(',')})`);
       }
     }
-    if (dates) {
-      // check if dates is an object
-      if (typeof dates === 'object') {
-        // check if dates is an array
-        if (Array.isArray(dates) && typeof dates[0] === 'string' && typeof dates[1] === 'string') {
-          where.push(
-            `date BETWEEN TO_DATE( '${dates[0]}', 'YYYY-MM-DD hh24:mi:ss' ) AND TO_DATE( '${dates[1]}', 'YYYY-MM-DD hh24:mi:ss' )`,
-          );
-        } else {
-          log.error({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid object date option`, details: dates });
-        }
-      } else {
-        switch (dates) {
-          case '0':
-            // do not need a filter All is selected
-            break;
-          case '15':
-            where.push('date > SYSDATE - ( 15 / 1440 )');
-            break;
-          case '60':
-            where.push('date > SYSDATE - ( 1 / 24 )');
-            break;
-          case '240':
-            where.push('date > SYSDATE - ( 4 / 24 )');
-            break;
-          case 'today':
-            where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-            break;
-          case 'yesterday':
-            where.push("TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-            break;
-          default:
-            log.error({
-              title: `SuiteToolsModel:getScriptLogsViaSuiteQL() invalid string date option`,
-              details: dates,
-            });
-            break;
-        }
-      }
-    }
+    this.addDateFilter(where, 'SuiteToolsModel:getScriptLogsViaSuiteQL()', 'ScriptNote', 'date', date);
     if (title) {
       where.push(`ScriptNote.title LIKE '%${title}%'`);
     }
@@ -1513,4 +1478,69 @@ export class SuiteToolsModel {
   // ---------------------------------------------------------------------------
   // Supporting Functions
   // ---------------------------------------------------------------------------
+
+  /**
+   * Adds date filter to where clause.
+   *
+   * @param where - the where clause
+   * @param functionName - the function
+   * @param table - the SuiteQL table
+   * @param field - the table date field
+   * @param dates - date field values
+   */
+  private addDateFilter(where: string[], functionName: string, table: string, field: string, dates: string | string[]) {
+    log.debug({
+      title: `SuiteToolsModel:dateFilter() initiated`,
+      details: { where: where, functionName: functionName, table: table, field: field, dates: dates },
+    });
+    if (dates) {
+      // check if dates is an object
+      if (typeof dates === 'object') {
+        // check if dates is an array
+        if (Array.isArray(dates) && typeof dates[0] === 'string' && typeof dates[1] === 'string') {
+          where.push(
+            `date BETWEEN TO_DATE( '${dates[0]}', 'YYYY-MM-DD hh24:mi:ss' ) AND TO_DATE( '${dates[1]}', 'YYYY-MM-DD hh24:mi:ss' )`,
+          );
+        } else {
+          log.error({
+            title: `${functionName} invalid object date values for ${table}.${field}`,
+            details: dates,
+          });
+        }
+      } else {
+        switch (dates) {
+          case '0':
+            // no filter
+            break;
+          case '15':
+            where.push(`${field} > SYSDATE - ( 15 / 1440 )`);
+            break;
+          case '60':
+            where.push(`${field} > SYSDATE - ( 1 / 24 )`);
+            break;
+          case '240':
+            where.push(`${field} > SYSDATE - ( 4 / 24 )`);
+            break;
+          case 'today':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')`);
+            break;
+          case 'yesterday':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')`);
+            break;
+          case 'lastweek':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') > TO_CHAR ( SYSDATE - 7, 'YYYY-MM-DD')`);
+            break;
+          case 'lastmonth':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') > TO_CHAR ( SYSDATE - 31, 'YYYY-MM-DD')`);
+            break;
+          default:
+            log.error({
+              title: `${functionName} invalid object date values for ${table}.${field}`,
+              details: dates,
+            });
+            break;
+        }
+      }
+    }
+  }
 }

@@ -4,6 +4,15 @@ import { OptionValues, OptionValuesTypes } from './types';
 export async function getOptionValues(type: OptionValuesTypes): Promise<OptionValues[]> {
   let localTestData: object = {};
   switch (type) {
+    case OptionValuesTypes.FILE:
+      localTestData = {
+        data: [
+          { value: '1', text: 'File One' },
+          { value: '2', text: 'File Two' },
+          { value: '3', text: 'File Three' },
+        ],
+      };
+      break;
     case OptionValuesTypes.OWNER:
       localTestData = {
         data: [

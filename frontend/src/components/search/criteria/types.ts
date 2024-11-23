@@ -1,12 +1,17 @@
 export type CriteriaFields = {
   active?: string;
-  rows?: number;
+  createddate?: string;
+  detail?: string;
+  file?: string[];
+  filetype?: string[];
+  lastmodifieddate?: string;
   level?: string[];
-  user?: string;
-  script?: string[];
-  scripttype?: string[];
   owner?: string[];
-  date?: string;
+  rows?: number;
+  scriptname?: string[];
+  scripttype?: string[];
+  title?: string;
+  user?: string;
   version?: string[];
 };
 
@@ -17,8 +22,10 @@ export interface OptionValues {
 
 // the option values types that we get from the server
 export enum OptionValuesTypes {
+  FILE = 'file',
+  FILETYPE = 'filetype',
+  OWNER = 'owner',
   SCRIPT = 'script',
   SCRIPTTYPE = 'scripttype',
   USER = 'user',
-  OWNER = 'owner',
 }

@@ -8,15 +8,16 @@ import { ScriptsResults } from './ScriptsResults.tsx';
 export function ScriptsPage() {
   const [criteria, setCriteria] = useState<CriteriaFields>({
     active: '',
-    script: [''],
-    scripttype: [''],
+    file: [''],
     owner: [''],
+    scripttype: [''],
+    scriptname: [''],
     version: [''],
   });
   const [results, setResults] = useState<Script[]>([]);
 
   useEffect(() => {
-    console.log('ScriptPage useEffect');
+    console.log('ScriptsPage useEffect');
 
     async function fetchData() {
       try {

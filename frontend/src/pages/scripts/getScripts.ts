@@ -23,8 +23,9 @@ export async function getScripts(fields: CriteriaFields): Promise<Script[]> {
     active: fields.active,
     version: fields.version,
     scripttype: fields.scripttype,
-    scriptrecord: fields.script,
+    scriptname: fields.scriptname,
     owner: fields.owner,
+    file: fields.file,
   };
 
   const response = await getData(localTestData, 'scripts', urlParams);

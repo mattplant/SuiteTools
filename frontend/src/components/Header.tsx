@@ -36,6 +36,14 @@ export default function Header({ user }: Props) {
           Scripts
         </NavLink>
         <NavLink
+          to={`files`}
+          className={({ isActive }) =>
+            `no-underline p-1 pb-0.5 border-solid border-b-2 ${isActive ? 'border-black' : 'border-transparent'}`
+          }
+        >
+          Files
+        </NavLink>
+        <NavLink
           to={`scriptLogs`}
           className={({ isActive }) =>
             `no-underline p-1 pb-0.5 border-solid border-b-2 ${isActive ? 'border-black' : 'border-transparent'}`

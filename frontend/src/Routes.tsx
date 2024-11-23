@@ -2,9 +2,8 @@ import { createHashRouter, RouterProvider, defer } from 'react-router-dom';
 import App from './components/App.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/HomePage.tsx';
-// scriptLogs
+import { FilesPage } from './pages/files/FilesPage.tsx';
 import { ScriptLogsPage } from './pages/scriptLogs/ScriptLogsPage.tsx';
-// scripts
 import { ScriptsPage } from './pages/scripts/ScriptsPage.tsx';
 // settings
 import { SettingsPage } from './pages/settings/SettingsPage.tsx';
@@ -23,6 +22,10 @@ const router = createHashRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: 'files',
+        element: <FilesPage />,
       },
       {
         path: 'system',

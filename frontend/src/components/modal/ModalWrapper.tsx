@@ -40,6 +40,9 @@ export function ModalWrapper({ getData, setShowModal, type, id }: Props) {
   // determine modal title based on modal type
   let title = '';
   switch (type) {
+    case ModalTypes.FILE:
+      title = 'File';
+      break;
     case ModalTypes.SCRIPT:
       title = 'Script';
       break;

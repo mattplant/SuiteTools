@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../../components/search/criteria/types';
 import { SearchCriteriaActive } from '../../components/search/criteria/SearchCriteriaActive';
+import { SearchCriteriaFile } from '../../components/search/criteria/SearchCriteriaFile';
 import { SearchCriteriaOwner } from '../../components/search/criteria/SearchCriteriaOwner';
 import { SearchCriteriaScript } from '../../components/search/criteria/SearchCriteriaScript';
 import { SearchCriteriaScriptType } from '../../components/search/criteria/SearchCriteriaScriptType';
@@ -13,9 +14,10 @@ interface ScriptsCriteriaProps {
 export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
   const defaultCriteria: CriteriaFields = {
     active: '',
-    script: [''],
-    scripttype: [''],
+    file: [''],
     owner: [''],
+    scripttype: [''],
+    scriptname: [''],
     version: [''],
   };
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
@@ -39,6 +41,7 @@ export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
         <SearchCriteriaScriptType register={register} />
         <SearchCriteriaScript register={register} />
         <SearchCriteriaOwner register={register} />
+        <SearchCriteriaFile register={register} />
       </div>
     </form>
   );
