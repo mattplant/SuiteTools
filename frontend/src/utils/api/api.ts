@@ -1,4 +1,12 @@
-import { Response, SavedEndpoint, SaveMethod, SavedData, assertIsResponse, assertIsSavedData } from './types';
+import {
+  RequestBody,
+  Response,
+  SavedEndpoint,
+  SaveMethod,
+  SavedData,
+  assertIsResponse,
+  assertIsSavedData,
+} from './types';
 
 // grab the apiBaseUrl from the config file
 import config from '../../../config.js';
@@ -52,11 +60,14 @@ export async function saveData(endpoint: SavedEndpoint, saveMethod: SaveMethod, 
     return { ...data, ...responseBody };
   } else {
     // save data to NetSuite
-    const apiUrl = `${apiBaseUrl}&endpoint=${endpoint}`;
-    console.log(`saveData() ${endpoint} apiUrl`, apiUrl);
+    const apiUrl = `${apiBaseUrl}`;
+    const requestBody: RequestBody = {
+      endpoint: endpoint,
+      data: data,
+    };
     const response = await fetch(apiUrl, {
       method: saveMethod,
-      body: JSON.stringify(data),
+      body: JSON.stringify(requestBody),
       headers: {
         'Content-Type': 'application/json',
       },

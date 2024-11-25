@@ -1,3 +1,8 @@
+export type RequestBody = {
+  endpoint: string;
+  data: object;
+};
+
 export type Response = {
   data: object;
   remainingUsage?: number;

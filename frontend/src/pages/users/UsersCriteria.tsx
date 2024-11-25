@@ -1,24 +1,18 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../../components/search/criteria/types';
 import { SearchCriteriaActive } from '../../components/search/criteria/SearchCriteriaActive';
-import { SearchCriteriaFile } from '../../components/search/criteria/SearchCriteriaFile';
 import { SearchCriteriaOwner } from '../../components/search/criteria/SearchCriteriaOwner';
-import { SearchCriteriaScript } from '../../components/search/criteria/SearchCriteriaScript';
-import { SearchCriteriaScriptType } from '../../components/search/criteria/SearchCriteriaScriptType';
-import { SearchCriteriaVersion } from '../../components/search/criteria/SearchCriteriaVersion';
+import { SearchCriteriaRole } from '../../components/search/criteria/SearchCriteriaRole';
 
-interface ScriptsCriteriaProps {
+interface UsersCriteriaProps {
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
+export function UsersCriteria({ setCriteria }: UsersCriteriaProps) {
   const defaultCriteria: CriteriaFields = {
     active: '',
-    file: [''],
+    role: [''],
     owner: [''],
-    scripttype: [''],
-    scriptname: [''],
-    version: [''],
   };
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
@@ -33,15 +27,12 @@ export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
         type="submit"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center"
       >
-        Get Scripts
+        Get Users
       </button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaActive register={register} />
-        <SearchCriteriaVersion register={register} />
-        <SearchCriteriaScriptType register={register} />
-        <SearchCriteriaScript register={register} />
-        <SearchCriteriaOwner register={register} title="Owner" />
-        <SearchCriteriaFile register={register} />
+        <SearchCriteriaRole register={register} />
+        <SearchCriteriaOwner register={register} title="Supervisor" />
       </div>
     </form>
   );

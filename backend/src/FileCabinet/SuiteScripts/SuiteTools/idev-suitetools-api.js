@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * SuiteTools API
  *
@@ -27,25 +26,9 @@
 define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], function (require, exports, error, log, idev_suitetools_app_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.SuiteToolsApi = void 0;
+    exports.SuiteToolsApiPut = exports.SuiteToolsApiGetOptions = exports.SuiteToolsApiGet = exports.SuiteToolsApi = void 0;
     exports.get = get;
-    exports.post = post;
     exports.put = put;
-    /**
-     * SuiteTools API
-     *
-     * @author Matthew Plant <i@idev.systems>
-     */
-    class SuiteToolsApi {
-        get stApp() {
-            return this._stApp;
-        }
-        constructor() {
-            log.debug({ title: 'SuiteToolsApi:constructor() initiated', details: null });
-            this._stApp = new idev_suitetools_app_1.SuiteToolsApp();
-        }
-    }
-    exports.SuiteToolsApi = SuiteToolsApi;
     /**
      * Handles the GET request event.
      *
@@ -53,87 +36,13 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      * @returns The response.
      */
     function get(requestParams) {
-        log.debug({ title: 'SuiteToolsApi:get() initiated', details: requestParams });
+        log.audit({ title: 'get() initiated', details: requestParams });
         const stApi = new SuiteToolsApi();
-        // verify that the required parameters are present
-        // @ts-ignore-next-line
-        const endpoint = requestParams.endpoint;
-        if (!endpoint) {
-            throw error.create({
-                name: 'SUITE_TOOLS_MISSING_PARAMETER',
-                message: `Missing required parameter: endpoint`,
-                notifyOff: true,
-            });
-        }
-        const response = { data: {}, remainingUsage: 0 };
-        switch (endpoint) {
-            case 'file':
-                response.data = getFile(stApi, requestParams);
-                break;
-            case 'files':
-                response.data = getFiles(stApi, requestParams);
-                break;
-            case 'optionValues':
-                response.data = getOptionValues(stApi, requestParams);
-                break;
-            case 'script':
-                response.data = getScript(stApi, requestParams);
-                break;
-            case 'scripts':
-                response.data = getScripts(stApi, requestParams);
-                break;
-            case 'scriptLog':
-                response.data = getScriptLog(stApi, requestParams);
-                break;
-            case 'scriptLogs':
-                response.data = getScriptLogs(stApi, requestParams);
-                break;
-            case 'settings':
-                response.data = getSettings(stApi, requestParams);
-                break;
-            case 'system':
-                response.data = getSystem(stApi, requestParams);
-                break;
-            default:
-                throw error.create({
-                    name: 'SUITE_TOOLS_INVALID_PARAMETER',
-                    message: `Invalid parameter: endpoint=${endpoint}`,
-                    notifyOff: true,
-                });
-        }
-        response.remainingUsage = stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
-        return JSON.stringify(response);
+        const response = JSON.stringify(stApi.stApiGet.process(requestParams));
+        log.audit({ title: 'get() returning', details: response });
+        return response;
     }
-    /**
-     * Handles the POST request event.
-     *
-     * @param postParams The request parameters.
-     * @returns The response.
-     */
-    function post(postParams) {
-        log.debug({ title: 'SuiteToolsApi:post() initiated', details: postParams });
-        // const stApi = new SuiteToolsApi();
-        // verify that the required parameters are present
-        // @ts-ignore-next-line
-        const endpoint = postParams.endpoint;
-        if (!endpoint) {
-            throw error.create({
-                name: 'SUITE_TOOLS_MISSING_PARAMETER',
-                message: `Missing required parameter: endpoint`,
-                notifyOff: true,
-            });
-        }
-        // handle the request
-        switch (endpoint) {
-            // case '???':
-            default:
-                throw error.create({
-                    name: 'SUITE_TOOLS_INVALID_PARAMETER',
-                    message: `Invalid parameter: endpoint=${endpoint}`,
-                    notifyOff: true,
-                });
-        }
-    }
+    // TODO add POST method
     /**
      * Handles the PUT request event.
      *
@@ -141,313 +50,518 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
      * @returns The response.
      */
     function put(requestBody) {
-        log.debug({ title: 'SuiteToolsApi:put() initiated', details: requestBody });
+        log.audit({ title: 'put() initiated', details: requestBody });
         const stApi = new SuiteToolsApi();
-        // TODO remove this line
-        const endpoint = 'settings';
-        // // verify that the required parameters are present
-        // const endpoint = requestBody.endpoint;
-        // if (!endpoint) {
-        //   throw error.create({
-        //     name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        //     message: `Missing required parameter: endpoint`,
-        //     notifyOff: true,
-        //   });
-        // }
-        switch (endpoint) {
-            case 'settings':
-                return JSON.stringify(putSettings(stApi, requestBody));
-            default:
+        const response = JSON.stringify(stApi.stApiPut.process(requestBody));
+        log.audit({ title: 'put() returning', details: response });
+        return response;
+    }
+    /**
+     * SuiteTools API
+     *
+     * @author Matthew Plant <i@idev.systems>
+     */
+    class SuiteToolsApi {
+        get stApiGet() {
+            return this._stApiGet;
+        }
+        get stApiPut() {
+            return this._stApiPut;
+        }
+        get stApp() {
+            return this._stApp;
+        }
+        constructor() {
+            log.debug({ title: 'SuiteToolsApi:constructor() initiated', details: null });
+            this._stApiGet = new SuiteToolsApiGet(this);
+            this._stApiPut = new SuiteToolsApiPut(this);
+            this._stApp = new idev_suitetools_app_1.SuiteToolsApp();
+        }
+    }
+    exports.SuiteToolsApi = SuiteToolsApi;
+    class SuiteToolsApiGet {
+        get stApi() {
+            return this._stApi;
+        }
+        get stApiGetOptions() {
+            return this._stApiGetOptions;
+        }
+        constructor(stApi) {
+            log.debug({ title: 'SuiteToolsApiGet:constructor() initiated', details: null });
+            this._stApi = stApi;
+            this._stApiGetOptions = new SuiteToolsApiGetOptions(stApi);
+        }
+        process(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
+            this.assertIsRequestParams(requestParams);
+            const response = { data: null };
+            // // verify that the required parameters are present
+            const endpoint = requestParams.endpoint;
+            switch (endpoint) {
+                case 'file':
+                    response.data = this.getFile(requestParams);
+                    break;
+                case 'files':
+                    response.data = this.getFiles(requestParams);
+                    break;
+                case 'optionValues':
+                    response.data = this.stApiGetOptions.process(requestParams);
+                    break;
+                case 'script':
+                    response.data = this.getScript(requestParams);
+                    break;
+                case 'scripts':
+                    response.data = this.getScripts(requestParams);
+                    response.data = this.cleanScriptsData(response.data);
+                    break;
+                case 'scriptLog':
+                    response.data = this.getScriptLog(requestParams);
+                    break;
+                case 'scriptLogs':
+                    response.data = this.getScriptLogs(requestParams);
+                    break;
+                case 'settings':
+                    response.data = this.getSettings(requestParams);
+                    break;
+                case 'system':
+                    response.data = this.getSystem(requestParams);
+                    break;
+                case 'user':
+                    response.data = this.getUser(requestParams);
+                    break;
+                case 'users':
+                    response.data = this.getUsers(requestParams);
+                    response.data = this.cleanUsersData(response.data);
+                    break;
+                default:
+                    throw error.create({
+                        name: 'SUITE_TOOLS_INVALID_PARAMETER',
+                        message: `Invalid parameter: endpoint=${endpoint}`,
+                        notifyOff: true,
+                    });
+            }
+            response.remainingUsage = this.stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
+            log.debug({ title: 'SuiteToolsApiGet:process() returning', details: response });
+            return response;
+        }
+        assertIsRequestParams(data) {
+            // check if the data is an object
+            if (typeof data !== 'object' || data === null) {
+                throw new Error('Request params data is not an object');
+            }
+            // endpoint
+            if (!('endpoint' in data)) {
+                throw new Error('Request params data is missing the "endpoint" field');
+            }
+            if (typeof data.endpoint !== 'string') {
+                throw new Error('Request params data "endpoint" field is not a string');
+            }
+        }
+        convertMultiSelectToArray(field) {
+            return field ? (field.includes(',') ? field.split(',') : [field]) : null;
+        }
+        cleanScriptsData(scripts) {
+            log.debug({ title: 'SuiteToolsApiGet:cleanScriptsData() initiated', details: scripts });
+            if (scripts && Array.isArray(scripts) && scripts.length > 0) {
+                scripts.forEach((script) => {
+                    // switch isinactive values to active values
+                    if (script.isinactive === 'F') {
+                        script.isinactive = 'Yes';
+                    }
+                    else {
+                        script.isinactive = 'No';
+                    }
+                });
+            }
+            // log.debug({ title: 'SuiteToolsApiGet:cleanScriptsData() returning', details: scripts });
+            return scripts;
+        }
+        cleanUsersData(data) {
+            log.debug({ title: 'SuiteToolsApiGet:cleanUsersData() initiated', details: data });
+            if (data && Array.isArray(data) && data.length > 0) {
+                data.forEach((script) => {
+                    // switch isinactive values to active values
+                    if (script.isinactive === 'F') {
+                        script.isinactive = 'Yes';
+                    }
+                    else {
+                        script.isinactive = 'No';
+                    }
+                    // clear role field if empty
+                    if (script.role === ' ()') {
+                        script.role = '';
+                    }
+                    // clear supervisor field if empty
+                    if (script.supervisor === ' ()') {
+                        script.supervisor = '';
+                    }
+                    // set title field to "" if empty
+                    if (script.title === null) {
+                        script.title = '';
+                    }
+                });
+            }
+            // log.debug({ title: 'SuiteToolsApiGet:cleanUsersData() returning', details: data });
+            return data;
+        }
+        /**
+         * Get File
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getFile(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getFile() initiated', details: requestParams });
+            const id = requestParams.id;
+            if (!id) {
                 throw error.create({
-                    name: 'SUITE_TOOLS_INVALID_PARAMETER',
-                    message: `Invalid parameter: endpoint=${endpoint}`,
+                    name: 'SUITE_TOOLS_MISSING_PARAMETER',
+                    message: `Missing required parameter: id`,
                     notifyOff: true,
                 });
+            }
+            const result = this.stApi.stApp.stModel.getFile(id);
+            // log.debug({ title: 'SuiteToolsApiGet:getFile() returning', details: result });
+            return result;
         }
-    }
-    /**
-     * Get File
-     *
-     * @param requestParams
-     * @returns settings
-     */
-    function getFile(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getFile() initiated', details: requestParams });
-        // verify that the required parameters are present
-        // @ts-ignore-next-line
-        const id = requestParams.id;
-        if (!id) {
-            throw error.create({
-                name: 'SUITE_TOOLS_MISSING_PARAMETER',
-                message: `Missing required parameter: id`,
-                notifyOff: true,
-            });
+        /**
+         * Get Files
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getFiles(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getFiles() initiated', details: requestParams });
+            const row = requestParams['rows'];
+            const types = this.convertMultiSelectToArray(requestParams['filetype']);
+            const createdDate = requestParams['createddate'];
+            const modifiedDate = requestParams['lastmodifieddate'];
+            const result = this.stApi.stApp.stModel.getFiles(row, types, createdDate, modifiedDate);
+            // log.debug({ title: 'SuiteToolsApiGet:getFiles() returning', details: result });
+            return result;
         }
-        const result = stApi.stApp.stModel.getFile(id);
-        log.debug({ title: 'SuiteToolsApi:getFile() returning', details: result });
-        return result;
-    }
-    /**
-     * Get Files
-     *
-     * @param requestParams
-     * @returns settings
-     */
-    function getFiles(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getFiles() initiated', details: requestParams });
-        const row = requestParams['rows'];
-        const types = convertMultiSelectToArray(requestParams['filetype']);
-        const createdDate = requestParams['createddate'];
-        const modifiedDate = requestParams['lastmodifieddate'];
-        const result = stApi.stApp.stModel.getFiles(row, types, createdDate, modifiedDate);
-        log.debug({ title: 'SuiteToolsApi:getFiles() returning', details: result });
-        return result;
-    }
-    /**
-     * Get Script
-     *
-     * @param requestParams
-     * @returns settings
-     */
-    function getScript(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getScript() initiated', details: requestParams });
-        // verify that the required parameters are present
-        // @ts-ignore-next-line
-        const id = requestParams.id;
-        if (!id) {
-            throw error.create({
-                name: 'SUITE_TOOLS_MISSING_PARAMETER',
-                message: `Missing required parameter: id`,
-                notifyOff: true,
-            });
-        }
-        const result = stApi.stApp.stModel.getScript(id);
-        log.debug({ title: 'SuiteToolsApi:getScript() returning', details: result });
-        return result;
-    }
-    /**
-     * Get Scripts
-     *
-     * @param requestParams
-     * @returns settings
-     */
-    function getScripts(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getScripts() initiated', details: requestParams });
-        const active = requestParams['active'];
-        const versions = convertMultiSelectToArray(requestParams['version']);
-        const scripttypes = convertMultiSelectToArray(requestParams['scripttype']);
-        const scripts = convertMultiSelectToArray(requestParams['scriptrecord']);
-        const owners = convertMultiSelectToArray(requestParams['owner']);
-        const files = convertMultiSelectToArray(requestParams['file']);
-        const result = stApi.stApp.stModel.getScripts(active, versions, scripttypes, scripts, owners, files);
-        log.debug({ title: 'SuiteToolsApi:getScripts() returning', details: result });
-        return result;
-    }
-    /**
-     * Get Server Script Log
-     *
-     * @param requestParams
-     * @returns settings
-     */
-    function getScriptLog(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getScriptLog() initiated', details: requestParams });
-        // verify that the required parameters are present
-        // @ts-ignore-next-line
-        const id = requestParams.id;
-        if (!id) {
-            throw error.create({
-                name: 'SUITE_TOOLS_MISSING_PARAMETER',
-                message: `Missing required parameter: id`,
-                notifyOff: true,
-            });
-        }
-        const result = stApi.stApp.stModel.getScriptLog(id);
-        log.debug({ title: 'SuiteToolsApi:getScriptLog() returning', details: result });
-        return result;
-    }
-    /**
-     * Get Server Script Logs
-     *
-     * @param requestParams
-     * @returns settings
-     */
-    function getScriptLogs(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getScriptLogs() initiated', details: requestParams });
-        const row = requestParams['rows'] ? requestParams['rows'] : '50';
-        const levels = convertMultiSelectToArray(requestParams['level']);
-        // const users = convertMultiSelectToArray(requestParams['user']);
-        const types = convertMultiSelectToArray(requestParams['scripttype']);
-        const scripts = convertMultiSelectToArray(requestParams['scriptname']);
-        const owners = convertMultiSelectToArray(requestParams['owner']);
-        const date = requestParams['createddate'] ? requestParams['createddate'] : '15';
-        const title = requestParams['title'];
-        const detail = requestParams['detail'];
-        const result = stApi.stApp.stModel.getScriptLogsViaSuiteQL(row, levels, types, scripts, owners, date, title, detail);
-        log.debug({ title: 'SuiteToolsApi:getScriptLogs() returning', details: result });
-        return result;
-    }
-    /**
-     * Get settings.
-     * @param requestParams
-     * @returns settings
-     */
-    function getSettings(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getSettings() initiated', details: requestParams });
-        stApi.stApp.stAppSettings.getSettings();
-        const result = {
-            recordId: stApi.stApp.stAppSettings.recordId,
-            cssUrl: stApi.stApp.stAppSettings.cssUrl,
-            jsUrl: stApi.stApp.stAppSettings.jsUrl,
-            devMode: stApi.stApp.stAppSettings.devMode,
-        };
-        log.debug({ title: 'SuiteToolsApi:getSettings() returning', details: result });
-        return result;
-    }
-    /**
-     * Put settings.
-     * @param requestParams
-     * @returns settings
-     */
-    function putSettings(stApi, requestBody) {
-        log.debug({ title: 'SuiteToolsApi:putSettings() initiated', details: requestBody });
-        // @ts-ignore-next-line
-        const devMode = requestBody.devMode;
-        const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
-        stApi.stApp.stAppSettings.getSettings();
-        const success = stApi.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord(stApi.stApp.appSettingsCustomRecord, stApi.stApp.stAppSettings.recordId, updateSettings);
-        log.debug({ title: `SuiteToolsApi:putSettings() saved successfully?`, details: success });
-        return {
-            status: 200,
-            data: 'Settings updated',
-        };
-    }
-    /**
-     * Get system.
-     * @param requestParams
-     * @returns system
-     */
-    function getSystem(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getSystem() initiated', details: requestParams });
-        const result = {
-            // system
-            accountId: stApi.stApp.stAppNs.runtime.accountId,
-            envType: stApi.stApp.stAppNs.runtime.envType,
-            isProduction: stApi.stApp.stAppNs.isProduction,
-            version: stApi.stApp.stAppNs.runtime.version,
-            processorCount: stApi.stApp.stAppNs.runtime.processorCount,
-            queueCount: stApi.stApp.stAppNs.runtime.queueCount,
-            // user
-            userId: stApi.stApp.stAppNs.runtime.getCurrentUser().id,
-            userName: stApi.stApp.stAppNs.runtime.getCurrentUser().name,
-            userEmail: stApi.stApp.stAppNs.runtime.getCurrentUser().email,
-            userLocation: stApi.stApp.stAppNs.runtime.getCurrentUser().location,
-            userDepartment: stApi.stApp.stAppNs.runtime.getCurrentUser().department,
-            userRole: stApi.stApp.stAppNs.runtime.getCurrentUser().role,
-            userRoleId: stApi.stApp.stAppNs.runtime.getCurrentUser().roleId,
-            isAdmin: stApi.stApp.stAppNs.isAdmin,
-            userSubsidiary: stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
-        };
-        log.debug({ title: 'SuiteToolsApi:getSystem() returning', details: result });
-        return result;
-    }
-    /**
-     * Get option values for select fields.
-     *
-     * @param stApi
-     * @param requestParams
-     * @returns settings
-     */
-    function getOptionValues(stApi, requestParams) {
-        log.debug({ title: 'SuiteToolsApi:getOptionValues() initiated', details: requestParams });
-        let data = '';
-        let result = {};
-        // verify that the required parameters are present
-        // @ts-ignore-next-line
-        const type = requestParams.type;
-        if (!type) {
-            throw error.create({
-                name: 'SUITE_TOOLS_MISSING_PARAMETER',
-                message: `Missing required parameter: type`,
-                notifyOff: true,
-            });
-        }
-        // determine the SQL query to run
-        switch (type) {
-            case 'file':
-                data = stApi.stApp.stModel.getFileList(true);
-                break;
-            case 'filetype':
-                data = stApi.stApp.stModel.getFileTypeList();
-                break;
-            case 'owner':
-                data = stApi.stApp.stModel.getEmployeeList(true);
-                break;
-            case 'script':
-                data = stApi.stApp.stModel.getScriptList();
-                break;
-            case 'scripttype':
-                data = stApi.stApp.stModel.getScriptTypeList();
-                break;
-            case 'user':
-                data = stApi.stApp.stModel.getEmployeeList(true);
-                break;
-            default:
+        /**
+         * Get Script
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getScript(requestParams) {
+            log.debug({ title: 'SuiteToolsApi:getScript() initiated', details: requestParams });
+            const id = requestParams.id;
+            if (!id) {
                 throw error.create({
-                    name: 'SUITE_TOOLS_INVALID_PARAMETER',
-                    message: `Invalid parameter: type=${type}`,
+                    name: 'SUITE_TOOLS_MISSING_PARAMETER',
+                    message: `Missing required parameter: id`,
                     notifyOff: true,
                 });
+            }
+            const result = this.stApi.stApp.stModel.getScript(id);
+            // log.debug({ title: 'SuiteToolsApi:getScript() returning', details: result });
+            return result;
         }
-        assertIsOptionValuesResponse(data);
-        // need to convert the OptionValuesResponse response to the expected OptionValues type
-        const optionValues = convertOptionValuesResponse(data);
-        if (optionValues.length === 0) {
-            log.error({ title: 'SuiteToolsApi:getOptionValues() no results', details: '' });
+        /**
+         * Get Scripts
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getScripts(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getScripts() initiated', details: requestParams });
+            const active = requestParams['active'];
+            const versions = this.convertMultiSelectToArray(requestParams['version']);
+            const scripttypes = this.convertMultiSelectToArray(requestParams['scripttype']);
+            const scripts = this.convertMultiSelectToArray(requestParams['scriptrecord']);
+            const owners = this.convertMultiSelectToArray(requestParams['owner']);
+            const files = this.convertMultiSelectToArray(requestParams['file']);
+            const result = this.stApi.stApp.stModel.getScripts(active, versions, scripttypes, scripts, owners, files);
+            // log.debug({ title: 'SuiteToolsApiGet:getScripts() returning', details: result });
+            return result;
         }
-        else {
-            result = optionValues;
-            log.debug({ title: 'SuiteToolsApi:getOptionValues() returning', details: result });
-        }
-        return result;
-    }
-    function assertIsOptionValuesResponse(data) {
-        log.debug({ title: 'SuiteToolsApi:assertIsOptionValuesResponse() initiated', details: data });
-        if (!Array.isArray(data)) {
-            throw new Error('OptionValuesResponse is not an array');
-        }
-        if (data.length === 0) {
-            throw new Error('OptionValuesResponse is empty');
-        }
-        // check the data for the required fields
-        // id
-        if (!('id' in data[0])) {
-            throw new Error('OptionValuesResponse is missing the "id" field');
-        }
-        // if (typeof data[0].id !== 'number') {
-        //     throw new Error('OptionValuesResponse "id" field is not a number');
-        // }
-        // name
-        if (!('name' in data[0])) {
-            throw new Error('OptionValuesResponse is missing the "name" field');
-        }
-        if (typeof data[0].name !== 'string') {
-            throw new Error('OptionValuesResponse "name" field is not a string');
-        }
-    }
-    function convertOptionValuesResponse(values) {
-        const options = [];
-        if (values && Array.isArray(values) && values.length > 0) {
-            values.forEach((option) => {
-                options.push({
-                    value: String(option.id),
-                    text: option.name,
+        /**
+         * Get Server Script Log
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getScriptLog(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getScriptLog() initiated', details: requestParams });
+            const id = requestParams.id;
+            if (!id) {
+                throw error.create({
+                    name: 'SUITE_TOOLS_MISSING_PARAMETER',
+                    message: `Missing required parameter: id`,
+                    notifyOff: true,
                 });
-            });
+            }
+            const result = this.stApi.stApp.stModel.getScriptLog(id);
+            // log.debug({ title: 'SuiteToolsApiGet:getScriptLog() returning', details: result });
+            return result;
         }
-        return options;
+        /**
+         * Get Server Script Logs
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getScriptLogs(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getScriptLogs() initiated', details: requestParams });
+            const row = requestParams['rows'] ? requestParams['rows'] : '50';
+            const levels = this.convertMultiSelectToArray(requestParams['level']);
+            // const users = this.convertMultiSelectToArray(requestParams['user']);
+            const types = this.convertMultiSelectToArray(requestParams['scripttype']);
+            const scripts = this.convertMultiSelectToArray(requestParams['scriptname']);
+            const owners = this.convertMultiSelectToArray(requestParams['owner']);
+            const date = requestParams['createddate'] ? requestParams['createddate'] : '15';
+            const title = requestParams['title'];
+            const detail = requestParams['detail'];
+            const result = this.stApi.stApp.stModel.getScriptLogsViaSuiteQL(row, levels, types, scripts, owners, date, title, detail);
+            // log.debug({ title: 'SuiteToolsApiGet:getScriptLogs() returning', details: result });
+            return result;
+        }
+        /**
+         * Get Settings.
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getSettings(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getSettings() initiated', details: requestParams });
+            this.stApi.stApp.stAppSettings.getSettings();
+            const result = {
+                recordId: this.stApi.stApp.stAppSettings.recordId,
+                cssUrl: this.stApi.stApp.stAppSettings.cssUrl,
+                jsUrl: this.stApi.stApp.stAppSettings.jsUrl,
+                devMode: this.stApi.stApp.stAppSettings.devMode,
+            };
+            // log.debug({ title: 'SuiteToolsApiGet:getSettings() returning', details: result });
+            return result;
+        }
+        /**
+         * Get system values.
+         *
+         * @param requestParams
+         * @returns system
+         */
+        getSystem(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getSystem() initiated', details: requestParams });
+            const result = {
+                // system
+                accountId: this.stApi.stApp.stAppNs.runtime.accountId,
+                envType: this.stApi.stApp.stAppNs.runtime.envType,
+                isProduction: this.stApi.stApp.stAppNs.isProduction,
+                version: this.stApi.stApp.stAppNs.runtime.version,
+                processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
+                queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
+                // user
+                userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
+                userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
+                userEmail: this.stApi.stApp.stAppNs.runtime.getCurrentUser().email,
+                userLocation: this.stApi.stApp.stAppNs.runtime.getCurrentUser().location,
+                userDepartment: this.stApi.stApp.stAppNs.runtime.getCurrentUser().department,
+                userRole: this.stApi.stApp.stAppNs.runtime.getCurrentUser().role,
+                userRoleId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().roleId,
+                isAdmin: this.stApi.stApp.stAppNs.isAdmin,
+                userSubsidiary: this.stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
+            };
+            // log.debug({ title: 'SuiteToolsApiGet:getSystem() returning', details: result });
+            return result;
+        }
+        /**
+         * Get Script
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getUser(requestParams) {
+            log.debug({ title: 'SuiteToolsApi:getUser() initiated', details: requestParams });
+            const id = requestParams.id;
+            if (!id) {
+                throw error.create({
+                    name: 'SUITE_TOOLS_MISSING_PARAMETER',
+                    message: `Missing required parameter: id`,
+                    notifyOff: true,
+                });
+            }
+            const result = this.stApi.stApp.stModel.getUser(id);
+            // log.debug({ title: 'SuiteToolsApi:getUser() returning', details: result });
+            return result;
+        }
+        /**
+         * Get Users
+         *
+         * @param requestParams
+         * @returns settings
+         */
+        getUsers(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGet:getUsers() initiated', details: requestParams });
+            const active = requestParams['active'];
+            const role = requestParams['role'];
+            const supervisors = this.convertMultiSelectToArray(requestParams['owner']);
+            const result = this.stApi.stApp.stModel.getUsers(active, role, supervisors);
+            // log.debug({ title: 'SuiteToolsApiGet:getUsers() returning', details: result });
+            return result;
+        }
     }
-    // UTILITIES
-    function convertMultiSelectToArray(field) {
-        return field ? (field.includes(',') ? field.split(',') : [field]) : null;
+    exports.SuiteToolsApiGet = SuiteToolsApiGet;
+    class SuiteToolsApiGetOptions {
+        get stApi() {
+            return this._stApi;
+        }
+        constructor(stApi) {
+            log.debug({ title: 'SuiteToolsApiGetOptions:constructor() initiated', details: null });
+            this._stApi = stApi;
+        }
+        process(requestParams) {
+            log.debug({ title: 'SuiteToolsApiGetOptions:process() initiated', details: requestParams });
+            let data;
+            // let result: OptionValuesResponse[];
+            let result = {};
+            // verify that the required parameters are present
+            const type = requestParams.type;
+            switch (type) {
+                case 'file':
+                    data = this.stApi.stApp.stModel.getFileList(true);
+                    break;
+                case 'filetype':
+                    data = this.stApi.stApp.stModel.getFileTypeList();
+                    break;
+                case 'owner':
+                    data = this.stApi.stApp.stModel.getEmployeeList(true);
+                    break;
+                case 'script':
+                    data = this.stApi.stApp.stModel.getScriptList();
+                    break;
+                case 'scripttype':
+                    data = this.stApi.stApp.stModel.getScriptTypeList();
+                    break;
+                case 'role':
+                    data = this.stApi.stApp.stModel.getRoleList(true);
+                    break;
+                case 'user':
+                    data = this.stApi.stApp.stModel.getEmployeeList(true);
+                    break;
+                default:
+                    throw error.create({
+                        name: 'SUITE_TOOLS_INVALID_PARAMETER',
+                        message: `Invalid parameter: type=${type}`,
+                        notifyOff: true,
+                    });
+            }
+            this.assertIsOptionValuesResponse(data);
+            const optionValues = this.convertOptionValuesResponse(data);
+            if (optionValues.length === 0) {
+                log.error({ title: 'SuiteToolsApiGetOptions:process() no results', details: '' });
+            }
+            else {
+                result = optionValues;
+            }
+            // log.debug({ title: 'SuiteToolsApiGetOptions:process() returning', details: result });
+            return result;
+        }
+        assertIsOptionValuesResponse(data) {
+            log.debug({ title: 'SuiteToolsApiGetOptions:assertIsOptionValuesResponse() initiated', details: data });
+            if (!Array.isArray(data)) {
+                throw new Error('OptionValuesResponse is not an array');
+            }
+            if (data.length === 0) {
+                throw new Error('OptionValuesResponse is empty');
+            }
+            // check the data for the required fields
+            // id
+            if (!('id' in data[0])) {
+                throw new Error('OptionValuesResponse is missing the "id" field');
+            }
+            // if (typeof data[0].id !== 'number') {
+            //     throw new Error('OptionValuesResponse "id" field is not a number');
+            // }
+            // name
+            if (!('name' in data[0])) {
+                throw new Error('OptionValuesResponse is missing the "name" field');
+            }
+            if (typeof data[0].name !== 'string') {
+                throw new Error('OptionValuesResponse "name" field is not a string');
+            }
+        }
+        convertOptionValuesResponse(values) {
+            const options = [];
+            if (values && Array.isArray(values) && values.length > 0) {
+                values.forEach((option) => {
+                    options.push({
+                        value: String(option.id),
+                        text: option.name,
+                    });
+                });
+            }
+            return options;
+        }
     }
+    exports.SuiteToolsApiGetOptions = SuiteToolsApiGetOptions;
+    class SuiteToolsApiPut {
+        get stApi() {
+            return this._stApi;
+        }
+        constructor(stApi) {
+            log.debug({ title: 'SuiteToolsApiPut:constructor() initiated', details: null });
+            this._stApi = stApi;
+        }
+        process(requestBody) {
+            log.debug({ title: 'SuiteToolsApiPut:process() initiated', details: requestBody });
+            this.assertIsRequestBody(requestBody);
+            let response;
+            const endpoint = requestBody.endpoint;
+            switch (endpoint) {
+                case 'settings':
+                    response = this.putSettings(requestBody.data);
+                    break;
+                default:
+                    throw error.create({
+                        name: 'SUITE_TOOLS_INVALID_PARAMETER',
+                        message: `Invalid parameter: endpoint=${endpoint}`,
+                        notifyOff: true,
+                    });
+            }
+            response.remainingUsage = this.stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
+            // log.debug({ title: 'SuiteToolsApiPut:process() returning', details: response });
+            return response;
+        }
+        assertIsRequestBody(data) {
+            log.debug({ title: 'SuiteToolsApiPut:assertIsRequestBody() initiated', details: data });
+            if (typeof data !== 'object' || data === null) {
+                throw new Error('Request body data is not an object');
+            }
+            // endpoint
+            if (!('endpoint' in data)) {
+                throw new Error('Request params data is missing the "endpoint" field');
+            }
+            if (typeof data.endpoint !== 'string') {
+                throw new Error('Request params data "endpoint" field is not a string');
+            }
+            // data
+            if (!('data' in data)) {
+                throw new Error('Request params data is missing the "data" field');
+            }
+            if (typeof data.data !== 'object') {
+                throw new Error('Request params data "data" field is not a object');
+            }
+        }
+        assertIsRequestBodyData(data) {
+            if (typeof data !== 'object' || data === null) {
+                throw new Error('Request body data is not an object');
+            }
+        }
+        putSettings(requestBodyData) {
+            this.assertIsRequestBodyData(requestBodyData);
+            const devMode = requestBodyData.devMode;
+            const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
+            this.stApi.stApp.stAppSettings.getSettings();
+            const success = this.stApi.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord(this.stApi.stApp.appSettingsCustomRecord, this.stApi.stApp.stAppSettings.recordId, updateSettings);
+            log.debug({ title: `SuiteToolsApiPut:putSettings() saved successfully?`, details: success });
+            return {
+                status: 200,
+                data: 'Settings updated',
+            };
+        }
+    }
+    exports.SuiteToolsApiPut = SuiteToolsApiPut;
 });

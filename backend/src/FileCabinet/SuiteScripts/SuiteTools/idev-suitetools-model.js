@@ -279,6 +279,27 @@ define(["require", "exports", "N/log"], function (require, exports, log) {
             return result;
         }
         /**
+         * Get role list
+         *
+         * @param [activeOnly]
+         * @returns roles
+         */
+        getRoleList(activeOnly = false) {
+            // log.debug({ title: `SuiteToolsModel:getRoleList() initiated`, details: { activeOnly: activeOnly } });
+            let sql = `SELECT
+      role.id,
+      role.name
+    FROM
+      role`;
+            if (activeOnly) {
+                sql += ` WHERE isInactive = 'F'`;
+            }
+            sql += ` ORDER BY role.name`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+            // log.debug({ title: 'SuiteToolsModel:getRoleList returning', details: results });
+            return results;
+        }
+        /**
          * Get script type list
          *
          * @returns script types
@@ -570,27 +591,6 @@ define(["require", "exports", "N/log"], function (require, exports, log) {
         //   return result;
         // }
         /**
-         * Get role list
-         *
-         * @param [activeOnly]
-         * @returns roles
-         */
-        // public getRoleList(activeOnly = false) {
-        //   // log.debug({ title: `SuiteToolsModel:getRoleList() initiated`, details: { activeOnly: activeOnly } });
-        //   let sql = `SELECT
-        //     role.id,
-        //     role.name
-        //   FROM
-        //     role`;
-        //   if (activeOnly) {
-        //     sql += ` WHERE isInactive = 'F'`;
-        //   }
-        //   sql += ` ORDER BY role.name`;
-        //   const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-        //   // log.debug({ title: 'SuiteToolsModel:getRoleList returning', details: results });
-        //   return results;
-        // }
-        /**
          * Get Roles
          *
          * @param status - the status of the login
@@ -666,79 +666,6 @@ define(["require", "exports", "N/log"], function (require, exports, log) {
         //     result = sqlResults[0];
         //   }
         //   log.debug({ title: 'SuiteToolsModel:getRole() returning', details: result });
-        //   return result;
-        // }
-        /**
-         * Get Users
-         *
-         * @returns results
-         */
-        // public getUsers(
-        //   role: string,
-        //   supervisor: string
-        // ) {
-        //   log.debug({
-        //     title: `SuiteToolsModel:getUsers() initiated`,
-        //     details: { role: role, supervisor: supervisor },
-        //   });
-        //   let results = this.stApp.stAppSettings.users;
-        //   log.debug({ title: 'SuiteToolsModel:getUsers() unfiltered users', details: results });
-        //   if (role) {
-        //     const tempResults = [];
-        //     for (const result of results) {
-        //       // add user if role id of (role) is present
-        //       const roleIdsObj = JSON.parse(result.roleIds);
-        //       roleIdsObj.forEach((roleId) => {
-        //         if (roleId == role) {
-        //           tempResults.push(result);
-        //         }
-        //       });
-        //     }
-        //     results = tempResults;
-        //   }
-        //   if (supervisor) {
-        //     results = results.filter((result) => result.supervisorid == supervisor);
-        //   }
-        //   log.debug({ title: 'SuiteToolsModel:getUsers() returning', details: results });
-        //   return results;
-        // }
-        /**
-         * Get User
-         *
-         * @param id - the record id to return
-         * @returns user
-         */
-        // public getUser(id: string) {
-        //   log.debug({ title: `SuiteToolsModel:getUser() initiated`, details: { id: id } });
-        //   const sql = `SELECT
-        //     employee.id,
-        //     employee.entityid,
-        //     employee.firstname,
-        //     employee.lastname,
-        //     employee.email,
-        //     BUILTIN.DF( employee.supervisor ) AS supervisorname,
-        //     employee.supervisor AS supervisorid,
-        //     employee.title,
-        //     employee.isinactive,
-        //   FROM
-        //     employee
-        //   WHERE
-        //     employee.id = ${id}`;
-        //   const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-        //   let result = null;
-        //   if (sqlResults.length === 0) {
-        //     this.stApp.setAlert('No results found that matched criteria.');
-        //   } else {
-        //     result = sqlResults[0];
-        //   }
-        //   // const results = this.stApp.stAppSettings.users;
-        //   // log.debug({ title: 'SuiteToolsModel:getUser() unfiltered users', details: results });
-        //   // const resultsFiltered = results.filter((result) => result.id == id);
-        //   // const result = resultsFiltered ? resultsFiltered[0] : null;
-        //   // if (!result) {
-        //   //   this.stApp.setAlert('No results found that matched criteria.');
-        //   // }
-        //   log.debug({ title: 'SuiteToolsModel:getUser() returning', details: result });
         //   return result;
         // }
         /**
@@ -1117,107 +1044,6 @@ define(["require", "exports", "N/log"], function (require, exports, log) {
             return results;
         }
         /**
-         * Get Employees
-         *
-         * @returns results
-         */
-        // public getEmployees(
-        //   active: string,
-        //   role: string,
-        //   supervisors: string[]
-        // ) {
-        //   log.debug({
-        //     title: `SuiteToolsModel:getEmployees() initiated`,
-        //     details: { active: active, role: role, supervisors: supervisors },
-        //   });
-        //   // alternative name field: // TRIM(TRIM(employee.firstname) || ' ' || TRIM(employee.lastname)) as name,
-        //   let sql = `SELECT
-        //     employee.id,
-        //     employee.email,
-        //     employee.entityid || ' (' || employee.id || ')' AS name,
-        //     employee.firstname,
-        //     employee.lastname,
-        //     employee.supervisor as supervisorId,
-        //     BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
-        //     employee.title,`;
-        //   if (role) {
-        //     sql += ` role.id AS roleId,
-        //     role.name || ' (' || role.id || ')' AS roleName`;
-        //   }
-        //   sql += ` FROM employee`;
-        //   if (role) {
-        //     sql += ` INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
-        //     INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
-        //   }
-        //   // add where clause
-        //   const where = [];
-        //   switch (active) {
-        //     case 'U':
-        //       where.push(`employee.giveaccess = 'T'`);
-        //       where.push(`employee.isinactive = 'F'`);
-        //       break;
-        //     case 'T':
-        //       where.push(`employee.isinactive = 'F'`);
-        //       break;
-        //     case 'F':
-        //       where.push(`employee.isinactive = 'T'`);
-        //       break;
-        //     default:
-        //       // do not add a filter
-        //       break;
-        //   }
-        //   if (role) {
-        //     where.push(`role.id = ${role}`);
-        //   }
-        //   if (supervisors) {
-        //     if (Array.isArray(supervisors)) {
-        //       supervisors = supervisors.map((employee) => {
-        //         return `'${employee.toUpperCase()}'`;
-        //       });
-        //       where.push(`employee.supervisor IN (${supervisors.join(',')})`);
-        //     }
-        //   }
-        //   if (where.length > 0) {
-        //     sql += ` WHERE ${where.join(' AND ')}`;
-        //   }
-        //   // add order by
-        //   sql += ` ORDER BY employee.firstname ASC`;
-        //   const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-        //   // log.debug({ title: 'SuiteToolsModel:getEmployees() returning', details: results });
-        //   return results;
-        // }
-        /**
-         * Get Employee
-         *
-         * @param id - the record id to return
-         * @returns employee
-         */
-        // public getEmployee(id: string) {
-        //   log.debug({ title: `SuiteToolsModel:getEmployee() initiated`, details: { id: id } });
-        //   const sql = `SELECT
-        //     employee.id,
-        //     employee.entityid,
-        //     employee.firstname,
-        //     employee.lastname,
-        //     employee.email,
-        //     BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
-        //     employee.title,
-        //     employee.isinactive,
-        //   FROM
-        //     employee
-        //   WHERE
-        //     employee.id = ${id}`;
-        //   const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-        //   let result = null;
-        //   if (sqlResults.length === 0) {
-        //     this.stApp.setAlert('No results found that matched criteria.');
-        //   } else {
-        //     result = sqlResults[0];
-        //   }
-        //   log.debug({ title: 'SuiteToolsModel:getEmployee() returning', details: result });
-        //   return result;
-        // }
-        /**
          * Get Script Log
          *
          * @param id - the record id to return
@@ -1347,6 +1173,94 @@ define(["require", "exports", "N/log"], function (require, exports, log) {
             // log.debug({ title: `SuiteToolsModel:getScriptLogsViaSuiteQL() generated this sql`, details: sql });
             const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
             return sqlResults;
+        }
+        /**
+         * Get User
+         *
+         * @param id - the record id to return
+         * @returns user
+         */
+        getUser(id) {
+            log.debug({ title: `SuiteToolsModel:getUser() initiated`, details: { id: id } });
+            const sql = `SELECT
+      employee.id,
+      employee.isinactive,
+      employee.email,
+      employee.entityid || ' (' || employee.id || ')' AS name,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,
+    FROM
+      employee
+    WHERE
+      employee.id = ${id}`;
+            const sqlResults = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            let result = null;
+            if (sqlResults.length === 0) {
+                // this.stApp.setAlert('No results found that matched criteria.');
+            }
+            else {
+                result = sqlResults[0];
+            }
+            log.debug({ title: 'SuiteToolsModel:getUser() returning', details: result });
+            return result;
+        }
+        /**
+         * Get Users
+         *
+         * @returns results
+         */
+        getUsers(active, role, supervisors) {
+            log.debug({
+                title: `SuiteToolsModel:getUsers() initiated`,
+                details: { active: active, role: role, supervisors: supervisors },
+            });
+            let sql = `SELECT
+      employee.id,
+      employee.isinactive,
+      employee.email,
+      employee.entityid || ' (' || employee.id || ')' AS name,
+      BUILTIN.DF( role.id ) || ' (' || role.id || ')' AS role,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,
+    FROM employee
+      INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
+      INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
+            // add where clause
+            const where = [];
+            switch (active) {
+                case 'U':
+                    where.push(`employee.giveaccess = 'T'`);
+                    where.push(`employee.isinactive = 'F'`);
+                    break;
+                case 'T':
+                    where.push(`employee.isinactive = 'F'`);
+                    break;
+                case 'F':
+                    where.push(`employee.isinactive = 'T'`);
+                    break;
+                default:
+                    // do not add a filter
+                    break;
+            }
+            if (role) {
+                where.push(`role.id = ${role}`);
+            }
+            if (supervisors) {
+                if (Array.isArray(supervisors)) {
+                    supervisors = supervisors.map((employee) => {
+                        return `'${employee.toUpperCase()}'`;
+                    });
+                    where.push(`employee.supervisor IN (${supervisors.join(',')})`);
+                }
+            }
+            if (where.length > 0) {
+                sql += ` WHERE ${where.join(' AND ')}`;
+            }
+            // add order by
+            sql += ` ORDER BY employee.firstname ASC`;
+            const results = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+            log.debug({ title: 'SuiteToolsModel:getUsers() returning', details: results });
+            return results;
         }
         // ---------------------------------------------------------------------------
         // Supporting Functions

@@ -8,6 +8,7 @@ export type CriteriaFields = {
   level?: string[];
   owner?: string[];
   rows?: number;
+  role?: string[];
   scriptname?: string[];
   scripttype?: string[];
   title?: string;
@@ -25,6 +26,7 @@ export enum OptionValuesTypes {
   FILE = 'file',
   FILETYPE = 'filetype',
   OWNER = 'owner',
+  ROLE = 'role',
   SCRIPT = 'script',
   SCRIPTTYPE = 'scripttype',
   USER = 'user',

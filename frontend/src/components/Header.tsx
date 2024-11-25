@@ -51,6 +51,14 @@ export default function Header({ user }: Props) {
         >
           Script_Logs
         </NavLink>
+        <NavLink
+          to={`users`}
+          className={({ isActive }) =>
+            `no-underline p-1 pb-0.5 border-solid border-b-2 ${isActive ? 'border-black' : 'border-transparent'}`
+          }
+        >
+          Users
+        </NavLink>
         {user && <span className="ml-auto font-bold">{user}</span>}
       </nav>
     </header>

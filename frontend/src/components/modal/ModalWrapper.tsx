@@ -49,6 +49,9 @@ export function ModalWrapper({ getData, setShowModal, type, id }: Props) {
     case ModalTypes.SCRIPTLOG:
       title = 'Script Log Details';
       break;
+    case ModalTypes.USER:
+      title = 'User';
+      break;
     default:
       console.error('ModalWrapper type not found:', type);
       break;

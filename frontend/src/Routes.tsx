@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage.tsx';
 import { FilesPage } from './pages/files/FilesPage.tsx';
 import { ScriptLogsPage } from './pages/scriptLogs/ScriptLogsPage.tsx';
 import { ScriptsPage } from './pages/scripts/ScriptsPage.tsx';
+import { UsersPage } from './pages/users/UsersPage.tsx';
 // settings
 import { SettingsPage } from './pages/settings/SettingsPage.tsx';
 import { getSettingsData } from './pages/settings/getSettingsData.ts';
@@ -44,6 +45,10 @@ const router = createHashRouter([
       {
         path: 'scripts',
         element: <ScriptsPage />,
+      },
+      {
+        path: 'users',
+        element: <UsersPage />,
       },
     ],
   },

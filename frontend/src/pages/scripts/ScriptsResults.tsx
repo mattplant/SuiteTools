@@ -46,13 +46,6 @@ export function ScriptsResults({ lines }: Props) {
             field: 'isinactive',
             hozAlign: 'center',
             sorter: 'string',
-            // formatter:function(cell, formatterParams, onRendered){
-            //     if (cell.getValue() == "T") {
-            //         return "No";
-            //     } else {
-            //         return "Yes";
-            //     }
-            // }
           },
           {
             title: 'API',
@@ -95,27 +88,20 @@ export function ScriptsResults({ lines }: Props) {
             title: 'Notify Emails',
             field: 'notifyemails',
             sorter: 'string',
-            // formatter:function(cell, formatterParams, onRendered){
-            //     if (cell.getValue() != "null") {
-            //         return cell.getValue();
-            //     }
-            // }
           },
           {
             title: 'Description',
             field: 'description',
             sorter: 'string',
-            // formatter:function(cell, formatterParams, onRendered){
-            //     if (cell.getValue() != "null") {
-            //         return cell.getValue();
-            //     }
-            // }
           },
         ]}
         data={lines}
         options={options}
       />
       {showModal && <ModalWrapper getData={getScript} setShowModal={setShowModal} type={ModalTypes.SCRIPT} id={id} />}
+      {/* {showModal && (
+        <ModalWrapper getData={getScript} setShowModal={setShowModal} type={ModalTypes.USER} id={14671395} />
+      )} */}
     </>
   );
 }

@@ -2,6 +2,7 @@ import { ModalTypes } from './types';
 import { assertIsFile } from '../../pages/files/types';
 import { assertIsScript } from '../../pages/scripts/types';
 import { assertIsScriptLog } from '../../pages/scriptLogs/types';
+import { assertIsUser } from '../../pages/users/types';
 
 type Props = {
   type: ModalTypes;
@@ -113,6 +114,30 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             </p>
             <p>
               <b>Detail</b>: {data.detail}
+            </p>
+          </>
+        );
+      case ModalTypes.USER:
+        assertIsUser(data);
+        return (
+          <>
+            <p>
+              <b>ID</b>: {data.id}
+            </p>
+            <p>
+              <b>Name</b>: {data.name}
+            </p>
+            <p>
+              <b>Active</b>: {data.isinactive}
+            </p>
+            <p>
+              <b>Email</b>: {data.email}
+            </p>
+            <p>
+              <b>Supervisor</b>: {data.supervisor}
+            </p>
+            <p>
+              <b>Title</b>: {data.title}
             </p>
           </>
         );

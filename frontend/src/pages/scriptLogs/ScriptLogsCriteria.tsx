@@ -46,7 +46,7 @@ export function ScriptLogsCriteria({ setCriteria }: ScriptLogsCriteriaProps) {
         {/* <SearchCriteriaUser register={register} /> */}
         <SearchCriteriaScriptType register={register} />
         <SearchCriteriaScript register={register} />
-        <SearchCriteriaOwner register={register} />
+        <SearchCriteriaOwner register={register} title="Owner" />
         <SearchCriteriaDateCreated register={register} title="Date" />
         <SearchCriteriaContent register={register} />
       </div>
