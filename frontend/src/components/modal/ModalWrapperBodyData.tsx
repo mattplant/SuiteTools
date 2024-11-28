@@ -3,6 +3,7 @@ import { assertIsFile } from '../../pages/files/types';
 import { assertIsScript } from '../../pages/scripts/types';
 import { assertIsScriptLog } from '../../pages/scriptLogs/types';
 import { assertIsUser } from '../../pages/users/types';
+import { Button } from 'flowbite-react';
 
 type Props = {
   type: ModalTypes;
@@ -55,36 +56,22 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
         assertIsScript(data);
         return (
           <>
+            <p>API Version: {data.apiversion}</p>
+            <p>{data.isinactive ? 'Inactive' : <b>Active</b>}</p>
+            <p>Script Type: {data.scripttype}</p>
+            <p>Name: {data.name}</p>
             <p>
-              <b>ID</b>: {data.id}
+              ID: {data.scriptid} ({data.id})
             </p>
-            <p>
-              <b>API Version</b>: {data.apiversion}
-            </p>
-            <p>
-              <b>Is Inactive?</b>: {data.isinactive}
-            </p>
-            <p>
-              <b>Script Type</b>: {data.scripttype}
-            </p>
-            <p>
-              <b>Name</b>: {data.name}
-            </p>
-            <p>
-              <b>Id</b>: {data.scriptid}
-            </p>
-            <p>
-              <b>Owner</b>: {data.owner}
-            </p>
-            <p>
-              <b>Script File</b>: {data.scriptfile}
-            </p>
-            <p>
-              <b>Notify Emails</b>: {data.notifyemails}
-            </p>
-            <p>
-              <b>Description</b>: {data.description}
-            </p>
+            <p>Owner: {data.owner}</p>
+            <p>File: {data.scriptfile}</p>
+            <p>Notify Emails: {data.notifyemails}</p>
+            <p>Description: {data.description}</p>
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Record</Button>
+              <Button onClick={() => window.open(data.urlScript, '_blank')}>View Script Details</Button>
+              <Button onClick={() => window.open(data.urlScriptLogs, '_blank')}>View Script Logs</Button>
+            </Button.Group>
           </>
         );
       case ModalTypes.SCRIPTLOG:

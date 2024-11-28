@@ -9,7 +9,7 @@ export function SystemPage() {
 
   return (
     <div className="mx-auto mt-6">
-      <h2 className="text-xl font-bold text-slate-900">System</h2>
+      <h2 className="text-xl font-bold text-slate-900">NetSuite Info</h2>
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.system}>
           {(sytemValues) => {

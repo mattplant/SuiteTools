@@ -9,6 +9,9 @@ export interface Script {
   scriptfile: string;
   notifyemails: string;
   description: string;
+  urlNs?: string;
+  urlScript?: string;
+  urlScriptLogs?: string;
 }
 
 export function assertIsScript(data: unknown): asserts data is Script {
@@ -74,20 +77,6 @@ export function assertIsScript(data: unknown): asserts data is Script {
   if (typeof data.scriptfile !== 'string') {
     throw new Error('Script data "scriptfile" field is not a string');
   }
-  // // notify emails
-  // if (!('notifyemails' in data)) {
-  //     throw new Error('Script data is missing the "notifyemails" field');
-  // }
-  // if (typeof data.notifyemails !== 'string') {
-  //     throw new Error('Script data "notifyemails" field is not a string');
-  // }
-  // // description
-  // if (!('description' in data)) {
-  //     throw new Error('Script data is missing the "description" field');
-  // }
-  // if (typeof data.description !== 'string') {
-  //     throw new Error('Script data "description" field is not a string');
-  // }
 }
 
 export function assertIsScripts(data: unknown): asserts data is Script[] {
