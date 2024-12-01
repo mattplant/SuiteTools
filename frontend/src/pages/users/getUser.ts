@@ -1,4 +1,4 @@
-import { getData } from '../../utils/api/api';
+import { getData } from '../../api/api';
 import { User, assertIsUser } from './types';
 
 export async function getUser(id: number): Promise<User> {

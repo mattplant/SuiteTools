@@ -1,9 +1,10 @@
+import { Button } from 'flowbite-react';
 import { ModalTypes } from './types';
 import { assertIsFile } from '../../pages/files/types';
 import { assertIsScript } from '../../pages/scripts/types';
 import { assertIsScriptLog } from '../../pages/scriptLogs/types';
 import { assertIsUser } from '../../pages/users/types';
-import { Button } from 'flowbite-react';
+import { useAppSettingsContext } from '../../AppSettingsContext';
 
 type Props = {
   type: ModalTypes;
@@ -12,6 +13,9 @@ type Props = {
 };
 
 export function ModalWrapperBodyData({ type, loading, data }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appScriptUrl;
+
   if (loading) {
     return 'Loading...';
   } else if (!data) {
@@ -69,8 +73,12 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             <p>Description: {data.description}</p>
             <Button.Group>
               <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Record</Button>
-              <Button onClick={() => window.open(data.urlScript, '_blank')}>View Script Details</Button>
-              <Button onClick={() => window.open(data.urlScriptLogs, '_blank')}>View Script Logs</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScript, '_blank')}>
+                View Script Details
+              </Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLogs, '_blank')}>
+                View Script Logs
+              </Button>
             </Button.Group>
           </>
         );

@@ -1,5 +1,5 @@
-import { saveData } from '../../utils/api/api';
-import { SavedEndpoint, SavedData, SaveMethod } from '../../utils/api/types';
+import { saveData } from '../../api/api';
+import { SavedEndpoint, SavedData, SaveMethod } from '../../api/types';
 import { NewSettingsData } from './types';
 
 export async function saveSettings(data: NewSettingsData): Promise<SavedData> {

@@ -1,4 +1,4 @@
-import { getData } from '../../utils/api/api';
+import { getData } from '../../api/api';
 import { ScriptLogsLine, assertIsScriptLogs } from './types';
 import { CriteriaFields } from '../../components/search/criteria/types';
 

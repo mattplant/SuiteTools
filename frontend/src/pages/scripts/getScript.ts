@@ -1,8 +1,5 @@
-import { getData } from '../../utils/api/api';
+import { getData } from '../../api/api';
 import { Script, assertIsScript } from './types';
-
-// TODO: set dynamically instead of hardcoding
-const appScriptUrl = '/app/site/hosting/scriptlet.nl?script=1285&deploy=1';
 
 export async function getScript(id: number): Promise<Script> {
   const localTestData = {
@@ -27,8 +24,9 @@ export async function getScript(id: number): Promise<Script> {
 
   // build additional properties
   response.data.urlNs = `/app/common/scripting/script.nl?id=${response.data.id}`;
-  response.data.urlScript = `${appScriptUrl}#/script/${response.data.id}`;
-  response.data.urlScriptLogs = `${appScriptUrl}#/scriptLogs`; //&scriptId=${response.data.id}`;
+  response.data.urlScript = `#/script/${response.data.id}`;
+  // TODO set scriptLogs to use the script id
+  response.data.urlScriptLogs = `#/scriptLogs`; //&scriptId=${response.data.id}`;
 
   return response.data;
 }

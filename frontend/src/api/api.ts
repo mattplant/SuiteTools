@@ -8,10 +8,9 @@ import {
   assertIsSavedData,
 } from './types';
 
-// grab the apiBaseUrl from the config file
-import config from '../../../config.js';
-const apiBaseUrl = config.apiBaseUrl;
-console.log('apiBaseUrl = ', apiBaseUrl);
+const script = 'customscript_idev_suitetools_api';
+const deploy = 'customdeploy_idev_suitetools_api';
+const apiBaseUrl = `/app/site/hosting/restlet.nl?script=${script}&deploy=${deploy}`;
 
 export async function getData(localTestData: object, endpoint: string, urlParams: object = {}): Promise<Response> {
   console.log('getData() initiated', { localTestData, endpoint, urlParams });

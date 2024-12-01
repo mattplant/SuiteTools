@@ -1,5 +1,5 @@
 import { createHashRouter, RouterProvider, defer } from 'react-router-dom';
-import App from './components/App.tsx';
+import App from './App.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 import { FilesPage } from './pages/files/FilesPage.tsx';
@@ -15,18 +15,12 @@ import { UsersPage } from './pages/users/UsersPage.tsx';
 import { SettingsPage } from './pages/settings/SettingsPage.tsx';
 import { getSettingsData } from './pages/settings/getSettingsData.ts';
 // system
-import { SystemPage } from './pages/system/SystemPage.tsx';
-import { getSystemData } from './pages/system/getSystemData.ts';
 
 const router = createHashRouter([
   {
     path: '/',
     element: <App />,
     errorElement: <ErrorPage />,
-
-    // TODO - do I still need to load the system data here?
-    loader: async () => defer({ system: getSystemData() }),
-
     children: [
       {
         index: true,
@@ -35,11 +29,6 @@ const router = createHashRouter([
       {
         path: 'files',
         element: <FilesPage />,
-      },
-      {
-        path: 'system',
-        element: <SystemPage />,
-        loader: async () => defer({ system: getSystemData() }),
       },
       {
         path: 'settings',

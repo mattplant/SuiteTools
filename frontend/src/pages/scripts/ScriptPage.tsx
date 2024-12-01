@@ -1,9 +1,18 @@
 import { Suspense } from 'react';
-import { useLoaderData, Await } from 'react-router-dom';
+// import { Await, useLoaderData, useParams } from 'react-router-dom';
+import { Await, useLoaderData } from 'react-router-dom';
 // import { assertIsScript } from './types';
 import { ScriptResult } from './ScriptResult';
 
+// type Params = {
+//   id: string;
+// };
+
 export function ScriptPage() {
+  // // TODO either use i or to load specific script data here or use the defer
+  // const params = useParams<Params>();
+  // const id = params.id === undefined ? undefined : parseInt(params.id);
+
   const data = useLoaderData();
   // assertIsScript(data);
 

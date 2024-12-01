@@ -1,4 +1,4 @@
-import { getData } from '../../utils/api/api';
+import { getData } from '../../api/api';
 import { File, assertIsFile } from './types';
 
 export async function getFile(id: number): Promise<File> {

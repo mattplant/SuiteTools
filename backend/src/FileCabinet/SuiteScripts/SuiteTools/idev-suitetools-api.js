@@ -329,10 +329,25 @@ define(["require", "exports", "N/error", "N/log", "./idev-suitetools-app"], func
             log.debug({ title: 'SuiteToolsApiGet:getSettings() initiated', details: requestParams });
             this.stApi.stApp.stAppSettings.getSettings();
             const result = {
-                recordId: this.stApi.stApp.stAppSettings.recordId,
-                cssUrl: this.stApi.stApp.stAppSettings.cssUrl,
-                jsUrl: this.stApi.stApp.stAppSettings.jsUrl,
                 devMode: this.stApi.stApp.stAppSettings.devMode,
+                appScriptUrl: this.stApi.stApp.scriptUrl,
+                // system
+                accountId: this.stApi.stApp.stAppNs.runtime.accountId,
+                envType: this.stApi.stApp.stAppNs.runtime.envType,
+                isProduction: this.stApi.stApp.stAppNs.isProduction,
+                version: this.stApi.stApp.stAppNs.runtime.version,
+                processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
+                queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
+                // user
+                userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
+                userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
+                userEmail: this.stApi.stApp.stAppNs.runtime.getCurrentUser().email,
+                userLocation: this.stApi.stApp.stAppNs.runtime.getCurrentUser().location,
+                userDepartment: this.stApi.stApp.stAppNs.runtime.getCurrentUser().department,
+                userRole: this.stApi.stApp.stAppNs.runtime.getCurrentUser().roleId, // flipped to have the roleId integer and
+                userRoleId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().role, // the role string like accountId, userId
+                userSubsidiary: this.stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
+                isAdmin: this.stApi.stApp.stAppNs.isAdmin,
             };
             // log.debug({ title: 'SuiteToolsApiGet:getSettings() returning', details: result });
             return result;

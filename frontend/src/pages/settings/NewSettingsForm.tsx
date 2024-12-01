@@ -16,18 +16,6 @@ export function NewSettingsForm({ onSave }: Props) {
   return (
     <form noValidate className="border-b py-4" onSubmit={handleSubmit(onSave)}>
       <div className={fieldStyle}>
-        <label htmlFor="cssUrl" className="block text-sm font-medium text-slate-700">
-          CSS URL
-        </label>
-        <input type="text" id="cssUrl" {...register('cssUrl', { required: 'CSS URL is required' })} />
-      </div>
-      <div className={fieldStyle}>
-        <label htmlFor="jsUrl" className="block text-sm font-medium text-slate-700">
-          JS URL
-        </label>
-        <input type="text" id="jsUrl" {...register('jsUrl', { required: 'JS URL is required' })} />
-      </div>
-      <div className={fieldStyle}>
         <label htmlFor="devMode" className="block text-sm font-medium text-slate-700">
           Dev Mode
         </label>
