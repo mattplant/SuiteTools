@@ -1,8 +1,8 @@
 import { getData } from '../../api/api';
-import { ScriptLogsLine, assertIsScriptLogs } from './types';
+import { ScriptLog, assertIsScriptLogs } from './types';
 import { CriteriaFields } from '../../components/search/criteria/types';
 
-export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLogsLine[]> {
+export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]> {
   console.log('getScriptLogs', fields);
 
   const localTestData = {

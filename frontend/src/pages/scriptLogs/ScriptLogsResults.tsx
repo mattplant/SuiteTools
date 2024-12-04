@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { ModalWrapper } from '../../components/modal/ModalWrapper.tsx';
 import { ModalTypes } from '../../components/modal/types.ts';
 import { ReactTabulator, ReactTabulatorOptions } from 'react-tabulator';
-import { ScriptLogsLine } from './types.ts';
+import { ScriptLog } from './types.ts';
 import { getScriptLog } from './getScriptLog.ts';
 
 type Props = {
-  lines: ScriptLogsLine[];
+  lines: ScriptLog[];
 };
 
 //           { title: "Script", field:"scriptname", cellClick:function(e, cell, value, data){

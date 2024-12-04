@@ -6,16 +6,11 @@ import { SearchCriteriaRows } from '../../components/search/criteria/SearchCrite
 import { SearchCriteriaDateModified } from '../../components/search/criteria/SearchCriteriaDateModified';
 
 interface FilesCriteriaProps {
+  defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function FilesCriteria({ setCriteria }: FilesCriteriaProps) {
-  const defaultCriteria: CriteriaFields = {
-    rows: 50,
-    filetype: [''],
-    createddate: 'today',
-    lastmodifieddate: 'today',
-  };
+export function FilesCriteria({ setCriteria, defaultCriteria }: FilesCriteriaProps) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {

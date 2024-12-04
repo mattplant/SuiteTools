@@ -1,21 +1,21 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { Script } from './types';
-import { assertIsScript } from './types';
-import { ScriptResult } from './ScriptResult';
+import { ScriptLog } from './types';
+import { assertIsScriptLog } from './types';
+import { ScriptLogResult } from './ScriptLogResult';
 
-export function ScriptPage() {
+export function ScriptLogPage() {
   const data = useLoaderData();
   assertIsData(data);
 
   return (
     <div className="mx-auto mt-6">
-      <h2 className="text-xl font-bold text-slate-900">Script</h2>
+      <h2 className="text-xl font-bold text-slate-900">Script Log</h2>
       <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data.script}>
-          {(script) => {
-            assertIsScript(script);
-            return <ScriptResult data={script} />;
+        <Await resolve={data.scriptLog}>
+          {(scriptLog) => {
+            assertIsScriptLog(scriptLog);
+            return <ScriptLogResult data={scriptLog} />;
           }}
         </Await>
       </Suspense>
@@ -24,7 +24,7 @@ export function ScriptPage() {
 }
 
 type Data = {
-  script: Script;
+  scriptLog: ScriptLog;
 };
 
 function assertIsData(data: unknown): asserts data is Data {
@@ -34,7 +34,7 @@ function assertIsData(data: unknown): asserts data is Data {
   if (data === null) {
     throw new Error('Data is null');
   }
-  if (!('script' in data)) {
-    throw new Error('Data does not contain script');
+  if (!('scriptLog' in data)) {
+    throw new Error('Data does not contain scriptLog');
   }
 }

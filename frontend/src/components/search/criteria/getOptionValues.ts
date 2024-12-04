@@ -13,6 +13,15 @@ export async function getOptionValues(type: OptionValuesTypes): Promise<OptionVa
         ],
       };
       break;
+    case OptionValuesTypes.FILETYPE:
+      localTestData = {
+        data: [
+          { value: '1', text: 'CSV' },
+          { value: '2', text: 'EXCEL' },
+          { value: '3', text: 'JAVASCRIPT' },
+        ],
+      };
+      break;
     case OptionValuesTypes.OWNER:
       localTestData = {
         data: [
@@ -25,10 +34,10 @@ export async function getOptionValues(type: OptionValuesTypes): Promise<OptionVa
     case OptionValuesTypes.SCRIPT:
       localTestData = {
         data: [
-          { value: 'SCRIPT-1', text: 'Script One' },
-          { value: 'SCRIPT-2', text: 'Script Two' },
-          { value: 'SCRIPT-3', text: 'Script Three' },
-          { value: 'SCRIPT-4', text: 'Script Four' },
+          { value: '1', text: 'Script One' },
+          { value: '2', text: 'Script Two' },
+          { value: '3', text: 'Script Three' },
+          { value: '4', text: 'Script Four' },
         ],
       };
       break;
@@ -59,7 +68,6 @@ export async function getOptionValues(type: OptionValuesTypes): Promise<OptionVa
 }
 
 export function assertIsOptionValues(data: unknown): asserts data is OptionValues[] {
-  console.log('assertIsOptionValues', data);
   if (!Array.isArray(data)) {
     throw new Error('OptionValues is not an array');
   }

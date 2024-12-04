@@ -21,7 +21,6 @@ const options: ReactTabulatorOptions = {
 };
 
 export function ScriptsResults({ lines }: Props) {
-  console.log('ScriptsResults inititiated with lines =', lines);
   const [id, setId] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
 

@@ -54,6 +54,12 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             <p>
               <b>URL</b>: {data.url}
             </p>
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View File Record</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlFile, '_blank')}>
+                View File Details
+              </Button>
+            </Button.Group>
           </>
         );
       case ModalTypes.SCRIPT:
@@ -110,6 +116,12 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             <p>
               <b>Detail</b>: {data.detail}
             </p>
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Log Record</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLog, '_blank')}>
+                View Script Log Details
+              </Button>
+            </Button.Group>
           </>
         );
       case ModalTypes.USER:
@@ -134,6 +146,12 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             <p>
               <b>Title</b>: {data.title}
             </p>
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View User Record</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlUser, '_blank')}>
+                View User Details
+              </Button>
+            </Button.Group>
           </>
         );
       default:

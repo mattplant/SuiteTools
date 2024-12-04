@@ -1,7 +1,7 @@
 import { getData } from '../../api/api';
-import { ScriptLogsLine, assertIsScriptLog } from './types';
+import { ScriptLog, assertIsScriptLog } from './types';
 
-export async function getScriptLog(id: number): Promise<ScriptLogsLine> {
+export async function getScriptLog(id: number): Promise<ScriptLog> {
   const localTestData = {
     data: {
       id: 1,
@@ -16,6 +16,10 @@ export async function getScriptLog(id: number): Promise<ScriptLogsLine> {
   };
   const response = await getData(localTestData, 'scriptLog', { id: id });
   assertIsScriptLog(response.data);
+
+  // build additional properties
+  response.data.urlNs = `/app/common/scripting/scriptnote.nl?id=${response.data.id}`;
+  response.data.urlScriptLog = `#/scriptLog/${response.data.id}`;
 
   return response.data;
 }

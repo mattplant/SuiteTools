@@ -9,13 +9,13 @@ export interface Script {
   scriptfile: string;
   notifyemails: string;
   description: string;
+  // additional properties
   urlNs?: string;
   urlScript?: string;
   urlScriptLogs?: string;
 }
 
 export function assertIsScript(data: unknown): asserts data is Script {
-  console.log('assertIsScript', data);
   // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Script data is not an object');
@@ -77,13 +77,28 @@ export function assertIsScript(data: unknown): asserts data is Script {
   if (typeof data.scriptfile !== 'string') {
     throw new Error('Script data "scriptfile" field is not a string');
   }
+  // TODO notifyemails: string;
+  // TODO description: string;
+  // ADDITIONAL PROPERTIES
+  // urlNs
+  if ('urlNs' in data && typeof data.urlNs !== 'string') {
+    throw new Error('File data "urlNs" field is not a string');
+  }
+  // urlScript
+  if ('urlScript' in data && typeof data.urlScript !== 'string') {
+    throw new Error('File data "urlScript" field is not a string');
+  }
+  // urlScriptLogs
+  if ('urlScriptLogs' in data && typeof data.urlScriptLogs !== 'string') {
+    throw new Error('File data "urlScriptLogs" field is not a string');
+  }
 }
 
 export function assertIsScripts(data: unknown): asserts data is Script[] {
-  console.log('assertIsScripts', data);
   if (!Array.isArray(data)) {
     throw new Error('Script data is not an array');
   }
+  // only checking the first element
   if (data.length > 0) {
     assertIsScript(data[0]);
   }

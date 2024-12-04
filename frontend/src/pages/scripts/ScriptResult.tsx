@@ -5,9 +5,6 @@ type Props = {
 };
 
 export function ScriptResult({ data }: Props) {
-  // @ts-expect-error TEMPORARY
-  data = data.script;
-
   return (
     <>
       <p>API Version: {data.apiversion}</p>

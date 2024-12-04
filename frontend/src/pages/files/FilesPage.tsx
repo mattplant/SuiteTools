@@ -6,17 +6,17 @@ import { FilesCriteria } from './FilesCriteria.tsx';
 import { FilesResults } from './FilesResults.tsx';
 
 export function FilesPage() {
-  const [criteria, setCriteria] = useState<CriteriaFields>({
+  const defaultCriteria: CriteriaFields = {
     rows: 50,
     filetype: [''],
     createddate: 'today',
     lastmodifieddate: 'today',
-  });
+  };
+  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<File[]>([]);
 
   useEffect(() => {
     console.log('FilesPage useEffect');
-
     async function fetchData() {
       try {
         const data = await getFiles(criteria);
@@ -25,7 +25,6 @@ export function FilesPage() {
         console.error('Error fetching data:', error);
       }
     }
-
     fetchData();
 
     return () => {
@@ -36,7 +35,7 @@ export function FilesPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Files</h2>
-      <FilesCriteria setCriteria={setCriteria} />
+      <FilesCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <FilesResults lines={results} />
     </div>
   );

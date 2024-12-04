@@ -5,10 +5,12 @@ export interface User {
   name: string;
   supervisor: string;
   title: string;
+  // additional properties
+  urlNs?: string;
+  urlUser?: string;
 }
 
 export function assertIsUser(data: unknown): asserts data is User {
-  console.log('assertIsUser', data);
   // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('User data is not an object');
@@ -56,13 +58,22 @@ export function assertIsUser(data: unknown): asserts data is User {
   if (typeof data.title !== 'string') {
     throw new Error('User data "title" field is not a string');
   }
+  // ADDITIONAL PROPERTIES
+  // urlNs
+  if ('urlNs' in data && typeof data.urlNs !== 'string') {
+    throw new Error('User data "urlNs" field is not a string');
+  }
+  // urlUser
+  if ('urlUser' in data && typeof data.urlUser !== 'string') {
+    throw new Error('User data "urlUser" field is not a string');
+  }
 }
 
 export function assertIsUsers(data: unknown): asserts data is User[] {
-  console.log('assertIsUsers', data);
   if (!Array.isArray(data)) {
     throw new Error('User data is not an array');
   }
+  // only checking the first element
   if (data.length > 0) {
     assertIsUser(data[0]);
   }

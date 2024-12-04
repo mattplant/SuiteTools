@@ -1,43 +1,21 @@
 # IDEs and editors
-.idea
-*.iml
-*.iws
-.project
-.classpath
-*.launch
-.settings
-*.sublime-workspace
 # .vscode
 
-# Dependency directories
+# dependencies
 node_modules
 
-# TypeScript cache
-*.tsbuildinfo
-
-# Logs
-logs
-*.log
+# logs
 npm-debug.log*
 
-# Packaged SuiteCloud projects
-build
-
-# misc
-.sass-cache
-
-# Optional npm cache directory
-.npm
-
-# System Files
+# system files
 .DS_Store
 Thumbs.db
 
-# Output of 'npm pack'
-*.tgz
+# testing
+coverage
 
 # NetSuite SDF project config
 project.json
 
-# SuiteTools frontend dist files that are built by the frontend build process
+# SuiteTools frontend dist files from the frontend build process
 dist

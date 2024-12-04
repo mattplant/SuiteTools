@@ -189,8 +189,8 @@ export class SuiteToolsLibraryNetSuiteEmail {
 
     // TODO lookup instead of hardcode these
     // override values as needed
-    const author = 14671395; // Matt Plant
-    const replyTo = 'matt.plant@bulletproof.com';
+    const author = 123456789; // get from current user
+    const replyTo = 'i@idev.systems'; // get from current user
 
     // TODO add recipient logic
     const recipients: string | string[] = replyTo; // default to replyTo

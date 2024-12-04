@@ -5,15 +5,11 @@ import { SearchCriteriaOwner } from '../../components/search/criteria/SearchCrit
 import { SearchCriteriaRole } from '../../components/search/criteria/SearchCriteriaRole';
 
 interface UsersCriteriaProps {
+  defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function UsersCriteria({ setCriteria }: UsersCriteriaProps) {
-  const defaultCriteria: CriteriaFields = {
-    active: '',
-    role: [''],
-    owner: [''],
-  };
+export function UsersCriteria({ setCriteria, defaultCriteria }: UsersCriteriaProps) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {

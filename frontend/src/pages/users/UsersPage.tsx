@@ -6,16 +6,16 @@ import { UsersCriteria } from './UsersCriteria.tsx';
 import { UsersResults } from './UsersResults.tsx';
 
 export function UsersPage() {
-  const [criteria, setCriteria] = useState<CriteriaFields>({
+  const defaultCriteria: CriteriaFields = {
     active: '',
     role: [''],
     owner: [''],
-  });
+  };
+  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<User[]>([]);
 
   useEffect(() => {
     console.log('UsersPage useEffect');
-
     async function fetchData() {
       try {
         const data = await getUsers(criteria);
@@ -24,7 +24,6 @@ export function UsersPage() {
         console.error('Error fetching data:', error);
       }
     }
-
     fetchData();
 
     return () => {
@@ -35,7 +34,7 @@ export function UsersPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Users</h2>
-      <UsersCriteria setCriteria={setCriteria} />
+      <UsersCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <UsersResults lines={results} />
     </div>
   );

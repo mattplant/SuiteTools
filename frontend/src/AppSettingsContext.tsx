@@ -20,7 +20,6 @@ export function AppSettingsProvider({ children }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching settings from an API or local storage
     const fetchSettings = async () => {
       try {
         const data = await getSettingsData();

@@ -158,8 +158,8 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
             log.debug({ title: 'SuiteToolsLibraryNetSuiteEmail:sendNotification() initiated', details: { subject: subject } });
             // TODO lookup instead of hardcode these
             // override values as needed
-            const author = 14671395; // Matt Plant
-            const replyTo = 'matt.plant@bulletproof.com';
+            const author = 123456789; // get from current user
+            const replyTo = 'i@idev.systems'; // get from current user
             // TODO add recipient logic
             const recipients = replyTo; // default to replyTo
             // recipients = replyTo;

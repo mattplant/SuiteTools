@@ -8,18 +8,11 @@ import { SearchCriteriaScriptType } from '../../components/search/criteria/Searc
 import { SearchCriteriaVersion } from '../../components/search/criteria/SearchCriteriaVersion';
 
 interface ScriptsCriteriaProps {
+  defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function ScriptsCriteria({ setCriteria }: ScriptsCriteriaProps) {
-  const defaultCriteria: CriteriaFields = {
-    active: '',
-    file: [''],
-    owner: [''],
-    scripttype: [''],
-    scriptname: [''],
-    version: [''],
-  };
+export function ScriptsCriteria({ setCriteria, defaultCriteria }: ScriptsCriteriaProps) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {

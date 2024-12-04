@@ -10,21 +10,22 @@ import { SearchCriteriaScriptType } from '../../components/search/criteria/Searc
 // import { SearchCriteriaUser } from '../../components/search/criteria/SearchCriteriaUser';
 
 interface ScriptLogsCriteriaProps {
+  defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function ScriptLogsCriteria({ setCriteria }: ScriptLogsCriteriaProps) {
-  const defaultCriteria: CriteriaFields = {
-    rows: 50,
-    level: ['ERROR', 'EMERGENCY', 'SYSTEM'],
-    // user: [''],
-    scripttype: [''],
-    scriptname: [''],
-    owner: [''],
-    createddate: '15',
-    title: '',
-    detail: '',
-  };
+export function ScriptLogsCriteria({ defaultCriteria, setCriteria }: ScriptLogsCriteriaProps) {
+  // const defaultCriteria: CriteriaFields = {
+  //   rows: 50,
+  //   level: ['ERROR', 'EMERGENCY', 'SYSTEM'],
+  //   // user: [''],
+  //   scripttype: [''],
+  //   scriptname: [''],
+  //   owner: [''],
+  //   createddate: '15',
+  //   title: '',
+  //   detail: '',
+  // };
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {

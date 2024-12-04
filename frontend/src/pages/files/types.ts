@@ -6,12 +6,14 @@ export interface File {
   filetypename: string;
   name: string;
   filesize: number;
-  // description: string;
+  // TODO description: string;
   url: string;
+  // additional properties
+  urlNs?: string;
+  urlFile?: string;
 }
 
 export function assertIsFile(data: unknown): asserts data is File {
-  console.log('assertIsFile', data);
   // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('File data is not an object');
@@ -66,7 +68,7 @@ export function assertIsFile(data: unknown): asserts data is File {
   if (typeof data.filesize !== 'number') {
     throw new Error('File data "filesize" field is not a number');
   }
-  // // description
+  // TODO description
   // if (!('description' in data)) {
   //   throw new Error('File data is missing the "description" field');
   // }
@@ -80,13 +82,22 @@ export function assertIsFile(data: unknown): asserts data is File {
   if (typeof data.url !== 'string') {
     throw new Error('File data "url" field is not a string');
   }
+  // ADDITIONAL PROPERTIES
+  // urlNs
+  if ('urlNs' in data && typeof data.urlNs !== 'string') {
+    throw new Error('File data "urlNs" field is not a string');
+  }
+  // urlFile
+  if ('urlFile' in data && typeof data.urlFile !== 'string') {
+    throw new Error('File data "urlFile" field is not a string');
+  }
 }
 
 export function assertIsFiles(data: unknown): asserts data is File[] {
-  console.log('assertIsFiles', data);
   if (!Array.isArray(data)) {
     throw new Error('Files data is not an array');
   }
+  // only checking the first element
   if (data.length > 0) {
     assertIsFile(data[0]);
   }

@@ -1,4 +1,4 @@
-export interface ScriptLogsLine {
+export interface ScriptLog {
   id: number;
   timestamp: string;
   type: string;
@@ -7,11 +7,12 @@ export interface ScriptLogsLine {
   scriptname: string;
   title: string;
   detail: string;
+  // additional properties
+  urlNs?: string;
+  urlScriptLog?: string;
 }
 
-export function assertIsScriptLog(data: unknown): asserts data is ScriptLogsLine {
-  console.log('assertIsScriptLog', data);
-
+export function assertIsScriptLog(data: unknown): asserts data is ScriptLog {
   // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Script log data is not an object');
@@ -66,20 +67,31 @@ export function assertIsScriptLog(data: unknown): asserts data is ScriptLogsLine
   if (typeof data.title !== 'string') {
     throw new Error('Script log data "title" field is not a string');
   }
-  // detail
+
+  // TODO detail
   if (!('detail' in data)) {
     throw new Error('Script log data is missing the "detail" field');
   }
   // if (typeof data.detail !== 'string') {
   //   throw new Error('Script log data "detail" field is not a string');
   // }
+
+  // ADDITIONAL PROPERTIES
+  // urlNs
+  if ('urlNs' in data && typeof data.urlNs !== 'string') {
+    throw new Error('File data "urlNs" field is not a string');
+  }
+  // urlFile
+  if ('urlScriptLog' in data && typeof data.urlScriptLog !== 'string') {
+    throw new Error('File data "urlScriptLog" field is not a string');
+  }
 }
 
-export function assertIsScriptLogs(data: unknown): asserts data is ScriptLogsLine[] {
-  console.log('assertIsScriptLogs', data);
+export function assertIsScriptLogs(data: unknown): asserts data is ScriptLog[] {
   if (!Array.isArray(data)) {
     throw new Error('Script log data is not an array');
   }
+  // only checking the first element
   if (data.length > 0) {
     assertIsScriptLog(data[0]);
   }

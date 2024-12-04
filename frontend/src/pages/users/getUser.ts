@@ -15,5 +15,9 @@ export async function getUser(id: number): Promise<User> {
   const response = await getData(localTestData, 'user', { id: id });
   assertIsUser(response.data);
 
+  // build additional properties
+  response.data.urlNs = `/app/common/entity/employee.nl?id=${response.data.id}`;
+  response.data.urlUser = `#/user/${response.data.id}`;
+
   return response.data;
 }

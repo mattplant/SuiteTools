@@ -1,10 +1,6 @@
-# Ignore artifacts:
-<!-- **/dist -->
+# dependencies
+node_modules
 
-# Ignore files in version control:
-<!-- **/.git
-**/.svn
-**/.hg -->
-
-# Ignore node modules directory:
-<!-- **/node_modules -->
+# ignore artifacts:
+dist
+coverage

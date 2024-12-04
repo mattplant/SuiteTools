@@ -6,19 +6,19 @@ import { ScriptsCriteria } from './ScriptsCriteria.tsx';
 import { ScriptsResults } from './ScriptsResults.tsx';
 
 export function ScriptsPage() {
-  const [criteria, setCriteria] = useState<CriteriaFields>({
+  const defaultCriteria: CriteriaFields = {
     active: '',
     file: [''],
     owner: [''],
     scripttype: [''],
     scriptname: [''],
     version: [''],
-  });
+  };
+  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<Script[]>([]);
 
   useEffect(() => {
     console.log('ScriptsPage useEffect');
-
     async function fetchData() {
       try {
         const data = await getScripts(criteria);
@@ -27,7 +27,6 @@ export function ScriptsPage() {
         console.error('Error fetching data:', error);
       }
     }
-
     fetchData();
 
     return () => {
@@ -38,7 +37,7 @@ export function ScriptsPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Scripts</h2>
-      <ScriptsCriteria setCriteria={setCriteria} />
+      <ScriptsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <ScriptsResults lines={results} />
     </div>
   );

@@ -27,17 +27,7 @@ export default function Header() {
           <p>Queues: {settings?.queueCount}</p>
         </Dropdown>
         <NavbarLink>
-          <Dropdown color="light" label="Objects" dismissOnClick={true}>
-            <Dropdown.Item>
-              <NavLink to={`files`}>Files</NavLink>
-            </Dropdown.Item>
-            <Dropdown.Item>
-              <NavLink to={`scripts`}>Scripts</NavLink>
-            </Dropdown.Item>
-          </Dropdown>
-        </NavbarLink>
-        <NavbarLink>
-          <Dropdown color="light" label="Entities" dismissOnClick={true}>
+          <Dropdown color="light" label="Integrations" dismissOnClick={true}>
             <Dropdown.Item>
               <NavLink to={`users`}>Users</NavLink>
             </Dropdown.Item>
@@ -47,6 +37,16 @@ export default function Header() {
           <Dropdown color="light" label="Logs" dismissOnClick={true}>
             <Dropdown.Item>
               <NavLink to={`scriptLogs`}>Script Logs</NavLink>
+            </Dropdown.Item>
+          </Dropdown>
+        </NavbarLink>
+        <NavbarLink>
+          <Dropdown color="light" label="Objects" dismissOnClick={true}>
+            <Dropdown.Item>
+              <NavLink to={`files`}>Files</NavLink>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <NavLink to={`scripts`}>Scripts</NavLink>
             </Dropdown.Item>
           </Dropdown>
         </NavbarLink>
