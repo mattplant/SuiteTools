@@ -1,3 +1,5 @@
+// TODO move to src/components/App.tsx
+
 import { Outlet } from 'react-router-dom';
 import { AppSettingsProvider } from './AppSettingsContext.tsx';
 import Header from './components/Header.tsx';

@@ -29,6 +29,9 @@ export default function Header() {
         <NavbarLink>
           <Dropdown color="light" label="Integrations" dismissOnClick={true}>
             <Dropdown.Item>
+              <NavLink to={`integrations`}>Integrations</NavLink>
+            </Dropdown.Item>
+            <Dropdown.Item>
               <NavLink to={`users`}>Users</NavLink>
             </Dropdown.Item>
           </Dropdown>

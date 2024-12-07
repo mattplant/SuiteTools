@@ -43,6 +43,9 @@ export function ModalWrapper({ getData, setShowModal, type, id }: Props) {
     case ModalTypes.FILE:
       title = 'File';
       break;
+    case ModalTypes.INTEGRATION:
+      title = 'Integration';
+      break;
     case ModalTypes.SCRIPT:
       title = 'Script';
       break;

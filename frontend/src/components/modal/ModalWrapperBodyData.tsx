@@ -1,6 +1,7 @@
 import { Button } from 'flowbite-react';
 import { ModalTypes } from './types';
 import { assertIsFile } from '../../pages/files/types';
+import { assertIsIntegration } from '../../pages/integrations/types';
 import { assertIsScript } from '../../pages/scripts/types';
 import { assertIsScriptLog } from '../../pages/scriptLogs/types';
 import { assertIsUser } from '../../pages/users/types';
@@ -58,6 +59,33 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
               <Button onClick={() => window.open(data.urlNs, '_blank')}>View File Record</Button>
               <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlFile, '_blank')}>
                 View File Details
+              </Button>
+            </Button.Group>
+          </>
+        );
+      case ModalTypes.INTEGRATION:
+        assertIsIntegration(data);
+        return (
+          <>
+            <p>
+              <b>ID</b>: {data.id}
+            </p>
+            <p>
+              <b>Name</b>: {data.name}
+            </p>
+            <p>
+              <b>Application ID</b>: {data.applicationId}
+            </p>
+            <p>
+              <b>State</b>: {data.state}
+            </p>
+            <p>
+              <b>Date Created</b>: {data.dateCreated}
+            </p>
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Integration Record</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+                View Integration Details
               </Button>
             </Button.Group>
           </>
