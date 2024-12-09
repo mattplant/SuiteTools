@@ -151,9 +151,9 @@ export class SuiteToolsApiGet {
       case 'settings':
         response.data = this.getSettings(requestParams);
         break;
-      case 'system':
-        response.data = this.getSystem(requestParams);
-        break;
+      // case 'system':
+      //   response.data = this.getSystem(requestParams);
+      //   break;
       case 'user':
         response.data = this.getUser(requestParams);
         break;
@@ -404,6 +404,7 @@ export class SuiteToolsApiGet {
       version: this.stApi.stApp.stAppNs.runtime.version,
       processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
       queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
+      appBundle: this.stApi.stApp.stAppSettings.appBundle,
       // user
       userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
       userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
@@ -420,38 +421,38 @@ export class SuiteToolsApiGet {
     return result;
   }
 
-  /**
-   * Get system values.
-   *
-   * @param requestParams
-   * @returns system
-   */
-  private getSystem(requestParams: RequestParams): object {
-    log.debug({ title: 'SuiteToolsApiGet:getSystem() initiated', details: requestParams });
+  // /**
+  //  * Get system values.
+  //  *
+  //  * @param requestParams
+  //  * @returns system
+  //  */
+  // private getSystem(requestParams: RequestParams): object {
+  //   log.debug({ title: 'SuiteToolsApiGet:getSystem() initiated', details: requestParams });
 
-    const result = {
-      // system
-      accountId: this.stApi.stApp.stAppNs.runtime.accountId,
-      envType: this.stApi.stApp.stAppNs.runtime.envType,
-      isProduction: this.stApi.stApp.stAppNs.isProduction,
-      version: this.stApi.stApp.stAppNs.runtime.version,
-      processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
-      queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
-      // user
-      userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
-      userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
-      userEmail: this.stApi.stApp.stAppNs.runtime.getCurrentUser().email,
-      userLocation: this.stApi.stApp.stAppNs.runtime.getCurrentUser().location,
-      userDepartment: this.stApi.stApp.stAppNs.runtime.getCurrentUser().department,
-      userRole: this.stApi.stApp.stAppNs.runtime.getCurrentUser().role,
-      userRoleId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().roleId,
-      isAdmin: this.stApi.stApp.stAppNs.isAdmin,
-      userSubsidiary: this.stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
-    };
-    // log.debug({ title: 'SuiteToolsApiGet:getSystem() returning', details: result });
+  //   const result = {
+  //     // system
+  //     accountId: this.stApi.stApp.stAppNs.runtime.accountId,
+  //     envType: this.stApi.stApp.stAppNs.runtime.envType,
+  //     isProduction: this.stApi.stApp.stAppNs.isProduction,
+  //     version: this.stApi.stApp.stAppNs.runtime.version,
+  //     processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
+  //     queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
+  //     // user
+  //     userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
+  //     userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
+  //     userEmail: this.stApi.stApp.stAppNs.runtime.getCurrentUser().email,
+  //     userLocation: this.stApi.stApp.stAppNs.runtime.getCurrentUser().location,
+  //     userDepartment: this.stApi.stApp.stAppNs.runtime.getCurrentUser().department,
+  //     userRole: this.stApi.stApp.stAppNs.runtime.getCurrentUser().role,
+  //     userRoleId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().roleId,
+  //     isAdmin: this.stApi.stApp.stAppNs.isAdmin,
+  //     userSubsidiary: this.stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
+  //   };
+  //   // log.debug({ title: 'SuiteToolsApiGet:getSystem() returning', details: result });
 
-    return result;
-  }
+  //   return result;
+  // }
 
   /**
    * Get Script

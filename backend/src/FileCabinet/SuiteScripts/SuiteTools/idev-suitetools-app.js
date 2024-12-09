@@ -232,6 +232,9 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
         get stApp() {
             return this._stApp;
         }
+        get appBundle() {
+            return this._appBundle;
+        }
         get recordId() {
             return this._recordId;
         }
@@ -300,6 +303,7 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
                 this._integrations = JSON.parse(sqlResults[0].integrations);
                 this._tokens = JSON.parse(sqlResults[0].tokens);
                 this._users = JSON.parse(sqlResults[0].users);
+                this._appBundle = this.stApp.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stApp.appJsFile);
                 // if core configs are not set then set them
                 if (!this._cssUrl || !this._jsUrl) {
                     log.error({ title: `SuiteToolsAppSettings:getSettings() missing core configs`, details: '' });
@@ -341,17 +345,17 @@ define(["require", "exports", "N/log", "N/runtime", "N/url", "./idev-suitetools-
      * The bulk of this functionality is provided by NetSuite's runtime module.
      */
     class SuiteToolsAppNetSuite {
+        get isAdmin() {
+            return this.runtime.getCurrentUser().roleId == 'administrator';
+        }
+        get isProduction() {
+            return String(runtime.EnvType[runtime.envType]) === 'PRODUCTION';
+        }
         get runtime() {
             return runtime;
         }
         constructor() {
             // log.debug({ title: 'SuiteToolsAppNetSuite:constructor()', details: null });
-        }
-        get isProduction() {
-            return String(runtime.EnvType[runtime.envType]) === 'PRODUCTION';
-        }
-        get isAdmin() {
-            return this.runtime.getCurrentUser().roleId == 'administrator';
         }
     }
     exports.SuiteToolsAppNetSuite = SuiteToolsAppNetSuite;

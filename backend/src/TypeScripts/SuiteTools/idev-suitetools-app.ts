@@ -266,6 +266,7 @@ export class SuiteToolsApp {
  */
 export class SuiteToolsAppSettings {
   private _stApp: SuiteToolsApp;
+  private _appBundle: string;
   private _recordId: number;
   private _cssUrl: string;
   private _jsUrl: string;
@@ -281,6 +282,9 @@ export class SuiteToolsAppSettings {
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
+  }
+  get appBundle(): string {
+    return this._appBundle;
   }
   get recordId(): number {
     return this._recordId;
@@ -353,6 +357,7 @@ export class SuiteToolsAppSettings {
       this._integrations = JSON.parse(sqlResults[0].integrations);
       this._tokens = JSON.parse(sqlResults[0].tokens);
       this._users = JSON.parse(sqlResults[0].users);
+      this._appBundle = this.stApp.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stApp.appJsFile);
 
       // if core configs are not set then set them
       if (!this._cssUrl || !this._jsUrl) {
@@ -408,19 +413,19 @@ export class SuiteToolsAppSettings {
  * The bulk of this functionality is provided by NetSuite's runtime module.
  */
 export class SuiteToolsAppNetSuite {
-  get runtime() {
-    return runtime;
-  }
-
-  constructor() {
-    // log.debug({ title: 'SuiteToolsAppNetSuite:constructor()', details: null });
+  get isAdmin(): boolean {
+    return this.runtime.getCurrentUser().roleId == 'administrator';
   }
 
   get isProduction(): boolean {
     return String(runtime.EnvType[runtime.envType]) === 'PRODUCTION';
   }
 
-  get isAdmin(): boolean {
-    return this.runtime.getCurrentUser().roleId == 'administrator';
+  get runtime() {
+    return runtime;
+  }
+
+  constructor() {
+    // log.debug({ title: 'SuiteToolsAppNetSuite:constructor()', details: null });
   }
 }

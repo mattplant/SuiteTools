@@ -8,7 +8,7 @@ import {
   NavbarToggle,
 } from 'flowbite-react';
 import { NavLink } from 'react-router-dom';
-import { useAppSettingsContext } from '../AppSettingsContext';
+import { useAppSettingsContext } from './AppSettingsContext';
 
 export default function Header() {
   const { settings } = useAppSettingsContext();
@@ -21,15 +21,25 @@ export default function Header() {
       <NavbarToggle />
       <NavbarCollapse>
         <Dropdown color="light" label={settings?.envType} dismissOnClick={true}>
+          <p>----------</p>
+          <p>NetSuite</p>
+          <p>----------</p>
           <p>Account Id: {settings?.accountId}</p>
           <p>Version: {settings?.version}</p>
           <p>Processors: {settings?.processorCount}</p>
           <p>Queues: {settings?.queueCount}</p>
+          <p>----------</p>
+          <p>SuiteTools</p>
+          <p>----------</p>
+          <p>app-bundle: {settings?.appBundle}</p>
         </Dropdown>
         <NavbarLink>
           <Dropdown color="light" label="Integrations" dismissOnClick={true}>
             <Dropdown.Item>
               <NavLink to={`integrations`}>Integrations</NavLink>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <NavLink to={`tokens`}>Tokens</NavLink>
             </Dropdown.Item>
             <Dropdown.Item>
               <NavLink to={`users`}>Users</NavLink>

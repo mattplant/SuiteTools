@@ -52,6 +52,9 @@ export function ModalWrapper({ getData, setShowModal, type, id }: Props) {
     case ModalTypes.SCRIPTLOG:
       title = 'Script Log Details';
       break;
+    case ModalTypes.TOKEN:
+      title = 'Token';
+      break;
     case ModalTypes.USER:
       title = 'User';
       break;

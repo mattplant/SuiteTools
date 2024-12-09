@@ -232,8 +232,8 @@ export class SuiteToolsLibraryNetSuiteFile {
    * @param fileName - the path to the file in the /SuiteScripts/{appDir} folder
    * @returns file
    */
-  private getFile(id: number | string): file.File {
-    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() initiated', details: { id: id } });
+  private getFileObj(id: number | string): file.File {
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileObj() initiated', details: { id: id } });
 
     let fileObj: file.File;
     if (typeof id === 'string') {
@@ -242,7 +242,7 @@ export class SuiteToolsLibraryNetSuiteFile {
     } else {
       fileObj = file.load({ id: id });
     }
-    // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
+    // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileObj() fileObj', details: fileObj });
 
     return fileObj;
   }
@@ -256,9 +256,27 @@ export class SuiteToolsLibraryNetSuiteFile {
   public getFileContents(id: number | string): string {
     // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
 
-    const fileObj = this.getFile(id);
+    const fileObj = this.getFileObj(id);
 
     return fileObj.getContents();
+  }
+
+  /**
+   * Gets NetSuite file contents.
+   *
+   * @param fileName - the path to the file in the /SuiteScripts/{appDir} folder
+   * @returns file contents
+   */
+  public getFileLastModified(id: number | string): string {
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
+
+    const fileObj = this.getFileObj(id);
+    const sql = `select TO_CHAR(File.LastModifiedDate, 'YYYY-MM-DD HH24:MI:SS') as lastModifiedDate from file where id = ${fileObj.id}`;
+    const result = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const lastModifiedDate = result[0].lastmodifieddate;
+    log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() lastModifiedDate', details: lastModifiedDate });
+
+    return lastModifiedDate;
   }
 
   /**
@@ -270,7 +288,7 @@ export class SuiteToolsLibraryNetSuiteFile {
   public getFileURL(fileName: string): string {
     log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
 
-    const fileObj = this.getFile(fileName);
+    const fileObj = this.getFileObj(fileName);
 
     return fileObj.url;
   }

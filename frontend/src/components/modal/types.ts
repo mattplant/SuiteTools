@@ -17,6 +17,7 @@ export enum ModalTypes {
   INTEGRATION = 'integration',
   SCRIPT = 'script',
   SCRIPTLOG = 'scriptlog',
+  TOKEN = 'token',
   USER = 'user',
 }
 

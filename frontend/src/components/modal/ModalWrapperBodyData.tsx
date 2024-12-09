@@ -1,11 +1,12 @@
 import { Button } from 'flowbite-react';
 import { ModalTypes } from './types';
-import { assertIsFile } from '../../pages/files/types';
-import { assertIsIntegration } from '../../pages/integrations/types';
-import { assertIsScript } from '../../pages/scripts/types';
-import { assertIsScriptLog } from '../../pages/scriptLogs/types';
-import { assertIsUser } from '../../pages/users/types';
-import { useAppSettingsContext } from '../../AppSettingsContext';
+import { assertIsFile } from '../file/types';
+import { assertIsIntegration } from '../integration/types';
+import { assertIsScript } from '../script/types';
+import { assertIsScriptLog } from '../scriptLog/types';
+import { assertIsToken } from '../token/types';
+import { assertIsUser } from '../user/types';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 type Props = {
   type: ModalTypes;
@@ -57,7 +58,7 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             </p>
             <Button.Group>
               <Button onClick={() => window.open(data.urlNs, '_blank')}>View File Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlFile, '_blank')}>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
                 View File Details
               </Button>
             </Button.Group>
@@ -107,7 +108,7 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             <p>Description: {data.description}</p>
             <Button.Group>
               <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScript, '_blank')}>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
                 View Script Details
               </Button>
               <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLogs, '_blank')}>
@@ -146,8 +147,44 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             </p>
             <Button.Group>
               <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Log Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLog, '_blank')}>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
                 View Script Log Details
+              </Button>
+            </Button.Group>
+          </>
+        );
+      case ModalTypes.TOKEN:
+        assertIsToken(data);
+        return (
+          <>
+            <p>
+              <b>ID</b>: {data.id}
+            </p>
+            <p>
+              <b>Name</b>: {data.name}
+            </p>
+            <p>
+              <b>User</b>: {data.user}
+            </p>
+            <p>
+              <b>Role</b>: {data.role}
+            </p>
+            <p>
+              <b>Application</b>: {data.application}
+            </p>
+            <p>
+              <b>State</b>: {data.state}
+            </p>
+            <p>
+              <b>Date Created</b>: {data.dateCreated}
+            </p>
+            <p>
+              <b>Created By</b>: {data.createdBy}
+            </p>{' '}
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Token Record</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+                View Token Details
               </Button>
             </Button.Group>
           </>
@@ -176,7 +213,7 @@ export function ModalWrapperBodyData({ type, loading, data }: Props) {
             </p>
             <Button.Group>
               <Button onClick={() => window.open(data.urlNs, '_blank')}>View User Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlUser, '_blank')}>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
                 View User Details
               </Button>
             </Button.Group>

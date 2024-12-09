@@ -194,8 +194,8 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
          * @param fileName - the path to the file in the /SuiteScripts/{appDir} folder
          * @returns file
          */
-        getFile(id) {
-            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() initiated', details: { id: id } });
+        getFileObj(id) {
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileObj() initiated', details: { id: id } });
             let fileObj;
             if (typeof id === 'string') {
                 const filePath = `/SuiteScripts/${this.stApp.appDir}/${id}`;
@@ -204,7 +204,7 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
             else {
                 fileObj = file.load({ id: id });
             }
-            // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFile() fileObj', details: fileObj });
+            // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileObj() fileObj', details: fileObj });
             return fileObj;
         }
         /**
@@ -215,8 +215,23 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
          */
         getFileContents(id) {
             // log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
-            const fileObj = this.getFile(id);
+            const fileObj = this.getFileObj(id);
             return fileObj.getContents();
+        }
+        /**
+         * Gets NetSuite file contents.
+         *
+         * @param fileName - the path to the file in the /SuiteScripts/{appDir} folder
+         * @returns file contents
+         */
+        getFileLastModified(id) {
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
+            const fileObj = this.getFileObj(id);
+            const sql = `select TO_CHAR(File.LastModifiedDate, 'YYYY-MM-DD HH24:MI:SS') as lastModifiedDate from file where id = ${fileObj.id}`;
+            const result = this.stApp.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+            const lastModifiedDate = result[0].lastmodifieddate;
+            log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileContents() lastModifiedDate', details: lastModifiedDate });
+            return lastModifiedDate;
         }
         /**
          * Gets NetSuite file URL.
@@ -226,7 +241,7 @@ define(["require", "exports", "N/email", "N/file", "N/log", "N/query", "N/record
          */
         getFileURL(fileName) {
             log.debug({ title: 'SuiteToolsLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
-            const fileObj = this.getFile(fileName);
+            const fileObj = this.getFileObj(fileName);
             return fileObj.url;
         }
     }
