@@ -1,97 +1,58 @@
-import { useState } from 'react';
-import { ReactTabulator, ReactTabulatorOptions } from 'react-tabulator';
-import { ModalWrapper } from '../modal/ModalWrapper.tsx';
-import { ModalTypes } from '../modal/types.ts';
-import { File } from './types.ts';
-import { getFile } from './getRecord.ts';
+import { useMemo } from 'react';
+import 'react-data-grid/lib/styles.css';
+import DataGrid from 'react-data-grid';
+import { ResultsProps, SummaryRow } from '../results/types.ts';
+import { assertIsFiles } from './types.ts';
 
-type Props = {
-  lines: File[];
-};
+const columns = [
+  {
+    key: 'id',
+    name: 'ID',
+    renderSummaryCell() {
+      return <strong>Total</strong>;
+    },
+  },
+  {
+    key: 'folder',
+    name: 'Folder',
+    renderSummaryCell({ row }: { row: SummaryRow }) {
+      return `${row.totalCount} records`;
+    },
+  },
+  { key: 'createddate', name: 'Created Date' },
+  { key: 'lastmodifieddate', name: 'Last Modified Date' },
+  { key: 'filetypename', name: 'Type' },
+  { key: 'name', name: 'Name' },
+  { key: 'filesize', name: 'File Size' },
+  { key: 'description', name: 'Description' },
+  { key: 'url', name: 'URL' },
+];
 
-const options: ReactTabulatorOptions = {
-  // headerSortElement: '<span className="inline-block"><i className="fas fa-arrow-up text-gray-500"></i><i className="fas fa-arrow-down text-gray-500"></i></span>',
-  // headerSort: true,
-  layout: 'fitData',
-};
+export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
+  assertIsFiles(rows);
 
-export function RecordsResults({ lines }: Props) {
-  console.log('RecordsResults inititiated with lines =', lines);
-  const [id, setId] = useState<number>(0);
-  const [showModal, setShowModal] = useState(false);
+  const summaryRows = useMemo((): readonly SummaryRow[] => {
+    return [
+      {
+        id: 'total_0',
+        totalCount: rows.length,
+      },
+    ];
+  }, [rows]);
 
   return (
-    <>
-      <ReactTabulator
-        columns={[
-          {
-            title: 'ID',
-            field: 'id',
-            cellClick: function (_e, cell) {
-              const id = cell.getValue();
-              setId(id);
-              setShowModal(true);
-            },
-            sorter: 'number',
-            headerSort: true,
-          },
-          {
-            title: 'Folder',
-            field: 'folder',
-            hozAlign: 'center',
-            sorter: 'string',
-          },
-          {
-            title: 'Created Date',
-            field: 'createddate',
-            hozAlign: 'center',
-            sorter: 'string',
-          },
-          {
-            title: 'Last Modified Date',
-            field: 'lastmodifieddate',
-            sorter: 'string',
-          },
-          {
-            title: 'Type',
-            field: 'filetypename',
-            sorter: 'string',
-          },
-          {
-            title: 'Name',
-            field: 'name',
-            cellClick: function (_e, cell) {
-              const row = cell.getRow();
-              const id = row.getData().id;
-              setId(id);
-              setShowModal(true);
-            },
-            sorter: 'string',
-          },
-          {
-            title: 'File Size',
-            field: 'filesize',
-            sorter: 'string',
-          },
-          {
-            title: 'Description',
-            field: 'description',
-            sorter: 'string',
-            // formatter:function(cell, formatterParams, onRendered){
-            //     if (cell.getValue() != "null") {
-            //         return cell.getValue();
-            //     }
-            // }
-          },
-          {
-            title: 'URL',
-            field: 'url',
-          },
-        ]}
-        data={lines}
-        options={options}
-      />
-      {showModal && <ModalWrapper getData={getFile} setShowModal={setShowModal} type={ModalTypes.FILE} id={id} />}
-    </>
+    <DataGrid
+      columns={columns}
+      rows={rows}
+      defaultColumnOptions={{
+        sortable: true,
+        resizable: true,
+      }}
+      bottomSummaryRows={summaryRows}
+      onCellClick={(cell) => {
+        setId(cell.row.id);
+        setOpenModal(true);
+      }}
+    />
   );
 }

@@ -1,71 +1,55 @@
-import { useState } from 'react';
-import { ReactTabulator, ReactTabulatorOptions } from 'react-tabulator';
-import { ModalWrapper } from '../modal/ModalWrapper.tsx';
-import { ModalTypes } from '../modal/types.ts';
-import { User } from './types.ts';
-import { getUser } from './getRecord.ts';
+import { useMemo } from 'react';
+import 'react-data-grid/lib/styles.css';
+import DataGrid from 'react-data-grid';
+import { ResultsProps, SummaryRow } from '../results/types.ts';
+import { assertIsUsers } from './types.ts';
 
-type Props = {
-  lines: User[];
-};
+const columns = [
+  {
+    key: 'isinactive',
+    name: 'Active',
+    renderSummaryCell() {
+      return <strong>Total</strong>;
+    },
+  },
+  {
+    key: 'name',
+    name: 'Name',
+    renderSummaryCell({ row }: { row: SummaryRow }) {
+      return `${row.totalCount} records`;
+    },
+  },
+  { key: 'email', name: 'Email' },
+  { key: 'role', name: 'Role' },
+  { key: 'title', name: 'Title' },
+  { key: 'supervisor', name: 'Supervisor' },
+];
 
-const options: ReactTabulatorOptions = {
-  // headerSortElement: '<span className="inline-block"><i className="fas fa-arrow-up text-gray-500"></i><i className="fas fa-arrow-down text-gray-500"></i></span>',
-  // headerSort: true,
-  layout: 'fitData',
-};
+export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
+  assertIsUsers(rows);
 
-export function RecordsResults({ lines }: Props) {
-  console.log('RecordsResults inititiated with lines =', lines);
-  const [id, setId] = useState<number>(0);
-  const [showModal, setShowModal] = useState(false);
+  const summaryRows = useMemo((): readonly SummaryRow[] => {
+    return [
+      {
+        id: 'total_0',
+        totalCount: rows.length,
+      },
+    ];
+  }, [rows]);
 
   return (
-    <>
-      <ReactTabulator
-        columns={[
-          {
-            title: 'Active',
-            field: 'isinactive',
-            hozAlign: 'center',
-            sorter: 'string',
-          },
-          {
-            title: 'Name',
-            field: 'name',
-            cellClick: function (_e, cell) {
-              const row = cell.getRow();
-              const id = row.getData().id;
-              setId(id);
-              setShowModal(true);
-            },
-            sorter: 'string',
-          },
-          {
-            title: 'Email',
-            field: 'email',
-            sorter: 'string',
-          },
-          {
-            title: 'Role',
-            field: 'role',
-            sorter: 'string',
-          },
-          {
-            title: 'Title',
-            field: 'title',
-            sorter: 'string',
-          },
-          {
-            title: 'Supervisor',
-            field: 'supervisor',
-            sorter: 'string',
-          },
-        ]}
-        data={lines}
-        options={options}
-      />
-      {showModal && <ModalWrapper getData={getUser} setShowModal={setShowModal} type={ModalTypes.USER} id={id} />}
-    </>
+    <DataGrid
+      columns={columns}
+      rows={rows}
+      defaultColumnOptions={{
+        sortable: true,
+        resizable: true,
+      }}
+      bottomSummaryRows={summaryRows}
+      onCellClick={(cell) => {
+        setId(cell.row.id);
+        setOpenModal(true);
+      }}
+    />
   );
 }

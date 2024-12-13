@@ -1,99 +1,59 @@
-import { useState } from 'react';
-import { ReactTabulator, ReactTabulatorOptions } from 'react-tabulator';
-import { ModalWrapper } from '../modal/ModalWrapper.tsx';
-import { ModalTypes } from '../modal/types.ts';
-import { Script } from './types.ts';
-import { getScript } from './getRecord.ts';
+import { useMemo } from 'react';
+import 'react-data-grid/lib/styles.css';
+import DataGrid from 'react-data-grid';
+import { ResultsProps, SummaryRow } from '../results/types.ts';
+import { assertIsScripts } from './types.ts';
 
-type Props = {
-  lines: Script[];
-};
+const columns = [
+  {
+    key: 'id',
+    name: 'ID',
+    renderSummaryCell() {
+      return <strong>Total</strong>;
+    },
+  },
+  {
+    key: 'isinactive',
+    name: 'Active',
+    renderSummaryCell({ row }: { row: SummaryRow }) {
+      return `${row.totalCount} records`;
+    },
+  },
+  { key: 'apiversion', name: 'API' },
+  { key: 'scripttype', name: 'Script Type' },
+  { key: 'script', name: 'Script' },
+  { key: 'scriptid', name: 'id' },
+  { key: 'owner', name: 'Owner' },
+  { key: 'scriptfile', name: 'File' },
+  { key: 'notifyemails', name: 'Notify Emails' },
+  { key: 'description', name: 'Description' },
+];
 
-const options: ReactTabulatorOptions = {
-  // headerSortElement: '<span className="inline-block"><i className="fas fa-arrow-up text-gray-500"></i><i className="fas fa-arrow-down text-gray-500"></i></span>',
-  // headerSort: true,
-  layout: 'fitData',
-};
+export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
+  assertIsScripts(rows);
 
-export function RecordsResults({ lines }: Props) {
-  const [id, setId] = useState<number>(0);
-  const [showModal, setShowModal] = useState(false);
+  const summaryRows = useMemo((): readonly SummaryRow[] => {
+    return [
+      {
+        id: 'total_0',
+        totalCount: rows.length,
+      },
+    ];
+  }, [rows]);
 
   return (
-    <>
-      <ReactTabulator
-        columns={[
-          {
-            title: 'ID',
-            field: 'id',
-            cellClick: function (_e, cell) {
-              const id = cell.getValue();
-              setId(id);
-              setShowModal(true);
-            },
-            sorter: 'number',
-            headerSort: true,
-          },
-          {
-            title: 'Active',
-            field: 'isinactive',
-            hozAlign: 'center',
-            sorter: 'string',
-          },
-          {
-            title: 'API',
-            field: 'apiversion',
-            hozAlign: 'center',
-            sorter: 'string',
-          },
-          {
-            title: 'Script Type',
-            field: 'scripttype',
-            sorter: 'string',
-          },
-          {
-            title: 'Script',
-            field: 'name',
-            cellClick: function (_e, cell) {
-              const row = cell.getRow();
-              const id = row.getData().id;
-              setId(id);
-              setShowModal(true);
-            },
-            sorter: 'string',
-          },
-          {
-            title: 'Id',
-            field: 'scriptid',
-            sorter: 'string',
-          },
-          {
-            title: 'Owner',
-            field: 'owner',
-            sorter: 'string',
-          },
-          {
-            title: 'File',
-            field: 'scriptfile',
-          },
-          {
-            title: 'Notify Emails',
-            field: 'notifyemails',
-            sorter: 'string',
-          },
-          {
-            title: 'Description',
-            field: 'description',
-            sorter: 'string',
-          },
-        ]}
-        data={lines}
-        options={options}
-      />
-      {showModal && <ModalWrapper getData={getScript} setShowModal={setShowModal} type={ModalTypes.SCRIPT} id={id} />}
-      {/* {showModal && (
-        <ModalWrapper getData={getScript} setShowModal={setShowModal} type={ModalTypes.USER} id={14671395} />
-      )} */}
-    </>
+    <DataGrid
+      columns={columns}
+      rows={rows}
+      defaultColumnOptions={{
+        sortable: true,
+        resizable: true,
+      }}
+      bottomSummaryRows={summaryRows}
+      onCellClick={(cell) => {
+        setId(cell.row.id);
+        setOpenModal(true);
+      }}
+    />
   );
 }

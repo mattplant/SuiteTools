@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
+import { getToken } from '../components/token/getRecord.ts';
 import { getTokens } from '../components/token/getRecords.ts';
 import { Token } from '../components/token/types.ts';
 import { RecordsCriteria } from '../components/token/RecordsCriteria.tsx';
-import { RecordsResults } from '../components/token/RecordsResults.tsx';
+import { Results } from '../components/results/Results.tsx';
+import { ResultsTypes } from '../components/results/types.ts';
 
 export function TokensPage() {
   const defaultCriteria: CriteriaFields = {
@@ -30,7 +32,7 @@ export function TokensPage() {
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Tokens</h2>
       <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
-      <RecordsResults lines={results} />
+      <Results type={ResultsTypes.TOKEN} lines={results} getModalData={getToken} />
     </div>
   );
 }

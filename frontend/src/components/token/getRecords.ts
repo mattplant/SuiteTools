@@ -11,17 +11,8 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
   if (window.location.href.includes('localhost')) {
     // mock data for local development
     dataArray = [
-      [
-        '',
-        '1',
-        'Sample Token',
-        'Matt Plant',
-        'Administrator',
-        'Sample Application',
-        'No',
-        '2024-12-07 18:28:38',
-        'Matt Plant',
-      ],
+      ['', '1', 'Token 1', 'Matt Plant', 'Administrator', 'Application 1', 'No', '2024-12-07 18:28:38', 'Matt Plant'],
+      ['', '2', 'Token 2', 'Matt Plant', 'Administrator', 'Application 2', 'No', '2024-12-11 12:13:14', 'Matt Plant'],
     ];
   } else {
     // get data from NetSuite page

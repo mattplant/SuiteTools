@@ -24,10 +24,10 @@
     "@types/react-router-dom": "5.3.3",
     "flowbite-react": "^0.10.2",
     "react": "^18.2.0",
+    "react-data-grid": "^7.0.0-beta.47",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.1",
-    "react-router-dom": "6.23.1",
-    "react-tabulator": "^0.21.0"
+    "react-router-dom": "6.23.1"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
+import { getScript } from '../components/script/getRecord.ts';
 import { getScripts } from '../components/script/getRecords.ts';
 import { Script } from '../components/script/types.ts';
 import { RecordsCriteria } from '../components/script/RecordsCriteria.tsx';
-import { RecordsResults } from '../components/script/RecordsResults.tsx';
+import { Results } from '../components/results/Results.tsx';
+import { ResultsTypes } from '../components/results/types.ts';
 
 export function ScriptsPage() {
   const defaultCriteria: CriteriaFields = {
@@ -35,7 +37,7 @@ export function ScriptsPage() {
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Scripts</h2>
       <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
-      <RecordsResults lines={results} />
+      <Results type={ResultsTypes.SCRIPT} lines={results} getModalData={getScript} />
     </div>
   );
 }

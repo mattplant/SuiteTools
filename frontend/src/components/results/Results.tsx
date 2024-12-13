@@ -1,0 +1,75 @@
+import { useEffect, useState } from 'react';
+import { Modal } from 'flowbite-react';
+import { DynamicResultsRenderer } from './DynamicResultsRenderer.tsx';
+import { ModalResult, ResultsTypes } from './types.ts';
+import { ResultsModal } from './ResultsModal.tsx';
+
+type Props = {
+  type: ResultsTypes;
+  lines: unknown[];
+  getModalData: (id: number) => Promise<ModalResult>;
+};
+
+export function Results({ type, lines, getModalData }: Props) {
+  const [openModal, setOpenModal] = useState(false);
+  const [id, setId] = useState<number>(0);
+  const [data, setData] = useState<ModalResult>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const data = await getModalData(id);
+        setData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    }
+    fetchData();
+
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // determine modal title based on modal type
+  let modalTitle = '';
+  switch (type) {
+    case ResultsTypes.FILE:
+      modalTitle = 'File';
+      break;
+    case ResultsTypes.INTEGRATION:
+      modalTitle = 'Integration';
+      break;
+    case ResultsTypes.SCRIPT:
+      modalTitle = 'Script';
+      break;
+    case ResultsTypes.SCRIPTLOG:
+      modalTitle = 'Script Log Details';
+      break;
+    case ResultsTypes.TOKEN:
+      modalTitle = 'Token';
+      break;
+    case ResultsTypes.USER:
+      modalTitle = 'User';
+      break;
+    default:
+      console.error('Results type not found:', type);
+      break;
+  }
+
+  return (
+    <>
+      <DynamicResultsRenderer type={type} rows={lines} setId={setId} setOpenModal={setOpenModal} />
+      <Modal dismissible show={openModal} size="6xl" onClose={() => setOpenModal(false)}>
+        <Modal.Header>{modalTitle + ' ' + id}</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6 p-6">
+            <ResultsModal type={type} loading={loading} data={data} />
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
+  );
+}

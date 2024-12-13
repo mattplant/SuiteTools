@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
+import { getFile } from '../components/file/getRecord.ts';
 import { getFiles } from '../components/file/getRecords.ts';
 import { File } from '../components/file/types.ts';
 import { RecordsCriteria } from '../components/file/RecordsCriteria.tsx';
-import { RecordsResults } from '../components/file/RecordsResults.tsx';
+import { Results } from '../components/results/Results.tsx';
+import { ResultsTypes } from '../components/results/types.ts';
 
 export function FilesPage() {
   const defaultCriteria: CriteriaFields = {
@@ -33,7 +35,7 @@ export function FilesPage() {
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Files</h2>
       <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
-      <RecordsResults lines={results} />
+      <Results type={ResultsTypes.FILE} lines={results} getModalData={getFile} />
     </div>
   );
 }

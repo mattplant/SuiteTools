@@ -1,6 +1,3 @@
-@import '../node_modules/react-tabulator/css/tabulator_simple.css';
-/* @import '../node_modules/react-tabulator/css/tabulator_modern.css'; */
-/* @import '../node_modules/react-tabulator/css/tabulator_midnight.css'; */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

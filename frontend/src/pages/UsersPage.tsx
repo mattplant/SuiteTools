@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
+import { getUser } from '../components/user/getRecord.ts';
 import { getUsers } from '../components/user/getRecords.ts';
 import { User } from '../components/user/types.ts';
 import { RecordsCriteria } from '../components/user/RecordsCriteria.tsx';
-import { RecordsResults } from '../components/user/RecordsResults.tsx';
+import { Results } from '../components/results/Results.tsx';
+import { ResultsTypes } from '../components/results/types.ts';
 
 export function UsersPage() {
   const defaultCriteria: CriteriaFields = {
@@ -32,7 +34,7 @@ export function UsersPage() {
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Users</h2>
       <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
-      <RecordsResults lines={results} />
+      <Results type={ResultsTypes.USER} lines={results} getModalData={getUser} />
     </div>
   );
 }

@@ -10,7 +10,10 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
   let dataArray: string[][] = [];
   if (window.location.href.includes('localhost')) {
     // mock data for local development
-    dataArray = [['1', 'Sample Integration', 'ABCD12EF-456G-...', 'Enabled', '2024-12-06 13:02:03']];
+    dataArray = [
+      ['1', 'Application 1', 'ABCD12EF-456G-...', 'Enabled', '2024-12-06 13:02:03'],
+      ['2', 'Application 2', 'ABCDE12F-456G-...', 'Enabled', '2024-12-11 12:13:14'],
+    ];
   } else {
     // get data from NetSuite page
     dataArray = await getDataFromPageTable('/app/common/integration/integrapplist.nl?showall=T', 'div__body', true);
