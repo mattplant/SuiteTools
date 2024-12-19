@@ -5,7 +5,7 @@ export async function getSettings(): Promise<Settings> {
   const localTestData = {
     data: {
       devMode: true,
-      appScriptUrl: '/',
+      appUrl: '/',
       // system
       accountId: '1234567_SB1',
       envType: 'SANDBOX',
@@ -44,12 +44,12 @@ export function assertIsSettings(data: unknown): asserts data is Settings {
   if (typeof data.devMode !== 'boolean') {
     throw new Error('Settings data "devMode" field is not a boolean');
   }
-  // appScriptUrl
-  if (!('appScriptUrl' in data)) {
-    throw new Error('Settings data is missing the "appScriptUrl" field');
+  // appUrl
+  if (!('appUrl' in data)) {
+    throw new Error('Settings data is missing the "appUrl" field');
   }
-  if (typeof data.appScriptUrl !== 'string') {
-    throw new Error('Settings data "appScriptUrl" field is not a string');
+  if (typeof data.appUrl !== 'string') {
+    throw new Error('Settings data "appUrl" field is not a string');
   }
   // SYSTEM INFO
   // accountId

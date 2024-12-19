@@ -27,7 +27,7 @@
 import { EntryPoints } from 'N/types';
 import error = require('N/error');
 import log = require('N/log');
-import { SuiteToolsApp } from './idev-suitetools-app';
+import { SuiteToolsCommon } from './idev-suitetools-common';
 
 /**
  * Handles the GET request event.
@@ -36,11 +36,11 @@ import { SuiteToolsApp } from './idev-suitetools-app';
  * @returns The response.
  */
 export function get(requestParams: EntryPoints.RESTlet.get): string {
-  log.audit({ title: 'get() initiated', details: requestParams });
+  // log.debug({ title: 'get() initiated', details: requestParams });
 
   const stApi = new SuiteToolsApi();
   const response = JSON.stringify(stApi.stApiGet.process(requestParams));
-  log.audit({ title: 'get() returning', details: response });
+  // log.debug({ title: 'get() returning', details: response });
 
   return response;
 }
@@ -54,11 +54,11 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
  * @returns The response.
  */
 export function put(requestBody: EntryPoints.RESTlet.put): string {
-  log.audit({ title: 'put() initiated', details: requestBody });
+  // log.debug({ title: 'put() initiated', details: requestBody });
 
   const stApi = new SuiteToolsApi();
   const response = JSON.stringify(stApi.stApiPut.process(requestBody));
-  log.audit({ title: 'put() returning', details: response });
+  // log.debug({ title: 'put() returning', details: response });
 
   return response;
 }
@@ -71,25 +71,28 @@ export function put(requestBody: EntryPoints.RESTlet.put): string {
 export class SuiteToolsApi {
   private _stApiGet: SuiteToolsApiGet;
   private _stApiPut: SuiteToolsApiPut;
-  private _stApp: SuiteToolsApp;
+  private _stApiModel: SuiteToolsApiModel;
+  private _stCommon: SuiteToolsCommon;
 
   get stApiGet(): SuiteToolsApiGet {
     return this._stApiGet;
   }
-
   get stApiPut(): SuiteToolsApiPut {
     return this._stApiPut;
   }
-
-  get stApp(): SuiteToolsApp {
-    return this._stApp;
+  get stApiModel(): SuiteToolsApiModel {
+    return this._stApiModel;
+  }
+  get stCommon(): SuiteToolsCommon {
+    return this._stCommon;
   }
 
   constructor() {
     log.debug({ title: 'SuiteToolsApi:constructor() initiated', details: null });
+    this._stCommon = new SuiteToolsCommon();
+    this._stApiModel = new SuiteToolsApiModel(this._stCommon);
     this._stApiGet = new SuiteToolsApiGet(this);
     this._stApiPut = new SuiteToolsApiPut(this);
-    this._stApp = new SuiteToolsApp();
   }
 }
 
@@ -98,7 +101,6 @@ type RequestParams = { [key: string]: string };
 type Response = {
   status?: number;
   data: object | string;
-  remainingUsage?: number;
 };
 
 export class SuiteToolsApiGet {
@@ -113,7 +115,7 @@ export class SuiteToolsApiGet {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    log.debug({ title: 'SuiteToolsApiGet:constructor() initiated', details: null });
+    // log.debug({ title: 'SuiteToolsApiGet:constructor() initiated', details: null });
     this._stApi = stApi;
     this._stApiGetOptions = new SuiteToolsApiGetOptions(stApi);
   }
@@ -123,7 +125,6 @@ export class SuiteToolsApiGet {
     this.assertIsRequestParams(requestParams);
 
     const response: Response = { data: null };
-    // // verify that the required parameters are present
     const endpoint = requestParams.endpoint;
     switch (endpoint) {
       case 'file':
@@ -135,8 +136,17 @@ export class SuiteToolsApiGet {
       case 'optionValues':
         response.data = this.stApiGetOptions.process(requestParams);
         break;
+      case 'role':
+        response.data = this.getRole(requestParams);
+        response.data = this.cleanRoleData(response.data);
+        break;
+      case 'roles':
+        response.data = this.getRoles(requestParams);
+        response.data = this.cleanRolesData(response.data);
+        break;
       case 'script':
         response.data = this.getScript(requestParams);
+        response.data = this.cleanScriptData(response.data);
         break;
       case 'scripts':
         response.data = this.getScripts(requestParams);
@@ -151,11 +161,9 @@ export class SuiteToolsApiGet {
       case 'settings':
         response.data = this.getSettings(requestParams);
         break;
-      // case 'system':
-      //   response.data = this.getSystem(requestParams);
-      //   break;
       case 'user':
         response.data = this.getUser(requestParams);
+        response.data = this.cleanUserData(response.data);
         break;
       case 'users':
         response.data = this.getUsers(requestParams);
@@ -168,7 +176,6 @@ export class SuiteToolsApiGet {
           notifyOff: true,
         });
     }
-    response.remainingUsage = this.stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
     log.debug({ title: 'SuiteToolsApiGet:process() returning', details: response });
 
     return response;
@@ -192,50 +199,96 @@ export class SuiteToolsApiGet {
     return field ? (field.includes(',') ? field.split(',') : [field]) : null;
   }
 
-  private cleanScriptsData(scripts: object): object {
-    log.debug({ title: 'SuiteToolsApiGet:cleanScriptsData() initiated', details: scripts });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cleanRoleData(data: any): object {
+    // switch isinactive values to active values
+    if (data.isinactive === 'F') {
+      data.isinactive = 'Yes';
+    } else {
+      data.isinactive = 'No';
+    }
+    // clean other fields
+    if (data.issalesrole === 'F') {
+      data.issalesrole = 'No';
+    } else {
+      data.issalesrole = 'Yes';
+    }
+    if (data.issupportrole === 'F') {
+      data.issupportrole = 'No';
+    } else {
+      data.issupportrole = 'Yes';
+    }
+    if (data.iswebserviceonlyrole === 'F') {
+      data.iswebserviceonlyrole = 'No';
+    } else {
+      data.iswebserviceonlyrole = 'Yes';
+    }
 
-    if (scripts && Array.isArray(scripts) && scripts.length > 0) {
-      scripts.forEach((script) => {
-        // switch isinactive values to active values
-        if (script.isinactive === 'F') {
-          script.isinactive = 'Yes';
-        } else {
-          script.isinactive = 'No';
-        }
+    return data;
+  }
+
+  private cleanRolesData(data: object): object {
+    if (data && Array.isArray(data) && data.length > 0) {
+      data.forEach((record) => {
+        this.cleanRoleData(record);
       });
     }
-    // log.debug({ title: 'SuiteToolsApiGet:cleanScriptsData() returning', details: scripts });
 
-    return scripts;
+    return data;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cleanScriptData(data: any): object {
+    // switch isinactive values to active values
+    if (data.isinactive === 'F') {
+      data.isinactive = 'Yes';
+    } else {
+      data.isinactive = 'No';
+    }
+
+    return data;
+  }
+
+  private cleanScriptsData(data: object): object {
+    if (data && Array.isArray(data) && data.length > 0) {
+      data.forEach((record) => {
+        this.cleanScriptData(record);
+      });
+    }
+
+    return data;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cleanUserData(data: any): object {
+    // switch isinactive values to active values
+    if (data.isinactive === 'F') {
+      data.isinactive = 'Yes';
+    } else {
+      data.isinactive = 'No';
+    }
+    // clear role field if empty
+    if (data.role === ' ()') {
+      data.role = '';
+    }
+    // clear supervisor field if empty
+    if (data.supervisor === ' ()') {
+      data.supervisor = '';
+    }
+    // set title field to "" if empty
+    if (data.title === null) {
+      data.title = '';
+    }
+
+    return data;
   }
 
   private cleanUsersData(data: object): object {
-    log.debug({ title: 'SuiteToolsApiGet:cleanUsersData() initiated', details: data });
-
     if (data && Array.isArray(data) && data.length > 0) {
-      data.forEach((script) => {
-        // switch isinactive values to active values
-        if (script.isinactive === 'F') {
-          script.isinactive = 'Yes';
-        } else {
-          script.isinactive = 'No';
-        }
-        // clear role field if empty
-        if (script.role === ' ()') {
-          script.role = '';
-        }
-        // clear supervisor field if empty
-        if (script.supervisor === ' ()') {
-          script.supervisor = '';
-        }
-        // set title field to "" if empty
-        if (script.title === null) {
-          script.title = '';
-        }
+      data.forEach((record) => {
+        this.cleanUserData(record);
       });
     }
-    // log.debug({ title: 'SuiteToolsApiGet:cleanUsersData() returning', details: data });
 
     return data;
   }
@@ -258,7 +311,7 @@ export class SuiteToolsApiGet {
       });
     }
 
-    const result = this.stApi.stApp.stModel.getFile(id);
+    const result = this.stApi.stApiModel.getFile(id);
     // log.debug({ title: 'SuiteToolsApiGet:getFile() returning', details: result });
 
     return result;
@@ -277,8 +330,48 @@ export class SuiteToolsApiGet {
     const types = this.convertMultiSelectToArray(requestParams['filetype']);
     const createdDate = requestParams['createddate'];
     const modifiedDate = requestParams['lastmodifieddate'];
-    const result = this.stApi.stApp.stModel.getFiles(row, types, createdDate, modifiedDate);
+    const result = this.stApi.stApiModel.getFiles(row, types, createdDate, modifiedDate);
     // log.debug({ title: 'SuiteToolsApiGet:getFiles() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Role
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getRole(requestParams: RequestParams): object {
+    log.debug({ title: 'SuiteToolsApi:getRole() initiated', details: requestParams });
+
+    const id = requestParams.id;
+    if (!id) {
+      throw error.create({
+        name: 'SUITE_TOOLS_MISSING_PARAMETER',
+        message: `Missing required parameter: id`,
+        notifyOff: true,
+      });
+    }
+
+    const result = this.stApi.stApiModel.getRole(id);
+    // log.debug({ title: 'SuiteToolsApi:getRole() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Roles
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getRoles(requestParams: RequestParams): object {
+    log.debug({ title: 'SuiteToolsApiGet:getRoles() initiated', details: requestParams });
+
+    const active = requestParams['active'];
+    const result = this.stApi.stApiModel.getRoles(active);
+    // log.debug({ title: 'SuiteToolsApiGet:getRoles() returning', details: result });
 
     return result;
   }
@@ -301,7 +394,7 @@ export class SuiteToolsApiGet {
       });
     }
 
-    const result = this.stApi.stApp.stModel.getScript(id);
+    const result = this.stApi.stApiModel.getScript(id);
     // log.debug({ title: 'SuiteToolsApi:getScript() returning', details: result });
 
     return result;
@@ -322,7 +415,7 @@ export class SuiteToolsApiGet {
     const scripts = this.convertMultiSelectToArray(requestParams['scriptrecord']);
     const owners = this.convertMultiSelectToArray(requestParams['owner']);
     const files = this.convertMultiSelectToArray(requestParams['file']);
-    const result = this.stApi.stApp.stModel.getScripts(active, versions, scripttypes, scripts, owners, files);
+    const result = this.stApi.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
     // log.debug({ title: 'SuiteToolsApiGet:getScripts() returning', details: result });
 
     return result;
@@ -346,11 +439,12 @@ export class SuiteToolsApiGet {
       });
     }
 
-    const result = this.stApi.stApp.stModel.getScriptLog(id);
+    const result = this.stApi.stApiModel.getScriptLog(id);
     // log.debug({ title: 'SuiteToolsApiGet:getScriptLog() returning', details: result });
 
     return result;
   }
+
   /**
    * Get Server Script Logs
    *
@@ -369,7 +463,7 @@ export class SuiteToolsApiGet {
     const date = requestParams['createddate'] ? requestParams['createddate'] : '15';
     const title = requestParams['title'];
     const detail = requestParams['detail'];
-    const result = this.stApi.stApp.stModel.getScriptLogsViaSuiteQL(
+    const result = this.stApi.stApiModel.getScriptLogsViaSuiteQL(
       row,
       levels,
       types,
@@ -393,69 +487,36 @@ export class SuiteToolsApiGet {
   private getSettings(requestParams: RequestParams): object {
     log.debug({ title: 'SuiteToolsApiGet:getSettings() initiated', details: requestParams });
 
-    this.stApi.stApp.stAppSettings.getSettings();
+    this.stApi.stCommon.stSettings.getSettings();
     const result = {
-      devMode: this.stApi.stApp.stAppSettings.devMode,
-      appScriptUrl: this.stApi.stApp.scriptUrl,
+      devMode: this.stApi.stCommon.stSettings.devMode,
+      appUrl: this.stApi.stCommon.appUrl,
       // system
-      accountId: this.stApi.stApp.stAppNs.runtime.accountId,
-      envType: this.stApi.stApp.stAppNs.runtime.envType,
-      isProduction: this.stApi.stApp.stAppNs.isProduction,
-      version: this.stApi.stApp.stAppNs.runtime.version,
-      processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
-      queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
-      appBundle: this.stApi.stApp.stAppSettings.appBundle,
+      accountId: this.stApi.stCommon.runtime.accountId,
+      envType: this.stApi.stCommon.runtime.envType,
+      isProduction: this.stApi.stCommon.isProduction,
+      version: this.stApi.stCommon.runtime.version,
+      processorCount: this.stApi.stCommon.runtime.processorCount,
+      queueCount: this.stApi.stCommon.runtime.queueCount,
+      appBundle: this.stApi.stCommon.stSettings.appBundle,
       // user
-      userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
-      userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
-      userEmail: this.stApi.stApp.stAppNs.runtime.getCurrentUser().email,
-      userLocation: this.stApi.stApp.stAppNs.runtime.getCurrentUser().location,
-      userDepartment: this.stApi.stApp.stAppNs.runtime.getCurrentUser().department,
-      userRole: this.stApi.stApp.stAppNs.runtime.getCurrentUser().roleId, // flipped to have the roleId integer and
-      userRoleId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().role, // the role string like accountId, userId
-      userSubsidiary: this.stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
-      isAdmin: this.stApi.stApp.stAppNs.isAdmin,
+      userId: this.stApi.stCommon.runtime.getCurrentUser().id,
+      userName: this.stApi.stCommon.runtime.getCurrentUser().name,
+      userEmail: this.stApi.stCommon.runtime.getCurrentUser().email,
+      userLocation: this.stApi.stCommon.runtime.getCurrentUser().location,
+      userDepartment: this.stApi.stCommon.runtime.getCurrentUser().department,
+      userRole: this.stApi.stCommon.runtime.getCurrentUser().roleId, // flipped to have the roleId integer and
+      userRoleId: this.stApi.stCommon.runtime.getCurrentUser().role, // the role string like accountId, userId
+      userSubsidiary: this.stApi.stCommon.runtime.getCurrentUser().subsidiary,
+      isAdmin: this.stApi.stCommon.isAdmin,
     };
-    // log.debug({ title: 'SuiteToolsApiGet:getSettings() returning', details: result });
+    log.debug({ title: 'SuiteToolsApiGet:getSettings() returning', details: result });
 
     return result;
   }
 
-  // /**
-  //  * Get system values.
-  //  *
-  //  * @param requestParams
-  //  * @returns system
-  //  */
-  // private getSystem(requestParams: RequestParams): object {
-  //   log.debug({ title: 'SuiteToolsApiGet:getSystem() initiated', details: requestParams });
-
-  //   const result = {
-  //     // system
-  //     accountId: this.stApi.stApp.stAppNs.runtime.accountId,
-  //     envType: this.stApi.stApp.stAppNs.runtime.envType,
-  //     isProduction: this.stApi.stApp.stAppNs.isProduction,
-  //     version: this.stApi.stApp.stAppNs.runtime.version,
-  //     processorCount: this.stApi.stApp.stAppNs.runtime.processorCount,
-  //     queueCount: this.stApi.stApp.stAppNs.runtime.queueCount,
-  //     // user
-  //     userId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().id,
-  //     userName: this.stApi.stApp.stAppNs.runtime.getCurrentUser().name,
-  //     userEmail: this.stApi.stApp.stAppNs.runtime.getCurrentUser().email,
-  //     userLocation: this.stApi.stApp.stAppNs.runtime.getCurrentUser().location,
-  //     userDepartment: this.stApi.stApp.stAppNs.runtime.getCurrentUser().department,
-  //     userRole: this.stApi.stApp.stAppNs.runtime.getCurrentUser().role,
-  //     userRoleId: this.stApi.stApp.stAppNs.runtime.getCurrentUser().roleId,
-  //     isAdmin: this.stApi.stApp.stAppNs.isAdmin,
-  //     userSubsidiary: this.stApi.stApp.stAppNs.runtime.getCurrentUser().subsidiary,
-  //   };
-  //   // log.debug({ title: 'SuiteToolsApiGet:getSystem() returning', details: result });
-
-  //   return result;
-  // }
-
   /**
-   * Get Script
+   * Get User
    *
    * @param requestParams
    * @returns settings
@@ -472,7 +533,7 @@ export class SuiteToolsApiGet {
       });
     }
 
-    const result = this.stApi.stApp.stModel.getUser(id);
+    const result = this.stApi.stApiModel.getUser(id);
     // log.debug({ title: 'SuiteToolsApi:getUser() returning', details: result });
 
     return result;
@@ -489,7 +550,7 @@ export class SuiteToolsApiGet {
     const active = requestParams['active'];
     const role = requestParams['role'];
     const supervisors = this.convertMultiSelectToArray(requestParams['owner']);
-    const result = this.stApi.stApp.stModel.getUsers(active, role, supervisors);
+    const result = this.stApi.stApiModel.getUsers(active, role, supervisors);
     // log.debug({ title: 'SuiteToolsApiGet:getUsers() returning', details: result });
 
     return result;
@@ -519,36 +580,32 @@ export class SuiteToolsApiGetOptions {
   }
 
   public process(requestParams: RequestParams): object {
-    log.debug({ title: 'SuiteToolsApiGetOptions:process() initiated', details: requestParams });
+    // log.debug({ title: 'SuiteToolsApiGetOptions:process() initiated', details: requestParams });
 
     let data: unknown;
-
-    // let result: OptionValuesResponse[];
     let result = {};
-
-    // verify that the required parameters are present
     const type = requestParams.type;
     switch (type) {
       case 'file':
-        data = this.stApi.stApp.stModel.getFileList(true);
+        data = this.getFileList(true);
         break;
       case 'filetype':
-        data = this.stApi.stApp.stModel.getFileTypeList();
+        data = this.getFileTypeList();
         break;
       case 'owner':
-        data = this.stApi.stApp.stModel.getEmployeeList(true);
-        break;
-      case 'script':
-        data = this.stApi.stApp.stModel.getScriptList();
-        break;
-      case 'scripttype':
-        data = this.stApi.stApp.stModel.getScriptTypeList();
+        data = this.getEmployeeList(true);
         break;
       case 'role':
-        data = this.stApi.stApp.stModel.getRoleList(true);
+        data = this.getRoleList(true);
+        break;
+      case 'script':
+        data = this.getScriptList();
+        break;
+      case 'scripttype':
+        data = this.getScriptTypeList();
         break;
       case 'user':
-        data = this.stApi.stApp.stModel.getEmployeeList(true);
+        data = this.getEmployeeList(true);
         break;
       default:
         throw error.create({
@@ -570,7 +627,7 @@ export class SuiteToolsApiGetOptions {
   }
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
-    log.debug({ title: 'SuiteToolsApiGetOptions:assertIsOptionValuesResponse() initiated', details: data });
+    // log.debug({ title: 'SuiteToolsApiGetOptions:assertIsOptionValuesResponse() initiated', details: data });
 
     if (!Array.isArray(data)) {
       throw new Error('OptionValuesResponse is not an array');
@@ -607,6 +664,91 @@ export class SuiteToolsApiGetOptions {
     }
 
     return options;
+  }
+
+  // ------------------------------
+  // GET OPTION LISTS
+  // ------------------------------
+
+  /**
+   * Get employee list
+   *
+   * @param [activeOnly]
+   * @returns employees
+   */
+  private getEmployeeList(activeOnly?: boolean) {
+    let sql = `SELECT
+      employee.id,
+      TRIM(employee.firstname || ' ' || employee.lastname) AS name
+    FROM
+      employee`;
+    if (activeOnly) {
+      sql += ` WHERE
+        giveaccess = 'T'
+        AND isinactive = 'F'`;
+    }
+    sql += ` ORDER BY name ASC`;
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  }
+
+  private getFileList(activeOnly?: boolean) {
+    let sql = `SELECT
+      File.id,
+      File.name
+    FROM
+	    File
+    INNER JOIN Script ON
+		  ( Script.ScriptFile = File.ID )
+    WHERE
+      ( File.filetype = 'JAVASCRIPT' )`;
+    if (activeOnly) {
+      sql += ` AND ( Script.isinactive = 'F' )`;
+    }
+    sql += ` ORDER BY file.name ASC`;
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  }
+
+  // private getIntegrationList() {
+  // }
+
+  private getFileTypeList() {
+    const sql = `SELECT
+      DISTINCT filetype as id,
+      filetype as name
+    FROM file
+    ORDER BY filetype`;
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  }
+
+  private getRoleList(activeOnly = false) {
+    let sql = `SELECT
+      role.id,
+      role.name
+    FROM
+      role`;
+    if (activeOnly) {
+      sql += ` WHERE isInactive = 'F'`;
+    }
+    sql += ` ORDER BY role.name`;
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  }
+
+  private getScriptList(activeOnly?: boolean) {
+    let sql = `SELECT
+      script.id,
+      script.name
+    FROM
+      script`;
+    if (activeOnly) {
+      sql += ` WHERE isinactive = 'F'`;
+    }
+    sql += ` ORDER BY name ASC`;
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  }
+
+  private getScriptTypeList() {
+    const sql = 'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name';
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 }
 
@@ -645,7 +787,6 @@ export class SuiteToolsApiPut {
           notifyOff: true,
         });
     }
-    response.remainingUsage = this.stApi.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage();
     // log.debug({ title: 'SuiteToolsApiPut:process() returning', details: response });
 
     return response;
@@ -683,10 +824,10 @@ export class SuiteToolsApiPut {
 
     const devMode = requestBodyData.devMode;
     const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
-    this.stApi.stApp.stAppSettings.getSettings();
-    const success = this.stApi.stApp.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
-      this.stApi.stApp.appSettingsCustomRecord,
-      this.stApi.stApp.stAppSettings.recordId,
+    this.stApi.stCommon.stSettings.getSettings();
+    const success = this.stApi.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
+      this.stApi.stCommon.appSettingsRecord,
+      this.stApi.stCommon.stSettings.recordId,
       updateSettings,
     );
     log.debug({ title: `SuiteToolsApiPut:putSettings() saved successfully?`, details: success });
@@ -695,5 +836,1259 @@ export class SuiteToolsApiPut {
       status: 200,
       data: 'Settings updated',
     };
+  }
+}
+
+/**
+ * SuiteTools Model
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsApiModel {
+  private _stCommon: SuiteToolsCommon;
+
+  get stCommon(): SuiteToolsCommon {
+    return this._stCommon;
+  }
+
+  constructor(stCommon: SuiteToolsCommon) {
+    // log.debug({ title: 'SuiteToolsApiModel:constructor() initiated', details: null });
+    this._stCommon = stCommon;
+  }
+
+  /**
+   * Get Jobs
+   *
+   * @param active - the active flag
+   * @returns roles
+   */
+  // public getJobs(
+  //   active: string
+  // ) {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getJobs() initiated`,
+  //     details: {
+  //       active: active,
+  //     },
+  //   });
+
+  //   let sql = `SELECT
+  //     id,
+  //     custrecord_st_job_task_id as task_id,
+  //   FROM
+  //     customrecord_idev_suitetools_job`;
+
+  //   // isinactive,
+  //   // name || ' (' || id  || ')' AS name,
+  //   // custrecord_st_job_run_type AS type,
+  //   // custrecord_st_job_run_params AS params,
+
+  //   // add where clause
+  //   const where = [];
+  //   // if (active) {
+  //   //   if (active === 'T') {
+  //   //     where.push(`isinactive = 'F'`);
+  //   //   }
+  //   //   if (active === 'F') {
+  //   //     where.push(`isinactive = 'T'`);
+  //   //   }
+  //   // }
+  //   if (where.length > 0) {
+  //     sql += ` WHERE ${where.join(' AND ')}`;
+  //   }
+  //   // add order by
+  //   // sql += ` ORDER BY name`;
+  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+  //   log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: results });
+
+  //   return results;
+  // }
+
+  /**
+   * Get Job
+   *
+   * @param id - the record to return
+   * @returns results
+   */
+  // public getJob(id: number) {
+  //   log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
+
+  //   const sql = `SELECT
+  //     id,
+  //   FROM
+  //     customrecord_idev_suitetools_job
+  //   WHERE
+  //     id = ${id}`;
+  //   const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+  //   let result = null;
+  //   if (sqlResults.length === 0) {
+  //     // this.stCommon.setAlert('No results found that matched criteria.');
+  //   } else {
+  //     result = sqlResults[0];
+  //   }
+  //   log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: result });
+
+  //   return result;
+  // }
+
+  /*
+   * Initiate Job
+   *
+   * @returns jobId
+   */
+  // public initiateJob(): number {
+  //   log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: null });
+
+  //   // initiate the last logins map/reduce script
+  //   const scriptTask = task.create({
+  //     taskType: task.TaskType.MAP_REDUCE,
+  //     scriptId: 'customscript_idev_st_mr_jobs_run',
+  //     deploymentId: 'customdeploy_idev_st_mr_jobs_run',
+  //     // params: {
+  //     //   custscript_idev_st_mr_jobs_type: 'customer',
+  //     //   custscript_idev_st_mr_jobs_action: 'activate',
+  //     // },
+  //   });
+  //   const scriptTaskId = scriptTask.submit();
+  //   log.debug({
+  //     title: 'SuiteToolsController:runJob() submitted run job map/reduce script',
+  //     details: 'scriptTaskId = ' + scriptTaskId,
+  //   });
+
+  //   const jobId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecord('customrecord_idev_suitetools_job', {
+  //     custrecord_st_job_task_id: scriptTaskId,
+  //   });
+  //   log.debug({ title: 'SuiteToolsController:renderJobRunForm() created job record', details: jobId });
+
+  //   return jobId;
+  // }
+
+  // Get Folders SQL
+  // let sql = `SELECT
+  // 	MediaItemFolder.id,
+  // 	BUILTIN.DF(MediaItemFolder.owner) AS owner,
+  // 	MediaItemFolder.foldertype,
+  // 	MediaItemFolder.appfolder,
+  // 	MediaItemFolder.name,
+  // 	MediaItemFolder.description,
+  // 	MediaItemFolder.lastModifiedDate,
+  // 	MediaItemFolder.numFolderFiles,
+  // 	MediaItemFolder.folderSize,
+  // 	MediaItemFolder.parent
+  // FROM
+  // 	MediaItemFolder
+  // WHERE
+  // 	isTopLevel = 'T'
+  // ORDER BY
+  // 	name`;
+
+  /**
+   * Get Files
+   *
+   * @param row - the number of rows to return
+   * @param types - the file types
+   * @param createdDate - the created date
+   * @param modifiedDate - the last modified date
+   * @returns results
+   */
+  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string) {
+    log.debug({
+      title: `SuiteToolsApiModel:getFiles() initiated`,
+      details: {
+        rows: row,
+        types: types,
+        createdDate: createdDate,
+        modifiedDate: modifiedDate,
+      },
+    });
+    let sql = `SELECT
+      file.id,
+      file.folder,
+      file.createddate,
+      file.lastmodifieddate,
+      file.filetype,
+      BUILTIN.DF(file.filetype) AS filetypename,
+      file.name || ' (' || file.id  || ')' AS name,
+      file.filesize,
+      file.description,
+      file.url
+    FROM
+      file`;
+    // add where clause
+    const where = [];
+    if (row) {
+      where.push(`RowNum <= ${row}`);
+    }
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`filetype IN (${types.join(',')})`);
+      }
+    }
+    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'File', 'createddate', createdDate);
+    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'File', 'lastmodifieddate', modifiedDate);
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    sql += ` ORDER BY name ASC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+
+    return sqlResults;
+  }
+
+  /**
+   * Get File
+   *
+   * @param id - the record to return
+   * @returns results
+   */
+  public getFile(id: string) {
+    log.debug({ title: `SuiteToolsApiModel:getFile() initiated`, details: { id: id } });
+
+    const sql = `SELECT
+      file.id,
+      file.folder,
+      file.createddate,
+      file.lastmodifieddate,
+      file.filetype,
+      BUILTIN.DF(file.filetype) AS filetypename,
+      file.name || ' (' || file.id  || ')' AS name,
+      file.filesize,
+      file.description,
+      file.url
+    FROM
+      file
+    WHERE
+      file.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const result = sqlResults[0];
+    log.debug({ title: 'SuiteToolsApiModel:getFile() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Roles
+   *
+   * @param status - the status of the login
+   * @returns roles
+   */
+  public getRoles(active: string) {
+    log.debug({
+      title: `SuiteToolsApiModel:getRoles() initiated`,
+      details: {
+        active: active,
+      },
+    });
+
+    let sql = `SELECT
+      role.id,
+      role.scriptId,
+      role.name,
+      role.centerType,
+      role.isInactive,
+      role.isSalesRole,
+      role.isSupportRole,
+      role.isWebServiceOnlyRole
+    FROM
+      role`;
+    // add where clause
+    const where = [];
+    if (active) {
+      if (active === 'T') {
+        where.push(`role.isinactive = 'F'`);
+      }
+      if (active === 'F') {
+        where.push(`role.isinactive = 'T'`);
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY role.name`;
+    const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    log.debug({ title: 'SuiteToolsApiModel:getRoles() returning', details: results });
+
+    return results;
+  }
+
+  /**
+   * Get Role
+   *
+   * @param id - the id of the record
+   * @returns Role
+   */
+  public getRole(id: string) {
+    log.debug({ title: `SuiteToolsApiModel:getRole() initiated`, details: { id: id } });
+
+    const sql = `SELECT
+      role.id,
+      role.scriptId,
+      role.name,
+      role.name || ' (' || role.id  || ')' AS nameId,
+      role.centerType,
+      role.isInactive,
+      role.isSalesRole,
+      role.isSupportRole,
+      role.isWebServiceOnlyRole
+    FROM
+      role
+    WHERE
+      role.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    let result = null;
+    if (sqlResults.length === 0) {
+      // this.stCommon.setAlert('No results found that matched criteria.');
+    } else {
+      result = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getRole() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Scripts
+   *
+   * @param active - the active flag
+   * @param versions - the API versions
+   * @param types - the script types
+   * @param scripts - the scripts
+   * @param owners - the script owners
+   * @param files - the script files
+   * @returns results
+   */
+  public getScripts(
+    active: string,
+    versions: string[],
+    types: string[],
+    scripts: string[],
+    owners: string[],
+    files: string[],
+  ) {
+    log.debug({
+      title: `SuiteToolsApiModel:getScripts() initiated`,
+      details: { active: active, versions: versions, types: types, scripts: scripts, owners: owners, files: files },
+    });
+
+    let sql = `SELECT
+      script.id,
+      script.apiversion,
+      script.isinactive,
+      script.scripttype,
+      script.name || ' (' || script.id  || ')' AS name,
+      script.scriptid,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      file.name || ' (' || file.id  || ')' AS scriptfile,
+      script.notifyemails,
+      script.description
+    FROM
+      script
+    INNER JOIN file
+      ON script.scriptfile = file.id`;
+    // add where clause
+    const where = [];
+    if (active) {
+      if (active === 'T') {
+        where.push(`script.isinactive = 'F'`);
+      }
+      if (active === 'F') {
+        where.push(`script.isinactive = 'T'`);
+      }
+    }
+    if (versions) {
+      if (Array.isArray(versions)) {
+        where.push(`apiversion IN (${versions.join(',')})`);
+      }
+    }
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`scripttype IN (${types.join(',')})`);
+      }
+    }
+    if (scripts) {
+      if (Array.isArray(scripts)) {
+        scripts = scripts.map((script) => {
+          return `'${script.toUpperCase()}'`;
+        });
+        where.push(`script.id IN (${scripts.join(',')})`);
+      }
+    }
+    if (owners) {
+      if (Array.isArray(owners)) {
+        owners = owners.map((owner) => {
+          return `'${owner.toUpperCase()}'`;
+        });
+        where.push(`owner IN (${owners.join(',')})`);
+      }
+    }
+    if (files) {
+      if (Array.isArray(files)) {
+        files = files.map((file) => {
+          return `'${file.toUpperCase()}'`;
+        });
+        where.push(`file.id IN (${files.join(',')})`);
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY name ASC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+
+    return sqlResults;
+  }
+
+  /**
+   * Get Script
+   *
+   * @param id - the record to return
+   * @returns results
+   */
+  public getScript(id: string) {
+    log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
+
+    const sql = `SELECT
+      script.id,
+      script.apiversion,
+      script.isinactive,
+      script.scripttype,
+      script.name,
+      script.scriptid,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      file.name || ' (' || file.id  || ')' AS scriptfile,
+      script.notifyemails,
+      script.description
+    FROM
+      script
+    INNER JOIN file
+      ON script.scriptfile = file.id
+    WHERE
+      script.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    let result = null;
+    // if (sqlResults.length === 0) {
+    //   this.stCommon.setAlert('No results found that matched criteria.');
+    // } else {
+    result = sqlResults[0];
+    // }
+    log.debug({ title: 'SuiteToolsApiModel:getScript() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Integrations
+   *
+   * @param [status] - the status of the records
+   * @returns integrations
+   */
+  // public getIntegrations(
+  //   status: string = null
+  // ) {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getIntegrations() initiated`,
+  //     details: {
+  //       status: status,
+  //     },
+  //   });
+
+  //   let results = this.stCommon.stSettings.integrations;
+
+  //   if (results && status) {
+  //     // filter results for status
+  //     results = results.filter((result) => result.active == status);
+  //   }
+
+  //   log.debug({ title: 'SuiteToolsApiModel:getIntegrations() returning', details: results });
+
+  //   return results;
+  // }
+
+  /**
+   * Get Integration
+   *
+   * @param id - the id of the record
+   * @returns integration
+   */
+  // public getIntegration(id: string) {
+  //   log.debug({ title: `SuiteToolsApiModel:getIntegration() initiated`, details: { id: id } });
+
+  //   const results = this.stCommon.stSettings.integrations;
+  //   const resultsFiltered = results.filter((result) => result.id == id);
+  //   let result = null;
+  //   if (resultsFiltered.length === 0) {
+  //     this.stCommon.setAlert('No results found that matched criteria.');
+  //   } else {
+  //     result = resultsFiltered[0];
+  //   }
+  //   log.debug({ title: 'SuiteToolsApiModel:getIntegration() returning', details: result });
+
+  //   return result;
+  // }
+
+  /**
+   * Get token list
+   *
+   * @param [activeOnly]
+   * @returns users
+   */
+  // public getTokenList(activeOnly = false) {
+  //   // log.debug({ title: `SuiteToolsApiModel:getTokenList() initiated`, details: { activeOnly: activeOnly } });
+
+  //   let results = this.stCommon.stSettings.tokens;
+  //   if (results && activeOnly) {
+  //     results = results.filter((result) => result.active == 'T');
+  //   }
+
+  //   return results;
+  // }
+
+  /**
+   * Get Tokens
+   *
+   * @param status
+   * @returns tokens
+   */
+  // public getTokens(
+  //   active: string,
+  //   integration: string,
+  //   user: string,
+  //   role: string
+  // ) {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getTokens() initiated`,
+  //     details: {
+  //       active: active,
+  //       integration: integration,
+  //       user: user,
+  //       role: role,
+  //     },
+  //   });
+
+  //   let tokens = this.stCommon.stModel.getTokenList();
+  //   // log.debug({ title: `SuiteToolsApiModel:getTokens() unfiltered tokens =`, details: tokens });
+  //   if (tokens) {
+  //     if (active) {
+  //       tokens = tokens.filter((result) => result.active == active);
+  //     }
+  //     if (integration) {
+  //       tokens = tokens.filter((result) => result.integrationId == integration);
+  //     }
+  //     if (user) {
+  //       // // do we have a numeric id or a string name
+  //       // if (!isNaN(parseInt(user))) {
+  //       //   // build the name string
+  //       //   // TODO optimize this
+  //       //   const userObj = this.getUser(user);
+  //       //   if (userObj) {
+  //       //     log.debug({ title: `SuiteToolsApiModel:getTokens() userObj =`, details: userObj });
+  //       //     // need to handle the case where the user has no first or last name
+  //       //     const firstName = userObj.firstname ? userObj.firstname : '';
+  //       //     const lastName = userObj.lastname ? userObj.lastname : '';
+  //       //     user = `${firstName} ${lastName}`.trim();
+  //       //     user += ` (${userObj.id})`;
+  //       //   }
+  //       // }
+  //       log.debug({ title: `SuiteToolsApiModel:getTokens() filtering for user`, details: user });
+  //       tokens = tokens.filter((result) => result.userId == user);
+  //     }
+  //     if (role) {
+  //       tokens = tokens.filter((result) => result.roleId == role);
+  //     }
+  //     log.debug({ title: 'SuiteToolsApiModel:getTokens() returning', details: tokens });
+  //   }
+  //   return tokens;
+  // }
+
+  /**
+   * Get Token
+   *
+   * @param id - the id of the record
+   * @returns Token
+   */
+  // public getToken(id: string) {
+  //   // log.debug({ title: `SuiteToolsApiModel:getToken() initiated`, details: { id: id } });
+
+  //   const resultsFiltered = this.stCommon.stModel.getTokenList().filter((result) => result.id == id);
+  //   const result = resultsFiltered ? resultsFiltered[0] : null;
+  //   if (!result) {
+  //     this.stCommon.setAlert('No results found that matched criteria.');
+  //   }
+  //   log.debug({ title: 'SuiteToolsApiModel:getToken() returning', details: result });
+
+  //   return result;
+  // }
+
+  /**
+   * Get users from integration data.
+   *
+   * @returns results
+   */
+  // public getUsersIntegration(
+  //   role: string,
+  //   supervisor: string
+  // ) {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getUsersIntegration() initiated`,
+  //     details: { role: role, supervisor: supervisor },
+  //   });
+
+  //   let results = this.stCommon.stSettings.users;
+  //   log.debug({ title: 'SuiteToolsApiModel:getUsersIntegration() unfiltered users', details: results });
+  //   if (role) {
+  //     const tempResults = [];
+  //     for (const result of results) {
+  //       // add user if role id of (role) is present
+  //       const roleIdsObj = JSON.parse(result.roleIds);
+  //       roleIdsObj.forEach((roleId) => {
+  //         if (roleId == role) {
+  //           tempResults.push(result);
+  //         }
+  //       });
+  //     }
+  //     results = tempResults;
+  //   }
+  //   if (supervisor) {
+  //     results = results.filter((result) => result.supervisorid == supervisor);
+  //   }
+  //   log.debug({ title: 'SuiteToolsApiModel:getUsersIntegration() returning', details: results });
+
+  //   return results;
+  // }
+
+  /**
+   * Get Users Roles
+   *
+   * @returns users roles matrix
+   */
+  // public getUsersRoles() {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getUsersRoles() initiated`,
+  //     details: null,
+  //   });
+
+  //   const sql = `SELECT
+  //       Employee.id,
+  //       Employee.entityId,
+  //       Role.id as roleId,
+  //       Role.name AS roleName,
+  //     FROM
+  //       Employee
+  //       INNER JOIN EmployeeRolesForSearch ON
+  //         ( EmployeeRolesForSearch.entity = Employee.id )
+  //       INNER JOIN Role ON
+  //         ( Role.ID = EmployeeRolesForSearch.role ) AND ( Role.isInactive = 'F' )
+  //     ORDER BY
+  //       Employee.entityId ASC`;
+  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  //   // log.debug({ title: 'SuiteToolsApiModel:getUsersRoles() returning', details: results });
+
+  //   return results;
+  // }
+
+  /**
+   * Get User Logins
+   *
+   * @param rows - the number of rows to return
+   * @param status - the status of the login
+   * @param users - the users to return logins for
+   * @param dates - the dates to return logins for
+   * @returns user logins
+   */
+  // public getUserLogins(
+  //   rows: string,
+  //   status: string,
+  //   integration: string,
+  //   token: string,
+  //   users: string[],
+  //   dates: string
+  // ): {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getUserLogins() initiated`,
+  //     details: {
+  //       rows: rows,
+  //       status: status,
+  //       integration: integration,
+  //       token: token,
+  //       users: users,
+  //       dates: dates,
+  //     },
+  //   });
+
+  //   let sql = `SELECT
+  //     TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
+  //     LoginAudit.status,
+  //     LoginAudit.oAuthAppName,
+  //     LoginAudit.oAuthAccessTokenName,
+  //     BUILTIN.DF( LoginAudit.role ) as role,
+  //     BUILTIN.DF( LoginAudit.user ) || ' (' || LoginAudit.user  || ')' AS userName,
+  //     LoginAudit.emailAddress,
+  //     LoginAudit.ipAddress,
+  //     LoginAudit.requestUri,
+  //     LoginAudit.detail,
+  //     LoginAudit.secChallenge,
+  //     LoginAudit.userAgent
+  //   FROM
+  //     LoginAudit`;
+  //   // add where clause
+  //   const where = [];
+  //   if (rows) {
+  //     // limit to specified number of rows
+  //     where.push(`RowNum <= ${rows}`);
+  //   }
+  //   if (status) {
+  //     if (status === 'success') {
+  //       where.push(`LoginAudit.status = 'Success'`);
+  //     }
+  //     if (status === 'failure') {
+  //       where.push(`LoginAudit.status = 'Failure'`);
+  //     }
+  //   }
+  //   if (integration) {
+  //     // lookup integration name from id
+  //     const integrations = this.stCommon.stModel.getIntegrationList();
+  //     const foundIntegration = integrations.find((record) => record['id'] == integration);
+  //     let integrationName: string = foundIntegration ? foundIntegration.name : 'INTEGRATION_NOT_FOUND';
+  //     // switch integration name to match what is on the login audit record
+  //     if (integrationName === 'SuiteCloud IDE & CLI') {
+  //       this.stCommon.setAlert(
+  //         'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
+  //       );
+  //       integrationName = 'SuiteCloud Development Integration';
+  //     }
+  //     // add integration name to where clause
+  //     where.push(`LoginAudit.oAuthAppName = '${integrationName}'`);
+  //   }
+  //   if (token) {
+  //     // lookup token name from id
+  //     const tokens = this.stCommon.stModel.getTokenList();
+  //     const foundToken = tokens.find((record) => record['id'] == token);
+  //     const tokenName: string = foundToken ? foundToken.name : 'TOKEN_NOT_FOUND';
+  //     // // switch token name to match what is on the login audit record
+  //     // if (tokenName === 'SuiteCloud IDE & CLI') {
+  //     //   this.stCommon.setAlert(
+  //     //     'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
+  //     //   );
+  //     //   tokenName = 'SuiteCloud Development Integration';
+  //     // }
+  //     // add token name to where clause
+  //     where.push(`LoginAudit.oAuthAccessTokenName = '${tokenName}'`);
+  //   }
+  //   if (users) {
+  //     if (Array.isArray(users)) {
+  //       users = users.map((user) => {
+  //         return `'${user.toUpperCase()}'`;
+  //       });
+  //       where.push(`LoginAudit.user IN (${users.join(',')})`);
+  //     }
+  //   }
+  //   if (dates) {
+  //     switch (dates) {
+  //       case '15':
+  //         where.push('date > SYSDATE - ( 15 / 1440 )');
+  //         break;
+  //       case '60':
+  //         where.push('date > SYSDATE - ( 1 / 24 )');
+  //         break;
+  //       case '240':
+  //         where.push('date > SYSDATE - ( 4 / 24 )');
+  //         break;
+  //       case 'today':
+  //         where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+  //         break;
+  //       case 'yesterday':
+  //         where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+  //         break;
+  //       default:
+  //         log.error({ title: `SuiteToolsApiModel:getUserLogins() invalid date option`, details: dates });
+  //         break;
+  //     }
+  //   }
+  //   if (where.length > 0) {
+  //     sql += ` WHERE ${where.join(' AND ')}`;
+  //   }
+  //   // add order by
+  //   sql += ` ORDER BY LoginAudit.date DESC`;
+  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+
+  //   log.debug({ title: 'SuiteToolsApiModel:getUserLogins() returning', details: results });
+
+  //   return results;
+  // }
+
+  /**
+   * Get Script Logs results (Search version)
+   *
+   * The search version can return the user that triggered the log message, but it can only be filtered by days.
+   *
+   * @param rows - the number of rows to return
+   * @param levels - levels of log (e.g. debug, error, ...)
+   * @param users - users to return log records for
+   * @param types - types of script
+   * @param scripts - the scripts to return log records for
+   * @param owners - the script owners to return log records for
+   * @param dates - the dates to return log records for
+   * @param title - the title contains this string
+   * @param detail - the detail contains this string
+   * @returns script logs
+   */
+  // public getScriptLogsViaSearch(
+  //   rows: string,
+  //   levels: string,
+  //   users: string,
+  //   types: string,
+  //   scripts: string,
+  //   owners: string,
+  //   dates: string,
+  //   title: string,
+  //   detail: string
+  // ) {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getScriptLogsViaSearch() initiated`,
+  //     details: {
+  //       rows: rows,
+  //       levels: levels,
+  //       users: users,
+  //       types: types,
+  //       scripts: scripts,
+  //       owners: owners,
+  //       dates: dates,
+  //       title: title,
+  //       detail: detail,
+  //     },
+  //   });
+
+  //   const columns = [
+  //     search.createColumn({
+  //       name: 'internalid',
+  //       sort: search.Sort.DESC,
+  //       label: 'id',
+  //     }),
+  //     search.createColumn({
+  //       name: 'date',
+  //     }),
+  //     search.createColumn({
+  //       name: 'time',
+  //     }),
+  //     search.createColumn({ name: 'type' }),
+  //     search.createColumn({ name: 'user' }),
+  //     search.createColumn({
+  //       name: 'internalid',
+  //       join: 'user',
+  //       label: 'userid',
+  //     }),
+  //     search.createColumn({ name: 'scripttype' }),
+  //     search.createColumn({
+  //       name: 'owner',
+  //       join: 'script',
+  //     }),
+  //     search.createColumn({
+  //       name: 'name',
+  //       join: 'script',
+  //     }),
+  //     search.createColumn({
+  //       name: 'internalid',
+  //       join: 'script',
+  //       label: 'scriptid',
+  //     }),
+  //     search.createColumn({ name: 'title' }),
+  //     search.createColumn({ name: 'detail' }),
+  //   ];
+  //   const filters = [];
+  //   if (levels) {
+  //     filters.push(search.createFilter({ name: 'type', operator: search.Operator.ANYOF, values: levels }));
+  //   }
+  //   if (users) {
+  //     // TODO - handle multiple users
+  //     filters.push(search.createFilter({ name: 'user', operator: search.Operator.IS, values: users }));
+  //   }
+  //   if (types) {
+  //     filters.push(
+  //       search.createFilter({ name: 'scripttype', join: 'script', operator: search.Operator.ANYOF, values: types })
+  //     );
+  //   }
+  //   if (scripts) {
+  //     filters.push(
+  //       search.createFilter({
+  //         name: 'internalid',
+  //         join: 'script',
+  //         operator: search.Operator.ANYOF,
+  //         values: scripts,
+  //       })
+  //     );
+  //   }
+  //   if (owners) {
+  //     filters.push(
+  //       search.createFilter({
+  //         name: 'owner',
+  //         join: 'script',
+  //         operator: search.Operator.ANYOF,
+  //         values: owners,
+  //       })
+  //     );
+  //   }
+  //   if (dates) {
+  //     filters.push(search.createFilter({ name: 'date', operator: search.Operator.ON, values: dates }));
+  //   }
+  //   if (title) {
+  //     filters.push(search.createFilter({ name: 'title', operator: search.Operator.CONTAINS, values: title }));
+  //   }
+  //   if (detail) {
+  //     filters.push(search.createFilter({ name: 'detail', operator: search.Operator.CONTAINS, values: detail }));
+  //   }
+  //   // run the search
+  //   const searchResults = this.stCommon.stLib.stLibNs.stLibNsSearch.search(
+  //     'scriptexecutionlog',
+  //     columns,
+  //     filters,
+  //     rows,
+  //     true
+  //   );
+
+  //   // get list of active users so that we can determine user ids
+  //   const userList = this.stCommon.stModel.getEmployeeList(true);
+
+  //   // only return the results
+  //   const results = searchResults.map((result) => {
+  //     // log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:search() - columns', details: result.columns });
+  //     // log.debug({ title: 'SuiteToolsLibraryNetSuiteSearch:search() - allValues', details: result.getAllValues() });
+
+  //     // add user id to user if we can determine it
+  //     //   TODO: handle case where multiple users have the same name
+  //     let userName = result.getValue({ name: 'user' });
+  //     const foundUser = userList.find((user) => user.name.trim() === userName);
+  //     if (foundUser) {
+  //       userName = userName + ' (' + foundUser.id + ')';
+  //     }
+
+  //     // add owner name to owner field if we can determine it
+  //     let owner = result.getValue({ name: 'owner', join: 'script' });
+  //     const foundName = userList.find((user) => user.id == owner);
+  //     if (foundName) {
+  //       owner = foundName.name.trim() + ' (' + owner + ')';
+  //     }
+
+  //     return {
+  //       id: result.getValue({ name: 'internalid' }),
+  //       timestamp: result.getValue({ name: 'date' }) + ' ' + result.getValue({ name: 'time' }),
+  //       type: result.getValue({ name: 'type' }),
+  //       user: userName,
+  //       scripttype: result.getValue({ name: 'scripttype' }),
+  //       owner: owner,
+  //       scriptname:
+  //         result.getValue({ name: 'name', join: 'script' }) +
+  //         ' (' +
+  //         result.getValue({ name: 'internalid', join: 'script' }) +
+  //         ')',
+  //       title: result.getValue({ name: 'title' }),
+  //       detail: result.getValue({ name: 'detail' }),
+  //     };
+  //   });
+
+  //   log.debug({ title: 'SuiteToolsApiModel:getScriptLogsViaSearch() returning', details: results });
+
+  //   return results;
+  // }
+
+  /**
+   * Get Script Log
+   *
+   * @param id - the record id to return
+   * @returns script log
+   */
+  public getScriptLog(id: string) {
+    log.debug({
+      title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() initiated`,
+      details: {
+        id: id,
+      },
+    });
+
+    const sql = `SELECT
+      ScriptNote.internalid AS id,
+      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
+      ScriptNote.type,
+      script.scripttype,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+    FROM ScriptNote
+    INNER JOIN script
+      ON ScriptNote.scripttype = script.id
+    WHERE ScriptNote.internalid = ${id}`;
+    log.debug({ title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() generated this sql`, details: sql });
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    // return first record of sql results
+
+    return sqlResults[0];
+  }
+
+  /**
+   * Get Script Logs results (SuiteQL version)
+   *
+   * The SuiteQL version can not return the user that triggered the log message, but it can only be filtered by minutes.
+   *
+   * @param row - the number of rows to return
+   * @param levels - type of log (e.g. debug, error, ...)
+   * @param types - types of script
+   * @param scripts - the scripts to return log records for
+   * @param owners - the script owners to return log records for
+   * @param date - the dates to return log records for
+   * @param title - the title contains this string
+   * @param detail - the detail contains this string
+   * @returns script logs
+   */
+  public getScriptLogsViaSuiteQL(
+    row: string,
+    levels: string[],
+    // users: string[], // SuiteQL does not support user filtering. Need to use search instead.
+    types: string[],
+    scripts: string[],
+    owners: string[],
+    date: string,
+    title: string,
+    detail: string,
+  ) {
+    log.debug({
+      title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() initiated`,
+      details: {
+        rows: row,
+        levels: levels,
+        types: types,
+        scripts: scripts,
+        owners: owners,
+        dates: date,
+        title: title,
+        detail: detail,
+      },
+    });
+
+    let sql = `SELECT
+      ScriptNote.internalid AS id,
+      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
+      ScriptNote.type,
+      script.scripttype,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+    FROM ScriptNote
+    INNER JOIN script
+      ON ScriptNote.scripttype = script.id`;
+    // add where clause
+    const where: string[] = [];
+    if (row && row !== '0') {
+      // limit to specified number of rows
+      where.push(`RowNum <= ${row}`);
+    }
+    if (levels) {
+      if (Array.isArray(levels)) {
+        levels = levels.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`ScriptNote.type IN (${levels.join(',')})`);
+      }
+    }
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`script.scripttype IN (${types.join(',')})`);
+      }
+    }
+    if (scripts) {
+      if (Array.isArray(scripts)) {
+        where.push(`ScriptNote.scriptType IN (${scripts.join(',')})`);
+      }
+    }
+    if (owners) {
+      if (Array.isArray(owners)) {
+        owners = owners.map((owner) => {
+          return `'${owner.toUpperCase()}'`;
+        });
+        where.push(`owner IN (${owners.join(',')})`);
+      }
+    }
+    this.addDateFilter(where, 'SuiteToolsApiModel:getScriptLogsViaSuiteQL()', 'ScriptNote', 'date', date);
+    if (title) {
+      where.push(`ScriptNote.title LIKE '%${title}%'`);
+    }
+    if (detail) {
+      where.push(`ScriptNote.detail LIKE '%${detail}%'`);
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY ScriptNote.internalId DESC`;
+    // log.debug({ title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() generated this sql`, details: sql });
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+
+    return sqlResults;
+  }
+
+  /**
+   * Get User
+   *
+   * @param id - the record id to return
+   * @returns user
+   */
+  public getUser(id: string) {
+    log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
+
+    const sql = `SELECT
+      employee.id,
+      employee.isinactive,
+      employee.email,
+      employee.entityid || ' (' || employee.id || ')' AS name,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,
+    FROM
+      employee
+    WHERE
+      employee.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const result = sqlResults[0];
+    log.debug({ title: 'SuiteToolsApiModel:getUser() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Users
+   *
+   * @returns results
+   */
+  public getUsers(active: string, role: string, supervisors: string[]) {
+    log.debug({
+      title: `SuiteToolsApiModel:getUsers() initiated`,
+      details: { active: active, role: role, supervisors: supervisors },
+    });
+
+    let sql = `SELECT
+      employee.id,
+      employee.isinactive,
+      employee.email,
+      employee.entityid || ' (' || employee.id || ')' AS name,
+      BUILTIN.DF( role.id ) || ' (' || role.id || ')' AS role,
+      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.title,
+    FROM employee
+      INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
+      INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
+    // add where clause
+    const where = [];
+    switch (active) {
+      case 'U':
+        where.push(`employee.giveaccess = 'T'`);
+        where.push(`employee.isinactive = 'F'`);
+        break;
+      case 'T':
+        where.push(`employee.isinactive = 'F'`);
+        break;
+      case 'F':
+        where.push(`employee.isinactive = 'T'`);
+        break;
+      default:
+        // do not add a filter
+        break;
+    }
+    if (role) {
+      where.push(`role.id = ${role}`);
+    }
+    if (supervisors) {
+      if (Array.isArray(supervisors)) {
+        supervisors = supervisors.map((employee) => {
+          return `'${employee.toUpperCase()}'`;
+        });
+        where.push(`employee.supervisor IN (${supervisors.join(',')})`);
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY employee.firstname ASC`;
+    const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    log.debug({ title: 'SuiteToolsApiModel:getUsers() returning', details: results });
+
+    return results;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Supporting Functions
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Adds date filter to where clause.
+   *
+   * @param where - the where clause
+   * @param functionName - the function
+   * @param table - the SuiteQL table
+   * @param field - the table date field
+   * @param dates - date field values
+   */
+  private addDateFilter(where: string[], functionName: string, table: string, field: string, dates: string | string[]) {
+    log.debug({
+      title: `SuiteToolsApiModel:dateFilter() initiated`,
+      details: { where: where, functionName: functionName, table: table, field: field, dates: dates },
+    });
+    if (dates) {
+      // check if dates is an object
+      if (typeof dates === 'object') {
+        // check if dates is an array
+        if (Array.isArray(dates) && typeof dates[0] === 'string' && typeof dates[1] === 'string') {
+          where.push(
+            `date BETWEEN TO_DATE( '${dates[0]}', 'YYYY-MM-DD hh24:mi:ss' ) AND TO_DATE( '${dates[1]}', 'YYYY-MM-DD hh24:mi:ss' )`,
+          );
+        } else {
+          log.error({
+            title: `${functionName} invalid object date values for ${table}.${field}`,
+            details: dates,
+          });
+        }
+      } else {
+        switch (dates) {
+          case '0':
+            // no filter
+            break;
+          case '15':
+            where.push(`${field} > SYSDATE - ( 15 / 1440 )`);
+            break;
+          case '60':
+            where.push(`${field} > SYSDATE - ( 1 / 24 )`);
+            break;
+          case '240':
+            where.push(`${field} > SYSDATE - ( 4 / 24 )`);
+            break;
+          case 'today':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')`);
+            break;
+          case 'yesterday':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')`);
+            break;
+          case 'lastweek':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') > TO_CHAR ( SYSDATE - 7, 'YYYY-MM-DD')`);
+            break;
+          case 'lastmonth':
+            where.push(`TO_CHAR ( ${table}.${field}, 'YYYY-MM-DD') > TO_CHAR ( SYSDATE - 31, 'YYYY-MM-DD')`);
+            break;
+          default:
+            log.error({
+              title: `${functionName} invalid object date values for ${table}.${field}`,
+              details: dates,
+            });
+            break;
+        }
+      }
+    }
   }
 }

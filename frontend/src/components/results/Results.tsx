@@ -42,6 +42,9 @@ export function Results({ type, lines, getModalData }: Props) {
     case ResultsTypes.INTEGRATION:
       modalTitle = 'Integration';
       break;
+    case ResultsTypes.ROLE:
+      modalTitle = 'Role';
+      break;
     case ResultsTypes.SCRIPT:
       modalTitle = 'Script';
       break;

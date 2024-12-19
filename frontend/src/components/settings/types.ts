@@ -1,6 +1,6 @@
 export type Settings = {
   devMode: boolean;
-  appScriptUrl: string;
+  appUrl: string;
   // system
   accountId: string;
   envType: string;

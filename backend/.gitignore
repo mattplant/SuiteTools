@@ -17,5 +17,8 @@ coverage
 # NetSuite SDF project config
 project.json
 
+# SuiteTools backend JavaScript files from the backend build process
+src/**/*.js
+
 # SuiteTools frontend dist files from the frontend build process
 dist

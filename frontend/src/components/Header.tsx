@@ -44,6 +44,9 @@ export default function Header() {
             <Dropdown.Item>
               <NavLink to={`users`}>Users</NavLink>
             </Dropdown.Item>
+            <Dropdown.Item>
+              <NavLink to={`roles`}>Roles</NavLink>
+            </Dropdown.Item>
           </Dropdown>
         </NavbarLink>
         <NavbarLink>

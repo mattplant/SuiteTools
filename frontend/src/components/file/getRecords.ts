@@ -26,7 +26,6 @@ export async function getFiles(fields: CriteriaFields): Promise<File[]> {
     createddate: fields.createddate,
     lastmodifieddate: fields.lastmodifieddate,
   };
-
   const response = await getData(localTestData, 'files', urlParams);
   assertIsFiles(response.data);
 

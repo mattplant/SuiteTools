@@ -10,6 +10,10 @@ import { FilesPage } from './pages/FilesPage.tsx';
 import { getIntegration } from './components/integration/getRecord.ts';
 import { IntegrationPage } from './pages/IntegrationPage.tsx';
 import { IntegrationsPage } from './pages/IntegrationsPage.tsx';
+// roles
+import { getRole } from './components/role/getRecord.ts';
+import { RolePage } from './pages/RolePage.tsx';
+import { RolesPage } from './pages/RolesPage.tsx';
 // scripts
 import { getScript } from './components/script/getRecord.ts';
 import { ScriptPage } from './pages/ScriptPage.tsx';
@@ -57,6 +61,15 @@ const router = createHashRouter([
       {
         path: 'integrations',
         element: <IntegrationsPage />,
+      },
+      {
+        path: 'role/:id',
+        element: <RolePage />,
+        loader: async ({ params }) => defer({ role: getRole(Number(params.id)) }),
+      },
+      {
+        path: 'roles',
+        element: <RolesPage />,
       },
       {
         path: 'script/:id',

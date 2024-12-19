@@ -2,6 +2,7 @@ import { Button } from 'flowbite-react';
 import { ResultsTypes } from './types';
 import { assertIsFile } from '../file/types';
 import { assertIsIntegration } from '../integration/types';
+import { assertIsRole } from '../role/types';
 import { assertIsScript } from '../script/types';
 import { assertIsScriptLog } from '../scriptLog/types';
 import { assertIsToken } from '../token/types';
@@ -16,7 +17,7 @@ type Props = {
 
 export function ResultsModal({ type, loading, data }: Props) {
   const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appScriptUrl;
+  const appScriptUrl = settings?.appUrl;
 
   if (loading) {
     return 'Loading...';
@@ -91,12 +92,45 @@ export function ResultsModal({ type, loading, data }: Props) {
             </Button.Group>
           </>
         );
+      case ResultsTypes.ROLE:
+        assertIsRole(data);
+        return (
+          <>
+            <p>
+              <b>ID</b>: {data.id}
+            </p>
+            <p>
+              <b>Name</b>: {data.name}
+            </p>
+            <p>
+              <b>Active</b>: {data.isinactive}
+            </p>
+            <p>
+              <b>Center Type</b>: {data.centertype}
+            </p>
+            <p>
+              <b>Sales Role</b>: {data.issalesrole}
+            </p>
+            <p>
+              <b>Support Role</b>: {data.issupportrole}
+            </p>
+            <p>
+              <b>Web Service Only</b>: {data.iswebserviceonlyrole}
+            </p>
+            <Button.Group>
+              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Role Record</Button>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+                View Role Details
+              </Button>
+            </Button.Group>
+          </>
+        );
       case ResultsTypes.SCRIPT:
         assertIsScript(data);
         return (
           <>
             <p>API Version: {data.apiversion}</p>
-            <p>{data.isinactive ? 'Inactive' : <b>Active</b>}</p>
+            <p>{data.isinactive}</p>
             <p>Script Type: {data.scripttype}</p>
             <p>Name: {data.name}</p>
             <p>
@@ -220,7 +254,7 @@ export function ResultsModal({ type, loading, data }: Props) {
           </>
         );
       default:
-        console.error('ModalWrapperBodyData type not found:', type);
+        console.error('ResultsModal type not found:', type);
         break;
     }
   }

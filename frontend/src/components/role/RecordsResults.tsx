@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
 import { ResultsProps, SummaryRow } from '../results/types.ts';
-import { assertIsUsers } from './types.ts';
+import { assertIsRoles } from './types.ts';
 
 const columns = [
   {
@@ -23,14 +23,14 @@ const columns = [
     key: 'name',
     name: 'Name',
   },
-  { key: 'email', name: 'Email' },
-  { key: 'role', name: 'Role' },
-  { key: 'title', name: 'Title' },
-  { key: 'supervisor', name: 'Supervisor' },
+  { key: 'centertype', name: 'Center Type' },
+  { key: 'issalesrole', name: 'Sales Role' },
+  { key: 'issupportrole', name: 'Support Role' },
+  { key: 'iswebserviceonlyrole', name: 'Web Service Only Role' },
 ];
 
 export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertIsUsers(rows);
+  assertIsRoles(rows);
 
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [

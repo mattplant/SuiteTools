@@ -27,7 +27,6 @@ export async function getScripts(fields: CriteriaFields): Promise<Script[]> {
     owner: fields.owner,
     file: fields.file,
   };
-
   const response = await getData(localTestData, 'scripts', urlParams);
   assertIsScripts(response.data);
 

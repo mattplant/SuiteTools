@@ -8,7 +8,7 @@ export function ScriptResult({ data }: Props) {
   return (
     <>
       <p>API Version: {data.apiversion}</p>
-      <p>{data.isinactive ? 'Inactive' : <b>Active</b>}</p>
+      <p>{data.isinactive}</p>
       <p>Script Type: {data.scripttype}</p>
       <p>Name: {data.name}</p>
       <p>

@@ -9,7 +9,7 @@ export async function getUsers(fields: CriteriaFields): Promise<User[]> {
         id: 1,
         isinactive: 'Yes',
         email: 'i@idev.systems',
-        name: 'Matt Plant (1)',
+        name: 'Matt Plant',
         supervisor: 'John Doe',
         title: 'Architect',
       },
@@ -20,7 +20,6 @@ export async function getUsers(fields: CriteriaFields): Promise<User[]> {
     role: fields.role,
     owner: fields.owner,
   };
-
   const response = await getData(localTestData, 'users', urlParams);
   assertIsUsers(response.data);
 

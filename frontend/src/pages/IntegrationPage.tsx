@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { assertIsIntegration, Integration } from '../components/integration/types';
 import { IntegrationResult } from '../components/integration/RecordResult';
+import { IntegrationTokens } from '../components/integration/IntegrationTokens';
 
 export function IntegrationPage() {
   const data = useLoaderData();
@@ -14,7 +15,12 @@ export function IntegrationPage() {
         <Await resolve={data.integration}>
           {(record) => {
             assertIsIntegration(record);
-            return <IntegrationResult data={record} />;
+            return (
+              <>
+                <IntegrationResult data={record} />
+                <IntegrationTokens />
+              </>
+            );
           }}
         </Await>
       </Suspense>

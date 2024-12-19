@@ -15,17 +15,12 @@ export enum ResultsTypes {
   // my original code had these.
   //   const ModalType = Object.freeze({
   //     "Employee": 1,
-  //     "File": 2,
-  //     "Integration": 3,
   //     "Job": 4,
-  //     "Role": 5,
-  //     "Script": 6,
-  //     "Token": 7,
-  //     "User": 8,
   //   });
 
   FILE = 'file',
   INTEGRATION = 'integration',
+  ROLE = 'role',
   SCRIPT = 'script',
   SCRIPTLOG = 'scriptlog',
   TOKEN = 'token',

@@ -4,8 +4,8 @@ export type RequestBody = {
 };
 
 export type Response = {
+  // status?: number;
   data: object;
-  remainingUsage?: number;
 };
 
 export enum SavedEndpoint {

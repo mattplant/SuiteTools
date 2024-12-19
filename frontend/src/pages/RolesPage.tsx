@@ -1,25 +1,23 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
-import { getToken } from '../components/token/getRecord.ts';
-import { getTokens } from '../components/token/getRecords.ts';
-import { Token } from '../components/token/types.ts';
-import { RecordsCriteria } from '../components/token/RecordsCriteria.tsx';
+import { getRole } from '../components/role/getRecord.ts';
+import { getRoles } from '../components/role/getRecords.ts';
+import { Role } from '../components/role/types.ts';
+import { RecordsCriteria } from '../components/role/RecordsCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 
-export function TokensPage() {
+export function RolesPage() {
   const defaultCriteria: CriteriaFields = {
-    active: 'T',
-    user: '',
-    role: [''],
+    active: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Token[]>([]);
+  const [results, setResults] = useState<Role[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getTokens(criteria);
+        const data = await getRoles(criteria);
         setResults(data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -32,9 +30,9 @@ export function TokensPage() {
 
   return (
     <div className="mt-4">
-      <h2 className="text-xl font-bold text-slate-900 mb-2">Tokens</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-2">Roles</h2>
       <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
-      <Results type={ResultsTypes.TOKEN} lines={results} getModalData={getToken} />
+      <Results type={ResultsTypes.ROLE} lines={results} getModalData={getRole} />
     </div>
   );
 }
