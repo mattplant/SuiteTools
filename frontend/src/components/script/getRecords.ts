@@ -1,8 +1,10 @@
 import { getData } from '../../api/api';
-import { Script, assertIsScripts } from './types';
+import { NotFound } from '../../api/types';
+import { assertIsScripts, Script } from './types';
 import { CriteriaFields } from '../criteria/types';
 
-export async function getScripts(fields: CriteriaFields): Promise<Script[]> {
+export async function getScripts(fields: CriteriaFields): Promise<Script[] | NotFound> {
+  let result;
   const localTestData = {
     data: [
       {
@@ -28,7 +30,12 @@ export async function getScripts(fields: CriteriaFields): Promise<Script[]> {
     file: fields.file,
   };
   const response = await getData(localTestData, 'scripts', urlParams);
-  assertIsScripts(response.data);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsScripts(response.data);
+    result = response.data;
+  }
 
-  return response.data;
+  return result;
 }

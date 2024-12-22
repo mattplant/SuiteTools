@@ -5,6 +5,7 @@ import { CriteriaFields } from '../criteria/types';
 export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
   const urlParams = {
     active: fields.active,
+    integration: fields.integration,
   };
   const data: Token[] = [];
   let dataArray: string[][] = [];
@@ -23,6 +24,10 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
     dataArray = dataArray.filter((record) => record[6] === 'No');
   } else if (urlParams.active == 'F') {
     dataArray = dataArray.filter((record) => record[6] === 'Yes');
+  }
+  // filter data based on integration
+  if (urlParams.integration) {
+    dataArray = dataArray.filter((record) => record[5] === urlParams.integration);
   }
   // convert array to record objects
   dataArray.map((record) => {

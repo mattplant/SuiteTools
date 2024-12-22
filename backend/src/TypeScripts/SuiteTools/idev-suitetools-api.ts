@@ -100,7 +100,8 @@ type RequestParams = { [key: string]: string };
 
 type Response = {
   status?: number;
-  data: object | string;
+  data: object;
+  message?: string;
 };
 
 export class SuiteToolsApiGet {
@@ -124,50 +125,50 @@ export class SuiteToolsApiGet {
     log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
     this.assertIsRequestParams(requestParams);
 
-    const response: Response = { data: null };
+    let response: Response = { data: null };
     const endpoint = requestParams.endpoint;
     switch (endpoint) {
       case 'file':
-        response.data = this.getFile(requestParams);
+        response = this.getFile(requestParams);
         break;
       case 'files':
-        response.data = this.getFiles(requestParams);
+        response = this.getFiles(requestParams);
         break;
       case 'optionValues':
-        response.data = this.stApiGetOptions.process(requestParams);
+        response = this.stApiGetOptions.process(requestParams);
         break;
       case 'role':
-        response.data = this.getRole(requestParams);
+        response = this.getRole(requestParams);
         response.data = this.cleanRoleData(response.data);
         break;
       case 'roles':
-        response.data = this.getRoles(requestParams);
-        response.data = this.cleanRolesData(response.data);
+        response = this.getRoles(requestParams);
+        response = this.cleanRolesData(response);
         break;
       case 'script':
-        response.data = this.getScript(requestParams);
+        response = this.getScript(requestParams);
         response.data = this.cleanScriptData(response.data);
         break;
       case 'scripts':
-        response.data = this.getScripts(requestParams);
-        response.data = this.cleanScriptsData(response.data);
+        response = this.getScripts(requestParams);
+        response = this.cleanScriptsData(response);
         break;
       case 'scriptLog':
-        response.data = this.getScriptLog(requestParams);
+        response = this.getScriptLog(requestParams);
         break;
       case 'scriptLogs':
-        response.data = this.getScriptLogs(requestParams);
+        response = this.getScriptLogs(requestParams);
         break;
       case 'settings':
-        response.data = this.getSettings(requestParams);
+        response = this.getSettings(requestParams);
         break;
       case 'user':
-        response.data = this.getUser(requestParams);
+        response = this.getUser(requestParams);
         response.data = this.cleanUserData(response.data);
         break;
       case 'users':
-        response.data = this.getUsers(requestParams);
-        response.data = this.cleanUsersData(response.data);
+        response = this.getUsers(requestParams);
+        response = this.cleanUsersData(response);
         break;
       default:
         throw error.create({
@@ -223,22 +224,22 @@ export class SuiteToolsApiGet {
     } else {
       data.iswebserviceonlyrole = 'Yes';
     }
-
     return data;
   }
 
-  private cleanRolesData(data: object): object {
-    if (data && Array.isArray(data) && data.length > 0) {
-      data.forEach((record) => {
+  private cleanRolesData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      response.data.forEach((record) => {
         this.cleanRoleData(record);
       });
     }
 
-    return data;
+    return response;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanScriptData(data: any): object {
+    log.debug({ title: 'SuiteToolsApiGet:cleanScriptData() initiated', details: data });
     // switch isinactive values to active values
     if (data.isinactive === 'F') {
       data.isinactive = 'Yes';
@@ -249,14 +250,14 @@ export class SuiteToolsApiGet {
     return data;
   }
 
-  private cleanScriptsData(data: object): object {
-    if (data && Array.isArray(data) && data.length > 0) {
-      data.forEach((record) => {
+  private cleanScriptsData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      response.data.forEach((record) => {
         this.cleanScriptData(record);
       });
     }
 
-    return data;
+    return response;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -283,14 +284,14 @@ export class SuiteToolsApiGet {
     return data;
   }
 
-  private cleanUsersData(data: object): object {
-    if (data && Array.isArray(data) && data.length > 0) {
-      data.forEach((record) => {
+  private cleanUsersData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      response.data.forEach((record) => {
         this.cleanUserData(record);
       });
     }
 
-    return data;
+    return response;
   }
 
   /**
@@ -299,7 +300,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getFile(requestParams: RequestParams): object {
+  private getFile(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getFile() initiated', details: requestParams });
 
     const id = requestParams.id;
@@ -323,7 +324,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getFiles(requestParams: RequestParams): object {
+  private getFiles(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getFiles() initiated', details: requestParams });
 
     const row = requestParams['rows'];
@@ -342,7 +343,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getRole(requestParams: RequestParams): object {
+  private getRole(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApi:getRole() initiated', details: requestParams });
 
     const id = requestParams.id;
@@ -354,8 +355,7 @@ export class SuiteToolsApiGet {
       });
     }
 
-    const result = this.stApi.stApiModel.getRole(id);
-    // log.debug({ title: 'SuiteToolsApi:getRole() returning', details: result });
+    const result: Response = this.stApi.stApiModel.getRole(id);
 
     return result;
   }
@@ -366,12 +366,11 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getRoles(requestParams: RequestParams): object {
+  private getRoles(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getRoles() initiated', details: requestParams });
 
     const active = requestParams['active'];
     const result = this.stApi.stApiModel.getRoles(active);
-    // log.debug({ title: 'SuiteToolsApiGet:getRoles() returning', details: result });
 
     return result;
   }
@@ -382,7 +381,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getScript(requestParams: RequestParams): object {
+  private getScript(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApi:getScript() initiated', details: requestParams });
 
     const id = requestParams.id;
@@ -406,7 +405,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getScripts(requestParams: RequestParams): object {
+  private getScripts(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getScripts() initiated', details: requestParams });
 
     const active = requestParams['active'];
@@ -416,7 +415,6 @@ export class SuiteToolsApiGet {
     const owners = this.convertMultiSelectToArray(requestParams['owner']);
     const files = this.convertMultiSelectToArray(requestParams['file']);
     const result = this.stApi.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
-    // log.debug({ title: 'SuiteToolsApiGet:getScripts() returning', details: result });
 
     return result;
   }
@@ -427,7 +425,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getScriptLog(requestParams: RequestParams): object {
+  private getScriptLog(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getScriptLog() initiated', details: requestParams });
 
     const id = requestParams.id;
@@ -440,7 +438,6 @@ export class SuiteToolsApiGet {
     }
 
     const result = this.stApi.stApiModel.getScriptLog(id);
-    // log.debug({ title: 'SuiteToolsApiGet:getScriptLog() returning', details: result });
 
     return result;
   }
@@ -451,7 +448,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getScriptLogs(requestParams: RequestParams): object {
+  private getScriptLogs(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getScriptLogs() initiated', details: requestParams });
 
     const row = requestParams['rows'] ? requestParams['rows'] : '50';
@@ -473,7 +470,6 @@ export class SuiteToolsApiGet {
       title,
       detail,
     );
-    // log.debug({ title: 'SuiteToolsApiGet:getScriptLogs() returning', details: result });
 
     return result;
   }
@@ -484,7 +480,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getSettings(requestParams: RequestParams): object {
+  private getSettings(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getSettings() initiated', details: requestParams });
 
     this.stApi.stCommon.stSettings.getSettings();
@@ -512,7 +508,7 @@ export class SuiteToolsApiGet {
     };
     log.debug({ title: 'SuiteToolsApiGet:getSettings() returning', details: result });
 
-    return result;
+    return { data: result };
   }
 
   /**
@@ -521,7 +517,7 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getUser(requestParams: RequestParams): object {
+  private getUser(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApi:getUser() initiated', details: requestParams });
 
     const id = requestParams.id;
@@ -534,7 +530,6 @@ export class SuiteToolsApiGet {
     }
 
     const result = this.stApi.stApiModel.getUser(id);
-    // log.debug({ title: 'SuiteToolsApi:getUser() returning', details: result });
 
     return result;
   }
@@ -545,13 +540,12 @@ export class SuiteToolsApiGet {
    * @param requestParams
    * @returns settings
    */
-  private getUsers(requestParams: RequestParams): object {
+  private getUsers(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getUsers() initiated', details: requestParams });
     const active = requestParams['active'];
     const role = requestParams['role'];
     const supervisors = this.convertMultiSelectToArray(requestParams['owner']);
     const result = this.stApi.stApiModel.getUsers(active, role, supervisors);
-    // log.debug({ title: 'SuiteToolsApiGet:getUsers() returning', details: result });
 
     return result;
   }
@@ -579,7 +573,7 @@ export class SuiteToolsApiGetOptions {
     this._stApi = stApi;
   }
 
-  public process(requestParams: RequestParams): object {
+  public process(requestParams: RequestParams): Response {
     // log.debug({ title: 'SuiteToolsApiGetOptions:process() initiated', details: requestParams });
 
     let data: unknown;
@@ -621,9 +615,8 @@ export class SuiteToolsApiGetOptions {
     } else {
       result = optionValues;
     }
-    // log.debug({ title: 'SuiteToolsApiGetOptions:process() returning', details: result });
 
-    return result;
+    return { data: result };
   }
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
@@ -707,9 +700,6 @@ export class SuiteToolsApiGetOptions {
     sql += ` ORDER BY file.name ASC`;
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
-
-  // private getIntegrationList() {
-  // }
 
   private getFileTypeList() {
     const sql = `SELECT
@@ -834,7 +824,8 @@ export class SuiteToolsApiPut {
 
     return {
       status: 200,
-      data: 'Settings updated',
+      data: {},
+      message: 'Settings updated',
     };
   }
 }
@@ -991,7 +982,7 @@ export class SuiteToolsApiModel {
    * @param modifiedDate - the last modified date
    * @returns results
    */
-  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string) {
+  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
     log.debug({
       title: `SuiteToolsApiModel:getFiles() initiated`,
       details: {
@@ -1001,6 +992,8 @@ export class SuiteToolsApiModel {
         modifiedDate: modifiedDate,
       },
     });
+
+    const response: Response = { data: {} };
     let sql = `SELECT
       file.id,
       file.folder,
@@ -1034,8 +1027,14 @@ export class SuiteToolsApiModel {
     }
     sql += ` ORDER BY name ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getScripts() returning', details: response });
 
-    return sqlResults;
+    return response;
   }
 
   /**
@@ -1044,9 +1043,10 @@ export class SuiteToolsApiModel {
    * @param id - the record to return
    * @returns results
    */
-  public getFile(id: string) {
+  public getFile(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getFile() initiated`, details: { id: id } });
 
+    const response: Response = { data: {} };
     const sql = `SELECT
       file.id,
       file.folder,
@@ -1063,10 +1063,14 @@ export class SuiteToolsApiModel {
     WHERE
       file.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    const result = sqlResults[0];
-    log.debug({ title: 'SuiteToolsApiModel:getFile() returning', details: result });
+    if (sqlResults.length === 0) {
+      response.message = `No file found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getFile() returning', details: response });
 
-    return result;
+    return response;
   }
 
   /**
@@ -1075,7 +1079,7 @@ export class SuiteToolsApiModel {
    * @param status - the status of the login
    * @returns roles
    */
-  public getRoles(active: string) {
+  public getRoles(active: string): Response {
     log.debug({
       title: `SuiteToolsApiModel:getRoles() initiated`,
       details: {
@@ -1083,6 +1087,7 @@ export class SuiteToolsApiModel {
       },
     });
 
+    const response: Response = { data: {} };
     let sql = `SELECT
       role.id,
       role.scriptId,
@@ -1109,10 +1114,15 @@ export class SuiteToolsApiModel {
     }
     // add order by
     sql += ` ORDER BY role.name`;
-    const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    log.debug({ title: 'SuiteToolsApiModel:getRoles() returning', details: results });
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getRoles() returning', details: response });
 
-    return results;
+    return response;
   }
 
   /**
@@ -1121,9 +1131,10 @@ export class SuiteToolsApiModel {
    * @param id - the id of the record
    * @returns Role
    */
-  public getRole(id: string) {
+  public getRole(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getRole() initiated`, details: { id: id } });
 
+    const response: Response = { data: {} };
     const sql = `SELECT
       role.id,
       role.scriptId,
@@ -1139,15 +1150,14 @@ export class SuiteToolsApiModel {
     WHERE
       role.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    let result = null;
     if (sqlResults.length === 0) {
-      // this.stCommon.setAlert('No results found that matched criteria.');
+      response.message = `No role found with id of ${id}`;
     } else {
-      result = sqlResults[0];
+      response.data = sqlResults[0];
     }
-    log.debug({ title: 'SuiteToolsApiModel:getRole() returning', details: result });
+    log.debug({ title: 'SuiteToolsApiModel:getRole() returning', details: response });
 
-    return result;
+    return response;
   }
 
   /**
@@ -1168,12 +1178,13 @@ export class SuiteToolsApiModel {
     scripts: string[],
     owners: string[],
     files: string[],
-  ) {
+  ): Response {
     log.debug({
       title: `SuiteToolsApiModel:getScripts() initiated`,
       details: { active: active, versions: versions, types: types, scripts: scripts, owners: owners, files: files },
     });
 
+    const response: Response = { data: {} };
     let sql = `SELECT
       script.id,
       script.apiversion,
@@ -1242,8 +1253,14 @@ export class SuiteToolsApiModel {
     // add order by
     sql += ` ORDER BY name ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getScripts() returning', details: response });
 
-    return sqlResults;
+    return response;
   }
 
   /**
@@ -1252,9 +1269,10 @@ export class SuiteToolsApiModel {
    * @param id - the record to return
    * @returns results
    */
-  public getScript(id: string) {
+  public getScript(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
 
+    const response: Response = { data: {} };
     const sql = `SELECT
       script.id,
       script.apiversion,
@@ -1273,15 +1291,14 @@ export class SuiteToolsApiModel {
     WHERE
       script.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    let result = null;
-    // if (sqlResults.length === 0) {
-    //   this.stCommon.setAlert('No results found that matched criteria.');
-    // } else {
-    result = sqlResults[0];
-    // }
-    log.debug({ title: 'SuiteToolsApiModel:getScript() returning', details: result });
+    if (sqlResults.length === 0) {
+      response.message = `No script found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getScript() returning', details: response });
 
-    return result;
+    return response;
   }
 
   /**
@@ -1804,7 +1821,7 @@ export class SuiteToolsApiModel {
    * @param id - the record id to return
    * @returns script log
    */
-  public getScriptLog(id: string) {
+  public getScriptLog(id: string): Response {
     log.debug({
       title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() initiated`,
       details: {
@@ -1812,6 +1829,7 @@ export class SuiteToolsApiModel {
       },
     });
 
+    const response: Response = { data: {} };
     const sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -1826,9 +1844,13 @@ export class SuiteToolsApiModel {
     WHERE ScriptNote.internalid = ${id}`;
     log.debug({ title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() generated this sql`, details: sql });
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    // return first record of sql results
+    if (sqlResults.length === 0) {
+      response.message = `No script log found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
 
-    return sqlResults[0];
+    return response;
   }
 
   /**
@@ -1856,7 +1878,7 @@ export class SuiteToolsApiModel {
     date: string,
     title: string,
     detail: string,
-  ) {
+  ): Response {
     log.debug({
       title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() initiated`,
       details: {
@@ -1871,6 +1893,7 @@ export class SuiteToolsApiModel {
       },
     });
 
+    const response: Response = { data: {} };
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -1931,8 +1954,13 @@ export class SuiteToolsApiModel {
     sql += ` ORDER BY ScriptNote.internalId DESC`;
     // log.debug({ title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() generated this sql`, details: sql });
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script log records found`;
+    } else {
+      response.data = sqlResults;
+    }
 
-    return sqlResults;
+    return response;
   }
 
   /**
@@ -1941,9 +1969,10 @@ export class SuiteToolsApiModel {
    * @param id - the record id to return
    * @returns user
    */
-  public getUser(id: string) {
+  public getUser(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
 
+    const response: Response = { data: {} };
     const sql = `SELECT
       employee.id,
       employee.isinactive,
@@ -1956,10 +1985,14 @@ export class SuiteToolsApiModel {
     WHERE
       employee.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    const result = sqlResults[0];
-    log.debug({ title: 'SuiteToolsApiModel:getUser() returning', details: result });
+    if (sqlResults.length === 0) {
+      response.message = `No user found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getUser() returning', details: response });
 
-    return result;
+    return response;
   }
 
   /**
@@ -1967,12 +2000,13 @@ export class SuiteToolsApiModel {
    *
    * @returns results
    */
-  public getUsers(active: string, role: string, supervisors: string[]) {
+  public getUsers(active: string, role: string, supervisors: string[]): Response {
     log.debug({
       title: `SuiteToolsApiModel:getUsers() initiated`,
       details: { active: active, role: role, supervisors: supervisors },
     });
 
+    const response: Response = { data: {} };
     let sql = `SELECT
       employee.id,
       employee.isinactive,
@@ -2017,10 +2051,15 @@ export class SuiteToolsApiModel {
     }
     // add order by
     sql += ` ORDER BY employee.firstname ASC`;
-    const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    log.debug({ title: 'SuiteToolsApiModel:getUsers() returning', details: results });
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script log records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getUsers() returning', details: response });
 
-    return results;
+    return response;
   }
 
   // ---------------------------------------------------------------------------

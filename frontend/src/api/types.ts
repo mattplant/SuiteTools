@@ -6,7 +6,12 @@ export type RequestBody = {
 export type Response = {
   // status?: number;
   data: object;
+  message?: string;
 };
+
+export interface NotFound {
+  message: string;
+}
 
 export enum SavedEndpoint {
   SETTINGS = 'settings',

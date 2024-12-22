@@ -1,7 +1,9 @@
 import { getData } from '../../api/api';
+import { NotFound } from '../../api/types';
 import { Script, assertIsScript } from './types';
 
-export async function getScript(id: number): Promise<Script> {
+export async function getScript(id: number): Promise<Script | NotFound> {
+  let result;
   const localTestData = {
     data: {
       id: 1,
@@ -17,12 +19,16 @@ export async function getScript(id: number): Promise<Script> {
     },
   };
   const response = await getData(localTestData, 'script', { id: id });
-  assertIsScript(response.data);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsScript(response.data);
+    // build additional properties
+    response.data.urlNs = `/app/common/scripting/script.nl?id=${response.data.id}`;
+    response.data.urlDetail = `#/script/${response.data.id}`;
+    response.data.urlScriptLogs = `#/scriptLogs/${response.data.id}`;
+    result = response.data;
+  }
 
-  // build additional properties
-  response.data.urlNs = `/app/common/scripting/script.nl?id=${response.data.id}`;
-  response.data.urlDetail = `#/script/${response.data.id}`;
-  response.data.urlScriptLogs = `#/scriptLogs/${response.data.id}`;
-
-  return response.data;
+  return result;
 }

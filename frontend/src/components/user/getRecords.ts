@@ -1,8 +1,10 @@
 import { getData } from '../../api/api';
+import { NotFound } from '../../api/types';
 import { User, assertIsUsers } from './types';
 import { CriteriaFields } from '../criteria/types';
 
-export async function getUsers(fields: CriteriaFields): Promise<User[]> {
+export async function getUsers(fields: CriteriaFields): Promise<User[] | NotFound> {
+  let result;
   const localTestData = {
     data: [
       {
@@ -21,7 +23,12 @@ export async function getUsers(fields: CriteriaFields): Promise<User[]> {
     owner: fields.owner,
   };
   const response = await getData(localTestData, 'users', urlParams);
-  assertIsUsers(response.data);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsUsers(response.data);
+    result = response.data;
+  }
 
-  return response.data;
+  return result;
 }

@@ -1,7 +1,9 @@
 import { getData } from '../../api/api';
+import { NotFound } from '../../api/types';
 import { File, assertIsFile } from './types';
 
-export async function getFile(id: number): Promise<File> {
+export async function getFile(id: number): Promise<File | NotFound> {
+  let result;
   const localTestData = {
     data: {
       id: 1,
@@ -17,11 +19,15 @@ export async function getFile(id: number): Promise<File> {
     },
   };
   const response = await getData(localTestData, 'file', { id: id });
-  assertIsFile(response.data);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsFile(response.data);
+    // build additional properties
+    response.data.urlNs = `/app/common/media/mediaitem.nl?id=${response.data.id}`;
+    response.data.urlDetail = `#/file/${response.data.id}`;
+    result = response.data;
+  }
 
-  // build additional properties
-  response.data.urlNs = `/app/common/media/mediaitem.nl?id=${response.data.id}`;
-  response.data.urlDetail = `#/file/${response.data.id}`;
-
-  return response.data;
+  return result;
 }

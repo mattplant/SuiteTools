@@ -18,7 +18,7 @@ export function IntegrationPage() {
             return (
               <>
                 <IntegrationResult data={record} />
-                <IntegrationTokens />
+                <IntegrationTokens integration={record.name} />
               </>
             );
           }}

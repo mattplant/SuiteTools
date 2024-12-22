@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Modal } from 'flowbite-react';
 import { DynamicResultsRenderer } from './DynamicResultsRenderer.tsx';
+import { NotFound } from '../../api/types';
 import { ModalResult, ResultsTypes } from './types.ts';
 import { ResultsModal } from './ResultsModal.tsx';
 
 type Props = {
   type: ResultsTypes;
   lines: unknown[];
-  getModalData: (id: number) => Promise<ModalResult>;
+  getModalData: (id: number) => Promise<ModalResult | NotFound>;
 };
 
 export function Results({ type, lines, getModalData }: Props) {
@@ -20,7 +21,9 @@ export function Results({ type, lines, getModalData }: Props) {
     async function fetchData() {
       try {
         const data = await getModalData(id);
-        setData(data);
+        if ('id' in data) {
+          setData(data);
+        }
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -66,7 +69,7 @@ export function Results({ type, lines, getModalData }: Props) {
     <>
       <DynamicResultsRenderer type={type} rows={lines} setId={setId} setOpenModal={setOpenModal} />
       <Modal dismissible show={openModal} size="6xl" onClose={() => setOpenModal(false)}>
-        <Modal.Header>{modalTitle + ' ' + id}</Modal.Header>
+        <Modal.Header>{modalTitle}</Modal.Header>
         <Modal.Body>
           <div className="space-y-6 p-6">
             <ResultsModal type={type} loading={loading} data={data} />

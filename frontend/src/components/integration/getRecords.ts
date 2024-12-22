@@ -1,8 +1,9 @@
 import { getDataFromPageTable } from '../../utils/collectData';
-import { Integration, assertIsIntegrations } from './types';
+import { Integration } from './types';
 import { CriteriaFields } from '../criteria/types';
 
 export async function getIntegrations(fields: CriteriaFields): Promise<Integration[]> {
+  console.log('getIntegrations() initiated', { fields });
   const urlParams = {
     active: fields.active,
   };
@@ -34,8 +35,6 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
       dateCreated: integration[4],
     });
   });
-
-  assertIsIntegrations(data);
 
   return data;
 }

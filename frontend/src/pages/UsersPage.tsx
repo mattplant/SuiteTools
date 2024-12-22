@@ -20,7 +20,9 @@ export function UsersPage() {
     async function fetchData() {
       try {
         const data = await getUsers(criteria);
-        setResults(data);
+        if (!('message' in data)) {
+          setResults(data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }

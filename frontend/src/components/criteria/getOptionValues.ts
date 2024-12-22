@@ -1,5 +1,6 @@
 import { getData } from '../../api/api';
 import { OptionValues, OptionValuesTypes } from './types';
+import { getIntegrationOptionValues } from '../integration/getIntegrationOptionValues';
 
 export async function getOptionValues(type: OptionValuesTypes): Promise<OptionValues[]> {
   let localTestData: object = {};
@@ -61,10 +62,18 @@ export async function getOptionValues(type: OptionValuesTypes): Promise<OptionVa
       };
       break;
   }
-  const response = await getData(localTestData, 'optionValues', { type: type });
-  assertIsOptionValues(response.data);
 
-  return response.data;
+  // load the data from SuiteTools API unless we need to get it from NetSuite page
+  let responseObject: object = {};
+  if (type == OptionValuesTypes.INTEGRATION) {
+    responseObject = await getIntegrationOptionValues();
+  } else {
+    const response = await getData(localTestData, 'optionValues', { type: type });
+    responseObject = response.data;
+  }
+  assertIsOptionValues(responseObject);
+
+  return responseObject;
 }
 
 export function assertIsOptionValues(data: unknown): asserts data is OptionValues[] {

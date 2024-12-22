@@ -20,7 +20,7 @@ export async function getData(localTestData: object, endpoint: string, params: o
     .join('&');
 
   if (window.location.href.includes('localhost')) {
-    // get mock data for local development
+    // mock data for local development
     console.log(`getData() endpoint "${endpoint}" mock call initiated with params:`, paramString);
     const data = await new Promise((resolve) => setTimeout(() => resolve(localTestData), 1000));
     console.log(`getData() endpoint "${endpoint}" mock call response`, data);

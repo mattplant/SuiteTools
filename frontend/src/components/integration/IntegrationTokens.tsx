@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
-// import { assertIsIntegration, Integration } from '../integration/types';
-// import { IntegrationResult } from '../integration/RecordResult';
-
 import { CriteriaFields } from '../criteria/types.ts';
 import { getToken } from '../token/getRecord.ts';
 import { getTokens } from '../token/getRecords.ts';
 import { Token } from '../token/types.ts';
-
 import { Results } from '../results/Results.tsx';
 import { ResultsTypes } from '../results/types.ts';
 
-export function IntegrationTokens() {
-  const criteria: CriteriaFields = {
-    active: 'T',
-  };
+type Props = {
+  integration: string;
+};
+
+export function IntegrationTokens({ integration }: Props) {
   const [results, setResults] = useState<Token[]>([]);
 
   useEffect(() => {
+    const criteria: CriteriaFields = {
+      active: 'T',
+      integration: integration,
+    };
     async function fetchData() {
       try {
         const data = await getTokens(criteria);
@@ -28,7 +29,7 @@ export function IntegrationTokens() {
     fetchData();
 
     return () => {};
-  });
+  }, [integration]);
 
   return (
     <>

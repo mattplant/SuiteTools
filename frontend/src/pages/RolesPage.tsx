@@ -18,7 +18,9 @@ export function RolesPage() {
     async function fetchData() {
       try {
         const data = await getRoles(criteria);
-        setResults(data);
+        if (!('message' in data)) {
+          setResults(data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }

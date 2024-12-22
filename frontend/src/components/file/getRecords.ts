@@ -1,8 +1,10 @@
 import { getData } from '../../api/api';
+import { NotFound } from '../../api/types';
 import { File, assertIsFiles } from './types';
 import { CriteriaFields } from '../criteria/types';
 
-export async function getFiles(fields: CriteriaFields): Promise<File[]> {
+export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFound> {
+  let result;
   const localTestData = {
     data: [
       {
@@ -27,7 +29,11 @@ export async function getFiles(fields: CriteriaFields): Promise<File[]> {
     lastmodifieddate: fields.lastmodifieddate,
   };
   const response = await getData(localTestData, 'files', urlParams);
-  assertIsFiles(response.data);
-
-  return response.data;
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsFiles(response.data);
+    result = response.data;
+  }
+  return result;
 }

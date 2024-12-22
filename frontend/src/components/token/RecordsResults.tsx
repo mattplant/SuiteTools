@@ -14,14 +14,14 @@ const columns = [
   },
   {
     key: 'name',
-    name: 'Name',
+    name: 'Token Name',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
+  { key: 'application', name: 'Integration' },
   { key: 'user', name: 'User' },
   { key: 'role', name: 'Role' },
-  { key: 'application', name: 'Application' },
   { key: 'state', name: 'State' },
   { key: 'dateCreated', name: 'Date Created' },
   { key: 'createdBy', name: 'Created By' },

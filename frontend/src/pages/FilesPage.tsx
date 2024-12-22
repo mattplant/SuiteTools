@@ -21,7 +21,9 @@ export function FilesPage() {
     async function fetchData() {
       try {
         const data = await getFiles(criteria);
-        setResults(data);
+        if (!('message' in data)) {
+          setResults(data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }

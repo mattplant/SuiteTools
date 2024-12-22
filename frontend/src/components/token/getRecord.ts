@@ -1,11 +1,13 @@
 import { getTokens } from './getRecords';
-import { Token, assertIsToken } from './types';
+import { NotFound } from '../../api/types';
+import { Token } from './types';
 
-export async function getToken(id: number): Promise<Token> {
-  let record: Token;
+export async function getToken(id: number): Promise<Token | NotFound> {
+  console.log('getToken() initiated', { id });
+  let result;
   if (window.location.href.includes('localhost')) {
-    // get mock data for local development
-    record = {
+    // mock data for local development
+    result = {
       id: 1,
       name: 'Sample Token',
       user: 'Matt Plant',
@@ -16,19 +18,21 @@ export async function getToken(id: number): Promise<Token> {
       createdBy: 'Matt Plant',
     };
   } else {
-    const records = await getTokens({});
-    const result = records.find((record) => record.id === id);
-    if (!result) {
-      throw new Error(`Token with ID ${id} not found`);
+    if (!id) {
+      result = { message: 'Skipping loading token since id is 0' };
     } else {
-      record = result;
+      console.log('getToken() loading tokens from NetSuite page', { id });
+      const records = await getTokens({});
+      result = records.find((record) => record.id === id);
+      if (!result) {
+        throw new Error(`Token with ID ${id} not found`);
+      } else {
+        // build additional properties
+        result.urlNs = `/app/setup/accesstoken.nl?id=${result.id}`;
+        result.urlDetail = `#/token/${result.id}`;
+      }
     }
   }
-  assertIsToken(record);
 
-  // build additional properties
-  record.urlNs = `/app/setup/accesstoken.nl?id=${record.id}`;
-  record.urlDetail = `#/token/${record.id}`;
-
-  return record;
+  return result;
 }

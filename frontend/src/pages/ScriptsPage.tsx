@@ -23,7 +23,9 @@ export function ScriptsPage() {
     async function fetchData() {
       try {
         const data = await getScripts(criteria);
-        setResults(data);
+        if (!('message' in data)) {
+          setResults(data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }

@@ -195,16 +195,16 @@ export function ResultsModal({ type, loading, data }: Props) {
               <b>ID</b>: {data.id}
             </p>
             <p>
-              <b>Name</b>: {data.name}
+              <b>Token Name</b>: {data.name}
+            </p>
+            <p>
+              <b>Integration</b>: {data.application}
             </p>
             <p>
               <b>User</b>: {data.user}
             </p>
             <p>
               <b>Role</b>: {data.role}
-            </p>
-            <p>
-              <b>Application</b>: {data.application}
             </p>
             <p>
               <b>State</b>: {data.state}

@@ -3,6 +3,7 @@ import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
 import { SearchCriteriaUser } from '../criteria/SearchCriteriaUser';
 import { SearchCriteriaRole } from '../criteria/SearchCriteriaRole';
+import { SearchCriteriaIntegration } from '../criteria/SearchCriteriaIntegration';
 
 interface RecordsCriteriaProps {
   defaultCriteria: CriteriaFields;
@@ -26,7 +27,7 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
       </button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaActive register={register} />
-        {/* // Integration specific criteria */}
+        <SearchCriteriaIntegration register={register} />
         <SearchCriteriaUser register={register} />
         <SearchCriteriaRole register={register} />
       </div>

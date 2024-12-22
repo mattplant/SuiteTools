@@ -1,7 +1,9 @@
 import { getData } from '../../api/api';
+import { NotFound } from '../../api/types';
 import { Role, assertIsRole } from './types';
 
-export async function getRole(id: number): Promise<Role> {
+export async function getRole(id: number): Promise<Role | NotFound> {
+  let result;
   const localTestData = {
     data: {
       id: 3,
@@ -14,11 +16,15 @@ export async function getRole(id: number): Promise<Role> {
     },
   };
   const response = await getData(localTestData, 'role', { id: id });
-  assertIsRole(response.data);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsRole(response.data);
+    // build additional properties
+    response.data.urlNs = `/app/setup/role.nl?id=${response.data.id}`;
+    response.data.urlDetail = `#/role/${response.data.id}`;
+    result = response.data;
+  }
 
-  // build additional properties
-  response.data.urlNs = `/app/setup/role.nl?id=${response.data.id}`;
-  response.data.urlDetail = `#/role/${response.data.id}`;
-
-  return response.data;
+  return result;
 }

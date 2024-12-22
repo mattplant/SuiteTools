@@ -1,8 +1,10 @@
 import { getData } from '../../api/api';
+import { NotFound } from '../../api/types';
 import { Role, assertIsRoles } from './types';
 import { CriteriaFields } from '../criteria/types';
 
-export async function getRoles(fields: CriteriaFields): Promise<Role[]> {
+export async function getRoles(fields: CriteriaFields): Promise<Role[] | NotFound> {
+  let result;
   const localTestData = {
     data: [
       {
@@ -20,7 +22,12 @@ export async function getRoles(fields: CriteriaFields): Promise<Role[]> {
     active: fields.active,
   };
   const response = await getData(localTestData, 'roles', urlParams);
-  assertIsRoles(response.data);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    assertIsRoles(response.data);
+    result = response.data;
+  }
 
-  return response.data;
+  return result;
 }

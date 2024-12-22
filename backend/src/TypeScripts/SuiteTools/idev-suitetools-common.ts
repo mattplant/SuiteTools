@@ -6,7 +6,7 @@
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  *
- * Copyright (C) 2023  Matthew Plant
+ * Copyright (C) 2024  Matthew Plant
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

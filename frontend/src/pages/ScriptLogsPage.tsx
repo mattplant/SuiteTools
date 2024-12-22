@@ -33,7 +33,9 @@ export function ScriptLogsPage() {
     async function fetchData() {
       try {
         const data = await getScriptLogs(criteria);
-        setResults(data);
+        if (!('message' in data)) {
+          setResults(data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
