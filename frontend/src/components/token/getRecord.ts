@@ -12,7 +12,7 @@ export async function getToken(id: number): Promise<Token | NotFound> {
       name: 'Sample Token',
       user: 'Matt Plant',
       role: 'Administrator',
-      application: 'Sample Application',
+      integration: 'Application 1',
       state: 'No',
       dateCreated: '2024-12-07 18:28:38',
       createdBy: 'Matt Plant',

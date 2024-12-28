@@ -10,7 +10,7 @@ export type CriteriaFields = {
   owner?: string[];
   rows?: number;
   role?: string[];
-  scriptname?: string[]; // unable to use script as it is already in the URL parameters
+  scriptname?: string[]; // unable to use "script" as it is already in the URL parameters
   scripttype?: string[];
   title?: string;
   user?: string;

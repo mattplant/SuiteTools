@@ -9,7 +9,7 @@ export async function getIntegration(id: number): Promise<Integration | NotFound
     // mock data for local development
     result = {
       id: 1,
-      name: 'Sample Integration',
+      name: 'Application 1',
       applicationId: 'ABCD12EF-456G-...',
       state: 'Enabled',
       dateCreated: '2024-12-06 13:02:03',

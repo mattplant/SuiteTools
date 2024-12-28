@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
 import { ResultsProps, SummaryRow } from '../results/types.ts';
-import { assertIsTokens } from './types.ts';
+import { assertIsSoapLogs } from './types.ts';
 
 const columns = [
   {
@@ -13,22 +13,26 @@ const columns = [
     },
   },
   {
-    key: 'name',
-    name: 'Token Name',
+    key: 'startDate',
+    name: 'Start Date',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
+  { key: 'duration', name: 'Duration' },
   { key: 'integration', name: 'Integration' },
+  { key: 'action', name: 'Action' },
+  { key: 'recordType', name: 'Record Type' },
   { key: 'user', name: 'User' },
-  { key: 'role', name: 'Role' },
-  { key: 'state', name: 'State' },
-  { key: 'dateCreated', name: 'Date Created' },
-  { key: 'createdBy', name: 'Created By' },
+  { key: 'status', name: 'Status' },
+  { key: 'records', name: 'Records' },
+  { key: 'recordsFinished', name: 'Finished' },
+  { key: 'recordsFailed', name: 'Failed' },
+  { key: 'recordsReturned', name: 'Returned' },
 ];
 
 export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertIsTokens(rows);
+  assertIsSoapLogs(rows);
 
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [
@@ -43,14 +47,13 @@ export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
     <DataGrid
       columns={columns}
       rows={rows}
-      defaultColumnOptions={{
-        sortable: true,
-        resizable: true,
-      }}
       bottomSummaryRows={summaryRows}
       onCellClick={(cell) => {
         setId(cell.row.id);
         setOpenModal(true);
+      }}
+      defaultColumnOptions={{
+        minWidth: 110,
       }}
       className="fill-grid"
     />

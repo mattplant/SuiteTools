@@ -38,6 +38,7 @@ export enum ResultsTypes {
   ROLE = 'role',
   SCRIPT = 'script',
   SCRIPTLOG = 'scriptlog',
+  SOAPLOG = 'soaplog',
   TOKEN = 'token',
   USER = 'user',
 }

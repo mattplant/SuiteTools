@@ -5,6 +5,7 @@ import { assertIsIntegration } from '../integration/types';
 import { assertIsRole } from '../role/types';
 import { assertIsScript } from '../script/types';
 import { assertIsScriptLog } from '../scriptLog/types';
+import { assertIsSoapLog } from '../soapLog/types';
 import { assertIsToken } from '../token/types';
 import { assertIsUser } from '../user/types';
 import { useAppSettingsContext } from '../AppSettingsContext';
@@ -187,6 +188,62 @@ export function ResultsModal({ type, loading, data }: Props) {
             </Button.Group>
           </>
         );
+      case ResultsTypes.SOAPLOG:
+        assertIsSoapLog(data);
+        return (
+          <>
+            <p>
+              <b>ID</b>: {data.id}
+            </p>
+            <p>
+              <b>Start Date</b>: {data.startDate}
+            </p>
+            <p>
+              <b>Duration</b>: {data.duration}
+            </p>
+            <p>
+              <b>Integration</b>: {data.integration}
+            </p>
+            <p>
+              <b>Integration Id</b>: {data.integrationId}
+            </p>
+            <p>
+              <b>Action</b>: {data.action}
+            </p>
+            <p>
+              <b>Record Type</b>: {data.recordType}
+            </p>
+            <p>
+              <b>User</b>: {data.user}
+            </p>
+            <p>
+              <b>Status</b>: {data.status}
+            </p>
+            <p>
+              <b>Records</b>: {data.records}
+            </p>
+            <p>
+              <b>Records Finished</b>: {data.recordsFinished}
+            </p>
+            <p>
+              <b>Records Failed</b>: {data.recordsFailed}
+            </p>
+            <p>
+              <b>Records Returned</b>: {data.recordsReturned}
+            </p>
+            <p>
+              <b>Request</b>: {data.request}
+            </p>
+            <p>
+              <b>Response</b>: {data.response}
+            </p>
+            <Button.Group>
+              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+                View SOAP Log Details
+              </Button>
+            </Button.Group>
+          </>
+        );
       case ResultsTypes.TOKEN:
         assertIsToken(data);
         return (
@@ -198,7 +255,7 @@ export function ResultsModal({ type, loading, data }: Props) {
               <b>Token Name</b>: {data.name}
             </p>
             <p>
-              <b>Integration</b>: {data.application}
+              <b>Integration</b>: {data.integration}
             </p>
             <p>
               <b>User</b>: {data.user}

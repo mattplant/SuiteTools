@@ -14,7 +14,7 @@ export function RecordResult({ data }: Props) {
         <b>Token Name</b>: {data.name}
       </p>
       <p>
-        <b>Integration</b>: {data.application}
+        <b>Integration</b>: {data.integration}
       </p>
       <p>
         <b>User</b>: {data.user}

@@ -1,9 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
-import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
-import { SearchCriteriaUser } from '../criteria/SearchCriteriaUser';
-import { SearchCriteriaRole } from '../criteria/SearchCriteriaRole';
-import { SearchCriteriaIntegrationByValue } from '../criteria/SearchCriteriaIntegrationByValue';
+import { SearchCriteriaIntegration } from '../criteria/SearchCriteriaIntegration';
 
 interface RecordsCriteriaProps {
   defaultCriteria: CriteriaFields;
@@ -23,13 +20,10 @@ export function RecordsCriteria({ defaultCriteria, setCriteria }: RecordsCriteri
         type="submit"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center"
       >
-        Get Tokens
+        Get SOAP Logs
       </button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
-        <SearchCriteriaIntegrationByValue register={register} />
-        <SearchCriteriaUser register={register} />
-        <SearchCriteriaRole register={register} />
+        <SearchCriteriaIntegration register={register} />
       </div>
     </form>
   );

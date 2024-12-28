@@ -4,6 +4,7 @@ import { RecordsResults as IntegrationResults } from '../integration/RecordsResu
 import { RecordsResults as RolesResults } from '../role/RecordsResults.tsx';
 import { RecordsResults as ScriptsResults } from '../script/RecordsResults.tsx';
 import { RecordsResults as ScriptLogsResults } from '../scriptLog/RecordsResults.tsx';
+import { RecordsResults as SoapLogResults } from '../soapLog/RecordsResults.tsx';
 import { RecordsResults as TokenResults } from '../token/RecordsResults.tsx';
 import { RecordsResults as UserResults } from '../user/RecordsResults.tsx';
 
@@ -17,6 +18,7 @@ const resultMap: ResultsMap = {
   role: RolesResults,
   script: ScriptsResults,
   scriptlog: ScriptLogsResults,
+  soaplog: SoapLogResults,
   token: TokenResults,
   user: UserResults,
 };

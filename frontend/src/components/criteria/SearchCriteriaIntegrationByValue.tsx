@@ -8,12 +8,12 @@ interface SearchCriteriaIntegrationProps {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaIntegration({ register }: SearchCriteriaIntegrationProps) {
+export function SearchCriteriaIntegrationByValue({ register }: SearchCriteriaIntegrationProps) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getIntegrationOptionValues(true);
+      const data = await getIntegrationOptionValues(false);
       setValues(data);
     }
 

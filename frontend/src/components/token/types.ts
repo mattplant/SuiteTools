@@ -1,12 +1,12 @@
 export interface Token {
-  id: number; // Internal ID
-  name: string; // Token Name
-  user: string; // User
-  role: string; // Role
-  application: string; // Application
+  id: number;
+  name: string;
+  user: string;
+  role: string;
+  integration: string;
   state: string; // Inactive - TODO change type to boolean
   dateCreated: string;
-  createdBy: string; // Created By
+  createdBy: string;
   // additional properties
   urlNs?: string;
   urlDetail?: string;
@@ -46,12 +46,12 @@ export function assertIsToken(data: unknown): asserts data is Token {
   if (typeof data.role !== 'string') {
     throw new Error('Token data "role" field is not a string');
   }
-  // application
-  if (!('application' in data)) {
-    throw new Error('Token data is missing the "application" field');
+  // integration
+  if (!('integration' in data)) {
+    throw new Error('Token data is missing the "integration" field');
   }
-  if (typeof data.application !== 'string') {
-    throw new Error('Token data "application" field is not a string');
+  if (typeof data.integration !== 'string') {
+    throw new Error('Token data "integration" field is not a string');
   }
   // TODO fix state
   // if (!('state' in data)) {

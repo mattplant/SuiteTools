@@ -994,12 +994,6 @@ export class SuiteToolsCommonSettings {
   private _devMode: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _lastLogins: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _integrations: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _tokens: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _users: any[];
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
@@ -1023,18 +1017,6 @@ export class SuiteToolsCommonSettings {
   get lastLogins(): any[] {
     return this._lastLogins;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get integrations(): any[] {
-    return this._integrations;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get tokens(): any[] {
-    return this._tokens;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get users(): any[] {
-    return this._users;
-  }
 
   constructor(stCommon: SuiteToolsCommon) {
     // log.debug({ title: 'SuiteToolsCommonSettings:constructor() initiated', details: null });
@@ -1054,9 +1036,6 @@ export class SuiteToolsCommonSettings {
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_js_url AS jsUrl,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_dev_mode AS devMode,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_last_logins AS lastLogins,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_integrations AS integrations,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_tokens AS tokens,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_users AS users,
     FROM
       ${this.stCommon.appSettingsRecord}
     WHERE
@@ -1075,9 +1054,6 @@ export class SuiteToolsCommonSettings {
       this._jsUrl = sqlResults[0].jsurl;
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
       this._lastLogins = JSON.parse(sqlResults[0].lastlogins);
-      this._integrations = JSON.parse(sqlResults[0].integrations);
-      this._tokens = JSON.parse(sqlResults[0].tokens);
-      this._users = JSON.parse(sqlResults[0].users);
       this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
 
       // if core configs are not set then set them

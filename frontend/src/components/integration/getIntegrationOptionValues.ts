@@ -1,13 +1,13 @@
 import { getIntegrations } from './getRecords';
 import { OptionValues } from '../criteria/types';
 
-export async function getIntegrationOptionValues(): Promise<OptionValues[]> {
+export async function getIntegrationOptionValues(key: boolean): Promise<OptionValues[]> {
   const records = await getIntegrations({});
-  // for each record get key and value
   const optionValues = records.map((record) => {
+    const value = key ? record.id.toString() : record.name.replace(/<[^>]*>?/gm, '').trim();
     return {
-      value: record.id.toString(),
-      text: record.name,
+      value: value,
+      text: record.name.replace(/<[^>]*>?/gm, '').trim(),
     };
   });
 

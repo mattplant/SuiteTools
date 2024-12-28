@@ -12,8 +12,20 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
   if (window.location.href.includes('localhost')) {
     // mock data for local development
     dataArray = [
-      ['1', 'Application 1', 'ABCD12EF-456G-...', 'Enabled', '2024-12-06 13:02:03'],
-      ['2', 'Application 2', 'ABCDE12F-456G-...', 'Enabled', '2024-12-11 12:13:14'],
+      [
+        '1',
+        '<a href="/app/common/integration/integrapp.nl?id=1" target="_self">Application 1</a>',
+        'ABCD12EF-456G-...',
+        'Enabled',
+        '2024-12-06 13:02:03',
+      ],
+      [
+        '2',
+        '<a href="/app/common/integration/integrapp.nl?id=2" target="_self">Application 2</a>',
+        'ABCDE12F-456G-...',
+        'Enabled',
+        '2024-12-11 12:13:14',
+      ],
     ];
   } else {
     // get data from NetSuite page
@@ -29,7 +41,7 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
   dataArray.map((integration) => {
     data.push({
       id: Number(integration[0]),
-      name: integration[1],
+      name: integration[1].replace(/<[^>]*>?/gm, '').trim(),
       applicationId: integration[2],
       state: integration[3],
       dateCreated: integration[4],

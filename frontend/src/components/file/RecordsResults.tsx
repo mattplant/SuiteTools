@@ -53,6 +53,7 @@ export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
         setId(cell.row.id);
         setOpenModal(true);
       }}
+      className="fill-grid"
     />
   );
 }

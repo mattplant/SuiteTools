@@ -1,21 +1,25 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsToken, Token } from '../components/token/types';
-import { RecordResult } from '../components/token/RecordResult';
+import { assertIsSoapLog, SoapLog } from '../components/soapLog/types';
+import { SoapLogResult } from '../components/soapLog/RecordResult';
 
-export function TokenPage() {
+export function SoapLogPage() {
   const data = useLoaderData();
   assertIsData(data);
 
   return (
     <div className="mx-auto mt-6">
-      <h2 className="text-xl font-bold text-slate-900">Token</h2>
+      <h2 className="text-xl font-bold text-slate-900">SOAP Log</h2>
       <br />
       <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data.token}>
+        <Await resolve={data.soapLog}>
           {(record) => {
-            assertIsToken(record);
-            return <RecordResult data={record} />;
+            assertIsSoapLog(record);
+            return (
+              <>
+                <SoapLogResult data={record} />
+              </>
+            );
           }}
         </Await>
       </Suspense>
@@ -24,7 +28,7 @@ export function TokenPage() {
 }
 
 type Data = {
-  token: Token;
+  soapLog: SoapLog;
 };
 
 function assertIsData(data: unknown): asserts data is Data {
@@ -34,7 +38,7 @@ function assertIsData(data: unknown): asserts data is Data {
   if (data === null) {
     throw new Error('Data is null');
   }
-  if (!('token' in data)) {
-    throw new Error('Data does not contain token');
+  if (!('soapLog' in data)) {
+    throw new Error('Data does not contain integration');
   }
 }

@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { assertIsIntegration, Integration } from '../components/integration/types';
 import { IntegrationResult } from '../components/integration/RecordResult';
+import { IntegrationSoapLogs } from '../components/integration/IntegrationSoapLogs';
 import { IntegrationTokens } from '../components/integration/IntegrationTokens';
 
 export function IntegrationPage() {
@@ -11,6 +12,7 @@ export function IntegrationPage() {
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Integration</h2>
+      <br />
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.integration}>
           {(record) => {
@@ -19,6 +21,9 @@ export function IntegrationPage() {
               <>
                 <IntegrationResult data={record} />
                 <IntegrationTokens integration={record.name} />
+                <br />
+                <h2 className="text-xl font-bold text-slate-900">Execution Logs</h2>
+                <IntegrationSoapLogs integration={String(record.id)} />
               </>
             );
           }}

@@ -54,6 +54,9 @@ export default function Header() {
             <Dropdown.Item>
               <NavLink to={`scriptLogs`}>Script Logs</NavLink>
             </Dropdown.Item>
+            <Dropdown.Item>
+              <NavLink to={`soapLogs`}>SOAP Logs</NavLink>
+            </Dropdown.Item>
           </Dropdown>
         </NavbarLink>
         <NavbarLink>

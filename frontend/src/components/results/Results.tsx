@@ -54,6 +54,9 @@ export function Results({ type, lines, getModalData }: Props) {
     case ResultsTypes.SCRIPTLOG:
       modalTitle = 'Script Log Details';
       break;
+    case ResultsTypes.SOAPLOG:
+      modalTitle = 'SOAP Log Details';
+      break;
     case ResultsTypes.TOKEN:
       modalTitle = 'Token';
       break;
@@ -66,7 +69,7 @@ export function Results({ type, lines, getModalData }: Props) {
   }
 
   return (
-    <>
+    <div className="grid">
       <DynamicResultsRenderer type={type} rows={lines} setId={setId} setOpenModal={setOpenModal} />
       <Modal dismissible show={openModal} size="6xl" onClose={() => setOpenModal(false)}>
         <Modal.Header>{modalTitle}</Modal.Header>
@@ -76,6 +79,6 @@ export function Results({ type, lines, getModalData }: Props) {
           </div>
         </Modal.Body>
       </Modal>
-    </>
+    </div>
   );
 }

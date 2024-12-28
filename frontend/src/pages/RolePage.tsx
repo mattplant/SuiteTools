@@ -10,6 +10,7 @@ export function RolePage() {
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Role</h2>
+      <br />
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.role}>
           {(role) => {

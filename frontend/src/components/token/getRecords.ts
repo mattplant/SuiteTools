@@ -1,5 +1,5 @@
 import { getDataFromPageTable } from '../../utils/collectData';
-import { Token, assertIsTokens } from './types';
+import { assertIsTokens, Token } from './types';
 import { CriteriaFields } from '../criteria/types';
 
 export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
@@ -36,7 +36,7 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
       name: record[2],
       user: record[3],
       role: record[4],
-      application: record[5],
+      integration: record[5],
       state: record[6],
       dateCreated: record[7],
       createdBy: record[8],

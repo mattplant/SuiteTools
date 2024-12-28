@@ -22,6 +22,10 @@ import { ScriptsPage } from './pages/ScriptsPage.tsx';
 import { getScriptLog } from './components/scriptLog/getRecord.ts';
 import { ScriptLogPage } from './pages/ScriptLogPage.tsx';
 import { ScriptLogsPage } from './pages/ScriptLogsPage.tsx';
+// SOAP logs
+import { getSoapLog } from './components/soapLog/getRecord.ts';
+import { SoapLogPage } from './pages/SoapLogPage.tsx';
+import { SoapLogsPage } from './pages/SoapLogsPage.tsx';
 // settings
 import { getSettings } from './components/settings/getSettings.ts';
 import { SettingsPage } from './pages/SettingsPage.tsx';
@@ -88,6 +92,15 @@ const router = createHashRouter([
       {
         path: 'scriptLogs/:script?',
         element: <ScriptLogsPage />,
+      },
+      {
+        path: 'soapLogs',
+        element: <SoapLogsPage />,
+      },
+      {
+        path: 'soapLog/:id',
+        element: <SoapLogPage />,
+        loader: async ({ params }) => defer({ soapLog: getSoapLog(Number(params.id)) }),
       },
       {
         path: 'settings',

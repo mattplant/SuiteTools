@@ -48,27 +48,27 @@ async function getPageTable(url: string, id: string): Promise<string> {
 }
 
 function convertTableToArray(html: string): string[][] {
-  // console.log('convertTableToArray() initiated', html);
-
   const table: string[][] = [];
   const tableRows = html.split('</tr>');
   tableRows.forEach((row) => {
-    // console.log('row =', row);
     const tableColumns = row.split('</td>');
     const tableRow: string[] = [];
     tableColumns.forEach((column) => {
-      // console.log('col =', column);
-      const tableCell = column.replace(/<[^>]*>?/gm, '').trim();
-      // console.log('tableCell =', tableCell);
-      tableRow.push(tableCell);
+      if (column.includes('<a')) {
+        const matchResult = column.match(/<a[^>]*>[^<]*<\/a>/);
+        if (matchResult) {
+          column = matchResult[0];
+          tableRow.push(column);
+        }
+      } else {
+        const tableCell = column.replace(/<[^>]*>?/gm, '').trim();
+        tableRow.push(tableCell);
+      }
     });
     if (!(Array.isArray(tableRow) && tableRow.length === 1 && tableRow[0] === '')) {
-      // console.log('ADDING TABLE ROW =', tableRow);
       table.push(tableRow);
-      // console.log('tableRows =', tableRows);
     }
   });
-  // console.log('convertTableToArray() returning', table);
 
   return table;
 }
