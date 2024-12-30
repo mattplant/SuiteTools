@@ -10,9 +10,9 @@ export async function getToken(id: number): Promise<Token | NotFound> {
     result = {
       id: 1,
       name: 'Sample Token',
-      user: 'Matt Plant',
-      role: 'Administrator',
-      integration: 'Application 1',
+      userName: 'Matt Plant',
+      roleName: 'Administrator',
+      integrationName: 'Application 1',
       state: 'No',
       dateCreated: '2024-12-07 18:28:38',
       createdBy: 'Matt Plant',

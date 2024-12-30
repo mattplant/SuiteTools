@@ -3,6 +3,8 @@ export interface User {
   isinactive: string;
   email: string;
   name: string;
+  roleid: number;
+  rolename: string;
   supervisor: string;
   title: string;
   // additional properties
@@ -43,6 +45,20 @@ export function assertIsUser(data: unknown): asserts data is User {
   }
   if (typeof data.name !== 'string') {
     throw new Error('User data "name" field is not a string');
+  }
+  // roleid
+  if (!('roleid' in data)) {
+    throw new Error('User data is missing the "roleid" field');
+  }
+  if (typeof data.roleid !== 'number') {
+    throw new Error('User data "roleid" field is not a number');
+  }
+  // rolename
+  if (!('rolename' in data)) {
+    throw new Error('User data is missing the "rolename" field');
+  }
+  if (typeof data.rolename !== 'string') {
+    throw new Error('User data "rolename" field is not a string');
   }
   // supervisor
   if (!('supervisor' in data)) {

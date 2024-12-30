@@ -10,9 +10,10 @@ import { ResultsTypes } from '../components/results/types.ts';
 export function TokensPage() {
   const defaultCriteria: CriteriaFields = {
     active: 'T',
-    integration: '',
-    user: '',
-    role: [''],
+    integrationName: '',
+    tokenName: '',
+    // users: '',
+    // roles: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<Token[]>([]);

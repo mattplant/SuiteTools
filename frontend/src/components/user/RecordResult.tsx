@@ -20,6 +20,9 @@ export function UserResult({ data }: Props) {
         <b>Email</b>: {data.email}
       </p>
       <p>
+        <b>Role</b>: {data.rolename}
+      </p>
+      <p>
         <b>Supervisor</b>: {data.supervisor}
       </p>
       <p>

@@ -8,10 +8,11 @@ import { ResultsModal } from './ResultsModal.tsx';
 type Props = {
   type: ResultsTypes;
   lines: unknown[];
-  getModalData: (id: number) => Promise<ModalResult | NotFound>;
+  getModalData: (id: number, lines?: unknown[]) => Promise<ModalResult | NotFound>;
 };
 
 export function Results({ type, lines, getModalData }: Props) {
+  console.log('Results() initiated with', { type, lines, getModalData });
   const [openModal, setOpenModal] = useState(false);
   const [id, setId] = useState<number>(0);
   const [data, setData] = useState<ModalResult>();
@@ -20,7 +21,7 @@ export function Results({ type, lines, getModalData }: Props) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getModalData(id);
+        const data = await getModalData(id, lines);
         if ('id' in data) {
           setData(data);
         }
@@ -44,6 +45,9 @@ export function Results({ type, lines, getModalData }: Props) {
       break;
     case ResultsTypes.INTEGRATION:
       modalTitle = 'Integration';
+      break;
+    case ResultsTypes.LOGIN:
+      modalTitle = 'Login';
       break;
     case ResultsTypes.ROLE:
       modalTitle = 'Role';

@@ -19,9 +19,9 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
-  { key: 'integration', name: 'Integration' },
-  { key: 'user', name: 'User' },
-  { key: 'role', name: 'Role' },
+  { key: 'integrationName', name: 'Integration' },
+  { key: 'userName', name: 'User' },
+  { key: 'roleName', name: 'Role' },
   { key: 'state', name: 'State' },
   { key: 'dateCreated', name: 'Date Created' },
   { key: 'createdBy', name: 'Created By' },

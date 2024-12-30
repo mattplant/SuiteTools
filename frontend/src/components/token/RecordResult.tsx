@@ -14,13 +14,13 @@ export function RecordResult({ data }: Props) {
         <b>Token Name</b>: {data.name}
       </p>
       <p>
-        <b>Integration</b>: {data.integration}
+        <b>Integration</b>: {data.integrationName}
       </p>
       <p>
-        <b>User</b>: {data.user}
+        <b>User</b>: {data.userName}
       </p>
       <p>
-        <b>Role</b>: {data.role}
+        <b>Role</b>: {data.roleName}
       </p>
       <p>
         <b>State</b>: {data.state}

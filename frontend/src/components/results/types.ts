@@ -32,9 +32,9 @@ export enum ResultsTypes {
   //     "Employee": 1,
   //     "Job": 4,
   //   });
-
   FILE = 'file',
   INTEGRATION = 'integration',
+  LOGIN = 'login',
   ROLE = 'role',
   SCRIPT = 'script',
   SCRIPTLOG = 'scriptlog',

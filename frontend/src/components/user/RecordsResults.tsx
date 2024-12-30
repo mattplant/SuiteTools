@@ -19,12 +19,9 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
-  {
-    key: 'name',
-    name: 'Name',
-  },
+  { key: 'name', name: 'Name' },
   { key: 'email', name: 'Email' },
-  { key: 'role', name: 'Role' },
+  { key: 'rolename', name: 'Role' },
   { key: 'title', name: 'Title' },
   { key: 'supervisor', name: 'Supervisor' },
 ];

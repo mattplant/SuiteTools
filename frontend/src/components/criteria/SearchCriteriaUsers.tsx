@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { getOptionValues } from '../integration/getOptionValues';
-import { OptionValues } from './types';
-import { CriteriaFields } from './types';
+import { getOptionValues } from './getOptionValues';
+import { CriteriaFields, OptionValues, OptionValuesTypes } from './types';
 
-interface SearchCriteriaIntegrationProps {
+interface SearchCriteriaUsersProps {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaIntegration({ register }: SearchCriteriaIntegrationProps) {
+export function SearchCriteriaUsers({ register }: SearchCriteriaUsersProps) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getOptionValues(true);
+      const data = await getOptionValues(OptionValuesTypes.USER);
       setValues(data);
     }
 
@@ -22,12 +21,13 @@ export function SearchCriteriaIntegration({ register }: SearchCriteriaIntegratio
 
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
-      <label htmlFor="integration">Integration</label>
+      <label htmlFor="users">Users</label>
       <select
+        multiple
         size={6}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="integration"
-        {...register('integration')}
+        id="users"
+        {...register('users')}
       >
         <option value="">All</option>
         {values.map((option) => (

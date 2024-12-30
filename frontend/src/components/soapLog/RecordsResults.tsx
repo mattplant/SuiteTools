@@ -6,25 +6,24 @@ import { assertIsSoapLogs } from './types.ts';
 
 const columns = [
   {
-    key: 'id',
-    name: 'ID',
+    key: 'startDate',
+    name: 'Start Time',
     renderSummaryCell() {
       return <strong>Total</strong>;
     },
   },
   {
-    key: 'startDate',
-    name: 'Start Date',
+    key: 'duration',
+    name: 'Duration',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
-  { key: 'duration', name: 'Duration' },
+  { key: 'status', name: 'Status' },
   { key: 'integration', name: 'Integration' },
   { key: 'action', name: 'Action' },
   { key: 'recordType', name: 'Record Type' },
   { key: 'user', name: 'User' },
-  { key: 'status', name: 'Status' },
   { key: 'records', name: 'Records' },
   { key: 'recordsFinished', name: 'Finished' },
   { key: 'recordsFailed', name: 'Failed' },

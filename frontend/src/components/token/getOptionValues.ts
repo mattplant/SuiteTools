@@ -1,8 +1,8 @@
-import { getIntegrations } from './getRecords';
+import { getTokens } from './getRecords';
 import { OptionValues } from '../criteria/types';
 
-export async function getIntegrationOptionValues(key: boolean): Promise<OptionValues[]> {
-  const records = await getIntegrations({});
+export async function getOptionValues(key: boolean): Promise<OptionValues[]> {
+  const records = await getTokens({});
   const optionValues = records.map((record) => {
     const value = key ? record.id.toString() : record.name.replace(/<[^>]*>?/gm, '').trim();
     return {
@@ -10,6 +10,7 @@ export async function getIntegrationOptionValues(key: boolean): Promise<OptionVa
       text: record.name.replace(/<[^>]*>?/gm, '').trim(),
     };
   });
+  optionValues.sort((a, b) => a.text.localeCompare(b.text));
 
   return optionValues;
 }

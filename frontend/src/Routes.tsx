@@ -10,6 +10,8 @@ import { FilesPage } from './pages/FilesPage.tsx';
 import { getIntegration } from './components/integration/getRecord.ts';
 import { IntegrationPage } from './pages/IntegrationPage.tsx';
 import { IntegrationsPage } from './pages/IntegrationsPage.tsx';
+// logins
+import { LoginsPage } from './pages/LoginsPage.tsx';
 // roles
 import { getRole } from './components/role/getRecord.ts';
 import { RolePage } from './pages/RolePage.tsx';
@@ -65,6 +67,10 @@ const router = createHashRouter([
       {
         path: 'integrations',
         element: <IntegrationsPage />,
+      },
+      {
+        path: 'logins',
+        element: <LoginsPage />,
       },
       {
         path: 'role/:id',

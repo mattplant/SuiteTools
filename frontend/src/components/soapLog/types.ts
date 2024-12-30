@@ -52,6 +52,10 @@ export function assertIsSoapLog(data: unknown): asserts data is SoapLog {
   if (typeof data.integration !== 'string') {
     throw new Error('SoapLog data "integration" field is not a string');
   }
+  // integrationId
+  if ('integrationId' in data && typeof data.integrationId !== 'number') {
+    throw new Error('SoapLog data "integrationId" field is not a number');
+  }
   // action
   if (!('action' in data)) {
     throw new Error('SoapLog data is missing the "action" field');

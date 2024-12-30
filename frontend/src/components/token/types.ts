@@ -1,9 +1,9 @@
 export interface Token {
   id: number;
   name: string;
-  user: string;
-  role: string;
-  integration: string;
+  userName: string;
+  roleName: string;
+  integrationName: string;
   state: string; // Inactive - TODO change type to boolean
   dateCreated: string;
   createdBy: string;
@@ -32,26 +32,26 @@ export function assertIsToken(data: unknown): asserts data is Token {
   if (typeof data.name !== 'string') {
     throw new Error('Token data "name" field is not a string');
   }
-  // user
-  if (!('user' in data)) {
-    throw new Error('Token data is missing the "user" field');
+  // userName
+  if (!('userName' in data)) {
+    throw new Error('Token data is missing the "userName" field');
   }
-  if (typeof data.user !== 'string') {
-    throw new Error('Token data "user" field is not a string');
+  if (typeof data.userName !== 'string') {
+    throw new Error('Token data "userName" field is not a string');
   }
-  // role
-  if (!('role' in data)) {
-    throw new Error('Token data is missing the "role" field');
+  // roleName
+  if (!('roleName' in data)) {
+    throw new Error('Token data is missing the "roleName" field');
   }
-  if (typeof data.role !== 'string') {
-    throw new Error('Token data "role" field is not a string');
+  if (typeof data.roleName !== 'string') {
+    throw new Error('Token data "roleName" field is not a string');
   }
-  // integration
-  if (!('integration' in data)) {
-    throw new Error('Token data is missing the "integration" field');
+  // integrationName
+  if (!('integrationName' in data)) {
+    throw new Error('Token data is missing the "integrationName" field');
   }
-  if (typeof data.integration !== 'string') {
-    throw new Error('Token data "integration" field is not a string');
+  if (typeof data.integrationName !== 'string') {
+    throw new Error('Token data "integrationName" field is not a string');
   }
   // TODO fix state
   // if (!('state' in data)) {

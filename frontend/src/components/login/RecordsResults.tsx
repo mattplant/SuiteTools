@@ -2,32 +2,32 @@ import { useMemo } from 'react';
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
 import { ResultsProps, SummaryRow } from '../results/types.ts';
-import { assertIsRoles } from './types.ts';
+import { assertIsLogins } from './types.ts';
 
 const columns = [
   {
-    key: 'id',
-    name: 'ID',
+    key: 'date',
+    name: 'Date',
     renderSummaryCell() {
       return <strong>Total</strong>;
     },
   },
   {
-    key: 'isinactive',
-    name: 'Active',
+    key: 'status',
+    name: 'status',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
-  { key: 'name', name: 'Name' },
-  { key: 'centertype', name: 'Center Type' },
-  { key: 'issalesrole', name: 'Sales Role' },
-  { key: 'issupportrole', name: 'Support Role' },
-  { key: 'iswebserviceonlyrole', name: 'Web Service Only Role' },
+  { key: 'oauthappname', name: 'OAuth Application' },
+  { key: 'oauthaccesstokenname', name: 'OAuth Access Token' },
+  { key: 'username', name: 'User' },
+  { key: 'rolename', name: 'Role' },
 ];
 
 export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertIsRoles(rows);
+  console.log('RecordsResults() initiated with', { rows, setId, setOpenModal });
+  assertIsLogins(rows);
 
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [
@@ -51,6 +51,7 @@ export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
         setId(cell.row.id);
         setOpenModal(true);
       }}
+      className="fill-grid"
     />
   );
 }

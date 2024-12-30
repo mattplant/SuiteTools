@@ -2,6 +2,7 @@ import { Button } from 'flowbite-react';
 import { ResultsTypes } from './types';
 import { assertIsFile } from '../file/types';
 import { assertIsIntegration } from '../integration/types';
+import { assertIsLogin } from '../login/types';
 import { assertIsRole } from '../role/types';
 import { assertIsScript } from '../script/types';
 import { assertIsScriptLog } from '../scriptLog/types';
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function ResultsModal({ type, loading, data }: Props) {
+  console.log('ResultsModal() initiated', type, loading, data);
   const { settings } = useAppSettingsContext();
   const appScriptUrl = settings?.appUrl;
 
@@ -91,6 +93,48 @@ export function ResultsModal({ type, loading, data }: Props) {
                 View Integration Details
               </Button>
             </Button.Group>
+          </>
+        );
+      case ResultsTypes.LOGIN:
+        assertIsLogin(data);
+        return (
+          <>
+            <p>
+              <b>Date</b>: {data.date}
+            </p>
+            <p>
+              <b>Status</b>: {data.status}
+            </p>
+            <p>
+              <b>OAuth Application</b>: {data.oauthappname}
+            </p>
+            <p>
+              <b>OAuth Access Token</b>: {data.oauthaccesstokenname}
+            </p>
+            <p>
+              <b>User</b>: {data.username}
+            </p>
+            <p>
+              <b>Role</b>: {data.rolename}
+            </p>
+            <p>
+              <b>Email Address</b>: {data.emailaddress}
+            </p>
+            <p>
+              <b>IP Address</b>: {data.ipaddress}
+            </p>
+            <p>
+              <b>Request URI</b>: {data.requesturi}
+            </p>
+            <p>
+              <b>Detail</b>: {data.detail}
+            </p>
+            <p>
+              <b>Security Challenge</b>: {data.secchallenge}
+            </p>
+            <p>
+              <b>User Agent</b>: {data.useragent}
+            </p>
           </>
         );
       case ResultsTypes.ROLE:
@@ -255,13 +299,13 @@ export function ResultsModal({ type, loading, data }: Props) {
               <b>Token Name</b>: {data.name}
             </p>
             <p>
-              <b>Integration</b>: {data.integration}
+              <b>Integration</b>: {data.integrationName}
             </p>
             <p>
-              <b>User</b>: {data.user}
+              <b>User</b>: {data.userName}
             </p>
             <p>
-              <b>Role</b>: {data.role}
+              <b>Role</b>: {data.roleName}
             </p>
             <p>
               <b>State</b>: {data.state}
@@ -295,6 +339,9 @@ export function ResultsModal({ type, loading, data }: Props) {
             </p>
             <p>
               <b>Email</b>: {data.email}
+            </p>
+            <p>
+              <b>Role</b>: {data.rolename}
             </p>
             <p>
               <b>Supervisor</b>: {data.supervisor}

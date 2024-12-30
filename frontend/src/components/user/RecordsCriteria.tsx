@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
 import { SearchCriteriaOwner } from '../criteria/SearchCriteriaOwner';
-import { SearchCriteriaRole } from '../criteria/SearchCriteriaRole';
+import { SearchCriteriaRoles } from '../criteria/SearchCriteriaRoles';
 
 interface RecordsCriteriaProps {
   defaultCriteria: CriteriaFields;
@@ -27,7 +27,7 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
       </button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaActive register={register} />
-        <SearchCriteriaRole register={register} />
+        <SearchCriteriaRoles register={register} />
         <SearchCriteriaOwner register={register} title="Supervisor" />
       </div>
     </form>

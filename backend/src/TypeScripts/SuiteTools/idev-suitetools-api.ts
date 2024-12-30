@@ -134,6 +134,10 @@ export class SuiteToolsApiGet {
       case 'files':
         response = this.getFiles(requestParams);
         break;
+      case 'logins':
+        response = this.getLogins(requestParams);
+        response = this.cleanLoginsData(response);
+        break;
       case 'optionValues':
         response = this.stApiGetOptions.process(requestParams);
         break;
@@ -198,6 +202,34 @@ export class SuiteToolsApiGet {
 
   private convertMultiSelectToArray(field: string): string[] {
     return field ? (field.includes(',') ? field.split(',') : [field]) : null;
+  }
+
+  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // private cleanLoginData(data: any): object {
+  //   log.debug({ title: 'SuiteToolsApiGet:cleanLoginData() initiated', details: data });
+  //   // // switch isinactive values to active values
+  //   // if (data.isinactive === 'F') {
+  //   //   data.isinactive = 'Yes';
+  //   // } else {
+  //   //   data.isinactive = 'No';
+  //   // }
+
+  //   return data;
+  // }
+
+  private cleanLoginsData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      response.data.forEach((record) => {
+        // auto-number the id field
+        let i = 1; // purposely started at 1 so that I could ignore id of 0
+        record.id = i;
+        i++;
+        // clean the data
+        // this.cleanLoginData(record);
+      });
+    }
+
+    return response;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -333,6 +365,27 @@ export class SuiteToolsApiGet {
     const modifiedDate = requestParams['lastmodifieddate'];
     const result = this.stApi.stApiModel.getFiles(row, types, createdDate, modifiedDate);
     // log.debug({ title: 'SuiteToolsApiGet:getFiles() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Logins
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getLogins(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiGet:getLogins() initiated', details: requestParams });
+    const rows = requestParams['rows'];
+    const active = requestParams['active'];
+    const integrationName = requestParams['integrationName'];
+    const tokenName = requestParams['tokenName'];
+    const users = this.convertMultiSelectToArray(requestParams['users']);
+    const roles = this.convertMultiSelectToArray(requestParams['roles']);
+    const dates = requestParams['dates'];
+    const result = this.stApi.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dates);
+    // log.debug({ title: 'SuiteToolsApiGet:getLogins() returning', details: result });
 
     return result;
   }
@@ -543,9 +596,9 @@ export class SuiteToolsApiGet {
   private getUsers(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiGet:getUsers() initiated', details: requestParams });
     const active = requestParams['active'];
-    const role = requestParams['role'];
+    const roles = this.convertMultiSelectToArray(requestParams['roles']);
     const supervisors = this.convertMultiSelectToArray(requestParams['owner']);
-    const result = this.stApi.stApiModel.getUsers(active, role, supervisors);
+    const result = this.stApi.stApiModel.getUsers(active, roles, supervisors);
 
     return result;
   }
@@ -847,81 +900,6 @@ export class SuiteToolsApiModel {
     this._stCommon = stCommon;
   }
 
-  /**
-   * Get Jobs
-   *
-   * @param active - the active flag
-   * @returns roles
-   */
-  // public getJobs(
-  //   active: string
-  // ) {
-  //   log.debug({
-  //     title: `SuiteToolsApiModel:getJobs() initiated`,
-  //     details: {
-  //       active: active,
-  //     },
-  //   });
-
-  //   let sql = `SELECT
-  //     id,
-  //     custrecord_st_job_task_id as task_id,
-  //   FROM
-  //     customrecord_idev_suitetools_job`;
-
-  //   // isinactive,
-  //   // name || ' (' || id  || ')' AS name,
-  //   // custrecord_st_job_run_type AS type,
-  //   // custrecord_st_job_run_params AS params,
-
-  //   // add where clause
-  //   const where = [];
-  //   // if (active) {
-  //   //   if (active === 'T') {
-  //   //     where.push(`isinactive = 'F'`);
-  //   //   }
-  //   //   if (active === 'F') {
-  //   //     where.push(`isinactive = 'T'`);
-  //   //   }
-  //   // }
-  //   if (where.length > 0) {
-  //     sql += ` WHERE ${where.join(' AND ')}`;
-  //   }
-  //   // add order by
-  //   // sql += ` ORDER BY name`;
-  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-  //   log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: results });
-
-  //   return results;
-  // }
-
-  /**
-   * Get Job
-   *
-   * @param id - the record to return
-   * @returns results
-   */
-  // public getJob(id: number) {
-  //   log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
-
-  //   const sql = `SELECT
-  //     id,
-  //   FROM
-  //     customrecord_idev_suitetools_job
-  //   WHERE
-  //     id = ${id}`;
-  //   const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-  //   let result = null;
-  //   if (sqlResults.length === 0) {
-  //     // this.stCommon.setAlert('No results found that matched criteria.');
-  //   } else {
-  //     result = sqlResults[0];
-  //   }
-  //   log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: result });
-
-  //   return result;
-  // }
-
   /*
    * Initiate Job
    *
@@ -974,68 +952,78 @@ export class SuiteToolsApiModel {
   // 	name`;
 
   /**
-   * Get Files
+   * Get Job
    *
-   * @param row - the number of rows to return
-   * @param types - the file types
-   * @param createdDate - the created date
-   * @param modifiedDate - the last modified date
+   * @param id - the record to return
    * @returns results
    */
-  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getFiles() initiated`,
-      details: {
-        rows: row,
-        types: types,
-        createdDate: createdDate,
-        modifiedDate: modifiedDate,
-      },
-    });
+  // public getJob(id: number) {
+  //   log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
 
-    const response: Response = { data: {} };
-    let sql = `SELECT
-      file.id,
-      file.folder,
-      file.createddate,
-      file.lastmodifieddate,
-      file.filetype,
-      BUILTIN.DF(file.filetype) AS filetypename,
-      file.name || ' (' || file.id  || ')' AS name,
-      file.filesize,
-      file.description,
-      file.url
-    FROM
-      file`;
-    // add where clause
-    const where = [];
-    if (row) {
-      where.push(`RowNum <= ${row}`);
-    }
-    if (types) {
-      if (Array.isArray(types)) {
-        types = types.map((type) => {
-          return `'${type.toUpperCase()}'`;
-        });
-        where.push(`filetype IN (${types.join(',')})`);
-      }
-    }
-    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'File', 'createddate', createdDate);
-    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'File', 'lastmodifieddate', modifiedDate);
-    if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
-    }
-    sql += ` ORDER BY name ASC`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No script records found`;
-    } else {
-      response.data = sqlResults;
-    }
-    log.debug({ title: 'SuiteToolsApiModel:getScripts() returning', details: response });
+  //   const sql = `SELECT
+  //     id,
+  //   FROM
+  //     customrecord_idev_suitetools_job
+  //   WHERE
+  //     id = ${id}`;
+  //   const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+  //   let result = null;
+  //   if (sqlResults.length === 0) {
+  //     // this.stCommon.setAlert('No results found that matched criteria.');
+  //   } else {
+  //     result = sqlResults[0];
+  //   }
+  //   log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: result });
 
-    return response;
-  }
+  //   return result;
+  // }
+
+  /**
+   * Get Jobs
+   *
+   * @param active - the active flag
+   * @returns roles
+   */
+  // public getJobs(
+  //   active: string
+  // ) {
+  //   log.debug({
+  //     title: `SuiteToolsApiModel:getJobs() initiated`,
+  //     details: {
+  //       active: active,
+  //     },
+  //   });
+
+  //   let sql = `SELECT
+  //     id,
+  //     custrecord_st_job_task_id as task_id,
+  //   FROM
+  //     customrecord_idev_suitetools_job`;
+
+  //   // isinactive,
+  //   // name || ' (' || id  || ')' AS name,
+  //   // custrecord_st_job_run_type AS type,
+  //   // custrecord_st_job_run_params AS params,
+
+  //   // add where clause
+  //   const where = [];
+  //   // if (active) {
+  //   //   if (active === 'T') {
+  //   //     where.push(`isinactive = 'F'`);
+  //   //   } else {
+  //   //     where.push(`isinactive = 'T'`);
+  //   //   }
+  //   // }
+  //   if (where.length > 0) {
+  //     sql += ` WHERE ${where.join(' AND ')}`;
+  //   }
+  //   // add order by
+  //   // sql += ` ORDER BY name`;
+  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
+  //   log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: results });
+
+  //   return results;
+  // }
 
   /**
    * Get File
@@ -1074,53 +1062,208 @@ export class SuiteToolsApiModel {
   }
 
   /**
-   * Get Roles
+   * Get Files
    *
-   * @param status - the status of the login
-   * @returns roles
+   * @param row - the number of rows to return
+   * @param types - the file types
+   * @param createdDate - the created date
+   * @param modifiedDate - the last modified date
+   * @returns results
    */
-  public getRoles(active: string): Response {
+  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
     log.debug({
-      title: `SuiteToolsApiModel:getRoles() initiated`,
+      title: `SuiteToolsApiModel:getFiles() initiated`,
       details: {
-        active: active,
+        rows: row,
+        types: types,
+        createdDate: createdDate,
+        modifiedDate: modifiedDate,
       },
     });
 
     const response: Response = { data: {} };
     let sql = `SELECT
-      role.id,
-      role.scriptId,
-      role.name,
-      role.centerType,
-      role.isInactive,
-      role.isSalesRole,
-      role.isSupportRole,
-      role.isWebServiceOnlyRole
+      file.id,
+      file.folder,
+      file.createddate,
+      file.lastmodifieddate,
+      file.filetype,
+      BUILTIN.DF(file.filetype) AS filetypename,
+      file.name || ' (' || file.id  || ')' AS name,
+      file.filesize,
+      file.description,
+
+      file.url
     FROM
-      role`;
+      file`;
     // add where clause
     const where = [];
-    if (active) {
-      if (active === 'T') {
-        where.push(`role.isinactive = 'F'`);
-      }
-      if (active === 'F') {
-        where.push(`role.isinactive = 'T'`);
+    if (row) {
+      where.push(`RowNum <= ${row}`);
+    }
+    if (types) {
+      if (Array.isArray(types)) {
+        types = types.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`filetype IN (${types.join(',')})`);
       }
     }
+    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'File', 'createddate', createdDate);
+    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'File', 'lastmodifieddate', modifiedDate);
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
-    // add order by
-    sql += ` ORDER BY role.name`;
+    sql += ` ORDER BY name ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No script records found`;
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getRoles() returning', details: response });
+    log.debug({ title: 'SuiteToolsApiModel:getScripts() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Get Logins
+   *
+   * @param rows - the number of rows to return
+   * @param active - the active flag
+   * @param integrationName - the integration name
+   * @param tokenName - the token name
+   * @param users - the users
+   * @param roles - the roles
+   * @param dates - the date range
+   * @returns results
+   */
+  public getLogins(
+    rows: string,
+    active: string,
+    integrationName: string,
+    tokenName: string,
+    users: string[],
+    roles: string[],
+    dates: string,
+  ): Response {
+    log.debug({
+      title: `SuiteToolsApiModel:getLogins() initiated`,
+      details: {
+        rows: rows,
+        active: active, // Status
+        integrationName: integrationName,
+        tokenName: tokenName,
+        users: users,
+        roles: roles,
+        dates: dates,
+      },
+    });
+
+    const response: Response = { data: {} };
+    let sql = `SELECT
+      TO_CHAR ( loginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
+      loginAudit.status,
+      loginAudit.oAuthAppName,
+      loginAudit.oAuthAccessTokenName,
+      loginAudit.user,
+      BUILTIN.DF( loginAudit.user ) AS userName,
+      loginAudit.role,
+      BUILTIN.DF( loginAudit.role ) AS roleName,
+      loginAudit.emailAddress,
+      loginAudit.ipAddress,
+      loginAudit.requestUri,
+      loginAudit.detail,
+      loginAudit.secChallenge,
+      loginAudit.userAgent
+    FROM
+      loginAudit`;
+    // add where clause
+    const where = [];
+    if (rows) {
+      // limit to specified number of rows
+      where.push(`RowNum <= ${rows}`);
+    }
+    if (active) {
+      if (active === 'T') {
+        where.push(`loginAudit.status = 'Success'`);
+      } else {
+        where.push(`loginAudit.status = 'Failure'`);
+      }
+    }
+    if (integrationName) {
+      // TODO switch integration name to match what is on the login audit record
+      // if (integrationName === 'SuiteCloud IDE & CLI') {
+      //   this.stCommon.setAlert(
+      //     'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.',
+      //   );
+      //   integrationName = 'SuiteCloud Development Integration';
+      // }
+
+      // add integration name to where clause
+      where.push(`loginAudit.oAuthAppName = '${integrationName}'`);
+    }
+    if (tokenName) {
+      // TODO switch token name to match what is on the login audit record
+      // if (tokenName === 'SuiteCloud IDE & CLI') {
+      //   this.stCommon.setAlert(
+      //     'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
+      //   );
+      //   tokenName = 'SuiteCloud Development Integration';
+      // }
+      // add token name to where clause
+      where.push(`loginAudit.oAuthAccessTokenName = '${tokenName}'`);
+    }
+    if (users) {
+      if (Array.isArray(users)) {
+        users = users.map((user) => {
+          return user;
+        });
+        where.push(`loginAudit.user IN (${users.join(',')})`);
+      }
+    }
+    if (roles) {
+      if (Array.isArray(roles)) {
+        roles = roles.map((role) => {
+          return role;
+        });
+        where.push(`loginAudit.role IN (${roles.join(',')})`);
+      }
+    }
+    // if (dates) {
+    //   switch (dates) {
+    //     case '15':
+    //       where.push('date > SYSDATE - ( 15 / 1440 )');
+    //       break;
+    //     case '60':
+    //       where.push('date > SYSDATE - ( 1 / 24 )');
+    //       break;
+    //     case '240':
+    //       where.push('date > SYSDATE - ( 4 / 24 )');
+    //       break;
+    //     case 'today':
+    //       where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
+    //       break;
+    //     case 'yesterday':
+    //       where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
+    //       break;
+    //     default:
+    //       log.error({ title: `SuiteToolsApiModel:getLogins() invalid date option`, details: dates });
+    //       break;
+    //   }
+    // }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY loginAudit.date DESC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No login records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getLogins() returning', details: response });
 
     return response;
   }
@@ -1156,6 +1299,95 @@ export class SuiteToolsApiModel {
       response.data = sqlResults[0];
     }
     log.debug({ title: 'SuiteToolsApiModel:getRole() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Get Roles
+   *
+   * @param status - the status of the record
+   * @returns roles
+   */
+  public getRoles(active: string): Response {
+    log.debug({
+      title: `SuiteToolsApiModel:getRoles() initiated`,
+      details: {
+        active: active,
+      },
+    });
+
+    const response: Response = { data: {} };
+    let sql = `SELECT
+      role.id,
+      role.scriptId,
+      role.name,
+      role.centerType,
+      role.isInactive,
+      role.isSalesRole,
+      role.isSupportRole,
+      role.isWebServiceOnlyRole
+    FROM
+      role`;
+    // add where clause
+    const where = [];
+    if (active) {
+      if (active === 'T') {
+        where.push(`role.isinactive = 'F'`);
+      } else {
+        where.push(`role.isinactive = 'T'`);
+      }
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY role.name`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getRoles() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Get Script
+   *
+   * @param id - the record to return
+   * @returns results
+   */
+  public getScript(id: string): Response {
+    log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
+
+    const response: Response = { data: {} };
+    const sql = `SELECT
+      script.id,
+      script.apiversion,
+      script.isinactive,
+      script.scripttype,
+      script.name,
+      script.scriptid,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      file.name || ' (' || file.id  || ')' AS scriptfile,
+      script.notifyemails,
+      script.description
+    FROM
+      script
+    INNER JOIN file
+      ON script.scriptfile = file.id
+    WHERE
+      script.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No script found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getScript() returning', details: response });
 
     return response;
   }
@@ -1205,8 +1437,7 @@ export class SuiteToolsApiModel {
     if (active) {
       if (active === 'T') {
         where.push(`script.isinactive = 'F'`);
-      }
-      if (active === 'F') {
+      } else {
         where.push(`script.isinactive = 'T'`);
       }
     }
@@ -1264,172 +1495,42 @@ export class SuiteToolsApiModel {
   }
 
   /**
-   * Get Script
+   * Get Script Log
    *
-   * @param id - the record to return
-   * @returns results
+   * @param id - the record id to return
+   * @returns script log
    */
-  public getScript(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
+  public getScriptLog(id: string): Response {
+    log.debug({
+      title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() initiated`,
+      details: {
+        id: id,
+      },
+    });
 
     const response: Response = { data: {} };
     const sql = `SELECT
-      script.id,
-      script.apiversion,
-      script.isinactive,
+      ScriptNote.internalid AS id,
+      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
+      ScriptNote.type,
       script.scripttype,
-      script.name,
-      script.scriptid,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      file.name || ' (' || file.id  || ')' AS scriptfile,
-      script.notifyemails,
-      script.description
-    FROM
-      script
-    INNER JOIN file
-      ON script.scriptfile = file.id
-    WHERE
-      script.id = ${id}`;
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+    FROM ScriptNote
+    INNER JOIN script
+      ON ScriptNote.scripttype = script.id
+    WHERE ScriptNote.internalid = ${id}`;
+    log.debug({ title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() generated this sql`, details: sql });
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      response.message = `No script found with id of ${id}`;
+      response.message = `No script log found with id of ${id}`;
     } else {
       response.data = sqlResults[0];
     }
-    log.debug({ title: 'SuiteToolsApiModel:getScript() returning', details: response });
 
     return response;
   }
-
-  /**
-   * Get User Logins
-   *
-   * @param rows - the number of rows to return
-   * @param status - the status of the login
-   * @param users - the users to return logins for
-   * @param dates - the dates to return logins for
-   * @returns user logins
-   */
-  // public getUserLogins(
-  //   rows: string,
-  //   status: string,
-  //   integration: string,
-  //   token: string,
-  //   users: string[],
-  //   dates: string
-  // ): {
-  //   log.debug({
-  //     title: `SuiteToolsApiModel:getUserLogins() initiated`,
-  //     details: {
-  //       rows: rows,
-  //       status: status,
-  //       integration: integration,
-  //       token: token,
-  //       users: users,
-  //       dates: dates,
-  //     },
-  //   });
-
-  //   let sql = `SELECT
-  //     TO_CHAR ( LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
-  //     LoginAudit.status,
-  //     LoginAudit.oAuthAppName,
-  //     LoginAudit.oAuthAccessTokenName,
-  //     BUILTIN.DF( LoginAudit.role ) as role,
-  //     BUILTIN.DF( LoginAudit.user ) || ' (' || LoginAudit.user  || ')' AS userName,
-  //     LoginAudit.emailAddress,
-  //     LoginAudit.ipAddress,
-  //     LoginAudit.requestUri,
-  //     LoginAudit.detail,
-  //     LoginAudit.secChallenge,
-  //     LoginAudit.userAgent
-  //   FROM
-  //     LoginAudit`;
-  //   // add where clause
-  //   const where = [];
-  //   if (rows) {
-  //     // limit to specified number of rows
-  //     where.push(`RowNum <= ${rows}`);
-  //   }
-  //   if (status) {
-  //     if (status === 'success') {
-  //       where.push(`LoginAudit.status = 'Success'`);
-  //     }
-  //     if (status === 'failure') {
-  //       where.push(`LoginAudit.status = 'Failure'`);
-  //     }
-  //   }
-  //   if (integration) {
-  //     // lookup integration name from id
-  //     const integrations = this.stCommon.stModel.getIntegrationList();
-  //     const foundIntegration = integrations.find((record) => record['id'] == integration);
-  //     let integrationName: string = foundIntegration ? foundIntegration.name : 'INTEGRATION_NOT_FOUND';
-  //     // switch integration name to match what is on the login audit record
-  //     if (integrationName === 'SuiteCloud IDE & CLI') {
-  //       this.stCommon.setAlert(
-  //         'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
-  //       );
-  //       integrationName = 'SuiteCloud Development Integration';
-  //     }
-  //     // add integration name to where clause
-  //     where.push(`LoginAudit.oAuthAppName = '${integrationName}'`);
-  //   }
-  //   if (token) {
-  //     // lookup token name from id
-  //     const tokens = this.stCommon.stModel.getTokenList();
-  //     const foundToken = tokens.find((record) => record['id'] == token);
-  //     const tokenName: string = foundToken ? foundToken.name : 'TOKEN_NOT_FOUND';
-  //     // // switch token name to match what is on the login audit record
-  //     // if (tokenName === 'SuiteCloud IDE & CLI') {
-  //     //   this.stCommon.setAlert(
-  //     //     'Note that "SuiteCloud IDE & CLI" Integration is listed as "SuiteCloud Development Integration" in the login audit table.'
-  //     //   );
-  //     //   tokenName = 'SuiteCloud Development Integration';
-  //     // }
-  //     // add token name to where clause
-  //     where.push(`LoginAudit.oAuthAccessTokenName = '${tokenName}'`);
-  //   }
-  //   if (users) {
-  //     if (Array.isArray(users)) {
-  //       users = users.map((user) => {
-  //         return `'${user.toUpperCase()}'`;
-  //       });
-  //       where.push(`LoginAudit.user IN (${users.join(',')})`);
-  //     }
-  //   }
-  //   if (dates) {
-  //     switch (dates) {
-  //       case '15':
-  //         where.push('date > SYSDATE - ( 15 / 1440 )');
-  //         break;
-  //       case '60':
-  //         where.push('date > SYSDATE - ( 1 / 24 )');
-  //         break;
-  //       case '240':
-  //         where.push('date > SYSDATE - ( 4 / 24 )');
-  //         break;
-  //       case 'today':
-  //         where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE, 'YYYY-MM-DD')");
-  //         break;
-  //       case 'yesterday':
-  //         where.push("TO_CHAR ( date, 'YYYY-MM-DD') = TO_CHAR ( SYSDATE - 1, 'YYYY-MM-DD')");
-  //         break;
-  //       default:
-  //         log.error({ title: `SuiteToolsApiModel:getUserLogins() invalid date option`, details: dates });
-  //         break;
-  //     }
-  //   }
-  //   if (where.length > 0) {
-  //     sql += ` WHERE ${where.join(' AND ')}`;
-  //   }
-  //   // add order by
-  //   sql += ` ORDER BY LoginAudit.date DESC`;
-  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-
-  //   log.debug({ title: 'SuiteToolsApiModel:getUserLogins() returning', details: results });
-
-  //   return results;
-  // }
 
   /**
    * Get Script Logs results (Search version)
@@ -1438,11 +1539,11 @@ export class SuiteToolsApiModel {
    *
    * @param rows - the number of rows to return
    * @param levels - levels of log (e.g. debug, error, ...)
-   * @param users - users to return log records for
+   * @param users - users to return records for
    * @param types - types of script
-   * @param scripts - the scripts to return log records for
-   * @param owners - the script owners to return log records for
-   * @param dates - the dates to return log records for
+   * @param scripts - the scripts to return records for
+   * @param owners - the script owners to return records for
+   * @param dates - the dates to return records for
    * @param title - the title contains this string
    * @param detail - the detail contains this string
    * @returns script logs
@@ -1606,44 +1707,6 @@ export class SuiteToolsApiModel {
   // }
 
   /**
-   * Get Script Log
-   *
-   * @param id - the record id to return
-   * @returns script log
-   */
-  public getScriptLog(id: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() initiated`,
-      details: {
-        id: id,
-      },
-    });
-
-    const response: Response = { data: {} };
-    const sql = `SELECT
-      ScriptNote.internalid AS id,
-      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
-      ScriptNote.type,
-      script.scripttype,
-      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
-      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
-    FROM ScriptNote
-    INNER JOIN script
-      ON ScriptNote.scripttype = script.id
-    WHERE ScriptNote.internalid = ${id}`;
-    log.debug({ title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() generated this sql`, details: sql });
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No script log found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
-
-    return response;
-  }
-
-  /**
    * Get Script Logs results (SuiteQL version)
    *
    * The SuiteQL version can not return the user that triggered the log message, but it can only be filtered by minutes.
@@ -1651,9 +1714,9 @@ export class SuiteToolsApiModel {
    * @param row - the number of rows to return
    * @param levels - type of log (e.g. debug, error, ...)
    * @param types - types of script
-   * @param scripts - the scripts to return log records for
-   * @param owners - the script owners to return log records for
-   * @param date - the dates to return log records for
+   * @param scripts - the scripts to return records for
+   * @param owners - the script owners to return records for
+   * @param date - the dates to return records for
    * @param title - the title contains this string
    * @param detail - the detail contains this string
    * @returns script logs
@@ -1790,10 +1853,10 @@ export class SuiteToolsApiModel {
    *
    * @returns results
    */
-  public getUsers(active: string, role: string, supervisors: string[]): Response {
+  public getUsers(active: string, roles: string[], supervisors: string[]): Response {
     log.debug({
       title: `SuiteToolsApiModel:getUsers() initiated`,
-      details: { active: active, role: role, supervisors: supervisors },
+      details: { active: active, roles: roles, supervisors: supervisors },
     });
 
     const response: Response = { data: {} };
@@ -1802,7 +1865,8 @@ export class SuiteToolsApiModel {
       employee.isinactive,
       employee.email,
       employee.entityid || ' (' || employee.id || ')' AS name,
-      BUILTIN.DF( role.id ) || ' (' || role.id || ')' AS role,
+      role.id AS roleid,
+      BUILTIN.DF( role.id ) || ' (' || role.id || ')' AS roleName,
       BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
       employee.title,
     FROM employee
@@ -1810,6 +1874,7 @@ export class SuiteToolsApiModel {
       INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
     // add where clause
     const where = [];
+    // TODO verify that this works with the standard active component
     switch (active) {
       case 'U':
         where.push(`employee.giveaccess = 'T'`);
@@ -1825,8 +1890,13 @@ export class SuiteToolsApiModel {
         // do not add a filter
         break;
     }
-    if (role) {
-      where.push(`role.id = ${role}`);
+    if (roles) {
+      if (Array.isArray(roles)) {
+        roles = roles.map((role) => {
+          return role;
+        });
+        where.push(`role.id IN (${roles.join(',')})`);
+      }
     }
     if (supervisors) {
       if (Array.isArray(supervisors)) {

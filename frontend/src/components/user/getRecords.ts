@@ -12,6 +12,8 @@ export async function getUsers(fields: CriteriaFields): Promise<User[] | NotFoun
         isinactive: 'Yes',
         email: 'i@idev.systems',
         name: 'Matt Plant',
+        roleid: 3,
+        rolename: 'Administrator',
         supervisor: 'John Doe',
         title: 'Architect',
       },
@@ -19,7 +21,7 @@ export async function getUsers(fields: CriteriaFields): Promise<User[] | NotFoun
   };
   const urlParams = {
     active: fields.active,
-    role: fields.role,
+    roles: fields.roles,
     owner: fields.owner,
   };
   const response = await getData(localTestData, 'users', urlParams);

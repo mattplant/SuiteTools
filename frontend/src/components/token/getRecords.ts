@@ -5,7 +5,9 @@ import { CriteriaFields } from '../criteria/types';
 export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
   const urlParams = {
     active: fields.active,
-    integration: fields.integration,
+    integrationName: fields.integrationName,
+    userName: fields.userName,
+    roleName: fields.roleName,
   };
   const data: Token[] = [];
   let dataArray: string[][] = [];
@@ -19,24 +21,28 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
     // get data from NetSuite page
     dataArray = await getDataFromPageTable('/app/setup/accesstokens.nl', 'div__body', true);
   }
-  // filter data based on active status
   if (urlParams.active == 'T') {
     dataArray = dataArray.filter((record) => record[6] === 'No');
   } else if (urlParams.active == 'F') {
     dataArray = dataArray.filter((record) => record[6] === 'Yes');
   }
-  // filter data based on integration
-  if (urlParams.integration) {
-    dataArray = dataArray.filter((record) => record[5] === urlParams.integration);
+  if (urlParams.integrationName) {
+    dataArray = dataArray.filter((record) => record[5] === urlParams.integrationName);
+  }
+  if (urlParams.userName) {
+    dataArray = dataArray.filter((record) => record[3] === urlParams.userName);
+  }
+  if (urlParams.roleName) {
+    dataArray = dataArray.filter((record) => record[4] === urlParams.roleName);
   }
   // convert array to record objects
   dataArray.map((record) => {
     data.push({
       id: Number(record[1]),
       name: record[2],
-      user: record[3],
-      role: record[4],
-      integration: record[5],
+      userName: record[3],
+      roleName: record[4],
+      integrationName: record[5],
       state: record[6],
       dateCreated: record[7],
       createdBy: record[8],

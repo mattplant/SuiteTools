@@ -18,9 +18,9 @@ export function SearchCriteriaRows({ register }: SearchCriteriaRowsProps) {
         <option value="0">All</option>
         <option value="50">50</option>
         <option value="250">250</option>
-        <option value="1000">1000</option>
+        <option value="750">750</option>
         <option value="2000">2000</option>
-        <option value="4000">4000</option>
+        <option value="5000">5000</option>
       </select>
     </div>
   );
