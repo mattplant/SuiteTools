@@ -10,11 +10,11 @@ import { ResultsTypes } from '../components/results/types.ts';
 export function ScriptsPage() {
   const defaultCriteria: CriteriaFields = {
     active: '',
-    file: [''],
-    owner: [''],
-    scripttype: [''],
-    scriptname: [''],
-    version: [''],
+    files: [''],
+    owners: [''],
+    scripttypes: [''],
+    scriptnames: [''],
+    versions: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<Script[]>([]);

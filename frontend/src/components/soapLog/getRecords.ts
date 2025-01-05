@@ -5,7 +5,7 @@ import { CriteriaFields } from '../criteria/types';
 export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
   console.log('getSoapLogs() initiated', { fields });
   const urlParams = {
-    integration: fields.integration,
+    integrations: fields.integrations,
   };
   let data: SoapLog[] = [];
   let dataArray: string[][] = [];
@@ -74,10 +74,13 @@ export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
   });
   assertIsSoapLogs(data);
   cleanSoapLogsData(data);
-  // filter data based on integration
-  if (urlParams.integration) {
-    data = data.filter((record) => record.integrationId == urlParams.integration);
+  // filter data based on integrationId
+  if (urlParams.integrations) {
+    data = data.filter((record) => {
+      return urlParams.integrations!.includes(String(record.integrationId));
+    });
   }
+  console.log('getSoapLogs() TEST after filter', { data });
 
   return data;
 }

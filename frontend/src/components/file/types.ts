@@ -14,7 +14,6 @@ export interface File {
 }
 
 export function assertIsFile(data: unknown): asserts data is File {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('File data is not an object');
   }

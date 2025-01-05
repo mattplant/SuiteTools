@@ -7,16 +7,16 @@ import { Results } from '../results/Results.tsx';
 import { ResultsTypes } from '../results/types.ts';
 
 type Props = {
-  integration: string;
+  integrationName: string;
 };
 
-export function IntegrationTokens({ integration }: Props) {
+export function IntegrationTokens({ integrationName }: Props) {
   const [results, setResults] = useState<Token[]>([]);
 
   useEffect(() => {
     const criteria: CriteriaFields = {
       active: 'T',
-      integration: integration,
+      integrationName: integrationName,
     };
     async function fetchData() {
       try {
@@ -29,7 +29,7 @@ export function IntegrationTokens({ integration }: Props) {
     fetchData();
 
     return () => {};
-  }, [integration]);
+  }, [integrationName]);
 
   return (
     <>

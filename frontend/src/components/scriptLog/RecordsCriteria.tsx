@@ -2,11 +2,11 @@ import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaContent } from '../criteria/SearchCriteriaContent';
 import { SearchCriteriaDateCreated } from '../criteria/SearchCriteriaDateCreated';
-import { SearchCriteriaLevel } from '../criteria/SearchCriteriaLevel';
-import { SearchCriteriaOwner } from '../criteria/SearchCriteriaOwner';
+import { SearchCriteriaLevels } from '../criteria/SearchCriteriaLevels';
+import { SearchCriteriaOwners } from '../criteria/SearchCriteriaOwners';
 import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
-import { SearchCriteriaScript } from '../criteria/SearchCriteriaScript';
-import { SearchCriteriaScriptType } from '../criteria/SearchCriteriaScriptType';
+import { SearchCriteriaScripts } from '../criteria/SearchCriteriaScripts';
+import { SearchCriteriaScriptTypes } from '../criteria/SearchCriteriaScriptTypes';
 // import { SearchCriteriaUser } from '../../components/search/criteria/SearchCriteriaUser';
 
 interface RecordsCriteriaProps {
@@ -32,11 +32,11 @@ export function RecordsCriteria({ defaultCriteria, setCriteria }: RecordsCriteri
       </button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaRows register={register} />
-        <SearchCriteriaLevel register={register} />
+        <SearchCriteriaLevels register={register} />
         {/* <SearchCriteriaUser register={register} /> */}
-        <SearchCriteriaScriptType register={register} />
-        <SearchCriteriaScript register={register} />
-        <SearchCriteriaOwner register={register} title="Owner" />
+        <SearchCriteriaScriptTypes register={register} />
+        <SearchCriteriaScripts register={register} />
+        <SearchCriteriaOwners register={register} title="Owners" />
         <SearchCriteriaDateCreated register={register} title="Date" />
         <SearchCriteriaContent register={register} />
       </div>

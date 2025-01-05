@@ -10,8 +10,8 @@ import { ResultsTypes } from '../components/results/types.ts';
 export function FilesPage() {
   const defaultCriteria: CriteriaFields = {
     rows: 50,
-    filetype: [''],
-    createddate: '',
+    filetypes: [''],
+    createddate: '0',
     lastmodifieddate: 'today',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);

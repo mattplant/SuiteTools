@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from './getOptionValues';
-import { OptionValues, OptionValuesTypes } from './types';
-import { CriteriaFields } from './types';
+import { CriteriaFields, OptionValues, OptionValuesTypes } from './types';
 
-interface SearchCriteriaFileTypeProps {
+interface SearchCriteriaOwnersProps {
   register: UseFormRegister<CriteriaFields>;
+  title: string;
 }
 
-export function SearchCriteriaFileType({ register }: SearchCriteriaFileTypeProps) {
+export function SearchCriteriaOwners({ register, title }: SearchCriteriaOwnersProps) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getOptionValues(OptionValuesTypes.FILETYPE);
+      const data = await getOptionValues(OptionValuesTypes.OWNER);
       setValues(data);
     }
 
@@ -22,13 +22,13 @@ export function SearchCriteriaFileType({ register }: SearchCriteriaFileTypeProps
 
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
-      <label htmlFor="filetype">File Type</label>
+      <label htmlFor="owners">{title}</label>
       <select
         multiple
         size={6}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="filetype"
-        {...register('filetype')}
+        id="owners"
+        {...register('owners')}
       >
         <option value="">All</option>
         {values.map((option) => (

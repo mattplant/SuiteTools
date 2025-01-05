@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { UseFormRegister } from 'react-hook-form';
-import { getOptionValues } from '../integration/getOptionValues';
-import { OptionValues } from './types';
+import { getOptionValues } from './getOptionValues';
+import { OptionValues, OptionValuesTypes } from './types';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaIntegrationProps {
+interface SearchCriteriaFilesProps {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaIntegration({ register }: SearchCriteriaIntegrationProps) {
+export function SearchCriteriaFiles({ register }: SearchCriteriaFilesProps) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getOptionValues(true);
+      const data = await getOptionValues(OptionValuesTypes.FILE);
       setValues(data);
     }
 
@@ -22,12 +22,13 @@ export function SearchCriteriaIntegration({ register }: SearchCriteriaIntegratio
 
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
-      <label htmlFor="integration">Integration</label>
+      <label htmlFor="files">Files</label>
       <select
+        multiple
         size={6}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="integration"
-        {...register('integration')}
+        id="files"
+        {...register('files')}
       >
         <option value="">All</option>
         {values.map((option) => (

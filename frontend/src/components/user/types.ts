@@ -13,7 +13,6 @@ export interface User {
 }
 
 export function assertIsUser(data: unknown): asserts data is User {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('User data is not an object');
   }

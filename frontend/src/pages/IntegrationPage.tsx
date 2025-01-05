@@ -20,10 +20,10 @@ export function IntegrationPage() {
             return (
               <>
                 <IntegrationResult data={record} />
-                <IntegrationTokens integration={record.name} />
+                <IntegrationTokens integrationName={record.name} />
                 <br />
                 <h2 className="text-xl font-bold text-slate-900">Execution Logs</h2>
-                <IntegrationSoapLogs integration={String(record.id)} />
+                <IntegrationSoapLogs integrations={[String(record.id)]} />
               </>
             );
           }}

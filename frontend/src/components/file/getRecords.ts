@@ -24,7 +24,7 @@ export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFoun
 
   const urlParams = {
     rows: fields.rows,
-    filetype: fields.filetype,
+    filetypes: fields.filetypes,
     createddate: fields.createddate,
     lastmodifieddate: fields.lastmodifieddate,
   };

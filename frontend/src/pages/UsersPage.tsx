@@ -11,7 +11,7 @@ export function UsersPage() {
   const defaultCriteria: CriteriaFields = {
     active: '',
     roles: [''],
-    owner: [''],
+    owners: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<User[]>([]);

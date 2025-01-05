@@ -16,7 +16,6 @@ export interface Script {
 }
 
 export function assertIsScript(data: unknown): asserts data is Script {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Script data is not an object');
   }

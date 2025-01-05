@@ -20,7 +20,6 @@ export interface Login {
 }
 
 export function assertIsLogin(data: unknown): asserts data is Login {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Login data is not an object');
   }

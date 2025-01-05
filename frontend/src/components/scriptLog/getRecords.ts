@@ -31,11 +31,11 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]
   };
   const urlParams = {
     rows: fields.rows,
-    level: fields.level,
+    levels: fields.levels,
     // user: fields.user,
-    scripttype: fields.scripttype,
-    scriptname: fields.scriptname,
-    owner: fields.owner,
+    scripttypes: fields.scripttypes,
+    scriptnames: fields.scriptnames,
+    owners: fields.owners,
     createddate: fields.createddate,
     title: fields.title,
     detail: fields.detail,

@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
-import { SearchCriteriaIntegration } from '../criteria/SearchCriteriaIntegration';
+import { SearchCriteriaIntegrations } from '../criteria/SearchCriteriaIntegrations';
 
 interface RecordsCriteriaProps {
   defaultCriteria: CriteriaFields;
@@ -23,7 +23,7 @@ export function RecordsCriteria({ defaultCriteria, setCriteria }: RecordsCriteri
         Get SOAP Logs
       </button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaIntegration register={register} />
+        <SearchCriteriaIntegrations register={register} />
       </div>
     </form>
   );

@@ -50,6 +50,9 @@ export default function Header() {
             <Dropdown.Item>
               <NavLink to={`logins`}>Logins</NavLink>
             </Dropdown.Item>
+            <Dropdown.Item>
+              <NavLink to={`concurrency`}>Concurrency</NavLink>
+            </Dropdown.Item>
           </Dropdown>
         </NavbarLink>
         <NavbarLink>

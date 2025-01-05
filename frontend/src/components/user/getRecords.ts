@@ -22,7 +22,7 @@ export async function getUsers(fields: CriteriaFields): Promise<User[] | NotFoun
   const urlParams = {
     active: fields.active,
     roles: fields.roles,
-    owner: fields.owner,
+    owners: fields.owners,
   };
   const response = await getData(localTestData, 'users', urlParams);
   if (response.message) {

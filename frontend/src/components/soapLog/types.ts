@@ -19,7 +19,6 @@ export interface SoapLog {
 }
 
 export function assertIsSoapLog(data: unknown): asserts data is SoapLog {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('SoapLog data is not an object');
   }

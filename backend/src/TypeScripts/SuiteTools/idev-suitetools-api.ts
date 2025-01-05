@@ -271,7 +271,6 @@ export class SuiteToolsApiGet {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanScriptData(data: any): object {
-    log.debug({ title: 'SuiteToolsApiGet:cleanScriptData() initiated', details: data });
     // switch isinactive values to active values
     if (data.isinactive === 'F') {
       data.isinactive = 'Yes';
@@ -360,7 +359,7 @@ export class SuiteToolsApiGet {
     log.debug({ title: 'SuiteToolsApiGet:getFiles() initiated', details: requestParams });
 
     const row = requestParams['rows'];
-    const types = this.convertMultiSelectToArray(requestParams['filetype']);
+    const types = this.convertMultiSelectToArray(requestParams['filetypes']);
     const createdDate = requestParams['createddate'];
     const modifiedDate = requestParams['lastmodifieddate'];
     const result = this.stApi.stApiModel.getFiles(row, types, createdDate, modifiedDate);
@@ -462,11 +461,11 @@ export class SuiteToolsApiGet {
     log.debug({ title: 'SuiteToolsApiGet:getScripts() initiated', details: requestParams });
 
     const active = requestParams['active'];
-    const versions = this.convertMultiSelectToArray(requestParams['version']);
-    const scripttypes = this.convertMultiSelectToArray(requestParams['scripttype']);
-    const scripts = this.convertMultiSelectToArray(requestParams['scriptrecord']);
-    const owners = this.convertMultiSelectToArray(requestParams['owner']);
-    const files = this.convertMultiSelectToArray(requestParams['file']);
+    const versions = this.convertMultiSelectToArray(requestParams['versions']);
+    const scripttypes = this.convertMultiSelectToArray(requestParams['scripttypes']);
+    const scripts = this.convertMultiSelectToArray(requestParams['scriptnames']);
+    const owners = this.convertMultiSelectToArray(requestParams['owners']);
+    const files = this.convertMultiSelectToArray(requestParams['files']);
     const result = this.stApi.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
 
     return result;
@@ -505,11 +504,11 @@ export class SuiteToolsApiGet {
     log.debug({ title: 'SuiteToolsApiGet:getScriptLogs() initiated', details: requestParams });
 
     const row = requestParams['rows'] ? requestParams['rows'] : '50';
-    const levels = this.convertMultiSelectToArray(requestParams['level']);
+    const levels = this.convertMultiSelectToArray(requestParams['levels']);
     // const users = this.convertMultiSelectToArray(requestParams['user']);
-    const types = this.convertMultiSelectToArray(requestParams['scripttype']);
-    const scripts = this.convertMultiSelectToArray(requestParams['scriptname']);
-    const owners = this.convertMultiSelectToArray(requestParams['owner']);
+    const types = this.convertMultiSelectToArray(requestParams['scripttypes']);
+    const scripts = this.convertMultiSelectToArray(requestParams['scriptnames']);
+    const owners = this.convertMultiSelectToArray(requestParams['owners']);
     const date = requestParams['createddate'] ? requestParams['createddate'] : '15';
     const title = requestParams['title'];
     const detail = requestParams['detail'];
@@ -597,7 +596,7 @@ export class SuiteToolsApiGet {
     log.debug({ title: 'SuiteToolsApiGet:getUsers() initiated', details: requestParams });
     const active = requestParams['active'];
     const roles = this.convertMultiSelectToArray(requestParams['roles']);
-    const supervisors = this.convertMultiSelectToArray(requestParams['owner']);
+    const supervisors = this.convertMultiSelectToArray(requestParams['owners']);
     const result = this.stApi.stApiModel.getUsers(active, roles, supervisors);
 
     return result;

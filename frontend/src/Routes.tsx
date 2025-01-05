@@ -2,6 +2,8 @@ import { createHashRouter, RouterProvider, defer } from 'react-router-dom';
 import App from './components/App.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/HomePage.tsx';
+// concurrency
+import { ConcurrencyPage } from './pages/ConcurrencyPage.tsx';
 // files
 import { getFile } from './components/file/getRecord.ts';
 import { FilePage } from './pages/FilePage.tsx';
@@ -50,6 +52,15 @@ const router = createHashRouter([
         index: true,
         element: <HomePage />,
       },
+      {
+        path: 'concurrency',
+        element: <ConcurrencyPage />,
+        // loader: async () => defer({ concurrency: getConcurrency() }),
+      },
+      // {
+      //   path: 'concurrencies',
+      //   element: <ConcurrenciesPage />,
+      // },
       {
         path: 'file/:id',
         element: <FilePage />,

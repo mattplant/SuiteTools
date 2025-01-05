@@ -1,4 +1,69 @@
 /**
+ * SuiteTools Data Collection Library
+ *
+ * This library provides functions to collect data from NetSuite pages.
+ *
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ *
+ * Copyright (C) 2024  Matthew Plant
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+export interface NetSuiteResponse {
+  success: boolean;
+  message: string;
+  data: object;
+}
+
+/**
+ * Get data from NetSuite page
+ *
+ * @param url - the URL to the page to load
+ * @returns string
+ */
+export async function getDataFromPageContent(url: string): Promise<NetSuiteResponse> {
+  console.log('getDataFromPageContent() initiated', { url });
+
+  let data: NetSuiteResponse;
+  const content = await fetch(url)
+    .then((response) => {
+      return response.text();
+    })
+    .catch((error) => {
+      console.error(`getDataFromPageContent() error =\n`, error);
+      throw error;
+    });
+  if (!content) {
+    throw new Error(`getDataFromPageContent() no content found at ${url}`);
+  }
+  try {
+    data = JSON.parse(content);
+  } catch (error) {
+    console.error('getDataFromPageContent() error parsing JSON data:', error);
+    throw error;
+  }
+  // verify that the response was successful
+  if (!data.success && data.message) {
+    throw new Error(`getDataFromPageContent() response not successful: ${data.message}`);
+  }
+  console.log('getDataFromPageContent() returning', data);
+
+  return data;
+}
+
+/**
  * Gets data from table shown in NetSuite's UI.
  *
  * Allows access to your own NetSuite data that is not available via APIs.

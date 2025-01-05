@@ -23,11 +23,11 @@ export async function getScripts(fields: CriteriaFields): Promise<Script[] | Not
   };
   const urlParams = {
     active: fields.active,
-    version: fields.version,
-    scripttype: fields.scripttype,
-    scriptname: fields.scriptname,
-    owner: fields.owner,
-    file: fields.file,
+    versions: fields.versions,
+    scripttypes: fields.scripttypes,
+    scriptnames: fields.scriptnames,
+    owners: fields.owners,
+    files: fields.files,
   };
   const response = await getData(localTestData, 'scripts', urlParams);
   if (response.message) {

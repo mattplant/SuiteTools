@@ -12,7 +12,6 @@ export interface Role {
 }
 
 export function assertIsRole(data: unknown): asserts data is Role {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Role data is not an object');
   }

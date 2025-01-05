@@ -10,7 +10,6 @@ export interface Integration {
 }
 
 export function assertIsIntegration(data: unknown): asserts data is Integration {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Integration data is not an object');
   }

@@ -13,7 +13,6 @@ export interface Token {
 }
 
 export function assertIsToken(data: unknown): asserts data is Token {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Token data is not an object');
   }

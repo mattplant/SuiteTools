@@ -7,16 +7,16 @@ import { Results } from '../results/Results.tsx';
 import { ResultsTypes } from '../results/types.ts';
 
 type Props = {
-  integration: string;
+  integrations: string[];
 };
 
-export function IntegrationSoapLogs({ integration }: Props) {
+export function IntegrationSoapLogs({ integrations }: Props) {
   const [results, setResults] = useState<SoapLog[]>([]);
 
   useEffect(() => {
     const criteria: CriteriaFields = {
       active: 'T',
-      integration: integration,
+      integrations: integrations,
     };
     async function fetchData() {
       try {
@@ -29,7 +29,7 @@ export function IntegrationSoapLogs({ integration }: Props) {
     fetchData();
 
     return () => {};
-  }, [integration]);
+  }, [integrations]);
 
   return (
     <>

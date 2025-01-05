@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaDateCreated } from '../criteria/SearchCriteriaDateCreated';
-import { SearchCriteriaFileType } from '../criteria/SearchCriteriaFileType';
+import { SearchCriteriaFileTypes } from '../criteria/SearchCriteriaFileTypes';
 import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
 import { SearchCriteriaDateModified } from '../criteria/SearchCriteriaDateModified';
 
@@ -28,7 +28,7 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
       </button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaRows register={register} />
-        <SearchCriteriaFileType register={register} />
+        <SearchCriteriaFileTypes register={register} />
         <SearchCriteriaDateCreated register={register} title="Created Date" />
         <SearchCriteriaDateModified register={register} title="Modified Date" />
       </div>

@@ -4,7 +4,6 @@ export type ModalResult = {
 };
 
 export function assertIsModalResult(data: unknown): asserts data is ModalResult {
-  // check if data is an array
   if (!Array.isArray(data)) {
     throw new Error('ModalResult data is not an array');
   }
@@ -24,14 +23,8 @@ export type ResultsProps = {
   setOpenModal: (openModal: boolean) => void;
 };
 
+// using ALL CAPS since we need enum to be of type string for ResultsMap
 export enum ResultsTypes {
-  // TODO change these names proper capitalization.  I believe they should be Camel case instead of all CAPS
-
-  // my original code had these.
-  //   const ModalType = Object.freeze({
-  //     "Employee": 1,
-  //     "Job": 4,
-  //   });
   FILE = 'file',
   INTEGRATION = 'integration',
   LOGIN = 'login',

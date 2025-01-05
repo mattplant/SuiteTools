@@ -9,7 +9,7 @@ import { ResultsTypes } from '../components/results/types.ts';
 
 export function SoapLogsPage() {
   const defaultCriteria: CriteriaFields = {
-    integration: '',
+    integrations: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<SoapLog[]>([]);

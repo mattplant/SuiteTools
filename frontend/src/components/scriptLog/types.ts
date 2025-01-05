@@ -13,7 +13,6 @@ export interface ScriptLog {
 }
 
 export function assertIsScriptLog(data: unknown): asserts data is ScriptLog {
-  // check if the data is an object
   if (typeof data !== 'object' || data === null) {
     throw new Error('Script log data is not an object');
   }

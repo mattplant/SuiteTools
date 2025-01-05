@@ -11,11 +11,11 @@ import { ResultsTypes } from '../components/results/types.ts';
 export function ScriptLogsPage() {
   const defaultCriteria: CriteriaFields = {
     rows: 50,
-    level: ['ERROR', 'EMERGENCY', 'SYSTEM'],
+    levels: ['ERROR', 'EMERGENCY', 'SYSTEM'],
     // user: [''],
-    scripttype: [''],
-    scriptname: [''],
-    owner: [''],
+    scripttypes: [''],
+    scriptnames: [''],
+    owners: [''],
     createddate: '15',
     title: '',
     detail: '',
@@ -23,8 +23,8 @@ export function ScriptLogsPage() {
   // if a script param was passed in, set the scriptname criteria
   const { script } = useParams();
   if (script) {
-    defaultCriteria.scriptname = [script]; // set the script to see logs for
-    defaultCriteria.level = ['']; // clear the level criteria
+    defaultCriteria.scriptnames = [script]; // set the script to see logs for
+    defaultCriteria.levels = ['']; // clear the level criteria
   }
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ScriptLog[]>([]);

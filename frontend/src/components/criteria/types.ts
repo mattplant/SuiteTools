@@ -2,23 +2,23 @@ export type CriteriaFields = {
   active?: string;
   createddate?: string;
   detail?: string;
-  file?: string[];
-  filetype?: string[];
-  integration?: string; // TODO remove or fix
+  files?: string[];
+  filetypes?: string[];
+  integrations?: string[];
   integrationName?: string;
   lastmodifieddate?: string;
-  level?: string[];
-  owner?: string[];
-  rows?: number;
-  roles?: string[];
+  levels?: string[];
+  owners?: string[];
   roleName?: string;
-  scriptname?: string[];
-  scripttype?: string[];
+  roles?: string[];
+  rows?: number;
+  scriptnames?: string[];
+  scripttypes?: string[];
   title?: string;
   tokenName?: string;
-  users?: string[];
   userName?: string;
-  version?: string[];
+  users?: string[];
+  versions?: string[];
 };
 
 export interface OptionValues {

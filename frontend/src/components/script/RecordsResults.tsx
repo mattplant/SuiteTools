@@ -21,7 +21,7 @@ const columns = [
   },
   { key: 'apiversion', name: 'API' },
   { key: 'scripttype', name: 'Script Type' },
-  { key: 'script', name: 'Script' },
+  { key: 'name', name: 'Script' },
   { key: 'scriptid', name: 'id' },
   { key: 'owner', name: 'Owner' },
   { key: 'scriptfile', name: 'File' },
