@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/concurrency/types';
-import { getConcurrencySummary } from '../components/concurrency/getConcurrencySummary.ts';
-import { RecordsCriteria } from '../components/concurrency/RecordsCriteria.tsx';
-import { ConcurrencySummaryData } from '../components/concurrency/types';
-import { ConcurrencyOverview } from '../components/concurrency/Overview.tsx';
-import { ConcurrencyHeatMap } from '../components/concurrency/HeatMap.tsx';
-import { ConcurrencyPeak } from '../components/concurrency/Peak.tsx';
-import { ConcurrencyAverage } from '../components/concurrency/Average.tsx';
-import { useAppSettingsContext } from '../components/AppSettingsContext';
+import { CriteriaFields } from '../components/concurrency/summary/types.ts';
+import { getConcurrencySummary } from '../components/concurrency/summary/getRecords.ts';
+import { RecordsCriteria } from '../components/concurrency/summary/RecordsCriteria.tsx';
+import { ConcurrencySummaryData } from '../components/concurrency/summary/types.ts';
+import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Overview.tsx';
+import { ConcurrencySummaryHeatMap } from '../components/concurrency/summary/HeatMap.tsx';
+import { ConcurrencySummaryPeak } from '../components/concurrency/summary/Peak.tsx';
+import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
+import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
 
-export function ConcurrencyPage() {
+export function ConcurrencySummaryPage() {
   const { settings } = useAppSettingsContext();
   const defaultCriteria: CriteriaFields = {
     dateRange: '1',
@@ -35,9 +35,6 @@ export function ConcurrencyPage() {
 
     return () => {};
   }, [criteria, settings?.accountId]);
-
-  console.log('ConcurrencyPage() results', results);
-
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Concurrency Summary</h2>
@@ -46,10 +43,10 @@ export function ConcurrencyPage() {
         <p>Loading...</p>
       ) : (
         <>
-          <ConcurrencyOverview data={results} />
-          <ConcurrencyHeatMap data={results} />
-          <ConcurrencyPeak data={results} />
-          <ConcurrencyAverage data={results} />
+          <ConcurrencySummaryOverview data={results} />
+          <ConcurrencySummaryHeatMap data={results} />
+          <ConcurrencySummaryPeak data={results} />
+          <ConcurrencySummaryAverage data={results} />
         </>
       )}
     </div>

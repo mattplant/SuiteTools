@@ -1,13 +1,14 @@
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
-import { Column, ConcurrencySummaryData, RowCol } from './types';
-import { initializeConcurrencyColumns } from '../../utils/concurrency';
+import { Column, RowCol } from '../types';
+import { ConcurrencySummaryData } from './types';
+import { initializeConcurrencySummaryColumns } from '../../../utils/concurrency';
 
 type Props = {
   data: ConcurrencySummaryData | undefined;
 };
 
-export function ConcurrencyHeatMap({ data }: Props) {
+export function ConcurrencySummaryHeatMap({ data }: Props) {
   let columns: Column[] = [];
   const rows: RowCol[] = [];
 
@@ -19,7 +20,7 @@ export function ConcurrencyHeatMap({ data }: Props) {
 
     // BUILD HEATMAP TABLE
     if (peaks && peaks.length > 0) {
-      columns = initializeConcurrencyColumns(data.concurrency.xCategories);
+      columns = initializeConcurrencySummaryColumns(data.concurrency.xCategories);
       // build rowws
       let rowCol: RowCol = {};
       for (let i = 0; i < peaks.length; i++) {

@@ -22,15 +22,25 @@
  */
 
 import { getDataFromPageContent } from './collectData';
+import { Column } from '../components/concurrency/types';
 import {
-  Column,
   ConcurrencySummaryData,
   ConcurrencySummaryDataConcurrency,
   ConcurrencySummaryDataViolations,
-} from '../components/concurrency/types';
+} from '../components/concurrency/summary/types';
+import {
+  ConcurrencyDetailData,
+  ConcurrencyDetailDataConcurrency,
+  ConcurrencyDetailDataViolations,
+} from '../components/concurrency/detail/types';
+import { ConcurrencyRequestData } from '../components/concurrency/request/types';
+
+// -----------------------------------------------------------------------------
+// SUMMARY
+// -----------------------------------------------------------------------------
 
 /**
- * Get NetSuite concurrency summary data core.
+ * Get NetSuite concurrency summary data.
  *
  * @param accountId - the NetSuite account ID
  * @param dateRange - the number of days to get the summary for
@@ -40,13 +50,13 @@ export async function getConcurrencySummaryData(accountId: string, dateRange: st
   console.log('getConcurrencySummaryData() initiated', { accountId, dateRange });
 
   // get concurrency summary from NetSuite's APM service
-  const concurrencySummaryUrl = getConcurrencySummaryUrl(accountId, dateRange);
-  const currencyResponse = await getDataFromPageContent(concurrencySummaryUrl);
+  const concurrencyUrl = getConcurrencySummaryUrl(accountId, dateRange);
+  const currencyResponse = await getDataFromPageContent(concurrencyUrl);
   const concurrency = currencyResponse.data as ConcurrencySummaryDataConcurrency;
 
   // get violations data from NetSuite's APM service
-  const concurrencyViolationsUrl = getConcurrencyViolationsUrl(accountId, dateRange);
-  const violationsResponse = await getDataFromPageContent(concurrencyViolationsUrl);
+  const violationsUrl = getConcurrencySummaryViolationsUrl(accountId, dateRange);
+  const violationsResponse = await getDataFromPageContent(violationsUrl);
   const violations = violationsResponse.data as ConcurrencySummaryDataViolations;
 
   return { concurrency, violations };
@@ -92,7 +102,7 @@ function getConcurrencySummaryUrl(accountId: string, days: string): string {
  * @param days - the number of days to get the data for
  * @returns url - the url to get the violation data
  */
-function getConcurrencyViolationsUrl(accountId: string, days: string): string {
+function getConcurrencySummaryViolationsUrl(accountId: string, days: string): string {
   // console.log('getConcurrencyViolationsUrl() initiated with ' + JSON.stringify({ accountId: accountId, days: days }));
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_violations_v2&deploy=customdeploy_nsapm_cm_sl_violations_v2&testmode=F&startDateMS=1686034800000&endDateMS=1686380400000&compfil=(REDACTED)&integId=&allocatedList=
   const path = '/app/site/hosting/scriptlet.nl';
@@ -118,7 +128,7 @@ function getConcurrencyViolationsUrl(accountId: string, days: string): string {
   return url;
 }
 
-export function initializeConcurrencyColumns(hours: number[]): Column[] {
+export function initializeConcurrencySummaryColumns(hours: number[]): Column[] {
   const columns: Column[] = [];
   // add initial top left cell
   columns.push({ name: '', key: 'date', width: 92 });
@@ -134,4 +144,155 @@ export function initializeConcurrencyColumns(hours: number[]): Column[] {
   }
 
   return columns;
+}
+
+// -----------------------------------------------------------------------------
+// DETAIL
+// -----------------------------------------------------------------------------
+
+/**
+ * Gets concurrency detail data.
+ *
+ * @param accountId - NetSuite account ID
+ * @param startDate - detail data start date
+ * @param endDate - detail data end date
+ * @returns concurrency detail data
+ */
+export async function getConcurrencyDetailData(
+  accountId: string,
+  startDate: string,
+  endDate: string,
+): Promise<ConcurrencyDetailData> {
+  console.log('getConcurrencyDetailData() initiated', { accountId, startDate, endDate });
+
+  // get concurrency detail from NetSuite's APM service
+  const concurrencyUrl = getConcurrencyDetailUrl(accountId, startDate, endDate);
+  const currencyResponse = await getDataFromPageContent(concurrencyUrl);
+  const concurrency = currencyResponse.data as ConcurrencyDetailDataConcurrency;
+
+  // get concurrency detail violations data from NetSuite's APM service
+  const violationsUrl = getConcurrencyDetailViolationsUrl(accountId, startDate, endDate);
+  const violationsResponse = await getDataFromPageContent(violationsUrl);
+  const violations = violationsResponse.data as ConcurrencyDetailDataViolations;
+
+  return { concurrency, violations };
+}
+
+/**
+ * Build the relative URL to get the concurrency detail.
+ *
+ * @param accountId - the NetSuite account ID
+ * @param startDate - the start date
+ * @param endDate - the end date
+ * @returns url - the url to get the concurrency summary
+ */
+function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: string): string {
+  console.log(
+    'getConcurrencyDetailUrl() initiated with ' +
+      JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }),
+  );
+  // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_concurrency_v2&deploy=customdeploy_nsapm_cd_sl_concurrency_v2&testmode=F&startDateMS=1682002800000&endDateMS=1682006400000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
+  const path = '/app/site/hosting/scriptlet.nl';
+  const params = [];
+  params.push('script=customscript_nsapm_cd_sl_concurrency_v2'); // script (note cd instead of cm)
+  params.push('deploy=customdeploy_nsapm_cd_sl_concurrency_v2'); // deploy (note cd instead of cm)
+  params.push('compfil=' + accountId); // account ID
+  params.push('testmode=F'); // test mode
+  params.push('startDateMS=' + startDate); // start date
+  params.push('endDateMS=' + endDate); // end date
+  params.push('concurrencyMode=noallocation'); // concurrency mode
+  params.push('allocatedList='); // allocated list
+  params.push('integId='); // integration ID
+  const url = path + '?' + params.join('&');
+  console.log('getConcurrencyDetailUrl() returning ' + url);
+
+  return url;
+}
+
+/**
+ * Build the relative URL to get the violations data.
+ *
+ * @param accountId - the NetSuite account ID
+ * @param days - the number of days to get the data for
+ * @returns url - the url to get the violation data
+ */
+function getConcurrencyDetailViolationsUrl(accountId: string, startDate: string, endDate: string): string {
+  console.log(
+    'getConcurrencyDetailViolationsUrl() initiated with ' + JSON.stringify({ accountId, startDate, endDate }),
+  );
+  // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_violations_v2&deploy=customdeploy_nsapm_cd_sl_violations_v2&testmode=F&startDateMS=1685383200000&endDateMS=1685386800000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
+  const path = '/app/site/hosting/scriptlet.nl';
+  const params = [];
+  params.push('script=customscript_nsapm_cd_sl_violations_v2'); // script (note cm instead of cd)
+  params.push('deploy=customdeploy_nsapm_cd_sl_violations_v2'); // deploy (note cm instead of cd)
+  params.push('startDateMS=' + startDate); // start date
+  params.push('endDateMS=' + endDate); // end date
+  params.push('integId='); // integration ID
+  params.push('compfil=' + accountId); // accountId
+  params.push('allocatedList'); // 7 (420/60) hour time offset for PST
+  const url = path + '?' + params.join('&');
+  console.log('getConcurrencyDetailViolationsUrl() returning ' + url);
+
+  return url;
+}
+
+// -----------------------------------------------------------------------------
+// REQUEST
+// -----------------------------------------------------------------------------
+
+/**
+ * Gets concurrency request (web service log) data.
+ *
+ * @param accountId - NetSuite account ID
+ * @param startDate - request data start date
+ * @param endDate - request data end date
+ * @returns concurrency request data
+ */
+export async function getConcurrencyRequestData(
+  accountId: string,
+  startDate: string,
+  endDate: string,
+): Promise<ConcurrencyRequestData> {
+  console.log('getConcurrencyRequestData() initiated', { accountId, startDate, endDate });
+
+  // get concurrency requests from NetSuite's APM service
+  const concurrencyUrl = getConcurrencyRequestUrl(accountId, startDate, endDate);
+  const currencyResponse = await getDataFromPageContent(concurrencyUrl);
+  const requests = currencyResponse.data as ConcurrencyRequestData;
+
+  return requests;
+}
+
+/**
+ * Build the relative URL to get the concurrency request.
+ *
+ * @param accountId - the NetSuite account ID
+ * @param startDate - the start date
+ * @param endDate - the end date
+ * @parem integration - // TODO need to get
+ * @returns url - the url to get the concurrency summary
+ */
+function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate: string): string {
+  console.log(
+    'getConcurrencyRequestUrl() initiated with ' +
+      JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }),
+  );
+  const path = '/app/site/hosting/scriptlet.nl';
+  const params = [];
+  params.push('script=customscript_nsapm_wsod_sl_wsologs_v2'); // script
+  params.push('deploy=customdeploy_nsapm_wsod_sl_wsologs_v2'); // deploy
+  params.push('testmode=F'); // test mode
+  params.push('startDateMS=' + startDate); // start date
+  params.push('endDateMS=' + endDate); // end date
+  params.push('operation=search'); // operation
+  params.push('integration=-999'); // TODO Do I need to specify use another integration id?
+  params.push('compfil=' + accountId); // account ID
+  params.push('sort=date'); // sort order
+  params.push('dir=ASC'); // sort direction
+  // params.push('pageLimit=10'); // page limit (note that we do not want to page unless we need to)
+  // params.push('startIndex=0'); // start index (note that we do not want to page unless we need to)
+  const url = path + '?' + params.join('&');
+  console.log('getConcurrencyRequestUrl() returning ' + url);
+
+  return url;
 }

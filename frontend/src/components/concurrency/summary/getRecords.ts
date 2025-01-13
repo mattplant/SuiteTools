@@ -1,5 +1,5 @@
-import { getConcurrencySummaryData } from '../../utils/concurrency';
-import { CriteriaFields, ConcurrencySummaryData } from './types';
+import { getConcurrencySummaryData } from '../../../utils/concurrency';
+import { ConcurrencySummaryData, CriteriaFields } from './types';
 
 /**
  * Gets concurrency summary data.

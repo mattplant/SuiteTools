@@ -1,19 +1,28 @@
-import { ConcurrencySummaryData } from './types';
-import { formatDate } from '../../utils/dates';
+import { ConcurrencyDetailData } from './types';
+import { formatDate } from '../../../utils/dates';
 
 type Props = {
-  data: ConcurrencySummaryData | undefined;
+  data: ConcurrencyDetailData | undefined;
 };
 
-export function ConcurrencyOverview({ data }: Props) {
-  console.log('ConcurrencyOverview() initiated', { data });
+export function ConcurrencyDetailOverview({ data }: Props) {
+  console.log('ConcurrencyDetailOverview() initiated', { data });
   if (!data) {
     return null;
   }
-
   // calculate error rate percentage
   const errorRate = (data.violations.overview.totalViolations / data.violations.overview.totalRequests) * 100;
   const errorRateRounded = Math.round(errorRate * 100) / 100 + '%';
+  // get top integrations
+  const topIntegrations = data.violations.overview.topIntegrations;
+  console.log('topIntegrations = ' + JSON.stringify(topIntegrations));
+  const topIntegrationsArray = [];
+  if (topIntegrations && topIntegrations.length > 0) {
+    for (let i = 0; i < topIntegrations.length; i++) {
+      const topIntegration = topIntegrations[i];
+      topIntegrationsArray.push(topIntegration.name + ' - ' + topIntegration.value + ' requests');
+    }
+  }
 
   return (
     <div className="mx-auto text-center">
@@ -34,27 +43,6 @@ export function ConcurrencyOverview({ data }: Props) {
           </span>
         </div>
         <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">Close to the Limit</h3>
-          <h1 id="closeToLimitRate" className="text-3xl text-gray-500 p-2">
-            {data.concurrency.overview.timeCloseToLimit.value + '%'}
-          </h1>
-          <span id="closeToLimitRange" className="text-sm text-gray-500">
-            {'Requests between ' +
-              data.concurrency.overview.timeCloseToLimit.lowerRange +
-              ' and ' +
-              data.concurrency.overview.timeCloseToLimit.upperRange}
-          </span>
-        </div>
-        <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">Over the Limit</h3>
-          <h1 id="overLimitRate" className="text-3xl text-gray-500 p-2">
-            {data.concurrency.overview.timeOverLimit.value + '%'}
-          </h1>
-          <span id="overLimitRange" className="text-sm text-gray-500">
-            {'Requests over ' + data.concurrency.overview.timeOverLimit.range}
-          </span>
-        </div>
-        <div className="flex-1 p-5">
           <h3 className="text-xl font-bold tracking-tight text-red-700">Error Rate</h3>
           <h1 id="errorRate" className="text-3xl text-gray-500 p-2">
             {errorRateRounded}
@@ -64,6 +52,12 @@ export function ConcurrencyOverview({ data }: Props) {
               ' violations in ' +
               data.violations.overview.totalRequests +
               ' requests'}
+          </span>
+        </div>
+        <div className="flex-1 p-5">
+          <h3 className="text-xl font-bold tracking-tight text-gray-900">Top Unallocated Integrations</h3>
+          <span id="topIntegrations" className="text-sm text-gray-500">
+            {topIntegrationsArray.join('<br />')}
           </span>
         </div>
       </div>

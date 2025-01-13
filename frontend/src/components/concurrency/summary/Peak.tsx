@@ -1,21 +1,24 @@
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
-import { Column, ConcurrencySummaryData, RowCol } from './types';
-import { initializeConcurrencyColumns } from '../../utils/concurrency';
+import { Column, RowCol } from '../types';
+import { ConcurrencySummaryData } from './types';
+import { initializeConcurrencySummaryColumns } from '../../../utils/concurrency';
+import { useAppSettingsContext } from '../../../components/AppSettingsContext.tsx';
 
 type Props = {
   data: ConcurrencySummaryData | undefined;
 };
 
-export function ConcurrencyPeak({ data }: Props) {
+export function ConcurrencySummaryPeak({ data }: Props) {
+  const { settings } = useAppSettingsContext();
+
   let columns: Column[] = [];
   const rows: RowCol[] = [];
 
   if (data) {
     const results = data.concurrency.results;
     if (results && results.length > 0) {
-      columns = initializeConcurrencyColumns(data.concurrency.xCategories);
-      const url = '{{{scriptUrl}}}&action=apmConcurDetail';
+      columns = initializeConcurrencySummaryColumns(data.concurrency.xCategories);
       let rowCol: RowCol = {};
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
@@ -32,7 +35,8 @@ export function ConcurrencyPeak({ data }: Props) {
           rowCol['date'] = new Date(startDate).toLocaleDateString();
         }
         rowCol[String(colPosition)] = String(concurrency);
-        rowCol['link' + String(colPosition)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+        rowCol['startDate' + String(colPosition)] = String(startDate);
+        rowCol['endDate' + String(colPosition)] = String(endDate);
       }
       // if last row is not full, add it
       if (rowCol && Object.keys(rowCol).length > 0) {
@@ -57,6 +61,12 @@ export function ConcurrencyPeak({ data }: Props) {
           resizable: true,
         }}
         className="fill-grid"
+        onCellClick={(cell) => {
+          const startDate = cell.row[`startDate${cell.column.key}`];
+          const endDate = cell.row[`endDate${cell.column.key}`];
+          const link = settings?.appUrl + `#/concurrencyDetail/${startDate}/${endDate}`;
+          window.open(link, '_blank');
+        }}
       />
     </>
   );

@@ -3,7 +3,9 @@ import App from './components/App.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 // concurrency
-import { ConcurrencyPage } from './pages/ConcurrencyPage.tsx';
+import { ConcurrencySummaryPage } from './pages/ConcurrencySummaryPage.tsx';
+import { ConcurrencyDetailPage } from './pages/ConcurrencyDetailPage.tsx';
+import { ConcurrencyRequestPage } from './pages/ConcurrencyRequestPage.tsx';
 // files
 import { getFile } from './components/file/getRecord.ts';
 import { FilePage } from './pages/FilePage.tsx';
@@ -54,13 +56,16 @@ const router = createHashRouter([
       },
       {
         path: 'concurrency',
-        element: <ConcurrencyPage />,
-        // loader: async () => defer({ concurrency: getConcurrency() }),
+        element: <ConcurrencySummaryPage />,
       },
-      // {
-      //   path: 'concurrencies',
-      //   element: <ConcurrenciesPage />,
-      // },
+      {
+        path: 'concurrencyDetail/:startDate/:endDate',
+        element: <ConcurrencyDetailPage />,
+      },
+      {
+        path: 'concurrencyRequest/:startDate/:endDate',
+        element: <ConcurrencyRequestPage />,
+      },
       {
         path: 'file/:id',
         element: <FilePage />,

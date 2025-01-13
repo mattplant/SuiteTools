@@ -1,20 +1,21 @@
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
-import { Column, ConcurrencySummaryData, RowCol } from './types';
-import { initializeConcurrencyColumns } from '../../utils/concurrency';
+import { Column, RowCol } from '../types';
+import { ConcurrencySummaryData } from './types';
+import { initializeConcurrencySummaryColumns } from '../../../utils/concurrency';
 
 type Props = {
   data: ConcurrencySummaryData | undefined;
 };
 
-export function ConcurrencyAverage({ data }: Props) {
+export function ConcurrencySummaryAverage({ data }: Props) {
   let columns: Column[] = [];
   const rows: RowCol[] = [];
 
   if (data) {
     const results = data.concurrency.results;
     if (results && results.length > 0) {
-      columns = initializeConcurrencyColumns(data.concurrency.xCategories);
+      columns = initializeConcurrencySummaryColumns(data.concurrency.xCategories);
       const url = '{{{scriptUrl}}}&action=apmConcurDetail';
       let rowCol: RowCol = {};
       for (let i = 0; i < results.length; i++) {
