@@ -3,10 +3,11 @@ export interface User {
   isinactive: string;
   email: string;
   name: string;
-  roleid: number;
-  rolename: string;
-  supervisor: string;
+  supervisor?: string;
   title: string;
+  // supplemental properties
+  lastLogin?: string;
+  role_names?: string;
   // additional properties
   urlNs?: string;
   urlDetail?: string;
@@ -45,25 +46,8 @@ export function assertIsUser(data: unknown): asserts data is User {
   if (typeof data.name !== 'string') {
     throw new Error('User data "name" field is not a string');
   }
-  // roleid
-  if (!('roleid' in data)) {
-    throw new Error('User data is missing the "roleid" field');
-  }
-  if (typeof data.roleid !== 'number') {
-    throw new Error('User data "roleid" field is not a number');
-  }
-  // rolename
-  if (!('rolename' in data)) {
-    throw new Error('User data is missing the "rolename" field');
-  }
-  if (typeof data.rolename !== 'string') {
-    throw new Error('User data "rolename" field is not a string');
-  }
-  // supervisor
-  if (!('supervisor' in data)) {
-    throw new Error('User data is missing the "supervisor" field');
-  }
-  if (typeof data.supervisor !== 'string') {
+  // supervisor (optional)
+  if ('supervisor' in data && data.supervisor && typeof data.supervisor !== 'string') {
     throw new Error('User data "supervisor" field is not a string');
   }
   // title
@@ -72,6 +56,15 @@ export function assertIsUser(data: unknown): asserts data is User {
   }
   if (typeof data.title !== 'string') {
     throw new Error('User data "title" field is not a string');
+  }
+  // SUPPLEMENTAL PROPERTIES
+  // lastLogin
+  if ('lastLogin' in data && data.lastLogin && typeof data.lastLogin !== 'string') {
+    throw new Error('User data "lastLogin" field is not a string');
+  }
+  // roles
+  if ('roles' in data && typeof data.roles !== 'string') {
+    throw new Error('User data "roles" field is not a string');
   }
   // ADDITIONAL PROPERTIES
   // urlNs

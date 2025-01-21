@@ -20,13 +20,16 @@ export function UserResult({ data }: Props) {
         <b>Email</b>: {data.email}
       </p>
       <p>
-        <b>Role</b>: {data.rolename}
-      </p>
-      <p>
         <b>Supervisor</b>: {data.supervisor}
       </p>
       <p>
         <b>Title</b>: {data.title}
+      </p>
+      <p>
+        <b>Last Login</b>: {data.lastLogin}
+      </p>
+      <p>
+        <b>Role(s)</b>: {data.role_names}
       </p>
       {/* <Button.Group>
         <Button onClick={() => window.open(data.urlNs, '_blank')}>View User Record</Button>

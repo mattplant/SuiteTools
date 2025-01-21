@@ -31,6 +31,7 @@ import record = require('N/record');
 import redirect = require('N/redirect');
 import runtime = require('N/runtime');
 import search = require('N/search');
+import task = require('N/task');
 import url = require('N/url');
 
 /**
@@ -183,6 +184,7 @@ export class SuiteToolsCommonLibraryNetSuite {
   private _stLibNsScript: SuiteToolsCommonLibraryNetSuiteScript;
   private _stLibNsSearch: SuiteToolsCommonLibraryNetSuiteSearch;
   private _stLibNsSuiteQl: SuiteToolsCommonLibraryNetSuiteSuiteQl;
+  private _stLibNsTask: SuiteToolsCommonLibraryNetSuiteTask;
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
@@ -208,6 +210,9 @@ export class SuiteToolsCommonLibraryNetSuite {
   get stLibNsSuiteQl(): SuiteToolsCommonLibraryNetSuiteSuiteQl {
     return this._stLibNsSuiteQl;
   }
+  get stLibNsTask(): SuiteToolsCommonLibraryNetSuiteTask {
+    return this._stLibNsTask;
+  }
 
   constructor(stCommon: SuiteToolsCommon) {
     // log.debug({ title: 'SuiteToolsCommonLibraryNetSuite:constructor() initiated', details: null });
@@ -220,6 +225,7 @@ export class SuiteToolsCommonLibraryNetSuite {
     this._stLibNsScript = new SuiteToolsCommonLibraryNetSuiteScript(this.stCommon);
     this._stLibNsSearch = new SuiteToolsCommonLibraryNetSuiteSearch(this.stCommon);
     this._stLibNsSuiteQl = new SuiteToolsCommonLibraryNetSuiteSuiteQl(this.stCommon);
+    this._stLibNsTask = new SuiteToolsCommonLibraryNetSuiteTask(this.stCommon);
   }
 }
 
@@ -983,6 +989,80 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
 }
 
 /**
+ * SuiteTools NetSuite Task Library
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsCommonLibraryNetSuiteTask {
+  private _stCommon: SuiteToolsCommon;
+
+  get stCommon(): SuiteToolsCommon {
+    return this._stCommon;
+  }
+
+  constructor(stCommon: SuiteToolsCommon) {
+    this._stCommon = stCommon;
+  }
+
+  /**
+   * Submits the NetSuite task.
+   *
+   * @param scriptType
+   * @param scriptId
+   * @param deploymentId
+   * @param params
+   * @returns the script task id
+   */
+  public submit(taskType: string, scriptId: string, deploymentId: string, params: object): string {
+    log.debug({
+      title: 'SuiteToolsCommonLibraryNetSuiteTask:submit() initiated',
+      details: { taskType: taskType, scriptId: scriptId, deploymentId: deploymentId },
+    });
+
+    let scriptTaskId = '';
+    let taskTypeEnum: task.TaskType = null;
+    // set the task type to the task.TaskType enum
+    if (taskType === 'SCHEDULED_SCRIPT') {
+      taskTypeEnum = task.TaskType.SCHEDULED_SCRIPT;
+    } else if (taskType === 'MAP_REDUCE') {
+      taskTypeEnum = task.TaskType.MAP_REDUCE;
+    } else if (taskType === 'CSV_IMPORT') {
+      taskTypeEnum = task.TaskType.CSV_IMPORT;
+    } else if (taskType === 'ENTITY_DEDUPLICATION') {
+      taskTypeEnum = task.TaskType.ENTITY_DEDUPLICATION;
+    } else if (taskType === 'WORKFLOW_TRIGGER') {
+      taskTypeEnum = task.TaskType.WORKFLOW_TRIGGER;
+    } else if (taskType === 'SEARCH') {
+      taskTypeEnum = task.TaskType.SEARCH;
+    } else if (taskType === 'RECORD_ACTION') {
+      taskTypeEnum = task.TaskType.RECORD_ACTION;
+    } else if (taskType === 'SUITE_QL') {
+      taskTypeEnum = task.TaskType.SUITE_QL;
+    } else if (taskType === 'QUERY') {
+      taskTypeEnum = task.TaskType.QUERY;
+    }
+    if (taskTypeEnum) {
+      // initiate the last logins map/reduce script
+      const scriptTask = task.create({
+        taskType: task.TaskType.MAP_REDUCE, // Cast to the correct type
+        scriptId: scriptId,
+        deploymentId: deploymentId,
+        params: params,
+      });
+      scriptTaskId = scriptTask.submit();
+    }
+    log.debug({
+      title: 'SuiteToolsCommonLibraryNetSuiteTask:submit() returning',
+      details: scriptTaskId,
+    });
+
+    return scriptTaskId;
+  }
+}
+
+type LastLogins = { finished: string; data: { name: { type: string; name: string }; lastLogin: string }[] };
+
+/**
  * Settings info for SuiteTools App and SuiteTools API
  */
 export class SuiteToolsCommonSettings {
@@ -992,8 +1072,7 @@ export class SuiteToolsCommonSettings {
   private _cssUrl: string;
   private _jsUrl: string;
   private _devMode: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _lastLogins: any[];
+  private _lastLogins: LastLogins;
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
@@ -1014,7 +1093,7 @@ export class SuiteToolsCommonSettings {
     return this._devMode;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get lastLogins(): any[] {
+  get lastLogins(): LastLogins {
     return this._lastLogins;
   }
 

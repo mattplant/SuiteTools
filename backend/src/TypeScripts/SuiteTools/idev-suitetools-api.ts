@@ -45,7 +45,21 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
   return response;
 }
 
-// TODO add POST method
+/**
+ * Handles the POST request event.
+ *
+ * @param requestParams The request parameters.
+ * @returns The response.
+ */
+export function post(requestBody: EntryPoints.RESTlet.put): string {
+  log.debug({ title: 'post() initiated', details: requestBody });
+
+  const stApi = new SuiteToolsApi();
+  const response = JSON.stringify(stApi.stApiPost.process(requestBody));
+  log.debug({ title: 'post() returning', details: response });
+
+  return response;
+}
 
 /**
  * Handles the PUT request event.
@@ -70,12 +84,16 @@ export function put(requestBody: EntryPoints.RESTlet.put): string {
  */
 export class SuiteToolsApi {
   private _stApiGet: SuiteToolsApiGet;
+  private _stApiPost: SuiteToolsApiPost;
   private _stApiPut: SuiteToolsApiPut;
   private _stApiModel: SuiteToolsApiModel;
   private _stCommon: SuiteToolsCommon;
 
   get stApiGet(): SuiteToolsApiGet {
     return this._stApiGet;
+  }
+  get stApiPost(): SuiteToolsApiPost {
+    return this._stApiPost;
   }
   get stApiPut(): SuiteToolsApiPut {
     return this._stApiPut;
@@ -92,7 +110,35 @@ export class SuiteToolsApi {
     this._stCommon = new SuiteToolsCommon();
     this._stApiModel = new SuiteToolsApiModel(this._stCommon);
     this._stApiGet = new SuiteToolsApiGet(this);
+    this._stApiPost = new SuiteToolsApiPost(this);
     this._stApiPut = new SuiteToolsApiPut(this);
+  }
+
+  public assertIsRequestBody(data: unknown): asserts data is RequestBody {
+    log.debug({ title: 'SuiteToolsApiPost:assertIsRequestBody() initiated', details: data });
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Request body data is not an object');
+    }
+    // endpoint
+    if (!('endpoint' in data)) {
+      throw new Error('Request params data is missing the "endpoint" field');
+    }
+    if (typeof data.endpoint !== 'string') {
+      throw new Error('Request params data "endpoint" field is not a string');
+    }
+    // data
+    if (!('data' in data)) {
+      throw new Error('Request params data is missing the "data" field');
+    }
+    if (typeof data.data !== 'object') {
+      throw new Error('Request params data "data" field is not a object');
+    }
+  }
+
+  public assertIsRequestBodyData(data: unknown): asserts data is RequestBodyData {
+    if (typeof data !== 'object' || data === null) {
+      throw new Error('Request body data is not an object');
+    }
   }
 }
 
@@ -123,7 +169,7 @@ export class SuiteToolsApiGet {
 
   public process(requestParams: unknown): Response {
     log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
-    this.assertIsRequestParams(requestParams);
+    this.assertIsGetRequestParams(requestParams);
 
     let response: Response = { data: null };
     const endpoint = requestParams.endpoint;
@@ -169,10 +215,12 @@ export class SuiteToolsApiGet {
       case 'user':
         response = this.getUser(requestParams);
         response.data = this.cleanUserData(response.data);
+        response.data = this.addUserLastLogin(response.data);
         break;
       case 'users':
         response = this.getUsers(requestParams);
         response = this.cleanUsersData(response);
+        response = this.addUsersLastLogins(response);
         break;
       default:
         throw error.create({
@@ -186,22 +234,57 @@ export class SuiteToolsApiGet {
     return response;
   }
 
-  private assertIsRequestParams(data: unknown): asserts data is RequestParams {
+  private assertIsGetRequestParams(data: unknown): asserts data is RequestParams {
     // check if the data is an object
     if (typeof data !== 'object' || data === null) {
-      throw new Error('Request params data is not an object');
+      throw new Error('Get request params data is not an object');
     }
     // endpoint
     if (!('endpoint' in data)) {
-      throw new Error('Request params data is missing the "endpoint" field');
+      throw new Error('Get request params data is missing the "endpoint" field');
     }
     if (typeof data.endpoint !== 'string') {
-      throw new Error('Request params data "endpoint" field is not a string');
+      throw new Error('Get request params data "endpoint" field is not a string');
     }
   }
 
   private convertMultiSelectToArray(field: string): string[] {
     return field ? (field.includes(',') ? field.split(',') : [field]) : null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private addUserLastLogin(data: any): object {
+    if (data) {
+      // get last logins data
+      this.stApi.stCommon.stSettings.getSettings();
+      const lastloginsObj = this.stApi.stCommon.stSettings.lastLogins;
+      const lastloginsUsers = lastloginsObj.data.filter((lastlogin) => lastlogin.name.type === 'user');
+      // add the last login data to the user record
+      const lastlogin = lastloginsUsers.find((lastlogin) => lastlogin.name.name === data.email);
+      if (lastlogin) {
+        data.lastLogin = lastlogin.lastLogin;
+      }
+    }
+
+    return data;
+  }
+
+  private addUsersLastLogins(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      // get last logins data
+      this.stApi.stCommon.stSettings.getSettings();
+      const lastloginsObj = this.stApi.stCommon.stSettings.lastLogins;
+      const lastloginsUsers = lastloginsObj.data.filter((lastlogin) => lastlogin.name.type === 'user');
+      response.data.forEach((record) => {
+        // add the last login data to the user record
+        const lastlogin = lastloginsUsers.find((lastlogin) => lastlogin.name.name === record.email);
+        if (lastlogin) {
+          record.lastLogin = lastlogin.lastLogin;
+        }
+      });
+    }
+
+    return response;
   }
 
   // // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -256,6 +339,7 @@ export class SuiteToolsApiGet {
     } else {
       data.iswebserviceonlyrole = 'Yes';
     }
+
     return data;
   }
 
@@ -310,6 +394,10 @@ export class SuiteToolsApiGet {
     // set title field to "" if empty
     if (data.title === null) {
       data.title = '';
+    }
+    // set lastLogin field to "" if empty
+    if (data.lastLogin === null) {
+      data.lastLogin = '';
     }
 
     return data;
@@ -539,6 +627,7 @@ export class SuiteToolsApiGet {
     const result = {
       devMode: this.stApi.stCommon.stSettings.devMode,
       appUrl: this.stApi.stCommon.appUrl,
+      lastLogins: this.stApi.stCommon.stSettings.lastLogins,
       // system
       accountId: this.stApi.stCommon.runtime.accountId,
       envType: this.stApi.stCommon.runtime.envType,
@@ -580,7 +669,6 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
     const result = this.stApi.stApiModel.getUser(id);
 
     return result;
@@ -800,6 +888,96 @@ type RequestBody = {
   data: RequestBodyData;
 };
 
+export class SuiteToolsApiPost {
+  private _stApi: SuiteToolsApi;
+
+  get stApi(): SuiteToolsApi {
+    return this._stApi;
+  }
+
+  constructor(stApi: SuiteToolsApi) {
+    log.debug({ title: 'SuiteToolsApiPost:constructor() initiated', details: null });
+    this._stApi = stApi;
+  }
+
+  public process(requestBody: unknown): Response {
+    log.debug({ title: 'SuiteToolsApiPost:process() initiated', details: requestBody });
+    this._stApi.assertIsRequestBody(requestBody);
+
+    let response: Response;
+    const endpoint = requestBody.endpoint;
+    switch (endpoint) {
+      case 'lastlogin':
+        response = this.initiateLastLogins(requestBody.data);
+        break;
+      default:
+        throw error.create({
+          name: 'SUITE_TOOLS_INVALID_PARAMETER',
+          message: `Invalid parameter: endpoint=${endpoint}`,
+          notifyOff: true,
+        });
+    }
+    log.debug({ title: 'SuiteToolsApiPost:process() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Initiate last logins script.
+   *
+   * @param requestBodyData
+   * @returns Response
+   */
+  public initiateLastLogins(requestBodyData: object): Response {
+    log.debug({ title: 'SuiteToolsApiPost:initiateLastLogins() initiated', details: requestBodyData });
+    this._stApi.assertIsRequestBodyData(requestBodyData);
+    this.stApi.stCommon.stSettings.getSettings();
+    let message = '';
+    let entityRecords = [];
+    // get the entity records (integration and tokens) from the request body
+    if (requestBodyData && Array.isArray(requestBodyData) && requestBodyData.length > 0) {
+      entityRecords = requestBodyData;
+    }
+    // users
+    const response = this.stApi.stApiModel.getUsers('U');
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      for (const user of response.data) {
+        entityRecords.push({
+          type: 'user',
+          name: user['email'],
+        });
+      }
+      log.debug({
+        title: 'SuiteToolsController:initiateLastLogins() identity records standardizedValues',
+        details: entityRecords,
+      });
+    }
+    if (entityRecords.length > 0) {
+      // submit the task
+      const params = {
+        custscript_idev_st_mr_lastlogins_entity: JSON.stringify(entityRecords),
+        custscript_idev_st_mr_lastlogins_set_id: this.stApi.stCommon.stSettings.recordId,
+      };
+      const scriptTaskId = this.stApi.stCommon.stLib.stLibNs.stLibNsTask.submit(
+        'MAP_REDUCE',
+        'customscript_idev_st_mr_lastlogins',
+        'customdeploy_idev_st_mr_lastlogins',
+        params,
+      );
+      message = 'Last logins script initiated with task id of ' + scriptTaskId;
+      // NOTE: the results are saved in the summary step of the map/reduce script
+    } else {
+      message = 'No active users found';
+    }
+
+    return {
+      status: 200,
+      data: {},
+      message: message,
+    };
+  }
+}
+
 export class SuiteToolsApiPut {
   private _stApi: SuiteToolsApi;
 
@@ -814,7 +992,7 @@ export class SuiteToolsApiPut {
 
   public process(requestBody: unknown): Response {
     log.debug({ title: 'SuiteToolsApiPut:process() initiated', details: requestBody });
-    this.assertIsRequestBody(requestBody);
+    this._stApi.assertIsRequestBody(requestBody);
 
     let response: Response;
     const endpoint = requestBody.endpoint;
@@ -834,35 +1012,8 @@ export class SuiteToolsApiPut {
     return response;
   }
 
-  public assertIsRequestBody(data: unknown): asserts data is RequestBody {
-    log.debug({ title: 'SuiteToolsApiPut:assertIsRequestBody() initiated', details: data });
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('Request body data is not an object');
-    }
-    // endpoint
-    if (!('endpoint' in data)) {
-      throw new Error('Request params data is missing the "endpoint" field');
-    }
-    if (typeof data.endpoint !== 'string') {
-      throw new Error('Request params data "endpoint" field is not a string');
-    }
-    // data
-    if (!('data' in data)) {
-      throw new Error('Request params data is missing the "data" field');
-    }
-    if (typeof data.data !== 'object') {
-      throw new Error('Request params data "data" field is not a object');
-    }
-  }
-
-  public assertIsRequestBodyData(data: unknown): asserts data is RequestBodyData {
-    if (typeof data !== 'object' || data === null) {
-      throw new Error('Request body data is not an object');
-    }
-  }
-
   public putSettings(requestBodyData: object): Response {
-    this.assertIsRequestBodyData(requestBodyData);
+    this._stApi.assertIsRequestBodyData(requestBodyData);
 
     const devMode = requestBodyData.devMode;
     const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
@@ -1116,11 +1267,11 @@ export class SuiteToolsApiModel {
     sql += ` ORDER BY name ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      response.message = `No script records found`;
+      response.message = `No file records found`;
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getScripts() returning', details: response });
+    log.debug({ title: 'SuiteToolsApiModel:getFiles() returning', details: response });
 
     return response;
   }
@@ -1344,7 +1495,7 @@ export class SuiteToolsApiModel {
     sql += ` ORDER BY role.name`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      response.message = `No script records found`;
+      response.message = `No role records found`;
     } else {
       response.data = sqlResults;
     }
@@ -1501,7 +1652,7 @@ export class SuiteToolsApiModel {
    */
   public getScriptLog(id: string): Response {
     log.debug({
-      title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() initiated`,
+      title: `SuiteToolsApiModel:getScriptLog() initiated`,
       details: {
         id: id,
       },
@@ -1520,7 +1671,7 @@ export class SuiteToolsApiModel {
     INNER JOIN script
       ON ScriptNote.scripttype = script.id
     WHERE ScriptNote.internalid = ${id}`;
-    log.debug({ title: `SuiteToolsApiModel:SuiteToolsApi:getScriptLog() generated this sql`, details: sql });
+    log.debug({ title: `SuiteToolsApiModel:getScriptLog() generated this sql`, details: sql });
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No script log found with id of ${id}`;
@@ -1829,13 +1980,23 @@ export class SuiteToolsApiModel {
       employee.id,
       employee.isinactive,
       employee.email,
-      employee.entityid || ' (' || employee.id || ')' AS name,
-      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.entityid AS name,
+      BUILTIN.DF( employee.supervisor ) AS supervisor,
       employee.title,
-    FROM
-      employee
+      LISTAGG(role.name, ', ') WITHIN GROUP (ORDER BY role.name) AS role_names,
+      LISTAGG(role.id, ', ') WITHIN GROUP (ORDER BY role.id) AS role_ids
+    FROM employee
+      INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
+      INNER JOIN role ON ( role.id = employeerolesforsearch.role )
     WHERE
-      employee.id = ${id}`;
+      employee.id = ${id}
+    GROUP BY
+      employee.id,
+      employee.isinactive,
+      employee.email,
+      employee.entityid,
+      BUILTIN.DF( employee.supervisor ),
+      employee.title`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No user found with id of ${id}`;
@@ -1852,7 +2013,7 @@ export class SuiteToolsApiModel {
    *
    * @returns results
    */
-  public getUsers(active: string, roles: string[], supervisors: string[]): Response {
+  public getUsers(active: string, roles: string[] = null, supervisors: string[] = null): Response {
     log.debug({
       title: `SuiteToolsApiModel:getUsers() initiated`,
       details: { active: active, roles: roles, supervisors: supervisors },
@@ -1863,11 +2024,11 @@ export class SuiteToolsApiModel {
       employee.id,
       employee.isinactive,
       employee.email,
-      employee.entityid || ' (' || employee.id || ')' AS name,
-      role.id AS roleid,
-      BUILTIN.DF( role.id ) || ' (' || role.id || ')' AS roleName,
-      BUILTIN.DF( employee.supervisor ) || ' (' || employee.supervisor  || ')' AS supervisor,
+      employee.entityid AS name,
       employee.title,
+      MAX(BUILTIN.DF( employee.supervisor )) AS supervisor,
+      LISTAGG(role.name, ', ') WITHIN GROUP (ORDER BY role.name) AS role_names,
+      LISTAGG(role.id, ', ') WITHIN GROUP (ORDER BY role.id) AS role_ids
     FROM employee
       INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
       INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
@@ -1908,11 +2069,18 @@ export class SuiteToolsApiModel {
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
+    // add group by
+    sql += ` GROUP BY
+      employee.id,
+      employee.isinactive,
+      employee.email,
+      employee.entityid,
+      employee.title`;
     // add order by
-    sql += ` ORDER BY employee.firstname ASC`;
+    sql += ` ORDER BY name ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      response.message = `No script log records found`;
+      response.message = `No user records found`;
     } else {
       response.data = sqlResults;
     }

@@ -1,6 +1,7 @@
 export type Settings = {
   devMode: boolean;
   appUrl: string;
+  lastLogins: LastLogins;
   // system
   accountId: string;
   envType: string;
@@ -24,4 +25,15 @@ export type NewSettings = {
   cssUrl: string;
   jsUrl: string;
   devMode: boolean;
+};
+
+type LastLogins = {
+  finished: string;
+  data: {
+    name: {
+      type: string;
+      name: string;
+    };
+    lastLogin: string;
+  }[];
 };

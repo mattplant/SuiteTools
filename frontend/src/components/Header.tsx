@@ -24,6 +24,7 @@ export default function Header() {
           <p>----------</p>
           <p>NetSuite</p>
           <p>----------</p>
+          <p>Environment Type: {settings?.envType}</p>
           <p>Account Id: {settings?.accountId}</p>
           <p>Version: {settings?.version}</p>
           <p>Processors: {settings?.processorCount}</p>
@@ -81,7 +82,7 @@ export default function Header() {
               <p>
                 <b>{settings?.userRole.toUpperCase()}</b>
               </p>
-              <p>{settings?.userEmail}</p>
+              <NavLink to={`user/` + settings.userId}>{settings?.userEmail}</NavLink>
               <p>Subsidiary: {settings?.userSubsidiary}</p>
               <p>Location: {settings?.userLocation}</p>
               <p>Department: {settings?.userDepartment}</p>

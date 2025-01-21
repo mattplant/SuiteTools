@@ -39,6 +39,8 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
   }
   // convert array to Integration objects
   dataArray.map((integration) => {
+    // TODO if integrationName = 'SuiteCloud IDE & CLI' then set integrationName = 'SuiteCloud Development Integration'
+
     data.push({
       id: Number(integration[0]),
       name: integration[1].replace(/<[^>]*>?/gm, '').trim(),

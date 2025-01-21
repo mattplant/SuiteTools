@@ -6,6 +6,7 @@ export async function getSettings(): Promise<Settings> {
     data: {
       devMode: true,
       appUrl: '/',
+      lastLogins: null,
       // system
       accountId: '1234567_SB1',
       envType: 'SANDBOX',
@@ -50,6 +51,10 @@ export function assertIsSettings(data: unknown): asserts data is Settings {
   }
   if (typeof data.appUrl !== 'string') {
     throw new Error('Settings data "appUrl" field is not a string');
+  }
+  // lastLogins
+  if ('lastLogins' in data && typeof data.lastLogins !== 'object') {
+    throw new Error('User data "lastLogin" field is not a object');
   }
   // SYSTEM INFO
   // accountId

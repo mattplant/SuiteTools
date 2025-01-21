@@ -15,6 +15,7 @@ export interface NotFound {
 
 export enum SavedEndpoint {
   SETTINGS = 'settings',
+  LASTLOGIN = 'lastlogin',
 }
 
 export enum SaveMethod {

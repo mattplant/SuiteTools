@@ -188,27 +188,9 @@ export class SuiteToolsAppView {
 
   /**
    * Render SPA page
-   *
-   * @returns HTML content
    */
   public renderSpa(): void {
     log.debug({ title: 'SuiteToolsAppView:renderSpa() initiated', details: null });
-
-    // TODO move this to client side
-    // layoutValues['alert'] = this.stApp.getAlert();
-
-    // TODO move this to client side
-    // if (this.stApp.stCommon.stSettings.devMode) {
-    //   layoutValues['remainingUsage'] =
-    //     this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() +
-    //     ' units' +
-    //     ' (' +
-    //     this.stApp.stAppNs.runtime.getCurrentScript().getRemainingUsage() / 10 +
-    //     '%)';
-    //   layoutValues['sql'] = this.stApp.getSession('sql');
-    //   layoutValues['search'] = this.stApp.getSession('search');
-    // }
-
     const css = this.stApp.stCommon.stSettings.cssUrl;
     const js = this.stApp.stCommon.stSettings.jsUrl;
     let content = `<!doctype html>
@@ -302,7 +284,6 @@ export class SuiteToolsAppView {
 
   private getPageFooterComments(): string {
     log.debug({ title: 'SuiteToolsAppView:getPageFooterComments() initiated', details: null });
-
     const lines = [];
     lines.push('<!-- SuiteTools Application' + ' -->');
     lines.push('<!-- appUrl: ' + this._stApp.stCommon.appUrl + ' -->');
