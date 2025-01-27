@@ -96,11 +96,13 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
       FROM LoginAudit ${whereClause}`;
       const stLibNsSuiteQl = new SuiteToolsCommonLibraryNetSuiteSuiteQl(null);
       const lastLogin = stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
-      // return the result
-      context.write({
-        key: key,
-        value: lastLogin,
-      });
+      // save only the valid results
+      if (lastLogin) {
+        context.write({
+          key: key,
+          value: lastLogin,
+        });
+      }
     }
   } catch (e) {
     log.error('reduce() error', e);

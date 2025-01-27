@@ -1,6 +1,7 @@
 import { getDataFromPageTable } from '../../utils/collectData';
 import { assertIsTokens, Token } from './types';
 import { CriteriaFields } from '../criteria/types';
+import { Settings } from '../settings/types.ts';
 
 export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
   const urlParams = {
@@ -43,7 +44,7 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
       userName: record[3],
       roleName: record[4],
       integrationName: record[5],
-      state: record[6],
+      state: record[6] === 'No' ? 'Active' : 'Inactive',
       dateCreated: record[7],
       createdBy: record[8],
     });
@@ -51,4 +52,29 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
   assertIsTokens(data);
 
   return data;
+}
+
+export function addTokenLastLogins(tokens: Token[], settings: Settings | undefined): Token[] {
+  // console.log('addTokenLastLogins() initiated', { tokens, settings });
+  if (
+    settings &&
+    settings.lastLogins &&
+    settings.lastLogins.data &&
+    Array.isArray(settings.lastLogins.data) &&
+    settings.lastLogins.data.length > 0
+  ) {
+    const lastLoginsObj = settings.lastLogins.data;
+    const lastLogins = lastLoginsObj.filter((lastLogin) => lastLogin.name.type === 'token');
+    console.log('lastLogins', lastLogins);
+
+    tokens.forEach((token) => {
+      // add the last login data to the token record if found
+      const lastLogin = lastLogins.find((lastLogin) => lastLogin.name.name === token.name);
+      if (lastLogin) {
+        token.lastLogin = lastLogin.lastLogin;
+      }
+    });
+  }
+
+  return tokens;
 }

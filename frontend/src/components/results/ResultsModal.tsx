@@ -1,15 +1,31 @@
-import { Button } from 'flowbite-react';
 import { ResultsTypes } from './types';
+// file
 import { assertIsFile } from '../file/types';
+import { FileResult } from '../file/RecordResult';
+// integration
 import { assertIsIntegration } from '../integration/types';
+import { IntegrationResult } from '../integration/RecordResult';
+// login
 import { assertIsLogin } from '../login/types';
+import { LoginResult } from '../login/RecordResult';
+// role
 import { assertIsRole } from '../role/types';
+import { RoleResult } from '../role/RecordResult';
+// script
 import { assertIsScript } from '../script/types';
+import { ScriptResult } from '../script/RecordResult';
+// scriptLog
 import { assertIsScriptLog } from '../scriptLog/types';
+import { ScriptLogResult } from '../scriptLog/RecordResult';
+// soapLog
 import { assertIsSoapLog } from '../soapLog/types';
+import { SoapLogResult } from '../soapLog/RecordResult';
+// token
 import { assertIsToken } from '../token/types';
+import { TokenResult } from '../token/RecordResult';
+// user
 import { assertIsUser } from '../user/types';
-import { useAppSettingsContext } from '../AppSettingsContext';
+import { UserResult } from '../user/RecordResult';
 
 type Props = {
   type: ResultsTypes;
@@ -19,347 +35,41 @@ type Props = {
 
 export function ResultsModal({ type, loading, data }: Props) {
   console.log('ResultsModal() initiated', type, loading, data);
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
 
   if (loading) {
     return 'Loading...';
   } else if (!data) {
     return 'No records found.';
   } else {
-    // determine modal details based on modal type
+    // display the modal
     switch (type) {
       case ResultsTypes.FILE:
         assertIsFile(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Folder</b>: {data.folder}
-            </p>
-            <p>
-              <b>Created Date</b>: {data.createddate}
-            </p>
-            <p>
-              <b>Lastmodified Date</b>: {data.lastmodifieddate}
-            </p>
-            <p>
-              <b>Type</b>: {data.filetypename}
-            </p>
-            <p>
-              <b>Name</b>: {data.name}
-            </p>
-            <p>
-              <b>File Size</b>: {data.filesize}
-            </p>
-            {/* <p>
-              <b>Description</b>: {data.description}
-            </p> */}
-            <p>
-              <b>URL</b>: {data.url}
-            </p>
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View File Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View File Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <FileResult data={data} modal={true} />;
       case ResultsTypes.INTEGRATION:
         assertIsIntegration(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Name</b>: {data.name}
-            </p>
-            <p>
-              <b>Application ID</b>: {data.applicationId}
-            </p>
-            <p>
-              <b>State</b>: {data.state}
-            </p>
-            <p>
-              <b>Date Created</b>: {data.dateCreated}
-            </p>
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Integration Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View Integration Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <IntegrationResult data={data} modal={true} />;
       case ResultsTypes.LOGIN:
         assertIsLogin(data);
-        return (
-          <>
-            <p>
-              <b>Date</b>: {data.date}
-            </p>
-            <p>
-              <b>Status</b>: {data.status}
-            </p>
-            <p>
-              <b>OAuth Application</b>: {data.oauthappname}
-            </p>
-            <p>
-              <b>OAuth Access Token</b>: {data.oauthaccesstokenname}
-            </p>
-            <p>
-              <b>User</b>: {data.username}
-            </p>
-            <p>
-              <b>Role</b>: {data.rolename}
-            </p>
-            <p>
-              <b>Email Address</b>: {data.emailaddress}
-            </p>
-            <p>
-              <b>IP Address</b>: {data.ipaddress}
-            </p>
-            <p>
-              <b>Request URI</b>: {data.requesturi}
-            </p>
-            <p>
-              <b>Detail</b>: {data.detail}
-            </p>
-            <p>
-              <b>Security Challenge</b>: {data.secchallenge}
-            </p>
-            <p>
-              <b>User Agent</b>: {data.useragent}
-            </p>
-          </>
-        );
+        return <LoginResult data={data} />;
       case ResultsTypes.ROLE:
         assertIsRole(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Name</b>: {data.name}
-            </p>
-            <p>
-              <b>Active</b>: {data.isinactive}
-            </p>
-            <p>
-              <b>Center Type</b>: {data.centertype}
-            </p>
-            <p>
-              <b>Sales Role</b>: {data.issalesrole}
-            </p>
-            <p>
-              <b>Support Role</b>: {data.issupportrole}
-            </p>
-            <p>
-              <b>Web Service Only</b>: {data.iswebserviceonlyrole}
-            </p>
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Role Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View Role Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <RoleResult data={data} modal={true} />;
       case ResultsTypes.SCRIPT:
         assertIsScript(data);
-        return (
-          <>
-            <p>API Version: {data.apiversion}</p>
-            <p>{data.isinactive}</p>
-            <p>Script Type: {data.scripttype}</p>
-            <p>Name: {data.name}</p>
-            <p>
-              ID: {data.scriptid} ({data.id})
-            </p>
-            <p>Owner: {data.owner}</p>
-            <p>File: {data.scriptfile}</p>
-            <p>Notify Emails: {data.notifyemails}</p>
-            <p>Description: {data.description}</p>
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View Script Details
-              </Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLogs, '_blank')}>
-                View Script Logs
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <ScriptResult data={data} modal={true} />;
       case ResultsTypes.SCRIPTLOG:
         assertIsScriptLog(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Timestamp</b>: {data.timestamp}
-            </p>
-            <p>
-              <b>Type</b>: {data.type}
-            </p>
-            <p>
-              <b>Script Type</b>: {data.scripttype}
-            </p>
-            <p>
-              <b>Owner</b>: {data.owner}
-            </p>
-            <p>
-              <b>Name</b>: {data.scriptname}
-            </p>
-            <p>
-              <b>Title</b>: {data.title}
-            </p>
-            <p>
-              <b>Detail</b>: {data.detail}
-            </p>
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Log Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View Script Log Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <ScriptLogResult data={data} modal={true} />;
       case ResultsTypes.SOAPLOG:
         assertIsSoapLog(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Start Date</b>: {data.startDate}
-            </p>
-            <p>
-              <b>Duration</b>: {data.duration}
-            </p>
-            <p>
-              <b>Integration</b>: {data.integration}
-            </p>
-            <p>
-              <b>Integration Id</b>: {data.integrationId}
-            </p>
-            <p>
-              <b>Action</b>: {data.action}
-            </p>
-            <p>
-              <b>Record Type</b>: {data.recordType}
-            </p>
-            <p>
-              <b>User</b>: {data.user}
-            </p>
-            <p>
-              <b>Status</b>: {data.status}
-            </p>
-            <p>
-              <b>Records</b>: {data.records}
-            </p>
-            <p>
-              <b>Records Finished</b>: {data.recordsFinished}
-            </p>
-            <p>
-              <b>Records Failed</b>: {data.recordsFailed}
-            </p>
-            <p>
-              <b>Records Returned</b>: {data.recordsReturned}
-            </p>
-            <p>
-              <b>Request</b>: {data.request}
-            </p>
-            <p>
-              <b>Response</b>: {data.response}
-            </p>
-            <Button.Group>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View SOAP Log Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <SoapLogResult data={data} modal={true} />;
       case ResultsTypes.TOKEN:
         assertIsToken(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Token Name</b>: {data.name}
-            </p>
-            <p>
-              <b>Integration</b>: {data.integrationName}
-            </p>
-            <p>
-              <b>User</b>: {data.userName}
-            </p>
-            <p>
-              <b>Role</b>: {data.roleName}
-            </p>
-            <p>
-              <b>State</b>: {data.state}
-            </p>
-            <p>
-              <b>Date Created</b>: {data.dateCreated}
-            </p>
-            <p>
-              <b>Created By</b>: {data.createdBy}
-            </p>{' '}
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Token Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View Token Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <TokenResult data={data} modal={true} />;
       case ResultsTypes.USER:
         assertIsUser(data);
-        return (
-          <>
-            <p>
-              <b>ID</b>: {data.id}
-            </p>
-            <p>
-              <b>Name</b>: {data.name}
-            </p>
-            <p>
-              <b>Active</b>: {data.isinactive}
-            </p>
-            <p>
-              <b>Email</b>: {data.email}
-            </p>
-            <p>
-              <b>Supervisor</b>: {data.supervisor}
-            </p>
-            <p>
-              <b>Title</b>: {data.title}
-            </p>
-            <p>
-              <b>Last Login</b>: {data.lastLogin}
-            </p>
-            <p>
-              <b>Role(s)</b>: {data.role_names}
-            </p>
-            <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View User Record</Button>
-              <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-                View User Details
-              </Button>
-            </Button.Group>
-          </>
-        );
+        return <UserResult data={data} modal={true} />;
       default:
         console.error('ResultsModal type not found:', type);
         break;

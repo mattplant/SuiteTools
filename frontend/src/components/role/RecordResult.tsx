@@ -1,10 +1,16 @@
+import { Button } from 'flowbite-react';
 import { Role } from './types';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 type Props = {
   data: Role;
+  modal?: boolean;
 };
 
-export function RoleResult({ data }: Props) {
+export function RoleResult({ data, modal }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+
   return (
     <>
       <p>
@@ -28,12 +34,14 @@ export function RoleResult({ data }: Props) {
       <p>
         <b>Web Service Only</b>: {data.iswebserviceonlyrole}
       </p>
-      {/* <Button.Group>
-        <Button onClick={() => window.open(data.urlNs, '_blank')}>View Role Record</Button>
-        <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlRole, '_blank')}>
-          View Role Details
-        </Button>
-      </Button.Group> */}
+      {modal && (
+        <Button.Group>
+          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Role Record</Button>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+            View Role Details
+          </Button>
+        </Button.Group>
+      )}
     </>
   );
 }

@@ -4,6 +4,7 @@ export interface Integration {
   applicationId: string;
   state: string;
   dateCreated: string;
+  lastLogin?: string;
   // additional properties
   urlNs?: string;
   urlDetail?: string;
@@ -48,6 +49,11 @@ export function assertIsIntegration(data: unknown): asserts data is Integration 
   }
   if (typeof data.dateCreated !== 'string') {
     throw new Error('Integration data "dateCreated" field is not a string');
+  }
+  // SUPPLEMENTAL PROPERTIES
+  // lastLogin
+  if ('lastLogin' in data && data.lastLogin && typeof data.lastLogin !== 'string') {
+    throw new Error('User data "lastLogin" field is not a string');
   }
   // ADDITIONAL PROPERTIES
   // urlNs

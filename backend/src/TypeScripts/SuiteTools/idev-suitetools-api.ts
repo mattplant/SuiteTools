@@ -52,7 +52,7 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
  * @returns The response.
  */
 export function post(requestBody: EntryPoints.RESTlet.put): string {
-  log.debug({ title: 'post() initiated', details: requestBody });
+  // log.debug({ title: 'post() initiated', details: requestBody });
 
   const stApi = new SuiteToolsApi();
   const response = JSON.stringify(stApi.stApiPost.process(requestBody));
@@ -255,12 +255,12 @@ export class SuiteToolsApiGet {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private addUserLastLogin(data: any): object {
     if (data) {
-      // get last logins data
+      // get last logins data for users
       this.stApi.stCommon.stSettings.getSettings();
-      const lastloginsObj = this.stApi.stCommon.stSettings.lastLogins;
-      const lastloginsUsers = lastloginsObj.data.filter((lastlogin) => lastlogin.name.type === 'user');
+      const lastLoginsObj = this.stApi.stCommon.stSettings.lastLogins;
+      const lastLogins = lastLoginsObj.data.filter((lastlogin) => lastlogin.name.type === 'user');
       // add the last login data to the user record
-      const lastlogin = lastloginsUsers.find((lastlogin) => lastlogin.name.name === data.email);
+      const lastlogin = lastLogins.find((lastlogin) => lastlogin.name.name === data.email);
       if (lastlogin) {
         data.lastLogin = lastlogin.lastLogin;
       }
@@ -271,13 +271,13 @@ export class SuiteToolsApiGet {
 
   private addUsersLastLogins(response: Response): Response {
     if (response && Array.isArray(response.data) && response.data.length > 0) {
-      // get last logins data
+      // get last logins data for users
       this.stApi.stCommon.stSettings.getSettings();
-      const lastloginsObj = this.stApi.stCommon.stSettings.lastLogins;
-      const lastloginsUsers = lastloginsObj.data.filter((lastlogin) => lastlogin.name.type === 'user');
+      const lastLoginsObj = this.stApi.stCommon.stSettings.lastLogins;
+      const lastLogins = lastLoginsObj.data.filter((lastlogin) => lastlogin.name.type === 'user');
       response.data.forEach((record) => {
         // add the last login data to the user record
-        const lastlogin = lastloginsUsers.find((lastlogin) => lastlogin.name.name === record.email);
+        const lastlogin = lastLogins.find((lastlogin) => lastlogin.name.name === record.email);
         if (lastlogin) {
           record.lastLogin = lastlogin.lastLogin;
         }
@@ -709,7 +709,7 @@ export class SuiteToolsApiGetOptions {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    log.debug({ title: 'SuiteToolsApiGetOptions:constructor() initiated', details: null });
+    // log.debug({ title: 'SuiteToolsApiGetOptions:constructor() initiated', details: null });
     this._stApi = stApi;
   }
 
@@ -896,7 +896,7 @@ export class SuiteToolsApiPost {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    log.debug({ title: 'SuiteToolsApiPost:constructor() initiated', details: null });
+    // log.debug({ title: 'SuiteToolsApiPost:constructor() initiated', details: null });
     this._stApi = stApi;
   }
 
@@ -986,7 +986,7 @@ export class SuiteToolsApiPut {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    log.debug({ title: 'SuiteToolsApiPut:constructor() initiated', details: null });
+    // log.debug({ title: 'SuiteToolsApiPut:constructor() initiated', details: null });
     this._stApi = stApi;
   }
 

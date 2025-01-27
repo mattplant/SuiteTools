@@ -1,6 +1,7 @@
 import { getTokens } from './getRecords';
 import { NotFound } from '../../api/types';
 import { Token } from './types';
+import { Settings } from '../settings/types';
 
 export async function getToken(id: number): Promise<Token | NotFound> {
   console.log('getToken() initiated', { id });
@@ -35,4 +36,24 @@ export async function getToken(id: number): Promise<Token | NotFound> {
   }
 
   return result;
+}
+
+export function addTokenLastLogin(record: Token, settings: Settings | undefined): Token {
+  // console.log('addTokenLastLogin() initiated', { record, settings });
+  if (
+    settings &&
+    settings.lastLogins &&
+    settings.lastLogins.data &&
+    Array.isArray(settings.lastLogins.data) &&
+    settings.lastLogins.data.length > 0
+  ) {
+    const lastLoginsObj = settings.lastLogins.data;
+    const lastLogins = lastLoginsObj.filter((lastLogin) => lastLogin.name.type === 'token');
+    const lastlogin = lastLogins.find((lastlogin) => lastlogin.name.name === record.name);
+    if (lastlogin) {
+      record.lastLogin = lastlogin.lastLogin;
+    }
+  }
+
+  return record;
 }

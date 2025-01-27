@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { assertIsToken, Token } from '../components/token/types';
-import { RecordResult } from '../components/token/RecordResult';
+import { TokenResult } from '../components/token/RecordResult';
 
 export function TokenPage() {
   const data = useLoaderData();
@@ -15,7 +15,7 @@ export function TokenPage() {
         <Await resolve={data.token}>
           {(record) => {
             assertIsToken(record);
-            return <RecordResult data={record} />;
+            return <TokenResult data={record} />;
           }}
         </Await>
       </Suspense>

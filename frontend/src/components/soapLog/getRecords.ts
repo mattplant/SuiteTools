@@ -75,12 +75,11 @@ export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
   assertIsSoapLogs(data);
   cleanSoapLogsData(data);
   // filter data based on integrationId
-  if (urlParams.integrations) {
+  if (urlParams.integrations && urlParams.integrations.length > 0 && urlParams.integrations[0]) {
     data = data.filter((record) => {
       return urlParams.integrations!.includes(String(record.integrationId));
     });
   }
-  console.log('getSoapLogs() TEST after filter', { data });
 
   return data;
 }

@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
 import { getIntegration } from '../components/integration/getRecord.ts';
-import { getIntegrations } from '../components/integration/getRecords.ts';
+import { getIntegrations, addIntegrationLastLogins } from '../components/integration/getRecords.ts';
 import { Integration } from '../components/integration/types.ts';
 import { RecordsCriteria } from '../components/integration/RecordsCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
+import { useAppSettingsContext } from '../components/AppSettingsContext';
 
 export function IntegrationsPage() {
+  const { settings } = useAppSettingsContext();
   const defaultCriteria: CriteriaFields = {
     active: 'T',
   };
@@ -18,6 +20,7 @@ export function IntegrationsPage() {
     async function fetchData() {
       try {
         const data = await getIntegrations(criteria);
+        addIntegrationLastLogins(data, settings);
         setResults(data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -26,7 +29,7 @@ export function IntegrationsPage() {
     fetchData();
 
     return () => {};
-  }, [criteria]);
+  }, [criteria, settings]);
 
   return (
     <div className="mt-4">

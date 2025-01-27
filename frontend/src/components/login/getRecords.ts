@@ -28,12 +28,12 @@ export async function getLogins(fields: CriteriaFields): Promise<Login[] | NotFo
   };
 
   const urlParams = {
-    rows: fields.rows,
-    active: fields.active,
-    integrationName: fields.integrationName,
-    tokenName: fields.tokenName,
-    users: fields.users,
-    roles: fields.roles,
+    rows: fields.rows ? fields.rows : '',
+    active: fields.active ? fields.active : '',
+    integrationName: fields.integrationName ? fields.integrationName : '',
+    tokenName: fields.tokenName ? fields.tokenName : '',
+    users: fields.users ? fields.users : '',
+    roles: fields.roles ? fields.roles : '',
     // TODO: dates
   };
   const response = await getData(localTestData, 'logins', urlParams);

@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { assertIsUser, User } from '../components/user/types';
 import { UserResult } from '../components/user/RecordResult';
+import { UserLogins } from '../components/user/UserLogins';
+import { UserTokens } from '../components/user/UserTokens';
 
 export function UserPage() {
   const data = useLoaderData();
@@ -13,9 +15,15 @@ export function UserPage() {
       <br />
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.user}>
-          {(user) => {
-            assertIsUser(user);
-            return <UserResult data={user} />;
+          {(record) => {
+            assertIsUser(record);
+            return (
+              <>
+                <UserResult data={record} />
+                <UserLogins userId={String(record.id)} />
+                <UserTokens userName={record.name} />
+              </>
+            );
           }}
         </Await>
       </Suspense>

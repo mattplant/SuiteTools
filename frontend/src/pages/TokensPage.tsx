@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
 import { getToken } from '../components/token/getRecord.ts';
-import { getTokens } from '../components/token/getRecords.ts';
+import { getTokens, addTokenLastLogins } from '../components/token/getRecords.ts';
 import { Token } from '../components/token/types.ts';
 import { RecordsCriteria } from '../components/token/RecordsCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
+import { useAppSettingsContext } from '../components/AppSettingsContext';
 
 export function TokensPage() {
+  const { settings } = useAppSettingsContext();
   const defaultCriteria: CriteriaFields = {
     active: 'T',
     integrationName: '',
@@ -22,6 +24,7 @@ export function TokensPage() {
     async function fetchData() {
       try {
         const data = await getTokens(criteria);
+        addTokenLastLogins(data, settings);
         setResults(data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -30,7 +33,7 @@ export function TokensPage() {
     fetchData();
 
     return () => {};
-  }, [criteria]);
+  }, [criteria, settings]);
 
   return (
     <div className="mt-4">

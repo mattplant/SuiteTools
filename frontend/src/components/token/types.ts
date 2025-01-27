@@ -7,6 +7,7 @@ export interface Token {
   state: string; // Inactive - TODO change type to boolean
   dateCreated: string;
   createdBy: string;
+  lastLogin?: string;
   // additional properties
   urlNs?: string;
   urlDetail?: string;
@@ -73,6 +74,11 @@ export function assertIsToken(data: unknown): asserts data is Token {
   // if (typeof data.createdBy !== 'string') {
   //   throw new Error('Token data "createdBy" field is not a string');
   // }
+  // SUPPLEMENTAL PROPERTIES
+  // lastLogin
+  if ('lastLogin' in data && data.lastLogin && typeof data.lastLogin !== 'string') {
+    throw new Error('User data "lastLogin" field is not a string');
+  }
   // ADDITIONAL PROPERTIES
   // urlNs
   if ('urlNs' in data && typeof data.urlNs !== 'string') {

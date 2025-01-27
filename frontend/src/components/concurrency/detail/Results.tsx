@@ -1,5 +1,7 @@
+import { useRef } from 'react';
+import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import DataGrid from 'react-data-grid';
+import { Export } from '../../results/Export.tsx';
 import { ConcurrencyDetailData, ConcurrencyDetailRows } from './types';
 import { formatDate } from '../../../utils/dates';
 import { useAppSettingsContext } from '../../../components/AppSettingsContext.tsx';
@@ -17,9 +19,8 @@ const columns = [
 ];
 
 export function ConcurrencyDetailResults({ data }: Props) {
-  console.log('ConcurrencyDetailPeak() initiated', { data });
   const { settings } = useAppSettingsContext();
-
+  const gridRef = useRef<DataGridHandle>(null);
   const formattedResults: ConcurrencyDetailRows[] = [];
   if (data) {
     const results = data.concurrency.results;
@@ -43,7 +44,9 @@ export function ConcurrencyDetailResults({ data }: Props) {
   return (
     <>
       <h2 className="pt-5 pb-1 text-xl font-bold text-slate-900">Detail Table</h2>
+      <Export gridRef={gridRef} />
       <DataGrid
+        ref={gridRef}
         columns={columns}
         rows={formattedResults}
         defaultColumnOptions={{

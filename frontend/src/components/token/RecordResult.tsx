@@ -1,10 +1,18 @@
+import { Button } from 'flowbite-react';
 import { Token } from './types';
+import { useAppSettingsContext } from '../AppSettingsContext';
+import { addTokenLastLogin } from './getRecord';
 
 type Props = {
   data: Token;
+  modal?: boolean;
 };
 
-export function RecordResult({ data }: Props) {
+export function TokenResult({ data, modal }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+  addTokenLastLogin(data, settings);
+
   return (
     <>
       <p>
@@ -31,12 +39,14 @@ export function RecordResult({ data }: Props) {
       <p>
         <b>Created By</b>: {data.createdBy}
       </p>
-      {/* <Button.Group>
-        <Button onClick={() => window.open(data.urlNs, '_blank')}>View Integration Record</Button>
-        <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-          View Integration Details
-        </Button>
-      </Button.Group> */}
+      {modal && (
+        <Button.Group>
+          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Token Record</Button>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+            View Token Details
+          </Button>
+        </Button.Group>
+      )}
     </>
   );
 }

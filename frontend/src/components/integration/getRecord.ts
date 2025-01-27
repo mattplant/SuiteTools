@@ -1,6 +1,7 @@
 import { getIntegrations } from './getRecords';
 import { NotFound } from '../../api/types';
 import { Integration } from './types';
+import { Settings } from '../settings/types';
 
 export async function getIntegration(id: number): Promise<Integration | NotFound> {
   console.log('getIntegration() initiated', { id });
@@ -32,4 +33,24 @@ export async function getIntegration(id: number): Promise<Integration | NotFound
   }
 
   return result;
+}
+
+export function addIntegrationLastLogin(record: Integration, settings: Settings | undefined): Integration {
+  // console.log('addIntegrationLastLogin() initiated', { record, settings });
+  if (
+    settings &&
+    settings.lastLogins &&
+    settings.lastLogins.data &&
+    Array.isArray(settings.lastLogins.data) &&
+    settings.lastLogins.data.length > 0
+  ) {
+    const lastLoginsObj = settings.lastLogins.data;
+    const lastLogins = lastLoginsObj.filter((lastLogin) => lastLogin.name.type === 'integration');
+    const lastlogin = lastLogins.find((lastlogin) => lastlogin.name.name === record.name);
+    if (lastlogin) {
+      record.lastLogin = lastlogin.lastLogin;
+    }
+  }
+
+  return record;
 }

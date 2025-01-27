@@ -1,10 +1,16 @@
+import { Button } from 'flowbite-react';
 import { User } from './types';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 type Props = {
   data: User;
+  modal?: boolean;
 };
 
-export function UserResult({ data }: Props) {
+export function UserResult({ data, modal }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+
   return (
     <>
       <p>
@@ -31,12 +37,14 @@ export function UserResult({ data }: Props) {
       <p>
         <b>Role(s)</b>: {data.role_names}
       </p>
-      {/* <Button.Group>
-        <Button onClick={() => window.open(data.urlNs, '_blank')}>View User Record</Button>
-        <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlUser, '_blank')}>
-          View User Details
-        </Button>
-      </Button.Group> */}
+      {modal && (
+        <Button.Group>
+          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Employee Record</Button>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+            View User Details
+          </Button>
+        </Button.Group>
+      )}
     </>
   );
 }

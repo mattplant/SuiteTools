@@ -1,28 +1,56 @@
+import { Button } from 'flowbite-react';
 import { Script } from './types';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 type Props = {
   data: Script;
+  modal?: boolean;
 };
 
-export function ScriptResult({ data }: Props) {
+export function ScriptResult({ data, modal }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+
   return (
     <>
-      <p>API Version: {data.apiversion}</p>
-      <p>{data.isinactive}</p>
-      <p>Script Type: {data.scripttype}</p>
-      <p>Name: {data.name}</p>
       <p>
-        ID: {data.scriptid} ({data.id})
+        <b>API Version:</b> {data.apiversion}
       </p>
-      <p>Owner: {data.owner}</p>
-      <p>File: {data.scriptfile}</p>
-      <p>Notify Emails: {data.notifyemails}</p>
-      <p>Description: {data.description}</p>
-      {/* <Button.Group>
-              <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Record</Button>
-              <Button onClick={() => window.open(data.urlScript, '_blank')}>View Script Details</Button>
-              <Button onClick={() => window.open(data.urlScriptLogs, '_blank')}>View Script Logs</Button>
-            </Button.Group> */}
+      <p>
+        <b>{data.isinactive}</b>
+      </p>
+      <p>
+        <b>Script Type:</b> {data.scripttype}
+      </p>
+      <p>
+        <b>Name:</b> {data.name}
+      </p>
+      <p>
+        <b>ID:</b> {data.scriptid} ({data.id})
+      </p>
+      <p>
+        <b>Owner:</b> {data.owner}
+      </p>
+      <p>
+        <b>File:</b> {data.scriptfile}
+      </p>
+      <p>
+        <b>Notify Emails:</b> {data.notifyemails}
+      </p>
+      <p>
+        <b>Description:</b> {data.description}
+      </p>
+      {modal && (
+        <Button.Group>
+          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Record</Button>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+            View Script Details
+          </Button>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLogs, '_blank')}>
+            View Script Logs
+          </Button>
+        </Button.Group>
+      )}
     </>
   );
 }

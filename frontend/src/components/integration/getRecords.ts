@@ -1,6 +1,7 @@
 import { getDataFromPageTable } from '../../utils/collectData';
 import { Integration } from './types';
 import { CriteriaFields } from '../criteria/types';
+import { Settings } from '../settings/types.ts';
 
 export async function getIntegrations(fields: CriteriaFields): Promise<Integration[]> {
   console.log('getIntegrations() initiated', { fields });
@@ -51,4 +52,29 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
   });
 
   return data;
+}
+
+export function addIntegrationLastLogins(integrations: Integration[], settings: Settings | undefined): Integration[] {
+  // console.log('addIntegrationLastLogins() initiated', { integrations, settings });
+  if (
+    settings &&
+    settings.lastLogins &&
+    settings.lastLogins.data &&
+    Array.isArray(settings.lastLogins.data) &&
+    settings.lastLogins.data.length > 0
+  ) {
+    const lastLoginsObj = settings.lastLogins.data;
+    const lastLogins = lastLoginsObj.filter((lastLogin) => lastLogin.name.type === 'integration');
+    console.log('lastLogins', lastLogins);
+
+    integrations.forEach((integration) => {
+      // add the last login data to the integration record if found
+      const lastLogin = lastLogins.find((lastLogin) => lastLogin.name.name === integration.name);
+      if (lastLogin) {
+        integration.lastLogin = lastLogin.lastLogin;
+      }
+    });
+  }
+
+  return integrations;
 }

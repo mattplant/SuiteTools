@@ -1,10 +1,16 @@
+import { Button } from 'flowbite-react';
 import { SoapLog } from './types';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 type Props = {
   data: SoapLog;
+  modal?: boolean;
 };
 
-export function SoapLogResult({ data }: Props) {
+export function SoapLogResult({ data, modal }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+
   return (
     <>
       <p>
@@ -47,17 +53,18 @@ export function SoapLogResult({ data }: Props) {
         <b>Records Returned</b>: {data.recordsReturned}
       </p>
       <p>
-        <b>Request</b>:{' '}
-        <a href={data.request} target="_blank" rel="noopener noreferrer">
-          request
-        </a>
+        <b>Request</b>: {data.request}
       </p>
       <p>
-        <b>Response</b>:{' '}
-        <a href={data.response} target="_blank" rel="noopener noreferrer">
-          response
-        </a>
+        <b>Response</b>: {data.response}
       </p>
+      {modal && (
+        <Button.Group>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+            View SOAP Log Details
+          </Button>
+        </Button.Group>
+      )}
     </>
   );
 }

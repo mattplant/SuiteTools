@@ -1,10 +1,16 @@
+import { Button } from 'flowbite-react';
 import { ScriptLog } from './types';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 type Props = {
   data: ScriptLog;
+  modal?: boolean;
 };
 
-export function ScriptLogResult({ data }: Props) {
+export function ScriptLogResult({ data, modal }: Props) {
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+
   return (
     <>
       <p>
@@ -31,12 +37,14 @@ export function ScriptLogResult({ data }: Props) {
       <p>
         <b>Detail</b>: {data.detail}
       </p>
-      {/* <Button.Group>
-        <Button onClick={() => window.open(data.urlNs, '_blank')}>View ScriptLog Record</Button>
-        <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlScriptLog, '_blank')}>
-          View Script Log Details
-        </Button>
-      </Button.Group> */}
+      {modal && (
+        <Button.Group>
+          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Log Record</Button>
+          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
+            View Script Log Details
+          </Button>
+        </Button.Group>
+      )}
     </>
   );
 }

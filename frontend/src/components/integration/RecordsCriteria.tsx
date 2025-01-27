@@ -23,7 +23,7 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
         Get Integrations
       </button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
+        <SearchCriteriaActive register={register} title="State" trueLabel="Enabled" falseLabel="Blocked" />
       </div>
     </form>
   );
