@@ -38,14 +38,12 @@ export interface ConcurrencySummaryDataConcurrency {
     peak: [number, number, number, number][];
   };
   allocations: object;
-  results: [
-    {
-      startTime: number;
-      endTime: number;
-      averageConcurrency: number;
-      peakConcurrency: number;
-    },
-  ];
+  results: {
+    startTime: number;
+    endTime: number;
+    averageConcurrency: number;
+    peakConcurrency: number;
+  }[];
 }
 
 export interface ConcurrencySummaryDataViolations {

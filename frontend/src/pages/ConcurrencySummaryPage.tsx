@@ -4,7 +4,7 @@ import { getConcurrencySummary } from '../components/concurrency/summary/getReco
 import { RecordsCriteria } from '../components/concurrency/summary/RecordsCriteria.tsx';
 import { ConcurrencySummaryData } from '../components/concurrency/summary/types.ts';
 import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Overview.tsx';
-import { ConcurrencySummaryHeatMap } from '../components/concurrency/summary/HeatMap.tsx';
+import { ConcurrencySummaryHeatMapWrapper } from '../components/concurrency/summary/heatMap/Wrapper.tsx';
 import { ConcurrencySummaryPeak } from '../components/concurrency/summary/Peak.tsx';
 import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
 import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
@@ -17,7 +17,6 @@ export function ConcurrencySummaryPage() {
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ConcurrencySummaryData>();
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     async function fetchData() {
       try {
@@ -35,6 +34,7 @@ export function ConcurrencySummaryPage() {
 
     return () => {};
   }, [criteria, settings?.accountId]);
+
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Concurrency Summary</h2>
@@ -44,7 +44,7 @@ export function ConcurrencySummaryPage() {
       ) : (
         <>
           <ConcurrencySummaryOverview data={results} />
-          <ConcurrencySummaryHeatMap data={results} />
+          <ConcurrencySummaryHeatMapWrapper data={results} />
           <ConcurrencySummaryPeak data={results} />
           <ConcurrencySummaryAverage data={results} />
         </>
