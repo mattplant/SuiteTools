@@ -1,6 +1,7 @@
 import { ResultsProps } from './types.ts';
 import { RecordsResults as FileResults } from '../file/RecordsResults.tsx';
 import { RecordsResults as IntegrationResults } from '../integration/RecordsResults.tsx';
+import { RecordsResults as JobResults } from '../job/RecordsResults.tsx';
 import { RecordsResults as LoginResults } from '../login/RecordsResults.tsx';
 import { RecordsResults as RolesResults } from '../role/RecordsResults.tsx';
 import { RecordsResults as ScriptsResults } from '../script/RecordsResults.tsx';
@@ -16,6 +17,7 @@ interface ResultsMap {
 const resultMap: ResultsMap = {
   file: FileResults,
   integration: IntegrationResults,
+  job: JobResults,
   login: LoginResults,
   role: RolesResults,
   script: ScriptsResults,

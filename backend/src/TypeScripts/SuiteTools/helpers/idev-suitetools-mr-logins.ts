@@ -46,7 +46,7 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
   let entityRecords = null;
   try {
     entityRecords = JSON.parse(
-      String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_lastlogins_entity' })),
+      String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_logins_entity' })),
     );
     log.debug('getInputData() identity records =', entityRecords);
 
@@ -138,7 +138,7 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
     log.debug('summarize() results = ', JSON.stringify(results));
     const updateSettings = { custrecord_idev_st_config_last_logins: JSON.stringify(results) };
     const appSettingsRecordId = JSON.parse(
-      String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_lastlogins_set_id' })),
+      String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_logins_set_id' })),
     );
     const stLibNsRecord = new SuiteToolsCommonLibraryNetSuiteRecord(null);
     const success = stLibNsRecord.updateCustomRecord(

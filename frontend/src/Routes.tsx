@@ -14,6 +14,12 @@ import { FilesPage } from './pages/FilesPage.tsx';
 import { getIntegration } from './components/integration/getRecord.ts';
 import { IntegrationPage } from './pages/IntegrationPage.tsx';
 import { IntegrationsPage } from './pages/IntegrationsPage.tsx';
+// jobs
+import { getJob } from './components/job/getRecord.ts';
+import { getJobRun } from './components/job/run/getRecord.ts';
+import { JobPage } from './pages/JobPage.tsx';
+import { JobRunPage } from './pages/JobRunPage.tsx';
+import { JobsPage } from './pages/JobsPage.tsx';
 // logins
 import { LoginsPage } from './pages/LoginsPage.tsx';
 // roles
@@ -83,6 +89,20 @@ const router = createHashRouter([
       {
         path: 'integrations',
         element: <IntegrationsPage />,
+      },
+      {
+        path: 'job/:id',
+        element: <JobPage />,
+        loader: async ({ params }) => defer({ job: getJob(Number(params.id)) }),
+      },
+      {
+        path: 'jobRun/:id',
+        element: <JobRunPage />,
+        loader: async ({ params }) => defer({ job: getJobRun(Number(params.id)) }),
+      },
+      {
+        path: 'jobs',
+        element: <JobsPage />,
       },
       {
         path: 'logins',

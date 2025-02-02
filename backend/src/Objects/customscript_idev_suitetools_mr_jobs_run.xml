@@ -1,29 +1,29 @@
-<mapreducescript scriptid="customscript_idev_st_mr_lastlogins">
-  <description>SuiteTools Last Logins Map/Reduce Script</description>
+<mapreducescript scriptid="customscript_idev_suitetools_mr_jobs_run">
+  <description></description>
   <isinactive>F</isinactive>
-  <name>SuiteTools Last Logins Map/Reduce Script</name>
+  <name>SuiteTools Jobs Run</name>
   <notifyadmins>F</notifyadmins>
   <notifyemails></notifyemails>
   <notifyowner>T</notifyowner>
-  <scriptfile>[/SuiteScripts/SuiteTools/helpers/idev-suitetools-mr-lastlogins.js]</scriptfile>
+  <scriptfile>[/SuiteScripts/SuiteTools/helpers/idev-suitetools-mr-jobs-run.js]</scriptfile>
   <scriptcustomfields>
-    <scriptcustomfield scriptid="custscript_idev_st_mr_lastlogins_entity">
+    <scriptcustomfield scriptid="custscript_idev_st_mr_jobs_type">
       <accesslevel>2</accesslevel>
       <applyformatting>F</applyformatting>
       <checkspelling>F</checkspelling>
       <defaultchecked>F</defaultchecked>
       <defaultselection></defaultselection>
       <defaultvalue></defaultvalue>
-      <description>The entities (users, tokens, integrations) to look up the last logins for.</description>
+      <description>The type of record for the script to act upon.</description>
       <displayheight></displayheight>
       <displaytype>NORMAL</displaytype>
       <displaywidth></displaywidth>
       <dynamicdefault></dynamicdefault>
       <fieldtype>TEXT</fieldtype>
-      <help>The entities (users, tokens, integrations) to look up the last logins for.</help>
+      <help>The type of record for the script to act upon.</help>
       <isformula>F</isformula>
       <ismandatory>F</ismandatory>
-      <label>Login Entities</label>
+      <label>Record Type</label>
       <linktext></linktext>
       <maxlength></maxlength>
       <maxvalue></maxvalue>
@@ -34,23 +34,23 @@
       <setting></setting>
       <storevalue>T</storevalue>
     </scriptcustomfield>
-    <scriptcustomfield scriptid="custscript_idev_st_mr_lastlogins_set_id">
+    <scriptcustomfield scriptid="custscript_idev_st_mr_jobs_action">
       <accesslevel>2</accesslevel>
       <applyformatting>F</applyformatting>
       <checkspelling>F</checkspelling>
       <defaultchecked>F</defaultchecked>
       <defaultselection></defaultselection>
       <defaultvalue></defaultvalue>
-      <description></description>
+      <description>The action for the script to do on the records.</description>
       <displayheight></displayheight>
       <displaytype>NORMAL</displaytype>
       <displaywidth></displaywidth>
       <dynamicdefault></dynamicdefault>
       <fieldtype>TEXT</fieldtype>
-      <help></help>
+      <help>The action for the script to do on the records.</help>
       <isformula>F</isformula>
       <ismandatory>F</ismandatory>
-      <label>SuiteTools App Settings Record Id</label>
+      <label>Record Action</label>
       <linktext></linktext>
       <maxlength></maxlength>
       <maxvalue></maxvalue>
@@ -63,22 +63,22 @@
     </scriptcustomfield>
   </scriptcustomfields>
   <scriptdeployments>
-    <scriptdeployment scriptid="customdeploy_idev_st_mr_lastlogins">
+    <scriptdeployment scriptid="customdeploy_idev_suitetools_mr_jobs_run">
       <buffersize>1</buffersize>
       <concurrencylimit>1</concurrencylimit>
-      <custscript_idev_st_mr_lastlogins_entity></custscript_idev_st_mr_lastlogins_entity>
-      <custscript_idev_st_mr_lastlogins_set_id></custscript_idev_st_mr_lastlogins_set_id>
+      <custscript_idev_st_mr_jobs_action></custscript_idev_st_mr_jobs_action>
+      <custscript_idev_st_mr_jobs_type></custscript_idev_st_mr_jobs_type>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <queueallstagesatonce>T</queueallstagesatonce>
       <runasrole>ADMINISTRATOR</runasrole>
       <status>NOTSCHEDULED</status>
-      <title>SuiteTools Last Logins Map/Reduce Script</title>
+      <title>SuiteTools Jobs Run</title>
       <yieldaftermins>60</yieldaftermins>
       <recurrence>
         <single>
           <repeat></repeat>
-          <startdate>2025-01-19</startdate>
+          <startdate>2024-01-21</startdate>
           <starttime>02:00:00Z</starttime>
         </single>
       </recurrence>

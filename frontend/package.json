@@ -2,7 +2,7 @@
   "name": "suitetools-frontend",
   "displayName": "SuiteTools Frontend",
   "description": "The frontend for the missing NetSuite tools.",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.1",
   "author": {
     "name": "Matt Plant",
     "url": "https://github.com/mattplant"

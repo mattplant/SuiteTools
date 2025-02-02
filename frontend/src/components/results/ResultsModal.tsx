@@ -5,6 +5,9 @@ import { FileResult } from '../file/RecordResult';
 // integration
 import { assertIsIntegration } from '../integration/types';
 import { IntegrationResult } from '../integration/RecordResult';
+// file
+import { assertIsJob } from '../job/types';
+import { JobResult } from '../job/RecordResult';
 // login
 import { assertIsLogin } from '../login/types';
 import { LoginResult } from '../login/RecordResult';
@@ -49,6 +52,9 @@ export function ResultsModal({ type, loading, data }: Props) {
       case ResultsTypes.INTEGRATION:
         assertIsIntegration(data);
         return <IntegrationResult data={data} modal={true} />;
+      case ResultsTypes.JOB:
+        assertIsJob(data);
+        return <JobResult data={data} modal={true} />;
       case ResultsTypes.LOGIN:
         assertIsLogin(data);
         return <LoginResult data={data} />;

@@ -35,6 +35,13 @@ export default function Header() {
           <p>app-bundle: {settings?.appBundle}</p>
         </Dropdown>
         <NavbarLink>
+          <Dropdown color="light" label="Tools" dismissOnClick={true}>
+            <Dropdown.Item>
+              <NavLink to={`jobs`}>Jobs</NavLink>
+            </Dropdown.Item>
+          </Dropdown>
+        </NavbarLink>
+        <NavbarLink>
           <Dropdown color="light" label="Integrations" dismissOnClick={true}>
             <Dropdown.Item>
               <NavLink to={`integrations`}>Integrations</NavLink>

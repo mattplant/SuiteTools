@@ -27,6 +27,7 @@
 import { EntryPoints } from 'N/types';
 import error = require('N/error');
 import log = require('N/log');
+import task = require('N/task');
 import { SuiteToolsCommon } from './idev-suitetools-common';
 
 /**
@@ -179,6 +180,15 @@ export class SuiteToolsApiGet {
         break;
       case 'files':
         response = this.getFiles(requestParams);
+        break;
+      case 'job':
+        response = this.getJob(requestParams);
+        break;
+      case 'jobRun':
+        response = this.getJobRun(requestParams);
+        break;
+      case 'jobs':
+        response = this.getJobs(requestParams);
         break;
       case 'logins':
         response = this.getLogins(requestParams);
@@ -452,6 +462,70 @@ export class SuiteToolsApiGet {
     const modifiedDate = requestParams['lastmodifieddate'];
     const result = this.stApi.stApiModel.getFiles(row, types, createdDate, modifiedDate);
     // log.debug({ title: 'SuiteToolsApiGet:getFiles() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Job
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getJob(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiGet:getJob() initiated', details: requestParams });
+
+    const id = requestParams.id;
+    if (!id) {
+      throw error.create({
+        name: 'SUITE_TOOLS_MISSING_PARAMETER',
+        message: `Missing required parameter: id`,
+        notifyOff: true,
+      });
+    }
+
+    const result = this.stApi.stApiModel.getJob(id);
+    // log.debug({ title: 'SuiteToolsApiGet:getJob() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Run Job
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getJobRun(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiGet:getJobRun() initiated', details: requestParams });
+
+    const id = requestParams.id;
+    if (!id) {
+      throw error.create({
+        name: 'SUITE_TOOLS_MISSING_PARAMETER',
+        message: `Missing required parameter: id`,
+        notifyOff: true,
+      });
+    }
+
+    const result = this.stApi.stApiModel.getJobRun(id);
+    log.debug({ title: 'SuiteToolsApiGet:getJobRun() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Jobs
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getJobs(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiGet:getJobs() initiated', details: requestParams });
+
+    const row = requestParams['rows'];
+    const result = this.stApi.stApiModel.getJobs(row);
+    // log.debug({ title: 'SuiteToolsApiGet:getJobs() returning', details: result });
 
     return result;
   }
@@ -955,13 +1029,13 @@ export class SuiteToolsApiPost {
     if (entityRecords.length > 0) {
       // submit the task
       const params = {
-        custscript_idev_st_mr_lastlogins_entity: JSON.stringify(entityRecords),
-        custscript_idev_st_mr_lastlogins_set_id: this.stApi.stCommon.stSettings.recordId,
+        custscript_idev_st_mr_logins_entity: JSON.stringify(entityRecords),
+        custscript_idev_st_mr_logins_set_id: this.stApi.stCommon.stSettings.recordId,
       };
       const scriptTaskId = this.stApi.stCommon.stLib.stLibNs.stLibNsTask.submit(
         'MAP_REDUCE',
-        'customscript_idev_st_mr_lastlogins',
-        'customdeploy_idev_st_mr_lastlogins',
+        'customscript_idev_suitetools_mr_logins',
+        'customdeploy_idev_suitetools_mr_logins',
         params,
       );
       message = 'Last logins script initiated with task id of ' + scriptTaskId;
@@ -1049,131 +1123,6 @@ export class SuiteToolsApiModel {
     // log.debug({ title: 'SuiteToolsApiModel:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
-
-  /*
-   * Initiate Job
-   *
-   * @returns jobId
-   */
-  // public initiateJob(): number {
-  //   log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: null });
-
-  //   // initiate the last logins map/reduce script
-  //   const scriptTask = task.create({
-  //     taskType: task.TaskType.MAP_REDUCE,
-  //     scriptId: 'customscript_idev_st_mr_jobs_run',
-  //     deploymentId: 'customdeploy_idev_st_mr_jobs_run',
-  //     // params: {
-  //     //   custscript_idev_st_mr_jobs_type: 'customer',
-  //     //   custscript_idev_st_mr_jobs_action: 'activate',
-  //     // },
-  //   });
-  //   const scriptTaskId = scriptTask.submit();
-  //   log.debug({
-  //     title: 'SuiteToolsController:runJob() submitted run job map/reduce script',
-  //     details: 'scriptTaskId = ' + scriptTaskId,
-  //   });
-
-  //   const jobId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecord('customrecord_idev_suitetools_job', {
-  //     custrecord_st_job_task_id: scriptTaskId,
-  //   });
-  //   log.debug({ title: 'SuiteToolsController:renderJobRunForm() created job record', details: jobId });
-
-  //   return jobId;
-  // }
-
-  // Get Folders SQL
-  // let sql = `SELECT
-  // 	MediaItemFolder.id,
-  // 	BUILTIN.DF(MediaItemFolder.owner) AS owner,
-  // 	MediaItemFolder.foldertype,
-  // 	MediaItemFolder.appfolder,
-  // 	MediaItemFolder.name,
-  // 	MediaItemFolder.description,
-  // 	MediaItemFolder.lastModifiedDate,
-  // 	MediaItemFolder.numFolderFiles,
-  // 	MediaItemFolder.folderSize,
-  // 	MediaItemFolder.parent
-  // FROM
-  // 	MediaItemFolder
-  // WHERE
-  // 	isTopLevel = 'T'
-  // ORDER BY
-  // 	name`;
-
-  /**
-   * Get Job
-   *
-   * @param id - the record to return
-   * @returns results
-   */
-  // public getJob(id: number) {
-  //   log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
-
-  //   const sql = `SELECT
-  //     id,
-  //   FROM
-  //     customrecord_idev_suitetools_job
-  //   WHERE
-  //     id = ${id}`;
-  //   const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-  //   let result = null;
-  //   if (sqlResults.length === 0) {
-  //     // this.stCommon.setAlert('No results found that matched criteria.');
-  //   } else {
-  //     result = sqlResults[0];
-  //   }
-  //   log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: result });
-
-  //   return result;
-  // }
-
-  /**
-   * Get Jobs
-   *
-   * @param active - the active flag
-   * @returns roles
-   */
-  // public getJobs(
-  //   active: string
-  // ) {
-  //   log.debug({
-  //     title: `SuiteToolsApiModel:getJobs() initiated`,
-  //     details: {
-  //       active: active,
-  //     },
-  //   });
-
-  //   let sql = `SELECT
-  //     id,
-  //     custrecord_st_job_task_id as task_id,
-  //   FROM
-  //     customrecord_idev_suitetools_job`;
-
-  //   // isinactive,
-  //   // name || ' (' || id  || ')' AS name,
-  //   // custrecord_st_job_run_type AS type,
-  //   // custrecord_st_job_run_params AS params,
-
-  //   // add where clause
-  //   const where = [];
-  //   // if (active) {
-  //   //   if (active === 'T') {
-  //   //     where.push(`isinactive = 'F'`);
-  //   //   } else {
-  //   //     where.push(`isinactive = 'T'`);
-  //   //   }
-  //   // }
-  //   if (where.length > 0) {
-  //     sql += ` WHERE ${where.join(' AND ')}`;
-  //   }
-  //   // add order by
-  //   // sql += ` ORDER BY name`;
-  //   const results = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql, true);
-  //   log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: results });
-
-  //   return results;
-  // }
 
   /**
    * Get File
@@ -1272,6 +1221,124 @@ export class SuiteToolsApiModel {
       response.data = sqlResults;
     }
     log.debug({ title: 'SuiteToolsApiModel:getFiles() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Get Job
+   *
+   * @param id - the record to return
+   * @returns results
+   */
+  public getJob(id: string): Response {
+    log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
+
+    const response: Response = { data: {} };
+    const customRecord = 'customrecord_idev_suitetools_job';
+    const sql = `SELECT
+      ${customRecord}.id,
+      ${customRecord}.custrecord_st_job_task_id as name,
+    FROM
+      ${customRecord}
+    WHERE
+      ${customRecord}.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No job found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: response });
+
+    return response;
+  }
+
+  /*
+   * Run Job
+   *
+   * @param id - the job to run
+   * @returns jobId
+   */
+  public getJobRun(id: string): Response {
+    log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
+
+    // initiate the job run map/reduce script
+    const scriptTask = task.create({
+      taskType: task.TaskType.MAP_REDUCE,
+      scriptId: 'customscript_idev_suitetools_mr_jobs_run',
+      deploymentId: 'customdeploy_idev_suitetools_mr_jobs_run',
+      // params: {
+      //   custscript_idev_st_mr_jobs_type: 'customer',
+      //   custscript_idev_st_mr_jobs_action: 'activate',
+      // },
+    });
+    const scriptTaskId = scriptTask.submit();
+    log.debug({
+      title: 'SuiteToolsController:runJob() submitted run job map/reduce script',
+      details: 'scriptTaskId = ' + scriptTaskId,
+    });
+
+    // const jobId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecord('customrecord_idev_suitetools_job', {
+    //   custrecord_st_job_task_id: scriptTaskId,
+    // });
+    // log.debug({ title: 'SuiteToolsController:getJobRun() created job record', details: jobId });
+
+    const tempResult = this.getJob(id);
+
+    return tempResult;
+  }
+
+  /**
+   * Get Jobs
+   *
+   * @param row - the number of rows to return
+   * // TODO @param active - the active flag
+   * @returns results
+   */
+  public getJobs(row: string): Response {
+    log.debug({
+      title: `SuiteToolsApiModel:getJobs() initiated`,
+      details: {
+        // active: active,
+        rows: row,
+      },
+    });
+    const response: Response = { data: {} };
+    const customRecord = 'customrecord_idev_suitetools_job';
+
+    // TODO add
+    // custrecord_st_job_run_type AS type,
+    // custrecord_st_job_run_params AS params,
+
+    let sql = `SELECT
+      ${customRecord}.id,
+      ${customRecord}.custrecord_st_job_task_id as name,
+    FROM
+      ${customRecord}`;
+    // add where clause
+    const where = [];
+    // if (active) {
+    //   if (active === 'T') {
+    //     where.push(`isinactive = 'F'`);
+    //   } else {
+    //     where.push(`isinactive = 'T'`);
+    //   }
+    // }
+    if (row) {
+      where.push(`RowNum <= ${row}`);
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    sql += ` ORDER BY name ASC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No job records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: response });
 
     return response;
   }

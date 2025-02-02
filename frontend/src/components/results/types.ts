@@ -27,6 +27,7 @@ export type ResultsProps = {
 export enum ResultsTypes {
   FILE = 'file',
   INTEGRATION = 'integration',
+  JOB = 'job',
   LOGIN = 'login',
   ROLE = 'role',
   SCRIPT = 'script',
