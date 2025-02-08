@@ -23,9 +23,9 @@
  */
 
 import { EntryPoints } from 'N/types';
-import error = require('N/error');
-import log = require('N/log');
-import runtime = require('N/runtime');
+import * as error from 'N/error';
+import * as log from 'N/log';
+import * as runtime from 'N/runtime';
 import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from '../idev-suitetools-common';
 import { SuiteToolsCommonLibraryNetSuiteRecord } from '../idev-suitetools-common';
 

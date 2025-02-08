@@ -49,6 +49,9 @@ export function Results({ type, lines, getModalData }: Props) {
     case ResultsTypes.JOB:
       modalTitle = 'Job';
       break;
+    case ResultsTypes.JOBRUN:
+      modalTitle = 'Job Execution';
+      break;
     case ResultsTypes.LOGIN:
       modalTitle = 'Login';
       break;

@@ -1,8 +1,8 @@
 import { getData } from '../../../api/api';
 import { NotFound } from '../../../api/types';
-import { Job, assertIsJob } from '../types';
+import { JobRun, assertIsJobRun } from './types';
 
-export async function getJobRun(id: number): Promise<Job | NotFound> {
+export async function getJobRun(id: number): Promise<JobRun | NotFound> {
   let result;
   const localTestData = {
     data: {
@@ -14,10 +14,9 @@ export async function getJobRun(id: number): Promise<Job | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsJob(response.data);
+    assertIsJobRun(response.data);
     // build additional properties
-    response.data.urlDetail = `#/job/${response.data.id}`;
-    response.data.urlRun = `#/jobRun/${response.data.id}`;
+    response.data.urlDetail = `#/jobRun/${response.data.id}`;
     result = response.data;
   }
 

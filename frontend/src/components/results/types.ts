@@ -28,6 +28,7 @@ export enum ResultsTypes {
   FILE = 'file',
   INTEGRATION = 'integration',
   JOB = 'job',
+  JOBRUN = 'jobRun',
   LOGIN = 'login',
   ROLE = 'role',
   SCRIPT = 'script',

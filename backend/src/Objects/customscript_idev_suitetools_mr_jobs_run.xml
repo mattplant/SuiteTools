@@ -7,50 +7,23 @@
   <notifyowner>T</notifyowner>
   <scriptfile>[/SuiteScripts/SuiteTools/helpers/idev-suitetools-mr-jobs-run.js]</scriptfile>
   <scriptcustomfields>
-    <scriptcustomfield scriptid="custscript_idev_st_mr_jobs_type">
+    <scriptcustomfield scriptid="custscript_idev_st_mr_jobs_id">
       <accesslevel>2</accesslevel>
       <applyformatting>F</applyformatting>
       <checkspelling>F</checkspelling>
       <defaultchecked>F</defaultchecked>
       <defaultselection></defaultselection>
       <defaultvalue></defaultvalue>
-      <description>The type of record for the script to act upon.</description>
+      <description>Specifies which job id to run.  If set to 0 all active jobs will run.</description>
       <displayheight></displayheight>
       <displaytype>NORMAL</displaytype>
       <displaywidth></displaywidth>
       <dynamicdefault></dynamicdefault>
       <fieldtype>TEXT</fieldtype>
-      <help>The type of record for the script to act upon.</help>
+      <help>Specifies which job id to run.  If set to 0 all active jobs will run.</help>
       <isformula>F</isformula>
       <ismandatory>F</ismandatory>
-      <label>Record Type</label>
-      <linktext></linktext>
-      <maxlength></maxlength>
-      <maxvalue></maxvalue>
-      <minvalue></minvalue>
-      <onparentdelete></onparentdelete>
-      <searchlevel>2</searchlevel>
-      <selectrecordtype></selectrecordtype>
-      <setting></setting>
-      <storevalue>T</storevalue>
-    </scriptcustomfield>
-    <scriptcustomfield scriptid="custscript_idev_st_mr_jobs_action">
-      <accesslevel>2</accesslevel>
-      <applyformatting>F</applyformatting>
-      <checkspelling>F</checkspelling>
-      <defaultchecked>F</defaultchecked>
-      <defaultselection></defaultselection>
-      <defaultvalue></defaultvalue>
-      <description>The action for the script to do on the records.</description>
-      <displayheight></displayheight>
-      <displaytype>NORMAL</displaytype>
-      <displaywidth></displaywidth>
-      <dynamicdefault></dynamicdefault>
-      <fieldtype>TEXT</fieldtype>
-      <help>The action for the script to do on the records.</help>
-      <isformula>F</isformula>
-      <ismandatory>F</ismandatory>
-      <label>Record Action</label>
+      <label>Job Id</label>
       <linktext></linktext>
       <maxlength></maxlength>
       <maxvalue></maxvalue>
@@ -66,8 +39,7 @@
     <scriptdeployment scriptid="customdeploy_idev_suitetools_mr_jobs_run">
       <buffersize>1</buffersize>
       <concurrencylimit>1</concurrencylimit>
-      <custscript_idev_st_mr_jobs_action></custscript_idev_st_mr_jobs_action>
-      <custscript_idev_st_mr_jobs_type></custscript_idev_st_mr_jobs_type>
+      <custscript_idev_st_mr_jobs_id></custscript_idev_st_mr_jobs_id>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <queueallstagesatonce>T</queueallstagesatonce>

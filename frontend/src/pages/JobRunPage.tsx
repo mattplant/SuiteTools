@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsJob, Job } from '../components/job/types';
-import { JobResult } from '../components/job/RecordResult';
+import { assertIsJobRun, JobRun } from '../components/job/run/types';
+import { JobRunResult } from '../components/job/run/RecordResult';
 
 export function JobRunPage() {
   const data = useLoaderData();
@@ -9,13 +9,13 @@ export function JobRunPage() {
 
   return (
     <div className="mx-auto mt-6">
-      <h2 className="text-xl font-bold text-slate-900">Job Run</h2>
+      <h2 className="text-xl font-bold text-slate-900">Job Execution</h2>
       <br />
       <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data.job}>
-          {(job) => {
-            assertIsJob(job);
-            return <JobResult data={job} />;
+        <Await resolve={data.jobRun}>
+          {(record) => {
+            assertIsJobRun(record);
+            return <JobRunResult data={record} />;
           }}
         </Await>
       </Suspense>
@@ -24,7 +24,7 @@ export function JobRunPage() {
 }
 
 type Data = {
-  job: Job;
+  jobRun: JobRun;
 };
 
 function assertIsData(data: unknown): asserts data is Data {
@@ -34,7 +34,7 @@ function assertIsData(data: unknown): asserts data is Data {
   if (data === null) {
     throw new Error('Data is null');
   }
-  if (!('job' in data)) {
+  if (!('jobRun' in data)) {
     throw new Error('Data does not contain job');
   }
 }

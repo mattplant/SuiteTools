@@ -24,9 +24,9 @@
  */
 
 import { EntryPoints } from 'N/types';
-import error = require('N/error');
-import log = require('N/log');
-import url = require('N/url');
+import * as error from 'N/error';
+import * as log from 'N/log';
+import * as url from 'N/url';
 import { SuiteToolsCommon } from './idev-suitetools-common';
 
 /**

@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "lib": ["es7", "es2015.promise", "dom"],
+    "lib": ["ESNext", "dom"],
     "module": "amd",
     "moduleResolution": "node",
     "newLine": "LF",
@@ -15,7 +14,7 @@
       "N/*": ["node_modules/@hitc/netsuite-types/N/*"]
     },
     "sourceMap": false,
-    "target": "es2020"
+    "target": "ESNext"
   },
   "include": ["."],
   "exclude": ["node_modules"]

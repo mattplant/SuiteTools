@@ -1,6 +1,10 @@
 import { useForm } from 'react-hook-form';
+import { Button } from 'flowbite-react';
+import { saveData } from '../../api/api';
+import { SavedEndpoint, SavedData, SaveMethod } from '../../api/types';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
+import { useAppSettingsContext } from '../AppSettingsContext';
 
 interface RecordsCriteriaProps {
   defaultCriteria: CriteriaFields;
@@ -9,6 +13,20 @@ interface RecordsCriteriaProps {
 
 export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteriaProps) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
+  const { settings } = useAppSettingsContext();
+  const appScriptUrl = settings?.appUrl;
+  const initiateJobClick = async () => {
+    console.log('initiateJobClick() iniitiated');
+    // make API call
+    const responseData: SavedData = await saveData(SavedEndpoint.INITIATEJOB, SaveMethod.POST, { id: 0 });
+    console.log('initiateJobClick() response', responseData);
+    if (responseData.status === 200) {
+      // redirect job status page
+      window.location.href = appScriptUrl + `#/jobRuns`;
+    } else {
+      console.error('Failed to initiate job');
+    }
+  };
 
   function onSubmit(criteria: CriteriaFields) {
     console.log('Submitted details:', criteria);
@@ -23,6 +41,15 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
       >
         Get Jobs
       </button>
+      <Button
+        type="button"
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+          e.preventDefault();
+          initiateJobClick();
+        }}
+      >
+        Run Jobs
+      </Button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaRows register={register} />
       </div>

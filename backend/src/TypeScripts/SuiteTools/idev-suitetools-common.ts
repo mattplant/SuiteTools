@@ -23,16 +23,16 @@
  * @NApiVersion 2.1
  */
 
-import email = require('N/email');
-import file = require('N/file');
-import log = require('N/log');
-import query = require('N/query');
-import record = require('N/record');
-import redirect = require('N/redirect');
-import runtime = require('N/runtime');
-import search = require('N/search');
-import task = require('N/task');
-import url = require('N/url');
+import * as email from 'N/email';
+import * as file from 'N/file';
+import * as log from 'N/log';
+import * as query from 'N/query';
+import * as record from 'N/record';
+import * as redirect from 'N/redirect';
+import * as runtime from 'N/runtime';
+import * as search from 'N/search';
+import * as task from 'N/task';
+import * as url from 'N/url';
 
 /**
  * Common functionality between SuiteTools App and SuiteTools API
@@ -536,7 +536,7 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    * @param recordId
    * @returns true if successful else false
    */
-  public updateCustomRecord(recordType: string, recordId: number, values: object): boolean {
+  public updateCustomRecord(recordType: string, recordId: string, values: object): boolean {
     log.debug({
       title: 'SuiteToolsCommonLibraryNetSuiteRecord:updateCustomRecord() initiated',
       details: { recordType: recordType, recordId: recordId, values: values },
@@ -1149,7 +1149,7 @@ export class SuiteToolsCommonSettings {
     const coreConfigs = this.determineCoreConfigs();
     const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
       this.stCommon.appSettingsRecord,
-      this._recordId,
+      String(this._recordId),
       coreConfigs,
     );
 

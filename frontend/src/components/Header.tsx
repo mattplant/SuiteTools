@@ -39,6 +39,9 @@ export default function Header() {
             <Dropdown.Item>
               <NavLink to={`jobs`}>Jobs</NavLink>
             </Dropdown.Item>
+            <Dropdown.Item>
+              <NavLink to={`jobRuns`}>Job Status</NavLink>
+            </Dropdown.Item>
           </Dropdown>
         </NavbarLink>
         <NavbarLink>

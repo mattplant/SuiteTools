@@ -25,9 +25,9 @@
  */
 
 import { EntryPoints } from 'N/types';
-import error = require('N/error');
-import log = require('N/log');
-import task = require('N/task');
+import * as error from 'N/error';
+import * as log from 'N/log';
+import * as task from 'N/task';
 import { SuiteToolsCommon } from './idev-suitetools-common';
 
 /**
@@ -145,7 +145,7 @@ export class SuiteToolsApi {
 
 type RequestParams = { [key: string]: string };
 
-type Response = {
+export type Response = {
   status?: number;
   data: object;
   message?: string;
@@ -184,11 +184,14 @@ export class SuiteToolsApiGet {
       case 'job':
         response = this.getJob(requestParams);
         break;
+      case 'jobs':
+        response = this.getJobs(requestParams);
+        break;
       case 'jobRun':
         response = this.getJobRun(requestParams);
         break;
-      case 'jobs':
-        response = this.getJobs(requestParams);
+      case 'jobRuns':
+        response = this.getJobRuns(requestParams);
         break;
       case 'logins':
         response = this.getLogins(requestParams);
@@ -491,7 +494,23 @@ export class SuiteToolsApiGet {
   }
 
   /**
-   * Run Job
+   * Get Jobs
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private getJobs(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiGet:getJobs() initiated', details: requestParams });
+
+    const row = requestParams['rows'];
+    const result = this.stApi.stApiModel.getJobs(row);
+    // log.debug({ title: 'SuiteToolsApiGet:getJobs() returning', details: result });
+
+    return result;
+  }
+
+  /**
+   * Get Run Job
    *
    * @param requestParams
    * @returns settings
@@ -509,23 +528,23 @@ export class SuiteToolsApiGet {
     }
 
     const result = this.stApi.stApiModel.getJobRun(id);
-    log.debug({ title: 'SuiteToolsApiGet:getJobRun() returning', details: result });
+    // log.debug({ title: 'SuiteToolsApiGet:getJobRun() returning', details: result });
 
     return result;
   }
 
   /**
-   * Get Jobs
+   * Get Job Runs
    *
    * @param requestParams
    * @returns settings
    */
-  private getJobs(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getJobs() initiated', details: requestParams });
+  private getJobRuns(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiGet:getJobRuns() initiated', details: requestParams });
 
     const row = requestParams['rows'];
-    const result = this.stApi.stApiModel.getJobs(row);
-    // log.debug({ title: 'SuiteToolsApiGet:getJobs() returning', details: result });
+    const result = this.stApi.stApiModel.getJobRuns(row);
+    // log.debug({ title: 'SuiteToolsApiGet:getJobRuns() returning', details: result });
 
     return result;
   }
@@ -981,6 +1000,9 @@ export class SuiteToolsApiPost {
     let response: Response;
     const endpoint = requestBody.endpoint;
     switch (endpoint) {
+      case 'initiateJob':
+        response = this.initiateJob(requestBody.data);
+        break;
       case 'lastlogin':
         response = this.initiateLastLogins(requestBody.data);
         break;
@@ -997,12 +1019,38 @@ export class SuiteToolsApiPost {
   }
 
   /**
+   * Initiate Job
+   *
+   * @param requestParams
+   * @returns settings
+   */
+  private initiateJob(requestParams: RequestParams): Response {
+    log.debug({ title: 'SuiteToolsApiPost:initiateJob() initiated', details: requestParams });
+
+    let id = requestParams.id;
+    if (!id) {
+      // set to 0 to run all active jobs
+      id = '0';
+    }
+
+    // initiate the job run
+    this.stApi.stApiModel.initiateJob(id);
+    const message = 'InitiateJob() initiated with with id of ' + id;
+
+    return {
+      status: 200,
+      data: {},
+      message: message,
+    };
+  }
+
+  /**
    * Initiate last logins script.
    *
    * @param requestBodyData
    * @returns Response
    */
-  public initiateLastLogins(requestBodyData: object): Response {
+  private initiateLastLogins(requestBodyData: object): Response {
     log.debug({ title: 'SuiteToolsApiPost:initiateLastLogins() initiated', details: requestBodyData });
     this._stApi.assertIsRequestBodyData(requestBodyData);
     this.stApi.stCommon.stSettings.getSettings();
@@ -1022,7 +1070,7 @@ export class SuiteToolsApiPost {
         });
       }
       log.debug({
-        title: 'SuiteToolsController:initiateLastLogins() identity records standardizedValues',
+        title: 'SuiteToolsApiPost:initiateLastLogins() identity records standardizedValues',
         details: entityRecords,
       });
     }
@@ -1094,7 +1142,7 @@ export class SuiteToolsApiPut {
     this.stApi.stCommon.stSettings.getSettings();
     const success = this.stApi.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
       this.stApi.stCommon.appSettingsRecord,
-      this.stApi.stCommon.stSettings.recordId,
+      String(this.stApi.stCommon.stSettings.recordId),
       updateSettings,
     );
     log.debug({ title: `SuiteToolsApiPut:putSettings() saved successfully?`, details: success });
@@ -1225,6 +1273,32 @@ export class SuiteToolsApiModel {
     return response;
   }
 
+  /*
+   * Intiate Job
+   *
+   * @param id - the job to run
+   * @returns jobId
+   */
+  public initiateJob(id: string) {
+    log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: { id: id } });
+
+    // initiate the job run map/reduce script
+    const scriptTask = task.create({
+      taskType: task.TaskType.MAP_REDUCE,
+      scriptId: 'customscript_idev_suitetools_mr_jobs_run',
+      deploymentId: 'customdeploy_idev_suitetools_mr_jobs_run',
+      params: {
+        custscript_idev_st_mr_jobs_id: id,
+      },
+    });
+    const scriptTaskId = scriptTask.submit();
+    log.debug({
+      title: 'SuiteToolsApiModel:initiateJob() submitted run job map/reduce script',
+      details: 'scriptTaskId = ' + scriptTaskId,
+    });
+    log.debug({ title: 'SuiteToolsApiModel:initiateJob() initiated job map/reduce script', details: scriptTaskId });
+  }
+
   /**
    * Get Job
    *
@@ -1238,7 +1312,7 @@ export class SuiteToolsApiModel {
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
       ${customRecord}.id,
-      ${customRecord}.custrecord_st_job_task_id as name,
+      ${customRecord}.name,
     FROM
       ${customRecord}
     WHERE
@@ -1252,41 +1326,6 @@ export class SuiteToolsApiModel {
     log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: response });
 
     return response;
-  }
-
-  /*
-   * Run Job
-   *
-   * @param id - the job to run
-   * @returns jobId
-   */
-  public getJobRun(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
-
-    // initiate the job run map/reduce script
-    const scriptTask = task.create({
-      taskType: task.TaskType.MAP_REDUCE,
-      scriptId: 'customscript_idev_suitetools_mr_jobs_run',
-      deploymentId: 'customdeploy_idev_suitetools_mr_jobs_run',
-      // params: {
-      //   custscript_idev_st_mr_jobs_type: 'customer',
-      //   custscript_idev_st_mr_jobs_action: 'activate',
-      // },
-    });
-    const scriptTaskId = scriptTask.submit();
-    log.debug({
-      title: 'SuiteToolsController:runJob() submitted run job map/reduce script',
-      details: 'scriptTaskId = ' + scriptTaskId,
-    });
-
-    // const jobId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecord('customrecord_idev_suitetools_job', {
-    //   custrecord_st_job_task_id: scriptTaskId,
-    // });
-    // log.debug({ title: 'SuiteToolsController:getJobRun() created job record', details: jobId });
-
-    const tempResult = this.getJob(id);
-
-    return tempResult;
   }
 
   /**
@@ -1313,7 +1352,7 @@ export class SuiteToolsApiModel {
 
     let sql = `SELECT
       ${customRecord}.id,
-      ${customRecord}.custrecord_st_job_task_id as name,
+      ${customRecord}.name,
     FROM
       ${customRecord}`;
     // add where clause
@@ -1339,6 +1378,88 @@ export class SuiteToolsApiModel {
       response.data = sqlResults;
     }
     log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Get Job Run
+   *
+   * @param id - the record to return
+   * @returns results
+   */
+  public getJobRun(id: string): Response {
+    log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
+
+    const response: Response = { data: {} };
+    const customRecord = 'customrecord_idev_suitetools_job_run';
+    const sql = `SELECT
+      ${customRecord}.id,
+      TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS created,
+      ${customRecord}.custrecord_idev_st_mr_job_run_job_id as jobId,
+      customrecord_idev_suitetools_job.name as jobName,
+      ${customRecord}.custrecord_idev_st_mr_job_run_completed AS completed,
+      ${customRecord}.custrecord_idev_st_mr_job_run_results AS results,
+    FROM
+      ${customRecord}
+    INNER JOIN customrecord_idev_suitetools_job
+      ON customrecord_idev_suitetools_job_run.custrecord_idev_st_mr_job_run_job_id = customrecord_idev_suitetools_job.id
+    WHERE
+      ${customRecord}.id = ${id}`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No job execution found with id of ${id}`;
+    } else {
+      response.data = sqlResults[0];
+    }
+    // log.debug({ title: 'SuiteToolsApiModel:getJobRun() returning', details: response });
+
+    return response;
+  }
+
+  /**
+   * Get Job Runs
+   *
+   * @param row - the number of rows to return
+   * // TODO @param active - the active flag
+   * @returns results
+   */
+  public getJobRuns(row: string): Response {
+    log.debug({
+      title: `SuiteToolsApiModel:getJobRuns() initiated`,
+      details: {
+        rows: row,
+      },
+    });
+    const response: Response = { data: {} };
+    const customRecord = 'customrecord_idev_suitetools_job_run';
+    let sql = `SELECT
+      ${customRecord}.id,
+      TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS created,
+      ${customRecord}.custrecord_idev_st_mr_job_run_job_id as jobId,
+      customrecord_idev_suitetools_job.name as jobName,
+      ${customRecord}.custrecord_idev_st_mr_job_run_completed AS completed,
+      ${customRecord}.custrecord_idev_st_mr_job_run_results AS results,
+    FROM
+      ${customRecord}
+    INNER JOIN customrecord_idev_suitetools_job
+      ON customrecord_idev_suitetools_job_run.custrecord_idev_st_mr_job_run_job_id = customrecord_idev_suitetools_job.id`;
+    // add where clause
+    const where = [];
+    if (row) {
+      where.push(`RowNum <= ${row}`);
+    }
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    sql += ` ORDER BY ${customRecord}.id DESC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No job execution records found`;
+    } else {
+      response.data = sqlResults;
+    }
+    log.debug({ title: 'SuiteToolsApiModel:getJobRuns() returning', details: response });
 
     return response;
   }

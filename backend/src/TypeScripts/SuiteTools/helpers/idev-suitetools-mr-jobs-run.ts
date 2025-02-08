@@ -23,16 +23,14 @@
  */
 
 import { EntryPoints } from 'N/types';
-// import error = require('N/error');
-import log = require('N/log');
-import record = require('N/record');
-// import runtime = require('N/runtime');
-
-// import { SuiteToolsLibraryNetSuiteSuiteQl } from '../idev-suitetools-library';
-// const stLibNsSuiteQl = new SuiteToolsLibraryNetSuiteSuiteQl(null);
-
-// import { SuiteToolsLibraryNetSuiteRecord } from '../idev-suitetools-library';
-// const stLibNsRecord = new SuiteToolsLibraryNetSuiteRecord(null);
+import * as log from 'N/log';
+import * as runtime from 'N/runtime';
+import {
+  SuiteToolsCommonLibraryNetSuiteRecord,
+  SuiteToolsCommonLibraryNetSuiteSuiteQl,
+} from '../idev-suitetools-common';
+const stLibNsSuiteQl = new SuiteToolsCommonLibraryNetSuiteSuiteQl(null);
+const stLibNsRecord = new SuiteToolsCommonLibraryNetSuiteRecord(null);
 
 /**
  * getInputData() stage function
@@ -44,15 +42,21 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
   log.debug('getInputData() initiated with', JSON.stringify(context));
 
   try {
-    // TODO get the records list from the script parameter
-    // records = JSON.parse(
-    //   String(runtime.getCurrentScript().getParameter({ name: '' }))
-    // );
-    // log.debug('getInputData() records list =', records);
-
-    const records = [16420418, 12233752];
-
-    return records;
+    const jobId = Number(
+      runtime.getCurrentScript().getParameter({
+        name: 'custscript_idev_st_mr_jobs_id',
+      }),
+    );
+    log.debug('getInputData() jobId', jobId);
+    if (jobId) {
+      // run the specified job
+      const inputData = [{ id: jobId }];
+      log.debug('getInputData() running for job #' + jobId, inputData);
+      return inputData;
+    } else {
+      // run all active jobs
+      return getJobs();
+    }
   } catch (e) {
     log.error('getInputData() error', JSON.stringify(e));
   }
@@ -66,14 +70,43 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
  */
 export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
   log.debug('reduce() initiated', JSON.stringify(context));
+  let result: object;
+  let completed = false;
+  // get the values from the context
+  // const values = context.values.map((value) => JSON.parse(value));
+  // log.debug('reduce() values =', values);
 
-  // determine the record type and action from the script parameters
-  // const type = String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_jobs_type' }));
-  // const action = String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_jobs_action' }));
   // get the record id from the context
-  const id = String(JSON.parse(context.values[0]));
-  // perform the action
-  recordAction('customer', 'activate', id);
+  const values = JSON.parse(context.values[0]);
+  const jobId = values.id;
+  // const name = values.name;
+  // create new job run record
+  if (jobId) {
+    const jobRunRecordId = createJobRunRecord(jobId);
+
+    // execute the job
+    log.debug('reduce() executing job', { jobId });
+    switch (String(jobId)) {
+      case '1': // Recent Script Errors
+        result = getRecentScriptErrors();
+        completed = true;
+        log.debug('reduce() response.data', result);
+        break;
+      // case '2': // Test Job
+      //   // jobRecord = record.load({ type: type, id: id });
+      //   // jobRecord.setValue('isinactive', true);
+      //   // jobRecord.save();
+      //   log.audit('recordAction() inactivated', { type: type, id: id });
+      // break;
+      default:
+        log.error('record() error', `Unknown job id: ${jobId}`);
+    }
+
+    // update job run record after execution
+    updateJobRunRecord(String(jobRunRecordId), completed, JSON.stringify(result));
+  } else {
+    log.error('reduce() error', 'No job id provided');
+  }
 }
 
 /**
@@ -112,25 +145,101 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
   }
 }
 
-function recordAction(type: string, action: string, id: string) {
-  log.debug('recordAction() initiated with', { type: type, action: action, id: id });
-
-  let jobRecord = null;
-  // perform the action
-  switch (action) {
-    case 'activate':
-      jobRecord = record.load({ type: type, id: id });
-      jobRecord.setValue('isinactive', false);
-      jobRecord.save();
-      log.audit('recordAction() activated', { type: type, id: id });
-      break;
-    case 'inactivate':
-      jobRecord = record.load({ type: type, id: id });
-      jobRecord.setValue('isinactive', true);
-      jobRecord.save();
-      log.audit('recordAction() inactivated', { type: type, id: id });
-      break;
-    default:
-      log.error('recordAction() error', `Unknown record action: ${action}`);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getJobs(): any[] {
+  log.debug('getJobs() initiated', null);
+  const customRecord = 'customrecord_idev_suitetools_job';
+  const sql = `SELECT
+    ${customRecord}.id,
+    ${customRecord}.name,
+  FROM
+    ${customRecord}
+  WHERE
+    ${customRecord}.isinactive = 'F'
+  ORDER BY
+    ${customRecord}.id ASC`;
+  const sqlResults = stLibNsSuiteQl.query(sql);
+  if (sqlResults.length === 0) {
+    log.audit(`getJobs() - No active job records found`, null);
+  } else {
+    log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: sqlResults });
   }
+
+  return sqlResults;
+}
+
+function createJobRunRecord(id: string): number {
+  log.debug('createJobRunRecord() initiated', { id });
+  // save new job run record
+  const customRecord = 'customrecord_idev_suitetools_job_run';
+  const jobRunRecordId = stLibNsRecord.createCustomRecord(customRecord, {
+    custrecord_idev_st_mr_job_run_job_id: id,
+  });
+  log.debug({ title: 'SuiteToolsController:getJobInit() created job run record', details: jobRunRecordId });
+
+  return jobRunRecordId;
+}
+
+function updateJobRunRecord(id: string, completed: boolean, results: string) {
+  log.debug('updateJobRunRecord() initiated', { id, completed });
+  // update job run record
+  const customRecord = 'customrecord_idev_suitetools_job_run';
+  stLibNsRecord.updateCustomRecord(customRecord, id, {
+    custrecord_idev_st_mr_job_run_completed: completed,
+    custrecord_idev_st_mr_job_run_results: results,
+  });
+}
+
+// TODO update to use last execution date
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getRecentScriptErrors(): any[] {
+  log.debug({
+    title: `getScriptLogsViaSuiteQL() initiated`,
+    details: null,
+  });
+
+  // get the errors from the script execution log
+  let levels = ['ERROR', 'EMERGENCY', 'SYSTEM'];
+  // const date = '15';
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let result: any[] = [];
+
+  let sql = `SELECT
+      ScriptNote.internalid AS id,
+      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
+      ScriptNote.type,
+      script.scripttype,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+    FROM ScriptNote
+    INNER JOIN script
+      ON ScriptNote.scripttype = script.id`;
+  // add where clause
+  const where: string[] = [];
+  if (levels) {
+    if (Array.isArray(levels)) {
+      levels = levels.map((type) => {
+        return `'${type.toUpperCase()}'`;
+      });
+      where.push(`ScriptNote.type IN (${levels.join(',')})`);
+    }
+  }
+
+  // TODO use something like this to get from last run date
+  // where.push(`ScriptNote.date >= TRUNC( SYSDATE ) - ${date}`);
+
+  where.push(`ScriptNote.date > SYSDATE - ( 15 / 1440 )`);
+  if (where.length > 0) {
+    sql += ` WHERE ${where.join(' AND ')}`;
+  }
+  // add order by
+  sql += ` ORDER BY ScriptNote.internalId DESC`;
+  const sqlResults = stLibNsSuiteQl.query(sql);
+  if (sqlResults.length !== 0) {
+    result = sqlResults;
+  }
+
+  return result;
 }
