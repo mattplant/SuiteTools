@@ -26,7 +26,6 @@ export async function getLogins(fields: CriteriaFields): Promise<Login[] | NotFo
       },
     ],
   };
-
   const urlParams = {
     rows: fields.rows ? fields.rows : '',
     active: fields.active ? fields.active : '',

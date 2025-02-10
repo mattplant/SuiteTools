@@ -12,8 +12,6 @@ export async function getConcurrencySummary(
   fields: CriteriaFields,
   accountId?: string,
 ): Promise<ConcurrencySummaryData> {
-  console.log('getConcurrencySummary() initiated', { fields, accountId });
-
   let result: ConcurrencySummaryData;
   if (window.location.href.includes('localhost')) {
     result = {

@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { assertIsJob, Job } from '../components/job/types';
 import { JobResult } from '../components/job/RecordResult';
+import { JobRuns } from '../components/job/JobRuns';
 
 export function JobPage() {
   const data = useLoaderData();
@@ -15,7 +16,12 @@ export function JobPage() {
         <Await resolve={data.job}>
           {(job) => {
             assertIsJob(job);
-            return <JobResult data={job} />;
+            return (
+              <>
+                <JobResult data={job} />
+                <JobRuns job={String(job.id)} completed="" />
+              </>
+            );
           }}
         </Await>
       </Suspense>

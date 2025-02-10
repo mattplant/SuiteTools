@@ -1,11 +1,13 @@
 export type CriteriaFields = {
   active?: string;
+  completed?: string;
   createddate?: string;
   detail?: string;
   files?: string[];
   filetypes?: string[];
   integrations?: string[];
   integrationName?: string;
+  job?: string;
   lastmodifieddate?: string;
   levels?: string[];
   owners?: string[];
@@ -31,6 +33,7 @@ export enum OptionValuesTypes {
   FILE = 'file',
   FILETYPE = 'filetype',
   INTEGRATION = 'integration',
+  JOB = 'job',
   OWNER = 'owner',
   ROLE = 'role',
   SCRIPT = 'script',

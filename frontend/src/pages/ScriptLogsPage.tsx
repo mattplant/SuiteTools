@@ -4,7 +4,7 @@ import { CriteriaFields } from '../components/criteria/types.ts';
 import { getScriptLog } from '../components/scriptLog/getRecord.ts';
 import { getScriptLogs } from '../components/scriptLog/getRecords.ts';
 import { ScriptLog } from '../components/scriptLog/types.ts';
-import { RecordsCriteria } from '../components/scriptLog/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/scriptLog/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 
@@ -48,7 +48,7 @@ export function ScriptLogsPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Sever Script Logs</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.SCRIPTLOG} lines={results} getModalData={getScriptLog} />
     </div>
   );

@@ -28,13 +28,14 @@ export function JobRunResult({ data, modal }: Props) {
       <p>
         <b>Results</b>: {data.results}
       </p>
-      {modal && (
-        <Button.Group>
+      <Button.Group>
+        {modal && (
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View Job Details
+            Execution Details
           </Button>
-        </Button.Group>
-      )}
+        )}
+        <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlJob, '_blank')}>Job Details</Button>
+      </Button.Group>
     </>
   );
 }

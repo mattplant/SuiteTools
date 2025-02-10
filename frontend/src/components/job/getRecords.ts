@@ -15,7 +15,7 @@ export async function getJobs(fields: CriteriaFields): Promise<Job[] | NotFound>
   };
 
   const urlParams = {
-    rows: fields.rows,
+    active: fields.active,
   };
   const response = await getData(localTestData, 'jobs', urlParams);
   if (response.message) {

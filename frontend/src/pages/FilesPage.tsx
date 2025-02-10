@@ -3,7 +3,7 @@ import { CriteriaFields } from '../components/criteria/types.ts';
 import { getFile } from '../components/file/getRecord.ts';
 import { getFiles } from '../components/file/getRecords.ts';
 import { File } from '../components/file/types.ts';
-import { RecordsCriteria } from '../components/file/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/file/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 
@@ -36,7 +36,7 @@ export function FilesPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Files</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.FILE} lines={results} getModalData={getFile} />
     </div>
   );

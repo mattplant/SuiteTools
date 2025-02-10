@@ -116,7 +116,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
       </text>
     );
   });
-  // return the heatmap
+
   return (
     <svg height={height} width={width}>
       <g height={boundsHeight} transform={`translate(${[margin.left, margin.top].join(',')})`} width={boundsWidth}>

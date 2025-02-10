@@ -3,7 +3,7 @@ import { CriteriaFields } from '../components/criteria/types.ts';
 import { getSoapLog } from '../components/soapLog/getRecord.ts';
 import { getSoapLogs } from '../components/soapLog/getRecords.ts';
 import { SoapLog } from '../components/soapLog/types.ts';
-import { RecordsCriteria } from '../components/soapLog/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/soapLog/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 
@@ -31,7 +31,7 @@ export function SoapLogsPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">SOAP Logs</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.SOAPLOG} lines={results} getModalData={getSoapLog} />
     </div>
   );

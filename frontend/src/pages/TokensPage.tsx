@@ -3,7 +3,7 @@ import { CriteriaFields } from '../components/criteria/types.ts';
 import { getToken } from '../components/token/getRecord.ts';
 import { getTokens, addTokenLastLogins } from '../components/token/getRecords.ts';
 import { Token } from '../components/token/types.ts';
-import { RecordsCriteria } from '../components/token/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/token/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 import { useAppSettingsContext } from '../components/AppSettingsContext';
@@ -38,7 +38,7 @@ export function TokensPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Tokens</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.TOKEN} lines={results} getModalData={getToken} />
     </div>
   );

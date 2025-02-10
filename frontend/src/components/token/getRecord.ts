@@ -4,7 +4,6 @@ import { Token } from './types';
 import { Settings } from '../settings/types';
 
 export async function getToken(id: number): Promise<Token | NotFound> {
-  console.log('getToken() initiated', { id });
   let result;
   if (window.location.href.includes('localhost')) {
     // mock data for local development
@@ -39,7 +38,6 @@ export async function getToken(id: number): Promise<Token | NotFound> {
 }
 
 export function addTokenLastLogin(record: Token, settings: Settings | undefined): Token {
-  // console.log('addTokenLastLogin() initiated', { record, settings });
   if (
     settings &&
     settings.lastLogins &&

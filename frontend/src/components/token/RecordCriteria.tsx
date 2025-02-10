@@ -5,12 +5,12 @@ import { SearchCriteriaIntegrationName } from '../criteria/SearchCriteriaIntegra
 import { SearchCriteriaRoleName } from '../criteria/SearchCriteriaRoleName';
 import { SearchCriteriaUserName } from '../criteria/SearchCriteriaUserName';
 
-interface RecordsCriteriaProps {
+interface Props {
   defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteria({ defaultCriteria, setCriteria }: RecordsCriteriaProps) {
+export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {

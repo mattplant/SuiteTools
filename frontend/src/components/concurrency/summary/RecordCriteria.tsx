@@ -1,13 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from './types';
-import { RecordsCriteriaFieldDateRange } from './RecordsCriteriaFieldDateRange';
+import { RecordCriteriaFieldDateRange } from './RecordCriteriaFieldDateRange';
 
-interface RecordsCriteriaProps {
+interface Props {
   defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteriaProps) {
+export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const { register } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onChange(criteria: CriteriaFields) {
@@ -15,5 +15,5 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
     setCriteria(criteria);
   }
 
-  return <RecordsCriteriaFieldDateRange register={register} onChange={onChange} />;
+  return <RecordCriteriaFieldDateRange register={register} onChange={onChange} />;
 }

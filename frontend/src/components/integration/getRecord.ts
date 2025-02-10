@@ -36,7 +36,6 @@ export async function getIntegration(id: number): Promise<Integration | NotFound
 }
 
 export function addIntegrationLastLogin(record: Integration, settings: Settings | undefined): Integration {
-  // console.log('addIntegrationLastLogin() initiated', { record, settings });
   if (
     settings &&
     settings.lastLogins &&

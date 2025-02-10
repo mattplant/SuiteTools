@@ -1,15 +1,15 @@
 import { ResultsProps } from './types.ts';
-import { RecordsResults as FileResults } from '../file/RecordsResults.tsx';
-import { RecordsResults as IntegrationResults } from '../integration/RecordsResults.tsx';
-import { RecordsResults as JobResults } from '../job/RecordResults.tsx';
-import { RecordsResults as JobRunResults } from '../job/run/RecordResults.tsx';
-import { RecordsResults as LoginResults } from '../login/RecordsResults.tsx';
-import { RecordsResults as RolesResults } from '../role/RecordsResults.tsx';
-import { RecordsResults as ScriptsResults } from '../script/RecordsResults.tsx';
-import { RecordsResults as ScriptLogsResults } from '../scriptLog/RecordsResults.tsx';
-import { RecordsResults as SoapLogResults } from '../soapLog/RecordsResults.tsx';
-import { RecordsResults as TokenResults } from '../token/RecordsResults.tsx';
-import { RecordsResults as UserResults } from '../user/RecordsResults.tsx';
+import { RecordResults as FileResults } from '../file/RecordResults.tsx';
+import { RecordResults as IntegrationResults } from '../integration/RecordResults.tsx';
+import { RecordResults as JobResults } from '../job/RecordResults.tsx';
+import { RecordResults as JobRunResults } from '../job/run/RecordResults.tsx';
+import { RecordResults as LoginResults } from '../login/RecordResults.tsx';
+import { RecordResults as RolesResults } from '../role/RecordResults.tsx';
+import { RecordResults as ScriptsResults } from '../script/RecordResults.tsx';
+import { RecordResults as ScriptLogsResults } from '../scriptLog/RecordResults.tsx';
+import { RecordResults as SoapLogResults } from '../soapLog/RecordResults.tsx';
+import { RecordResults as TokenResults } from '../token/RecordResults.tsx';
+import { RecordResults as UserResults } from '../user/RecordResults.tsx';
 
 interface ResultsMap {
   [key: string]: React.FC<ResultsProps>;

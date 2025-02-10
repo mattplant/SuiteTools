@@ -3,15 +3,15 @@ import { Button } from 'flowbite-react';
 import { saveData } from '../../api/api';
 import { SavedEndpoint, SavedData, SaveMethod } from '../../api/types';
 import { CriteriaFields } from '../criteria/types';
-import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
+import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
 import { useAppSettingsContext } from '../AppSettingsContext';
 
-interface RecordsCriteriaProps {
+interface Props {
   defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteriaProps) {
+export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
   const { settings } = useAppSettingsContext();
   const appScriptUrl = settings?.appUrl;
@@ -21,7 +21,7 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
     const responseData: SavedData = await saveData(SavedEndpoint.INITIATEJOB, SaveMethod.POST, { id: 0 });
     console.log('initiateJobClick() response', responseData);
     if (responseData.status === 200) {
-      // redirect job status page
+      // redirect to job status page
       window.location.href = appScriptUrl + `#/jobRuns`;
     } else {
       console.error('Failed to initiate job');
@@ -51,7 +51,7 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
         Run Jobs
       </Button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaRows register={register} />
+        <SearchCriteriaActive register={register} />
       </div>
     </form>
   );

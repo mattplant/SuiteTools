@@ -38,10 +38,8 @@ import { SuiteToolsCommon } from './idev-suitetools-common';
  */
 export function get(requestParams: EntryPoints.RESTlet.get): string {
   // log.debug({ title: 'get() initiated', details: requestParams });
-
   const stApi = new SuiteToolsApi();
   const response = JSON.stringify(stApi.stApiGet.process(requestParams));
-  // log.debug({ title: 'get() returning', details: response });
 
   return response;
 }
@@ -54,10 +52,8 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
  */
 export function post(requestBody: EntryPoints.RESTlet.put): string {
   // log.debug({ title: 'post() initiated', details: requestBody });
-
   const stApi = new SuiteToolsApi();
   const response = JSON.stringify(stApi.stApiPost.process(requestBody));
-  log.debug({ title: 'post() returning', details: response });
 
   return response;
 }
@@ -70,10 +66,8 @@ export function post(requestBody: EntryPoints.RESTlet.put): string {
  */
 export function put(requestBody: EntryPoints.RESTlet.put): string {
   // log.debug({ title: 'put() initiated', details: requestBody });
-
   const stApi = new SuiteToolsApi();
   const response = JSON.stringify(stApi.stApiPut.process(requestBody));
-  // log.debug({ title: 'put() returning', details: response });
 
   return response;
 }
@@ -107,7 +101,6 @@ export class SuiteToolsApi {
   }
 
   constructor() {
-    log.debug({ title: 'SuiteToolsApi:constructor() initiated', details: null });
     this._stCommon = new SuiteToolsCommon();
     this._stApiModel = new SuiteToolsApiModel(this._stCommon);
     this._stApiGet = new SuiteToolsApiGet(this);
@@ -116,7 +109,6 @@ export class SuiteToolsApi {
   }
 
   public assertIsRequestBody(data: unknown): asserts data is RequestBody {
-    log.debug({ title: 'SuiteToolsApiPost:assertIsRequestBody() initiated', details: data });
     if (typeof data !== 'object' || data === null) {
       throw new Error('Request body data is not an object');
     }
@@ -163,7 +155,6 @@ export class SuiteToolsApiGet {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    // log.debug({ title: 'SuiteToolsApiGet:constructor() initiated', details: null });
     this._stApi = stApi;
     this._stApiGetOptions = new SuiteToolsApiGetOptions(stApi);
   }
@@ -171,7 +162,6 @@ export class SuiteToolsApiGet {
   public process(requestParams: unknown): Response {
     log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
     this.assertIsGetRequestParams(requestParams);
-
     let response: Response = { data: null };
     const endpoint = requestParams.endpoint;
     switch (endpoint) {
@@ -223,7 +213,7 @@ export class SuiteToolsApiGet {
         response = this.getScriptLogs(requestParams);
         break;
       case 'settings':
-        response = this.getSettings(requestParams);
+        response = this.getSettings();
         break;
       case 'user':
         response = this.getUser(requestParams);
@@ -242,7 +232,6 @@ export class SuiteToolsApiGet {
           notifyOff: true,
         });
     }
-    log.debug({ title: 'SuiteToolsApiGet:process() returning', details: response });
 
     return response;
   }
@@ -433,8 +422,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getFile(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getFile() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -443,9 +430,7 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
     const result = this.stApi.stApiModel.getFile(id);
-    // log.debug({ title: 'SuiteToolsApiGet:getFile() returning', details: result });
 
     return result;
   }
@@ -457,14 +442,11 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getFiles(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getFiles() initiated', details: requestParams });
-
     const row = requestParams['rows'];
     const types = this.convertMultiSelectToArray(requestParams['filetypes']);
     const createdDate = requestParams['createddate'];
     const modifiedDate = requestParams['lastmodifieddate'];
     const result = this.stApi.stApiModel.getFiles(row, types, createdDate, modifiedDate);
-    // log.debug({ title: 'SuiteToolsApiGet:getFiles() returning', details: result });
 
     return result;
   }
@@ -476,8 +458,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJob(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getJob() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -486,9 +466,7 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
     const result = this.stApi.stApiModel.getJob(id);
-    // log.debug({ title: 'SuiteToolsApiGet:getJob() returning', details: result });
 
     return result;
   }
@@ -500,11 +478,8 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobs(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getJobs() initiated', details: requestParams });
-
-    const row = requestParams['rows'];
-    const result = this.stApi.stApiModel.getJobs(row);
-    // log.debug({ title: 'SuiteToolsApiGet:getJobs() returning', details: result });
+    const active = requestParams['active'];
+    const result = this.stApi.stApiModel.getJobs(active);
 
     return result;
   }
@@ -516,8 +491,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobRun(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getJobRun() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -526,9 +499,7 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
     const result = this.stApi.stApiModel.getJobRun(id);
-    // log.debug({ title: 'SuiteToolsApiGet:getJobRun() returning', details: result });
 
     return result;
   }
@@ -540,11 +511,9 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobRuns(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getJobRuns() initiated', details: requestParams });
-
-    const row = requestParams['rows'];
-    const result = this.stApi.stApiModel.getJobRuns(row);
-    // log.debug({ title: 'SuiteToolsApiGet:getJobRuns() returning', details: result });
+    const job = requestParams['job'];
+    const completed = requestParams['completed'];
+    const result = this.stApi.stApiModel.getJobRuns(job, completed);
 
     return result;
   }
@@ -556,7 +525,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getLogins(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getLogins() initiated', details: requestParams });
     const rows = requestParams['rows'];
     const active = requestParams['active'];
     const integrationName = requestParams['integrationName'];
@@ -565,7 +533,6 @@ export class SuiteToolsApiGet {
     const roles = this.convertMultiSelectToArray(requestParams['roles']);
     const dates = requestParams['dates'];
     const result = this.stApi.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dates);
-    // log.debug({ title: 'SuiteToolsApiGet:getLogins() returning', details: result });
 
     return result;
   }
@@ -577,8 +544,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getRole(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApi:getRole() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -587,8 +552,7 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
-    const result: Response = this.stApi.stApiModel.getRole(id);
+    const result = this.stApi.stApiModel.getRole(id);
 
     return result;
   }
@@ -600,8 +564,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getRoles(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getRoles() initiated', details: requestParams });
-
     const active = requestParams['active'];
     const result = this.stApi.stApiModel.getRoles(active);
 
@@ -615,8 +577,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScript(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApi:getScript() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -625,9 +585,7 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
     const result = this.stApi.stApiModel.getScript(id);
-    // log.debug({ title: 'SuiteToolsApi:getScript() returning', details: result });
 
     return result;
   }
@@ -639,8 +597,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScripts(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getScripts() initiated', details: requestParams });
-
     const active = requestParams['active'];
     const versions = this.convertMultiSelectToArray(requestParams['versions']);
     const scripttypes = this.convertMultiSelectToArray(requestParams['scripttypes']);
@@ -659,8 +615,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScriptLog(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getScriptLog() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -669,7 +623,6 @@ export class SuiteToolsApiGet {
         notifyOff: true,
       });
     }
-
     const result = this.stApi.stApiModel.getScriptLog(id);
 
     return result;
@@ -682,8 +635,6 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScriptLogs(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getScriptLogs() initiated', details: requestParams });
-
     const row = requestParams['rows'] ? requestParams['rows'] : '50';
     const levels = this.convertMultiSelectToArray(requestParams['levels']);
     // const users = this.convertMultiSelectToArray(requestParams['user']);
@@ -710,12 +661,9 @@ export class SuiteToolsApiGet {
   /**
    * Get Settings.
    *
-   * @param requestParams
    * @returns settings
    */
-  private getSettings(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getSettings() initiated', details: requestParams });
-
+  private getSettings(): Response {
     this.stApi.stCommon.stSettings.getSettings();
     const result = {
       devMode: this.stApi.stCommon.stSettings.devMode,
@@ -740,7 +688,6 @@ export class SuiteToolsApiGet {
       userSubsidiary: this.stApi.stCommon.runtime.getCurrentUser().subsidiary,
       isAdmin: this.stApi.stCommon.isAdmin,
     };
-    log.debug({ title: 'SuiteToolsApiGet:getSettings() returning', details: result });
 
     return { data: result };
   }
@@ -749,11 +696,9 @@ export class SuiteToolsApiGet {
    * Get User
    *
    * @param requestParams
-   * @returns settings
+   * @returns user
    */
   private getUser(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApi:getUser() initiated', details: requestParams });
-
     const id = requestParams.id;
     if (!id) {
       throw error.create({
@@ -771,10 +716,9 @@ export class SuiteToolsApiGet {
    * Get Users
    *
    * @param requestParams
-   * @returns settings
+   * @returns users
    */
   private getUsers(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiGet:getUsers() initiated', details: requestParams });
     const active = requestParams['active'];
     const roles = this.convertMultiSelectToArray(requestParams['roles']);
     const supervisors = this.convertMultiSelectToArray(requestParams['owners']);
@@ -802,13 +746,10 @@ export class SuiteToolsApiGetOptions {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    // log.debug({ title: 'SuiteToolsApiGetOptions:constructor() initiated', details: null });
     this._stApi = stApi;
   }
 
   public process(requestParams: RequestParams): Response {
-    // log.debug({ title: 'SuiteToolsApiGetOptions:process() initiated', details: requestParams });
-
     let data: unknown;
     let result = {};
     const type = requestParams.type;
@@ -818,6 +759,9 @@ export class SuiteToolsApiGetOptions {
         break;
       case 'filetype':
         data = this.getFileTypeList();
+        break;
+      case 'job':
+        data = this.getJobList();
         break;
       case 'owner':
         data = this.getEmployeeList(true);
@@ -853,8 +797,6 @@ export class SuiteToolsApiGetOptions {
   }
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
-    // log.debug({ title: 'SuiteToolsApiGetOptions:assertIsOptionValuesResponse() initiated', details: data });
-
     if (!Array.isArray(data)) {
       throw new Error('OptionValuesResponse is not an array');
     }
@@ -914,6 +856,7 @@ export class SuiteToolsApiGetOptions {
         AND isinactive = 'F'`;
     }
     sql += ` ORDER BY name ASC`;
+
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 
@@ -931,6 +874,7 @@ export class SuiteToolsApiGetOptions {
       sql += ` AND ( Script.isinactive = 'F' )`;
     }
     sql += ` ORDER BY file.name ASC`;
+
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 
@@ -940,6 +884,22 @@ export class SuiteToolsApiGetOptions {
       filetype as name
     FROM file
     ORDER BY filetype`;
+
+    return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+  }
+
+  private getJobList(activeOnly?: boolean) {
+    const customRecord = 'customrecord_idev_suitetools_job';
+    let sql = `SELECT
+      ${customRecord}.id,
+      ${customRecord}.name,
+    FROM
+      ${customRecord}`;
+    if (activeOnly) {
+      sql += ` WHERE isinactive = 'F'`;
+    }
+    sql += ` ORDER BY name ASC`;
+
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 
@@ -952,7 +912,8 @@ export class SuiteToolsApiGetOptions {
     if (activeOnly) {
       sql += ` WHERE isInactive = 'F'`;
     }
-    sql += ` ORDER BY role.name`;
+    sql += ` ORDER BY role.name ASC`;
+
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 
@@ -966,11 +927,13 @@ export class SuiteToolsApiGetOptions {
       sql += ` WHERE isinactive = 'F'`;
     }
     sql += ` ORDER BY name ASC`;
+
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 
   private getScriptTypeList() {
     const sql = 'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name';
+
     return this.stApi.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
   }
 }
@@ -989,14 +952,12 @@ export class SuiteToolsApiPost {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    // log.debug({ title: 'SuiteToolsApiPost:constructor() initiated', details: null });
     this._stApi = stApi;
   }
 
   public process(requestBody: unknown): Response {
     log.debug({ title: 'SuiteToolsApiPost:process() initiated', details: requestBody });
     this._stApi.assertIsRequestBody(requestBody);
-
     let response: Response;
     const endpoint = requestBody.endpoint;
     switch (endpoint) {
@@ -1026,13 +987,11 @@ export class SuiteToolsApiPost {
    */
   private initiateJob(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiPost:initiateJob() initiated', details: requestParams });
-
     let id = requestParams.id;
     if (!id) {
       // set to 0 to run all active jobs
       id = '0';
     }
-
     // initiate the job run
     this.stApi.stApiModel.initiateJob(id);
     const message = 'InitiateJob() initiated with with id of ' + id;
@@ -1108,7 +1067,6 @@ export class SuiteToolsApiPut {
   }
 
   constructor(stApi: SuiteToolsApi) {
-    // log.debug({ title: 'SuiteToolsApiPut:constructor() initiated', details: null });
     this._stApi = stApi;
   }
 
@@ -1129,7 +1087,6 @@ export class SuiteToolsApiPut {
           notifyOff: true,
         });
     }
-    // log.debug({ title: 'SuiteToolsApiPut:process() returning', details: response });
 
     return response;
   }
@@ -1168,7 +1125,6 @@ export class SuiteToolsApiModel {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsApiModel:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -1218,16 +1174,15 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getFiles() initiated`,
-      details: {
-        rows: row,
-        types: types,
-        createdDate: createdDate,
-        modifiedDate: modifiedDate,
-      },
-    });
-
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getFiles() initiated`,
+    //   details: {
+    //     rows: row,
+    //     types: types,
+    //     createdDate: createdDate,
+    //     modifiedDate: modifiedDate,
+    //   },
+    // });
     const response: Response = { data: {} };
     let sql = `SELECT
       file.id,
@@ -1268,7 +1223,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getFiles() returning', details: response });
 
     return response;
   }
@@ -1280,9 +1234,7 @@ export class SuiteToolsApiModel {
    * @returns jobId
    */
   public initiateJob(id: string) {
-    log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: { id: id } });
-
-    // initiate the job run map/reduce script
+    // log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: { id: id } });
     const scriptTask = task.create({
       taskType: task.TaskType.MAP_REDUCE,
       scriptId: 'customscript_idev_suitetools_mr_jobs_run',
@@ -1296,7 +1248,6 @@ export class SuiteToolsApiModel {
       title: 'SuiteToolsApiModel:initiateJob() submitted run job map/reduce script',
       details: 'scriptTaskId = ' + scriptTaskId,
     });
-    log.debug({ title: 'SuiteToolsApiModel:initiateJob() initiated job map/reduce script', details: scriptTaskId });
   }
 
   /**
@@ -1306,8 +1257,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJob(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
-
+    // log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
     const response: Response = { data: {} };
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
@@ -1323,7 +1273,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults[0];
     }
-    log.debug({ title: 'SuiteToolsApiModel:getJob() returning', details: response });
 
     return response;
   }
@@ -1331,25 +1280,18 @@ export class SuiteToolsApiModel {
   /**
    * Get Jobs
    *
-   * @param row - the number of rows to return
-   * // TODO @param active - the active flag
+   * @param active - the active flag
    * @returns results
    */
-  public getJobs(row: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getJobs() initiated`,
-      details: {
-        // active: active,
-        rows: row,
-      },
-    });
+  public getJobs(active: string): Response {
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getJobs() initiated`,
+    //   details: {
+    //     active: active,
+    //   },
+    // });
     const response: Response = { data: {} };
     const customRecord = 'customrecord_idev_suitetools_job';
-
-    // TODO add
-    // custrecord_st_job_run_type AS type,
-    // custrecord_st_job_run_params AS params,
-
     let sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
@@ -1357,15 +1299,12 @@ export class SuiteToolsApiModel {
       ${customRecord}`;
     // add where clause
     const where = [];
-    // if (active) {
-    //   if (active === 'T') {
-    //     where.push(`isinactive = 'F'`);
-    //   } else {
-    //     where.push(`isinactive = 'T'`);
-    //   }
-    // }
-    if (row) {
-      where.push(`RowNum <= ${row}`);
+    if (active) {
+      if (active === 'T') {
+        where.push(`isinactive = 'F'`);
+      } else {
+        where.push(`isinactive = 'T'`);
+      }
     }
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
@@ -1377,7 +1316,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: response });
 
     return response;
   }
@@ -1389,7 +1327,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRun(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
+    // log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
 
     const response: Response = { data: {} };
     const customRecord = 'customrecord_idev_suitetools_job_run';
@@ -1412,7 +1350,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults[0];
     }
-    // log.debug({ title: 'SuiteToolsApiModel:getJobRun() returning', details: response });
 
     return response;
   }
@@ -1420,17 +1357,18 @@ export class SuiteToolsApiModel {
   /**
    * Get Job Runs
    *
-   * @param row - the number of rows to return
-   * // TODO @param active - the active flag
+   * @param job - the specific job to see the executions of
+   * @param completed - the completed status
    * @returns results
    */
-  public getJobRuns(row: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getJobRuns() initiated`,
-      details: {
-        rows: row,
-      },
-    });
+  public getJobRuns(job: string, completed: string): Response {
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getJobRuns() initiated`,
+    //   details: {
+    //     job: job,
+    //     completed: completed,
+    //   },
+    // });
     const response: Response = { data: {} };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     let sql = `SELECT
@@ -1446,8 +1384,11 @@ export class SuiteToolsApiModel {
       ON customrecord_idev_suitetools_job_run.custrecord_idev_st_mr_job_run_job_id = customrecord_idev_suitetools_job.id`;
     // add where clause
     const where = [];
-    if (row) {
-      where.push(`RowNum <= ${row}`);
+    if (job) {
+      where.push(`${customRecord}.custrecord_idev_st_mr_job_run_job_id = ${job}`);
+    }
+    if (completed) {
+      where.push(`${customRecord}.custrecord_idev_st_mr_job_run_completed = '${completed}'`);
     }
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
@@ -1459,7 +1400,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getJobRuns() returning', details: response });
 
     return response;
   }
@@ -1601,7 +1541,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getLogins() returning', details: response });
 
     return response;
   }
@@ -1613,8 +1552,7 @@ export class SuiteToolsApiModel {
    * @returns Role
    */
   public getRole(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getRole() initiated`, details: { id: id } });
-
+    // log.debug({ title: `SuiteToolsApiModel:getRole() initiated`, details: { id: id } });
     const response: Response = { data: {} };
     const sql = `SELECT
       role.id,
@@ -1636,7 +1574,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults[0];
     }
-    log.debug({ title: 'SuiteToolsApiModel:getRole() returning', details: response });
 
     return response;
   }
@@ -1648,12 +1585,12 @@ export class SuiteToolsApiModel {
    * @returns roles
    */
   public getRoles(active: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getRoles() initiated`,
-      details: {
-        active: active,
-      },
-    });
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getRoles() initiated`,
+    //   details: {
+    //     active: active,
+    //   },
+    // });
 
     const response: Response = { data: {} };
     let sql = `SELECT
@@ -1687,7 +1624,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getRoles() returning', details: response });
 
     return response;
   }
@@ -1699,8 +1635,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getScript(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
-
+    // log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
     const response: Response = { data: {} };
     const sql = `SELECT
       script.id,
@@ -1725,7 +1660,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults[0];
     }
-    log.debug({ title: 'SuiteToolsApiModel:getScript() returning', details: response });
 
     return response;
   }
@@ -1749,11 +1683,10 @@ export class SuiteToolsApiModel {
     owners: string[],
     files: string[],
   ): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getScripts() initiated`,
-      details: { active: active, versions: versions, types: types, scripts: scripts, owners: owners, files: files },
-    });
-
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getScripts() initiated`,
+    //   details: { active: active, versions: versions, types: types, scripts: scripts, owners: owners, files: files },
+    // });
     const response: Response = { data: {} };
     let sql = `SELECT
       script.id,
@@ -1827,7 +1760,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getScripts() returning', details: response });
 
     return response;
   }
@@ -1839,13 +1771,12 @@ export class SuiteToolsApiModel {
    * @returns script log
    */
   public getScriptLog(id: string): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getScriptLog() initiated`,
-      details: {
-        id: id,
-      },
-    });
-
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getScriptLog() initiated`,
+    //   details: {
+    //     id: id,
+    //   },
+    // });
     const response: Response = { data: {} };
     const sql = `SELECT
       ScriptNote.internalid AS id,
@@ -2070,20 +2001,19 @@ export class SuiteToolsApiModel {
     title: string,
     detail: string,
   ): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() initiated`,
-      details: {
-        rows: row,
-        levels: levels,
-        types: types,
-        scripts: scripts,
-        owners: owners,
-        dates: date,
-        title: title,
-        detail: detail,
-      },
-    });
-
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() initiated`,
+    //   details: {
+    //     rows: row,
+    //     levels: levels,
+    //     types: types,
+    //     scripts: scripts,
+    //     owners: owners,
+    //     dates: date,
+    //     title: title,
+    //     detail: detail,
+    //   },
+    // });
     const response: Response = { data: {} };
     let sql = `SELECT
       ScriptNote.internalid AS id,
@@ -2096,10 +2026,8 @@ export class SuiteToolsApiModel {
     FROM ScriptNote
     INNER JOIN script
       ON ScriptNote.scripttype = script.id`;
-    // add where clause
     const where: string[] = [];
     if (row && row !== '0') {
-      // limit to specified number of rows
       where.push(`RowNum <= ${row}`);
     }
     if (levels) {
@@ -2141,9 +2069,7 @@ export class SuiteToolsApiModel {
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
-    // add order by
     sql += ` ORDER BY ScriptNote.internalId DESC`;
-    // log.debug({ title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() generated this sql`, details: sql });
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No script log records found`;
@@ -2161,8 +2087,7 @@ export class SuiteToolsApiModel {
    * @returns user
    */
   public getUser(id: string): Response {
-    log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
-
+    // log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
     const response: Response = { data: {} };
     const sql = `SELECT
       employee.id,
@@ -2191,7 +2116,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults[0];
     }
-    log.debug({ title: 'SuiteToolsApiModel:getUser() returning', details: response });
 
     return response;
   }
@@ -2202,11 +2126,10 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getUsers(active: string, roles: string[] = null, supervisors: string[] = null): Response {
-    log.debug({
-      title: `SuiteToolsApiModel:getUsers() initiated`,
-      details: { active: active, roles: roles, supervisors: supervisors },
-    });
-
+    // log.debug({
+    //   title: `SuiteToolsApiModel:getUsers() initiated`,
+    //   details: { active: active, roles: roles, supervisors: supervisors },
+    // });
     const response: Response = { data: {} };
     let sql = `SELECT
       employee.id,
@@ -2220,7 +2143,6 @@ export class SuiteToolsApiModel {
     FROM employee
       INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
       INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
-    // add where clause
     const where = [];
     // TODO verify that this works with the standard active component
     switch (active) {
@@ -2257,14 +2179,12 @@ export class SuiteToolsApiModel {
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
-    // add group by
     sql += ` GROUP BY
       employee.id,
       employee.isinactive,
       employee.email,
       employee.entityid,
       employee.title`;
-    // add order by
     sql += ` ORDER BY name ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
@@ -2272,7 +2192,6 @@ export class SuiteToolsApiModel {
     } else {
       response.data = sqlResults;
     }
-    log.debug({ title: 'SuiteToolsApiModel:getUsers() returning', details: response });
 
     return response;
   }
@@ -2291,10 +2210,10 @@ export class SuiteToolsApiModel {
    * @param dates - date field values
    */
   private addDateFilter(where: string[], functionName: string, table: string, field: string, dates: string | string[]) {
-    log.debug({
-      title: `SuiteToolsApiModel:dateFilter() initiated`,
-      details: { where: where, functionName: functionName, table: table, field: field, dates: dates },
-    });
+    // log.debug({
+    //   title: `SuiteToolsApiModel:dateFilter() initiated`,
+    //   details: { where: where, functionName: functionName, table: table, field: field, dates: dates },
+    // });
     if (dates) {
       // check if dates is an object
       if (typeof dates === 'object') {

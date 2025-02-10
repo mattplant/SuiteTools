@@ -55,7 +55,6 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
 }
 
 export function addTokenLastLogins(tokens: Token[], settings: Settings | undefined): Token[] {
-  // console.log('addTokenLastLogins() initiated', { tokens, settings });
   if (
     settings &&
     settings.lastLogins &&

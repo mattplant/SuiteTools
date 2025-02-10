@@ -1,18 +1,20 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
-import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
-import { SearchCriteriaFiles } from '../criteria/SearchCriteriaFiles';
+import { SearchCriteriaContent } from '../criteria/SearchCriteriaContent';
+import { SearchCriteriaDateCreated } from '../criteria/SearchCriteriaDateCreated';
+import { SearchCriteriaLevels } from '../criteria/SearchCriteriaLevels';
 import { SearchCriteriaOwners } from '../criteria/SearchCriteriaOwners';
+import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
 import { SearchCriteriaScripts } from '../criteria/SearchCriteriaScripts';
 import { SearchCriteriaScriptTypes } from '../criteria/SearchCriteriaScriptTypes';
-import { SearchCriteriaVersions } from '../criteria/SearchCriteriaVersion';
+// import { SearchCriteriaUser } from '../../components/search/criteria/SearchCriteriaUser';
 
-interface RecordCriteriaProps {
+interface Props {
   defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordCriteriaProps) {
+export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {
@@ -26,15 +28,17 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordCriteria
         type="submit"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center"
       >
-        Get Scripts
+        Get Server Script Logs
       </button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
-        <SearchCriteriaVersions register={register} />
+        <SearchCriteriaRows register={register} />
+        <SearchCriteriaLevels register={register} />
+        {/* <SearchCriteriaUser register={register} /> */}
         <SearchCriteriaScriptTypes register={register} />
         <SearchCriteriaScripts register={register} />
-        <SearchCriteriaOwners register={register} title="Owner" />
-        <SearchCriteriaFiles register={register} />
+        <SearchCriteriaOwners register={register} title="Owners" />
+        <SearchCriteriaDateCreated register={register} title="Date" />
+        <SearchCriteriaContent register={register} />
       </div>
     </form>
   );

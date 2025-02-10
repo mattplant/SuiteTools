@@ -7,6 +7,7 @@ export interface JobRun {
   results?: string;
   // additional properties
   urlDetail?: string;
+  urlJob?: string;
 }
 
 export function assertIsJobRun(data: unknown): asserts data is JobRun {
@@ -46,9 +47,7 @@ export function assertIsJobRun(data: unknown): asserts data is JobRun {
   // results (optional)
   // ADDITIONAL PROPERTIES
   // urlDetail
-  if ('urlDetail' in data && typeof data.urlDetail !== 'string') {
-    throw new Error('Job data "urlDetail" field is not a string');
-  }
+  // urlJob
 }
 
 export function assertIsJobRuns(data: unknown): asserts data is JobRun[] {

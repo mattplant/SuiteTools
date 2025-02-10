@@ -21,7 +21,6 @@ export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFoun
       },
     ],
   };
-
   const urlParams = {
     rows: fields.rows,
     filetypes: fields.filetypes,
@@ -35,5 +34,6 @@ export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFoun
     assertIsFiles(response.data);
     result = response.data;
   }
+
   return result;
 }

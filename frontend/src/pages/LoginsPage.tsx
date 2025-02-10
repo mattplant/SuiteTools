@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/criteria/types.ts';
 import { getLogins } from '../components/login/getRecords.ts';
 import { Login } from '../components/login/types.ts';
-import { RecordsCriteria } from '../components/login/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/login/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 import { getLoginFromResults } from '../components/login/getRecordFromResults.ts';
@@ -38,7 +38,7 @@ export function LoginsPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Logins</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.LOGIN} lines={results} getModalData={getLoginFromResults} />
     </div>
   );

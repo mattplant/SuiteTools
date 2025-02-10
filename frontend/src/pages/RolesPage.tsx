@@ -3,7 +3,7 @@ import { CriteriaFields } from '../components/criteria/types.ts';
 import { getRole } from '../components/role/getRecord.ts';
 import { getRoles } from '../components/role/getRecords.ts';
 import { Role } from '../components/role/types.ts';
-import { RecordsCriteria } from '../components/role/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/role/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 
@@ -33,7 +33,7 @@ export function RolesPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Roles</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.ROLE} lines={results} getModalData={getRole} />
     </div>
   );

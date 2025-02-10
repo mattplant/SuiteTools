@@ -45,16 +45,18 @@ export function ConcurrencyRequestResults({ data }: Props) {
     <>
       <h2 className="pt-5 pb-1 text-xl font-bold text-slate-900">Request Table</h2>
       <Export gridRef={gridRef} />
-      <DataGrid
-        ref={gridRef}
-        columns={columns}
-        rows={formattedResults}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true,
-        }}
-        className="fill-grid"
-      />
+      <div style={{ height: '600px', overflowY: 'auto' }}>
+        <DataGrid
+          ref={gridRef}
+          columns={columns}
+          rows={formattedResults}
+          defaultColumnOptions={{
+            sortable: true,
+            resizable: true,
+          }}
+          className="fill-grid"
+        />
+      </div>
     </>
   );
 }

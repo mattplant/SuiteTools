@@ -3,7 +3,7 @@ import { CriteriaFields } from '../components/criteria/types.ts';
 import { getIntegration } from '../components/integration/getRecord.ts';
 import { getIntegrations, addIntegrationLastLogins } from '../components/integration/getRecords.ts';
 import { Integration } from '../components/integration/types.ts';
-import { RecordsCriteria } from '../components/integration/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/integration/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 import { useAppSettingsContext } from '../components/AppSettingsContext';
@@ -34,7 +34,7 @@ export function IntegrationsPage() {
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold text-slate-900 mb-2">Integrations</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       <Results type={ResultsTypes.INTEGRATION} lines={results} getModalData={getIntegration} />
     </div>
   );

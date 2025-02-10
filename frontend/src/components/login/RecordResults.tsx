@@ -26,8 +26,7 @@ const columns = [
   { key: 'rolename', name: 'Role' },
 ];
 
-export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
-  console.log('RecordsResults() initiated with', { rows, setId, setOpenModal });
+export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
   assertIsLogins(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
@@ -42,21 +41,23 @@ export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
   return (
     <>
       <Export gridRef={gridRef} />
-      <DataGrid
-        ref={gridRef}
-        columns={columns}
-        rows={rows}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true,
-        }}
-        bottomSummaryRows={summaryRows}
-        onCellClick={(cell) => {
-          setId(cell.row.id);
-          setOpenModal(true);
-        }}
-        className="fill-grid"
-      />
+      <div style={{ height: '600px', overflowY: 'auto' }}>
+        <DataGrid
+          ref={gridRef}
+          columns={columns}
+          rows={rows}
+          defaultColumnOptions={{
+            sortable: true,
+            resizable: true,
+          }}
+          bottomSummaryRows={summaryRows}
+          onCellClick={(cell) => {
+            setId(cell.row.id);
+            setOpenModal(true);
+          }}
+          className="fill-grid"
+        />
+      </div>
     </>
   );
 }

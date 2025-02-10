@@ -1,11 +1,11 @@
 import { UseFormRegister } from 'react-hook-form';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaContentProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaContent({ register }: SearchCriteriaContentProps) {
+export function SearchCriteriaContent({ register }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
       <label className="block">Content</label>

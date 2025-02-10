@@ -1,13 +1,16 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
-import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
+import { SearchCriteriaDateCreated } from '../criteria/SearchCriteriaDateCreated';
+import { SearchCriteriaFileTypes } from '../criteria/SearchCriteriaFileTypes';
+import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
+import { SearchCriteriaDateModified } from '../criteria/SearchCriteriaDateModified';
 
-interface RecordsCriteriaProps {
+interface Props {
   defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteriaProps) {
+export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {
@@ -21,10 +24,13 @@ export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteri
         type="submit"
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center"
       >
-        Get Roles
+        Get Files
       </button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
+        <SearchCriteriaRows register={register} />
+        <SearchCriteriaFileTypes register={register} />
+        <SearchCriteriaDateCreated register={register} title="Created Date" />
+        <SearchCriteriaDateModified register={register} title="Modified Date" />
       </div>
     </form>
   );

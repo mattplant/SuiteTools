@@ -22,6 +22,11 @@ export async function getOptionValues(type: OptionValuesTypes): Promise<OptionVa
         ],
       };
       break;
+    case OptionValuesTypes.JOB:
+      localTestData = {
+        data: [{ value: '1', text: 'Recent Script Errors' }],
+      };
+      break;
     case OptionValuesTypes.OWNER:
       localTestData = {
         data: [

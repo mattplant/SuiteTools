@@ -1,11 +1,11 @@
 import { UseFormRegister } from 'react-hook-form';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaLevelsProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaLevels({ register }: SearchCriteriaLevelsProps) {
+export function SearchCriteriaLevels({ register }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
       <label htmlFor="level">Levels</label>

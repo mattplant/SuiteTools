@@ -1,12 +1,12 @@
 import { UseFormRegister } from 'react-hook-form';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaDateModifiedProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
   title: string;
 }
 
-export function SearchCriteriaDateModified({ register, title }: SearchCriteriaDateModifiedProps) {
+export function SearchCriteriaDateModified({ register, title }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
       <label htmlFor="lastmodifieddate">{title}</label>

@@ -1,11 +1,11 @@
 import { UseFormRegister } from 'react-hook-form';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaVersionsProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaVersions({ register }: SearchCriteriaVersionsProps) {
+export function SearchCriteriaVersions({ register }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
       <label htmlFor="versions">API</label>

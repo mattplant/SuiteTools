@@ -4,11 +4,11 @@ import { getOptionValues } from './getOptionValues';
 import { OptionValues, OptionValuesTypes } from './types';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaRoleNameProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaRoleName({ register }: SearchCriteriaRoleNameProps) {
+export function SearchCriteriaRoleName({ register }: Props) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {

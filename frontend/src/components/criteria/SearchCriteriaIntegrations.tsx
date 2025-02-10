@@ -4,11 +4,11 @@ import { getOptionValues } from '../integration/getOptionValues';
 import { OptionValues } from './types';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaIntegrationsProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaIntegrations({ register }: SearchCriteriaIntegrationsProps) {
+export function SearchCriteriaIntegrations({ register }: Props) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {

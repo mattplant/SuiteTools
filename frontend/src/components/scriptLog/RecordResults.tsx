@@ -3,7 +3,7 @@ import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../results/Export.tsx';
 import { ResultsProps, SummaryRow } from '../results/types.ts';
-import { assertIsScripts } from './types.ts';
+import { assertIsScriptLogs } from './types.ts';
 
 const columns = [
   {
@@ -14,24 +14,22 @@ const columns = [
     },
   },
   {
-    key: 'isinactive',
-    name: 'Active',
+    key: 'timestamp',
+    name: 'Time Stamp',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
-  { key: 'apiversion', name: 'API' },
+  { key: 'type', name: 'Type' },
   { key: 'scripttype', name: 'Script Type' },
-  { key: 'name', name: 'Script' },
-  { key: 'scriptid', name: 'id' },
+  { key: 'scriptname', name: 'Script' },
   { key: 'owner', name: 'Owner' },
-  { key: 'scriptfile', name: 'File' },
-  { key: 'notifyemails', name: 'Notify Emails' },
-  { key: 'description', name: 'Description' },
+  { key: 'title', name: 'Title' },
+  { key: 'detail', name: 'Detail' },
 ];
 
-export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertIsScripts(rows);
+export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
+  assertIsScriptLogs(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [
@@ -45,21 +43,23 @@ export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
   return (
     <>
       <Export gridRef={gridRef} />
-      <DataGrid
-        ref={gridRef}
-        columns={columns}
-        rows={rows}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true,
-        }}
-        bottomSummaryRows={summaryRows}
-        onCellClick={(cell) => {
-          setId(cell.row.id);
-          setOpenModal(true);
-        }}
-        className="fill-grid"
-      />
+      <div style={{ height: '600px', overflowY: 'auto' }}>
+        <DataGrid
+          ref={gridRef}
+          columns={columns}
+          rows={rows}
+          defaultColumnOptions={{
+            sortable: true,
+            resizable: true,
+          }}
+          bottomSummaryRows={summaryRows}
+          onCellClick={(cell) => {
+            setId(cell.row.id);
+            setOpenModal(true);
+          }}
+          className="fill-grid"
+        />
+      </div>
     </>
   );
 }

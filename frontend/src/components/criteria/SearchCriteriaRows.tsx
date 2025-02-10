@@ -1,11 +1,11 @@
 import { UseFormRegister } from 'react-hook-form';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaRowsProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaRows({ register }: SearchCriteriaRowsProps) {
+export function SearchCriteriaRows({ register }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
       <label htmlFor="rows">Rows</label>

@@ -14,7 +14,8 @@ export async function getJobRuns(fields: CriteriaFields): Promise<JobRun[] | Not
     ],
   };
   const urlParams = {
-    rows: fields.rows,
+    job: fields.job,
+    completed: fields.completed,
   };
   const response = await getData(localTestData, 'jobRuns', urlParams);
   if (response.message) {

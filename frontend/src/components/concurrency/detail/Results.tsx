@@ -45,23 +45,25 @@ export function ConcurrencyDetailResults({ data }: Props) {
     <>
       <h2 className="pt-5 pb-1 text-xl font-bold text-slate-900">Detail Table</h2>
       <Export gridRef={gridRef} />
-      <DataGrid
-        ref={gridRef}
-        columns={columns}
-        rows={formattedResults}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true,
-        }}
-        className="fill-grid"
-        onCellClick={(cell) => {
-          console.log(cell);
-          const startDate = cell.row[`startTimeMS`];
-          const endDate = cell.row[`endTimeMS`];
-          const link = settings?.appUrl + `#/concurrencyRequest/${startDate}/${endDate}`;
-          window.open(link, '_blank');
-        }}
-      />
+      <div style={{ height: '600px', overflowY: 'auto' }}>
+        <DataGrid
+          ref={gridRef}
+          columns={columns}
+          rows={formattedResults}
+          defaultColumnOptions={{
+            sortable: true,
+            resizable: true,
+          }}
+          className="fill-grid"
+          onCellClick={(cell) => {
+            console.log(cell);
+            const startDate = cell.row[`startTimeMS`];
+            const endDate = cell.row[`endTimeMS`];
+            const link = settings?.appUrl + `#/concurrencyRequest/${startDate}/${endDate}`;
+            window.open(link, '_blank');
+          }}
+        />
+      </div>
     </>
   );
 }

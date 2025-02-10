@@ -4,12 +4,12 @@ import { getOptionValues } from '../token/getOptionValues';
 import { OptionValues } from './types';
 import { CriteriaFields } from './types';
 
-interface SearchCriteriaTokenNameProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
   title?: string;
 }
 
-export function SearchCriteriaTokenName({ register, title = 'Token' }: SearchCriteriaTokenNameProps) {
+export function SearchCriteriaTokenName({ register, title = 'Token' }: Props) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {

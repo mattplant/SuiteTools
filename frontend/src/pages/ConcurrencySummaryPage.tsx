@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/concurrency/summary/types.ts';
 import { getConcurrencySummary } from '../components/concurrency/summary/getRecords.ts';
-import { RecordsCriteria } from '../components/concurrency/summary/RecordsCriteria.tsx';
+import { RecordCriteria } from '../components/concurrency/summary/RecordCriteria.tsx';
 import { ConcurrencySummaryData } from '../components/concurrency/summary/types.ts';
 import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Overview.tsx';
 import { ConcurrencySummaryHeatMapWrapper } from '../components/concurrency/summary/heatMap/Wrapper.tsx';
@@ -38,7 +38,7 @@ export function ConcurrencySummaryPage() {
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Concurrency Summary</h2>
-      <RecordsCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
       {loading ? (
         <p>Loading...</p>
       ) : (

@@ -1,12 +1,12 @@
 import { UseFormRegister } from 'react-hook-form';
 import { CriteriaFields } from './types';
 
-interface RecordsCriteriaFieldDateRangeProps {
+interface RecordCriteriaFieldDateRangeProps {
   register: UseFormRegister<CriteriaFields>;
   onChange: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteriaFieldDateRange({ register, onChange }: RecordsCriteriaFieldDateRangeProps) {
+export function RecordCriteriaFieldDateRange({ register, onChange }: RecordCriteriaFieldDateRangeProps) {
   return (
     <div className="mb-4 mt-4 text-sm font-medium text-gray-900">
       <label htmlFor="dateRange">Date Range: </label>

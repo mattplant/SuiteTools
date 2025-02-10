@@ -11,7 +11,6 @@ type Props = {
 
 export function SettingsResult({ settings }: Props) {
   const lastLoginClick = async () => {
-    console.log('lastLoginClick() iniitiated');
     const entityRecords: { type: string; name: string }[] = [];
     // get integrations
     const integrationOptions = await getIntegrationOptionValues(true);

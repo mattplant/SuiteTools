@@ -17,6 +17,7 @@ export async function getJobRun(id: number): Promise<JobRun | NotFound> {
     assertIsJobRun(response.data);
     // build additional properties
     response.data.urlDetail = `#/jobRun/${response.data.id}`;
+    response.data.urlJob = `#/job/${response.data.jobid}`;
     result = response.data;
   }
 

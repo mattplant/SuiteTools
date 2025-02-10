@@ -31,7 +31,7 @@ const columns = [
   { key: 'recordsReturned', name: 'Returned' },
 ];
 
-export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
+export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
   assertIsSoapLogs(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
@@ -46,20 +46,22 @@ export function RecordsResults({ rows, setId, setOpenModal }: ResultsProps) {
   return (
     <>
       <Export gridRef={gridRef} />
-      <DataGrid
-        ref={gridRef}
-        columns={columns}
-        rows={rows}
-        bottomSummaryRows={summaryRows}
-        onCellClick={(cell) => {
-          setId(cell.row.id);
-          setOpenModal(true);
-        }}
-        defaultColumnOptions={{
-          minWidth: 110,
-        }}
-        className="fill-grid"
-      />
+      <div style={{ height: '600px', overflowY: 'auto' }}>
+        <DataGrid
+          ref={gridRef}
+          columns={columns}
+          rows={rows}
+          bottomSummaryRows={summaryRows}
+          onCellClick={(cell) => {
+            setId(cell.row.id);
+            setOpenModal(true);
+          }}
+          defaultColumnOptions={{
+            minWidth: 110,
+          }}
+          className="fill-grid"
+        />
+      </div>
     </>
   );
 }

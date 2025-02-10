@@ -3,12 +3,12 @@ import { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from './getOptionValues';
 import { CriteriaFields, OptionValues, OptionValuesTypes } from './types';
 
-interface SearchCriteriaOwnersProps {
+interface Props {
   register: UseFormRegister<CriteriaFields>;
   title: string;
 }
 
-export function SearchCriteriaOwners({ register, title }: SearchCriteriaOwnersProps) {
+export function SearchCriteriaOwners({ register, title }: Props) {
   const [values, setValues] = useState<OptionValues[]>([]);
 
   useEffect(() => {

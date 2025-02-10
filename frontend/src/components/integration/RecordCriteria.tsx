@@ -2,12 +2,12 @@ import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
 
-interface RecordsCriteriaProps {
+interface RecordCriteriaProps {
   defaultCriteria: CriteriaFields;
   setCriteria: (criteria: CriteriaFields) => void;
 }
 
-export function RecordsCriteria({ setCriteria, defaultCriteria }: RecordsCriteriaProps) {
+export function RecordCriteria({ setCriteria, defaultCriteria }: RecordCriteriaProps) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {

@@ -55,7 +55,6 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
 }
 
 export function addIntegrationLastLogins(integrations: Integration[], settings: Settings | undefined): Integration[] {
-  // console.log('addIntegrationLastLogins() initiated', { integrations, settings });
   if (
     settings &&
     settings.lastLogins &&
@@ -65,8 +64,6 @@ export function addIntegrationLastLogins(integrations: Integration[], settings: 
   ) {
     const lastLoginsObj = settings.lastLogins.data;
     const lastLogins = lastLoginsObj.filter((lastLogin) => lastLogin.name.type === 'integration');
-    console.log('lastLogins', lastLogins);
-
     integrations.forEach((integration) => {
       // add the last login data to the integration record if found
       const lastLogin = lastLogins.find((lastLogin) => lastLogin.name.name === integration.name);

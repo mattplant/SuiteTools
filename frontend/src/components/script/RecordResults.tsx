@@ -1,41 +1,37 @@
 import { useMemo, useRef } from 'react';
 import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import { Export } from '../../results/Export.tsx';
-import { ResultsProps, SummaryRow } from '../../results/types.ts';
-import { assertIsJobRuns } from './types.ts';
+import { Export } from '../results/Export.tsx';
+import { ResultsProps, SummaryRow } from '../results/types.ts';
+import { assertIsScripts } from './types.ts';
 
 const columns = [
   {
     key: 'id',
-    name: 'Id',
+    name: 'ID',
     renderSummaryCell() {
       return <strong>Total</strong>;
     },
   },
   {
-    key: 'jobname',
-    name: 'Job Name',
+    key: 'isinactive',
+    name: 'Active',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
-  {
-    key: 'created',
-    name: 'Created At',
-  },
-  {
-    key: 'completed',
-    name: 'Completed',
-  },
-  {
-    key: 'results',
-    name: 'Results',
-  },
+  { key: 'apiversion', name: 'API' },
+  { key: 'scripttype', name: 'Script Type' },
+  { key: 'name', name: 'Script' },
+  { key: 'scriptid', name: 'id' },
+  { key: 'owner', name: 'Owner' },
+  { key: 'scriptfile', name: 'File' },
+  { key: 'notifyemails', name: 'Notify Emails' },
+  { key: 'description', name: 'Description' },
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertIsJobRuns(rows);
+  assertIsScripts(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [
