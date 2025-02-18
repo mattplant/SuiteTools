@@ -20,6 +20,8 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
+  { key: 'config', name: 'Config' },
+  { key: 'description', name: 'Description' },
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {

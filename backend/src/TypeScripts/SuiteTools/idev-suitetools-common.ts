@@ -26,6 +26,7 @@
 import * as email from 'N/email';
 import * as file from 'N/file';
 import * as log from 'N/log';
+import * as https from 'N/https';
 import * as query from 'N/query';
 import * as record from 'N/record';
 import * as redirect from 'N/redirect';
@@ -36,11 +37,14 @@ import * as url from 'N/url';
 
 /**
  * Common functionality between SuiteTools App and SuiteTools API
+ *
+ * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommon {
   // classes
-  private _stLib: SuiteToolsCommonLibrary;
+  private _stJobs: SuiteToolsCommonJobs;
   private _stSettings: SuiteToolsCommonSettings;
+  private _stLib: SuiteToolsCommonLibrary;
   // application url
   private _appScriptId = 'customscript_idev_suitetools_app';
   private _appDeploymentId = 'customdeploy_idev_suitetools_app';
@@ -53,6 +57,9 @@ export class SuiteToolsCommon {
   // application settings record
   private _appSettingsRecord = 'customrecord_idev_suitetools_settings'; // the application settings custom record
 
+  get stJobs(): SuiteToolsCommonJobs {
+    return this._stJobs;
+  }
   get stSettings(): SuiteToolsCommonSettings {
     return this._stSettings;
   }
@@ -86,15 +93,389 @@ export class SuiteToolsCommon {
   }
 
   constructor() {
-    // log.debug({ title: 'SuiteToolsCommon:constructor() initiated', details: null });
-    this._stLib = new SuiteToolsCommonLibrary(this);
+    this._stJobs = new SuiteToolsCommonJobs(this);
     this._stSettings = new SuiteToolsCommonSettings(this);
+    this._stLib = new SuiteToolsCommonLibrary(this);
 
+    // TODO should this be moved into the bootstrap() method?
     this._appUrl = url.resolveScript({
       scriptId: this._appScriptId,
       deploymentId: this._appDeploymentId,
       returnExternalUrl: false,
     });
+  }
+}
+
+/**
+ * Jobs support for SuiteTools App and SuiteTools API
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsCommonJobs {
+  private _stCommon: SuiteToolsCommon;
+  private _appJobRecord = 'customrecord_idev_suitetools_job';
+  private _appJobRunRecord = 'customrecord_idev_suitetools_job_run';
+
+  get stCommon(): SuiteToolsCommon {
+    return this._stCommon;
+  }
+
+  constructor(stCommon: SuiteToolsCommon) {
+    this._stCommon = stCommon;
+  }
+
+  /**
+   * Initializes jobs
+   *
+   * Add the jobs when we first install the SuiteTools app.
+   */
+  public initializeJobs(): void {
+    log.debug({ title: `SuiteToolsCommonJobs:initializeJobs() initiated`, details: '' });
+
+    // ADD THE DEFAULT JOBS
+    // recent script errors job
+    const recentScriptErrorsJob = {
+      name: 'Recent Script Errors',
+      custrecord_idev_st_mr_job_desc:
+        'The job notifies user of recent errors (Error, Emergency, System) across all script execution logs.',
+    };
+    this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRecord, recentScriptErrorsJob);
+    // last logins job
+    const lastLoginsJob = {
+      name: 'Last Logins',
+      custrecord_idev_st_mr_job_desc: 'This job get the last logins for the users, tokens and integrations.',
+    };
+    this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRecord, lastLoginsJob);
+
+    log.debug({ title: `SuiteToolsCommonJobs::initializeJobs() completed`, details: null });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getJobs(): any[] {
+    log.debug('SuiteToolsCommonJobs:getJobs() initiated', null);
+
+    const customRecord = 'customrecord_idev_suitetools_job';
+    const sql = `SELECT
+      ${customRecord}.id,
+      ${customRecord}.name,
+    FROM
+      ${customRecord}
+    WHERE
+      ${customRecord}.isinactive = 'F'
+    ORDER BY
+      ${customRecord}.id ASC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      log.audit(`getJobs() - No active job records found`, null);
+    } else {
+      log.debug({ title: 'SuiteToolsCommonJobs:getJobs() returning', details: sqlResults });
+    }
+
+    return sqlResults;
+  }
+
+  /**
+   * Creates job run record
+   *
+   * @param id - job id
+   * @returns job run record id
+   */
+  public createJobRunRecord(id: string): number {
+    log.debug('SuiteToolsCommonJobs:createJobRunRecord() initiated', { id });
+
+    // TODO should we save job data also?
+
+    // save new job run record
+    const jobRunRecordId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRunRecord, {
+      custrecord_idev_st_mr_job_run_job_id: id,
+    });
+    log.debug({ title: 'SuiteToolsCommonJobs:createJobRunRecord() created job run record', details: jobRunRecordId });
+
+    return jobRunRecordId;
+  }
+
+  /**
+   * Updates job run record
+   *
+   * @param id - job run record id
+   * @param completed - did the job complete successfully?
+   * @param results - job results
+   */
+  public updateJobRunRecord(id: string, completed: boolean, results: string): void {
+    log.debug('SuiteToolsCommonJobs:updateJobRunRecord() initiated', { id, completed, results });
+    // update job run record
+    this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(this._appJobRunRecord, id, {
+      custrecord_idev_st_mr_job_run_completed: completed,
+      custrecord_idev_st_mr_job_run_results: results,
+    });
+  }
+
+  /**
+   * Runs job
+   *
+   * @param jobId
+   * @param jobData
+   * @returns void
+   */
+  public async runJob(jobId: string, jobData: object): Promise<void> {
+    log.debug('SuiteToolsCommonJobs:runJob() initiated', { jobId, jobData });
+    let result: object;
+    let completed = false;
+    if (jobId) {
+      // create new job run record
+      const jobRunId = this.createJobRunRecord(jobId);
+      // execute the job
+      log.debug('SuiteToolsCommonJobs:runJob() executing job', jobId);
+      switch (String(jobId)) {
+        case '1': // Recent Script Errors
+          result = this.getRecentScriptErrorsJob();
+          completed = true;
+          break;
+        case '2': // Last Logins
+          result = this.initiateLastLoginsJob(jobData);
+          completed = true;
+          break;
+        default:
+          log.error('SuiteToolsCommonJobs:runJob() error', `Unknown job id: ${jobId}`);
+      }
+      log.debug('SuiteToolsCommonJobs:runJob() job processed', { jobId, completed, result });
+      // update job run record after execution
+      this.updateJobRunRecord(String(jobRunId), completed, JSON.stringify(result));
+    } else {
+      log.error('SuiteToolsCommonJobs:runJob() error', 'No job id provided');
+    }
+  }
+
+  /**
+   * Gets recent script errors
+   *
+   * @returns recent script errors
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public getRecentScriptErrorsJob(): any[] {
+    // TODO update to use last execution date
+
+    log.debug({
+      title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`,
+      details: null,
+    });
+
+    // get the errors from the script execution log
+    let levels = ['ERROR', 'EMERGENCY', 'SYSTEM'];
+    // const date = '15';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any[] = [];
+
+    let sql = `SELECT
+      ScriptNote.internalid AS id,
+      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
+      ScriptNote.type,
+      script.scripttype,
+      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+    FROM ScriptNote
+    INNER JOIN script
+      ON ScriptNote.scripttype = script.id`;
+    // add where clause
+    const where: string[] = [];
+    if (levels) {
+      if (Array.isArray(levels)) {
+        levels = levels.map((type) => {
+          return `'${type.toUpperCase()}'`;
+        });
+        where.push(`ScriptNote.type IN (${levels.join(',')})`);
+      }
+    }
+
+    // TODO use something like this to get from last run date
+    // where.push(`ScriptNote.date >= TRUNC( SYSDATE ) - ${date}`);
+
+    where.push(`ScriptNote.date > SYSDATE - ( 15 / 1440 )`);
+    if (where.length > 0) {
+      sql += ` WHERE ${where.join(' AND ')}`;
+    }
+    // add order by
+    sql += ` ORDER BY ScriptNote.internalId DESC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length !== 0) {
+      result = sqlResults;
+    }
+
+    return result;
+  }
+
+  /**
+   * Initiate last logins job
+   *
+   * @param requestBodyData
+   * @returns object
+   */
+  public initiateLastLoginsJob(requestBodyData: object): object {
+    log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() initiated', details: requestBodyData });
+    let message = '';
+    let entityRecords: object;
+
+    // get the entity records (integration and tokens) from the request body
+    if (Array.isArray(requestBodyData) && requestBodyData.every((item) => typeof item === 'object' && item !== null)) {
+      entityRecords = requestBodyData;
+      log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() set entity records', details: entityRecords });
+    }
+
+    // TODO users
+    // const response = this.stApi.stApiModel.getUsers('U');
+    // if (response && Array.isArray(response.data) && response.data.length > 0) {
+    //   for (const user of response.data) {
+    //     entityRecords.push({
+    //       type: 'user',
+    //       name: user['email'],
+    //     });
+    //   }
+    // }
+
+    log.debug({
+      title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() identity records',
+      details: entityRecords,
+    });
+    if (entityRecords) {
+      // submit the task
+      const params = {
+        custscript_idev_st_mr_logins_entity: JSON.stringify(entityRecords),
+        custscript_idev_st_mr_logins_set_id: this.stCommon.stSettings.recordId,
+      };
+      const scriptTaskId = this.stCommon.stLib.stLibNs.stLibNsTask.submit(
+        'MAP_REDUCE',
+        'customscript_idev_suitetools_mr_logins',
+        'customdeploy_idev_suitetools_mr_logins',
+        params,
+      );
+      message = 'Last logins script initiated with task id of ' + scriptTaskId;
+      // NOTE: the results are saved in the summary step of the last logins script
+    } else {
+      message = 'No active entity records found';
+    }
+    log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() returning', details: message });
+
+    return {
+      data: {},
+      message: message,
+    };
+  }
+}
+
+// define type for Last Logins data
+type LastLogins = { finished: string; data: { name: { type: string; name: string }; lastLogin: string }[] };
+
+/**
+ * Settings info for SuiteTools App and SuiteTools API
+ *
+ * @author Matthew Plant <i@idev.systems>
+ */
+export class SuiteToolsCommonSettings {
+  private _stCommon: SuiteToolsCommon;
+  private _appBundle: string;
+  private _recordId: number;
+  private _cssUrl: string;
+  private _jsUrl: string;
+  private _devMode: boolean;
+  private _lastLogins: LastLogins;
+
+  get stCommon(): SuiteToolsCommon {
+    return this._stCommon;
+  }
+  get appBundle(): string {
+    return this._appBundle;
+  }
+  get recordId(): number {
+    return this._recordId;
+  }
+  get cssUrl(): string {
+    return this._cssUrl;
+  }
+  get jsUrl(): string {
+    return this._jsUrl;
+  }
+  get devMode(): boolean {
+    return this._devMode;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  get lastLogins(): LastLogins {
+    return this._lastLogins;
+  }
+
+  constructor(stCommon: SuiteToolsCommon) {
+    this._stCommon = stCommon;
+  }
+
+  /**
+   * Get Settings
+   */
+  public getSettings(): boolean {
+    log.debug({ title: `SuiteToolsCommonSettings:getSettings() initiated`, details: '' });
+    let settingsFound = false;
+
+    const sql = `
+    SELECT
+      ${this.stCommon.appSettingsRecord}.id,
+      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_css_url AS cssUrl,
+      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_js_url AS jsUrl,
+      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_dev_mode AS devMode,
+      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_last_logins AS lastLogins,
+    FROM
+      ${this.stCommon.appSettingsRecord}
+    WHERE
+      isInactive = 'F'
+    `;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    log.debug({ title: `SuiteToolsCommonSettings:getSettings() sqlResults = `, details: sqlResults });
+
+    if (sqlResults.length > 0) {
+      // set the settings to the first returned result
+      this._recordId = sqlResults[0].id;
+      this._cssUrl = sqlResults[0].cssurl;
+      this._jsUrl = sqlResults[0].jsurl;
+      this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+      this._lastLogins = JSON.parse(sqlResults[0].lastlogins);
+      this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
+      settingsFound = true;
+    }
+
+    return settingsFound;
+  }
+
+  public setCoreConfigs(): void {
+    log.audit({ title: `SuiteToolsCommonSettings:setCoreConfigs() initiated`, details: '' });
+
+    // set the css and js urls
+    const coreConfigs = {
+      custrecord_idev_st_config_css_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile),
+      custrecord_idev_st_config_js_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile),
+    };
+    // update the settings record
+    const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(
+      this.stCommon.appSettingsRecord,
+      String(this._recordId),
+      coreConfigs,
+    );
+
+    log.audit({ title: `SuiteToolsCommonSettings:setCoreConfigs() completed successfully?`, details: success });
+  }
+
+  public initializeApp(): void {
+    log.audit({ title: `SuiteToolsCommonSettings:initializeApp() initiated`, details: '' });
+
+    // set the css and js urls
+    const coreConfigs = {
+      custrecord_idev_st_config_css_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile),
+      custrecord_idev_st_config_js_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile),
+    };
+    this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this.stCommon.appSettingsRecord, coreConfigs);
+
+    // initialize the jobs
+    this.stCommon.stJobs.initializeJobs();
+
+    log.audit({ title: `SuiteToolsCommonSettings:initializeApp() completed`, details: null });
   }
 }
 
@@ -121,7 +502,6 @@ export class SuiteToolsCommonLibrary {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibrary:constructor() initiated', details: null });
     this._stCommon = stCommon;
     this._stLibGeneral = new SuiteToolsCommonLibraryGeneral(this.stCommon);
     this._stLibNs = new SuiteToolsCommonLibraryNetSuite(this.stCommon);
@@ -141,7 +521,6 @@ export class SuiteToolsCommonLibraryGeneral {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryGeneral:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -167,6 +546,29 @@ export class SuiteToolsCommonLibraryGeneral {
     if (minute.length < 2) minute = '0' + minute;
     if (second.length < 2) second = '0' + second;
     return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
+  }
+
+  public getElementFromHtmlString(htmlString: string, id: string): string {
+    log.debug('getElementFromHtmlString() initiated', { htmlString, id });
+    try {
+      let result = '';
+      // const pattern = /<([a-zA-Z]+)\s+id="div__body"[^>]*>([\s\S]*?)<\/\1>/;
+      const pattern = /<table\s+id="div__body"[^>]*>([\s\S]*?)<\/table>/;
+      const match = htmlString.match(pattern);
+      log.debug('getElementFromHtmlString() match', match);
+      if (match) {
+        const elementType = match[1]; // element type (e.g., table, div)
+        const elementContent = match[2]; // element content
+        result = `<${elementType} id="${id}">${elementContent}</${elementType}>`;
+      } else {
+        throw new Error(`Element with id ${id} not found`);
+      }
+      log.debug('getElementFromHtmlString() returning', result);
+
+      return result;
+    } catch (e) {
+      log.error('getElementFromHtmlString() error', e);
+    }
   }
 }
 
@@ -215,7 +617,6 @@ export class SuiteToolsCommonLibraryNetSuite {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuite:constructor() initiated', details: null });
     this._stCommon = stCommon;
     this._stLibNsEmail = new SuiteToolsCommonLibraryNetSuiteEmail(this.stCommon);
     this._stLibNsFile = new SuiteToolsCommonLibraryNetSuiteFile(this.stCommon);
@@ -241,7 +642,6 @@ export class SuiteToolsCommonLibraryNetSuiteEmail {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteEmail:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -292,7 +692,6 @@ export class SuiteToolsCommonLibraryNetSuiteFile {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteFile:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -349,7 +748,7 @@ export class SuiteToolsCommonLibraryNetSuiteFile {
    * @param fileName - the path to the file in the /SuiteScripts/{appDir} folder
    * @returns file url
    */
-  public getFileURL(fileName: string): string {
+  public getFileUrl(fileName: string): string {
     // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
     const fileObj = this.getFileObj(fileName);
 
@@ -370,72 +769,46 @@ export class SuiteToolsCommonLibraryNetSuiteHttp {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
   /**
-   * Builds the NetSuite record URL.
+   * Get request
    *
-   * @param recordType - the record type
-   * @param recordId - the record id
+   * @param url - the request url
+   * @returns the get request reponse body
    */
-  public buildRecordUrl(recordType: string, recordId: string): string {
-    log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteHttp:buildRecordUrl() initiated',
-      details: { recordType: recordType, recordId: recordId },
-    });
-    const path = url.resolveRecord({
-      recordType: recordType,
-      recordId: recordId,
-    });
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:buildRecordUrl() returning', details: path });
+  public async getRequest(url: string): Promise<string> {
+    log.debug('getRequest() initiated', { url });
+    let response;
+    try {
+      response = await https.get
+        .promise({
+          url: url,
+        })
+        .then(function (response) {
+          log.debug({
+            title: 'getRequest() response',
+            details: response,
+          });
+          log.debug('getRequest() response body', response.body);
 
-    return path;
+          return response.body;
+        })
+        .catch(function onRejected(reason) {
+          log.debug({
+            title: 'getRequest() invalid request',
+            details: reason,
+          });
+        });
+    } catch (e) {
+      log.error('getRequest() error', e);
+      // throw (e);
+    }
+    log.debug('getRequest() returning', response);
+
+    return response;
   }
-
-  // /**
-  //  * Get HTTP page.
-  //  *
-  //  * @param url - the URL to the page to load
-  //  * @returns string
-  //  */
-  // public getPage(url: string): string {
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:getPage() initiated', details: { url: url } });
-
-  //   const response = https.get({ url: url });
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:getPage() response', details: response });
-  //   const body = response.body;
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:getPage() body', details: body });
-
-  //   return body;
-  // }
-
-  // /**
-  //  * Get JSON HTTP page.
-  //  *
-  //  * @param url - the URL to the page to load
-  //  * @returns string
-  //  */
-  // public getJsonPage(url: string): string {
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:getJsonPage() initiated', details: { url: url } });
-
-  //   const response = https.get({ url: url });
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:getJsonPage() response', details: response });
-
-  //   // check that response code is 200
-  //   if (response.code !== 200) {
-  //     throw new Error(`SuiteToolsCommonLibraryNetSuiteHttp:getJsonPage() response code = ${response.code}`);
-  //   }
-
-  //   const body = response.body;
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteHttp:getJsonPage() body', details: body });
-
-  //   const results = JSON.parse(body);
-  //   log.debug({ title: 'SuiteToolsController:renderConcurrenciesForm() results =', details: results });
-
-  //   return results;
-  // }
 }
 
 /**
@@ -451,7 +824,6 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteRecord:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -462,9 +834,9 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    * @param values
    * @returns record id of newly created record if successful else 0
    */
-  public createCustomRecord(recordType: string, values: object): number {
+  public createCustomRecordEntry(recordType: string, values: object): number {
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecord() initiated',
+      title: 'SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecordEntry() initiated',
       details: { recordType: recordType, values: values },
     });
     let recordId = 0;
@@ -482,7 +854,7 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
       });
     } catch (e) {
       log.error({
-        title: `SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecord - Error on ${recordType}`,
+        title: `SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecordEntry - Error on ${recordType}`,
         details: e,
       });
     }
@@ -525,7 +897,7 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    * @param recordId
    * @returns true if successful else false
    */
-  public updateCustomRecord(recordType: string, recordId: string, values: object): boolean {
+  public updateCustomRecordEntry(recordType: string, recordId: string, values: object): boolean {
     log.debug({
       title: 'SuiteToolsCommonLibraryNetSuiteRecord:updateCustomRecord() initiated',
       details: { recordType: recordType, recordId: recordId, values: values },
@@ -699,51 +1071,8 @@ export class SuiteToolsCommonLibraryNetSuiteScript {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteScript:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
-
-  // /**
-  //  * Builds the SuiteScript script URL.
-  //  *
-  //  * @param accountId - the account id
-  //  * @param scriptId - the script id
-  //  * @param deploymentId - the deployment id
-  //  * @param parameters - the parameters
-  //  */
-  // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // buildScriptUrl(accountId: string, scriptId: string, deploymentId: string, params: any[]): string {
-  //   log.debug({
-  //     title: 'SuiteToolsCommonLibraryNetSuiteScript:callScript() initiated',
-  //     details: { scriptId: scriptId, deploymentId: deploymentId, params: params },
-  //   });
-  //   const scheme = 'https://';
-  //   const host = url.resolveDomain({
-  //     hostType: url.HostType.APPLICATION,
-  //     accountId: accountId,
-  //   });
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteScript:callScript() host', details: host });
-  //   const path = url.resolveScript({
-  //     scriptId: scriptId,
-  //     deploymentId: deploymentId,
-  //   });
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteScript:callScript() scriptUrl', details: path });
-  //   const parameters = '&' + params.join('&');
-  //   const scriptUrl = scheme + host + path + parameters;
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteScript:callScript() parameters', details: parameters });
-  //   log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteScript:callScript() returning', details: scriptUrl });
-
-  //   return scriptUrl;
-  // }
-
-  // /**
-  //  * Redirects to SuiteTools script.
-  //  *
-  //  * @param parameters - the parameters
-  //  */
-  // public redirectToSuiteTools(params: object): void {
-  //   this.redirectToScript(runtime.getCurrentScript().id, runtime.getCurrentScript().deploymentId, params);
-  // }
 
   /**
    * Redirects to SuiteScript script.
@@ -789,7 +1118,6 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSearch:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -920,7 +1248,6 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
   }
 
   constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:constructor() initiated', details: null });
     this._stCommon = stCommon;
   }
 
@@ -1046,128 +1373,5 @@ export class SuiteToolsCommonLibraryNetSuiteTask {
     });
 
     return scriptTaskId;
-  }
-}
-
-type LastLogins = { finished: string; data: { name: { type: string; name: string }; lastLogin: string }[] };
-
-/**
- * Settings info for SuiteTools App and SuiteTools API
- */
-export class SuiteToolsCommonSettings {
-  private _stCommon: SuiteToolsCommon;
-  private _appBundle: string;
-  private _recordId: number;
-  private _cssUrl: string;
-  private _jsUrl: string;
-  private _devMode: boolean;
-  private _lastLogins: LastLogins;
-
-  get stCommon(): SuiteToolsCommon {
-    return this._stCommon;
-  }
-  get appBundle(): string {
-    return this._appBundle;
-  }
-  get recordId(): number {
-    return this._recordId;
-  }
-  get cssUrl(): string {
-    return this._cssUrl;
-  }
-  get jsUrl(): string {
-    return this._jsUrl;
-  }
-  get devMode(): boolean {
-    return this._devMode;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  get lastLogins(): LastLogins {
-    return this._lastLogins;
-  }
-
-  constructor(stCommon: SuiteToolsCommon) {
-    // log.debug({ title: 'SuiteToolsCommonSettings:constructor() initiated', details: null });
-    this._stCommon = stCommon;
-  }
-
-  /**
-   * Get Settings
-   */
-  public getSettings(): void {
-    log.debug({ title: `SuiteToolsCommonSettings:getSettings() initiated`, details: '' });
-
-    const sql = `
-    SELECT
-      ${this.stCommon.appSettingsRecord}.id,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_css_url AS cssUrl,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_js_url AS jsUrl,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_dev_mode AS devMode,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_last_logins AS lastLogins,
-    FROM
-      ${this.stCommon.appSettingsRecord}
-    WHERE
-      isInactive = 'F'
-    `;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    log.debug({ title: `SuiteToolsCommonSettings:getSettings() sqlResults = `, details: sqlResults });
-
-    if (sqlResults.length === 0) {
-      // since no results then create core configs
-      log.error({ title: `SuiteToolsCommonSettings:getSettings() no results`, details: '' });
-      this.createCoreConfigs();
-    } else {
-      this._recordId = sqlResults[0].id;
-      this._cssUrl = sqlResults[0].cssurl;
-      this._jsUrl = sqlResults[0].jsurl;
-      this._devMode = sqlResults[0].devmode === 'T' ? true : false;
-      this._lastLogins = JSON.parse(sqlResults[0].lastlogins);
-      this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
-
-      // if core configs are not set then set them
-      if (!this._cssUrl || !this._jsUrl) {
-        log.error({ title: `SuiteToolsCommonSettings:getSettings() missing core configs`, details: '' });
-        this.updateCoreConfigs();
-      }
-    }
-  }
-
-  private updateCoreConfigs(): void {
-    log.debug({ title: `SuiteToolsCommonSettings:saveCoreConfigs() initiated`, details: '' });
-
-    const coreConfigs = this.determineCoreConfigs();
-    const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
-      this.stCommon.appSettingsRecord,
-      String(this._recordId),
-      coreConfigs,
-    );
-
-    log.debug({ title: `SuiteToolsCommonSettings:saveCoreConfigs() completed successfully?`, details: success });
-  }
-
-  private createCoreConfigs(): void {
-    log.debug({ title: `SuiteToolsCommonSettings:createCoreConfigs() initiated`, details: '' });
-
-    const coreConfigs = this.determineCoreConfigs();
-    this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecord(this.stCommon.appSettingsRecord, coreConfigs);
-
-    log.debug({ title: `SuiteToolsCommonSettings:createCoreConfigs() completed`, details: null });
-  }
-
-  /**
-   * Determine the core configs
-   *
-   * Helper function for updateCoreConfigs() and createCoreConfigs()
-   */
-  private determineCoreConfigs(): object {
-    // log.debug({ title: `SuiteToolsCommonSettings:determineCoreConfigs() initiated`, details: '' });
-
-    const coreConfigs = {
-      custrecord_idev_st_config_css_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileURL(this.stCommon.appCssFile),
-      custrecord_idev_st_config_js_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileURL(this.stCommon.appJsFile),
-    };
-    log.debug({ title: `SuiteToolsCommonSettings:determineCoreConfigs() returning`, details: coreConfigs });
-
-    return coreConfigs;
   }
 }

@@ -1,29 +1,26 @@
+export interface NotFound {
+  message: string;
+}
+
+export enum PostEndpoint {
+  INITIATEJOB = 'initiateJob',
+}
+
+export enum PutEndpoint {
+  SETTINGS = 'settings',
+}
+
 export type RequestBody = {
   endpoint: string;
   data: object;
 };
 
-export type Response = {
-  // status?: number;
+export type RequestResponse = {
+  status: number;
   data: object;
   message?: string;
 };
 
-export interface NotFound {
-  message: string;
-}
-
-export enum SavedEndpoint {
-  INITIATEJOB = 'initiateJob',
-  LASTLOGIN = 'lastlogin',
-  SETTINGS = 'settings',
-}
-
-export enum SaveMethod {
-  PUT = 'PUT',
-  POST = 'POST',
-}
-
-export type SavedData = {
+export type HttpResponse = {
   status: number;
 };

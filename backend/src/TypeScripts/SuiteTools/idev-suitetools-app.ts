@@ -49,124 +49,85 @@ export function onRequest(context: EntryPoints.Suitelet.onRequestContext): void 
  * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApp {
-  // classes
-  private _stCommon: SuiteToolsCommon;
-  private _stAppView: SuiteToolsAppView;
-  // application settings
-  private _appApiScriptId = 'customscript_idev_suitetools_api'; // the SuiteTools API script id
-  private _appApiDeploymentId = 'customdeploy_idev_suitetools_api'; // the SuiteTools API deployment id
   private _apiUrl: string;
-  // environment values
-  private _context: EntryPoints.Suitelet.onRequestContext;
+  private _stCommon: SuiteToolsCommon;
 
-  get stCommon(): SuiteToolsCommon {
-    return this._stCommon;
-  }
-  get stAppView(): SuiteToolsAppView {
-    return this._stAppView;
-  }
   get apiUrl(): string {
     return this._apiUrl;
   }
-  get context(): EntryPoints.Suitelet.onRequestContext {
-    return this._context;
+  get stCommon(): SuiteToolsCommon {
+    return this._stCommon;
   }
 
   constructor(context: EntryPoints.Suitelet.onRequestContext | null = null) {
-    log.debug({ title: 'SuiteToolsApp:constructor() initiated', details: null });
-
-    this._stCommon = new SuiteToolsCommon();
-    this._stAppView = new SuiteToolsAppView(this);
-    this._context = context;
     this._apiUrl = url.resolveScript({
-      scriptId: this._appApiScriptId,
-      deploymentId: this._appApiDeploymentId,
+      scriptId: 'customscript_idev_suitetools_api', // the SuiteTools API script id
+      deploymentId: 'customdeploy_idev_suitetools_api', // the SuiteTools API deployment id
       returnExternalUrl: false,
     });
-    this.stCommon.stSettings.getSettings();
-    this.bootstrapSpa();
-  }
+    this._stCommon = new SuiteToolsCommon();
 
-  private bootstrapSpa(): void {
-    log.debug({ title: 'SuiteToolsApp:bootstrapSpa()', details: null });
-
-    const devMode = this.stCommon.stSettings.devMode;
-    log.debug({ title: 'SuiteToolsApp:bootstrapSpa() dev mode = ', details: devMode });
-    if (devMode) {
-      this.bootstrapHelper();
+    if (!context) {
+      this.bootstrapLibrary(context);
     } else {
-      try {
-        this.bootstrapHelper();
-      } catch (e) {
-        log.error({ title: 'SuiteToolsApp:bootstrapSpa() caught error', details: e });
-        this.stAppView.renderAppErrorForm(e, devMode);
-      }
+      this.bootstrapSpa(context);
     }
   }
 
-  private bootstrapHelper(): void {
-    const appIssues = this.performChecks();
-    if (appIssues.length > 0) {
-      this.stAppView.renderAppIssuesForm(appIssues);
-    } else {
-      this.stAppView.renderSpa();
+  private bootstrapLibrary(context: EntryPoints.Suitelet.onRequestContext): void {
+    log.debug({ title: 'SuiteToolsApp:bootstrapLibrary() initiated', details: context });
+
+    // verify integrity of app settings before proceeding
+    const issues = [];
+    // check that settings were found
+    const settingsFound = this.stCommon.stSettings.getSettings();
+    if (!settingsFound) {
+      issues.push('SuiteToolsApp:bootstrapLibrary() did not find any settings');
     }
-  }
-
-  private performChecks(): string[] {
-    log.debug({ title: 'SuiteToolsApp:performChecks() initiated', details: null });
-    const results = [];
-
     // check that core configs are set
-    if (!this._stCommon.stSettings.cssUrl || !this._stCommon.stSettings.jsUrl) {
-      results.push(
-        'Core config settings were not set. SuiteTools has tried to fix issue. Please refresh the page. If issue persists, please contact your administrator.',
-      );
+    if (!this.stCommon.stSettings.cssUrl || !this.stCommon.stSettings.jsUrl) {
+      issues.push('Core config settings were not set.');
     }
-
-    if (results.length > 0) {
-      log.error({ title: 'SuiteToolsApp:performChecks() found issues', details: results });
+    // log app issues
+    if (issues.length > 0) {
+      log.error({ title: 'SuiteToolsApp:bootstrapLibrary() found issues', details: issues });
     }
-
-    return results;
   }
 
-  // /**
-  //  * Set session value.
-  //  *
-  //  * TODO: if still used move to SuiteToolsAppNetSuite?
-  //  *
-  //  * @param key - name of session variable
-  //  * @param value - value of session variable
-  //  */
-  // public setSession(key: string, value: string): void {
-  //   log.debug({ title: 'SuiteToolsApp:setSession() initiated with', details: { key: key, value: value } });
+  private bootstrapSpa(context: EntryPoints.Suitelet.onRequestContext): void {
+    const stAppView = new SuiteToolsAppView(context, this);
 
-  //   this.stCommon.runtime.getCurrentSession().set({
-  //     name: key,
-  //     value: value,
-  //   });
-  // }
+    try {
+      // get the app settings
+      const settingsFound = this._stCommon.stSettings.getSettings();
+      if (!settingsFound) {
+        // if no settings were found, initialize the app
+        log.error({ title: `SuiteToolsApp:bootstrapSpa() did not find any settings`, details: null });
+        this._stCommon.stSettings.initializeApp();
+      }
 
-  //   /**
-  //    * Get session value.
-  //    *
-  //    * TODO: if still used move to SuiteToolsAppNetSuite?
-  //    *
-  //    * @param key
-  //    * @returns session key
-  //    */
-  //   public getSession(key: string): string {
-  //     // log.debug({ title: 'SuiteToolsApp:getSession() initiated with', details: { key: key } });
+      // verify integrity of app settings before proceeding
+      const appIssues = [];
+      // check that core configs are set
+      if (!this._stCommon.stSettings.cssUrl || !this._stCommon.stSettings.jsUrl) {
+        appIssues.push('Core config settings were not set.');
+      }
 
-  //     // get it
-  //     const value = this.stCommon.runtime.getCurrentSession().get({ name: key });
-  //     // clear it
-  //     this.stCommon.runtime.getCurrentSession().set({ name: key, value: null });
-  //     // log.debug({ title: 'SuiteToolsApp:getSession() returning', details: value });
-
-  //     return value;
-  //   }
+      // render the SPA or issues form
+      if (appIssues.length === 0) {
+        // render the SPA
+        stAppView.renderSpa();
+      } else {
+        // log app issues and render the app issues form
+        log.error({ title: 'SuiteToolsApp:bootstrapSpa() found issues', details: appIssues });
+        stAppView.renderAppIssuesForm(appIssues);
+      }
+    } catch (e) {
+      // log the error and render the app error form
+      log.error({ title: 'SuiteToolsApp:bootstrapSpa() caught error', details: e });
+      stAppView.renderAppErrorForm(e);
+    }
+  }
 }
 
 /**
@@ -175,22 +136,22 @@ export class SuiteToolsApp {
  * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsAppView {
+  private _context: EntryPoints.Suitelet.onRequestContext;
   private _stApp: SuiteToolsApp;
 
   get stApp(): SuiteToolsApp {
     return this._stApp;
   }
 
-  constructor(stApp: SuiteToolsApp) {
-    // log.debug({ title: 'SuiteToolsAppView:constructor() initiated', details: null });
+  constructor(context: EntryPoints.Suitelet.onRequestContext, stApp: SuiteToolsApp) {
+    this._context = context;
     this._stApp = stApp;
   }
 
   /**
-   * Render SPA page
+   * Render SPA
    */
   public renderSpa(): void {
-    log.debug({ title: 'SuiteToolsAppView:renderSpa() initiated', details: null });
     const css = this.stApp.stCommon.stSettings.cssUrl;
     const js = this.stApp.stCommon.stSettings.jsUrl;
     let content = `<!doctype html>
@@ -207,20 +168,18 @@ export class SuiteToolsAppView {
   </body>
 </html>`;
     content += this.getPageFooterComments();
-    this.stApp.context.response.write(content);
+    this._context.response.write(content);
   }
 
   /**
-   * Renders the Application Error form.
+   * Render application error form.
    *
-   * @param appError - issues with the application that prevent it from running properly
+   * @param appError - application error
    */
-  public renderAppErrorForm(e: error.SuiteScriptError, devMode: boolean): void {
-    log.debug({ title: 'SuiteToolsAppView:renderAppErrorForm() initiated', details: e });
-
+  public renderAppErrorForm(e: error.SuiteScriptError): void {
     // build stack lines string for content from error if in dev mode
     let stackString = '';
-    if (devMode && Array.isArray(e.stack) && e.stack.length > 0) {
+    if (Array.isArray(e.stack) && e.stack.length > 0) {
       const stackLines = e.stack[0];
       log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLines', details: stackLines });
       const stackLinesArray = stackLines.split('at');
@@ -242,27 +201,21 @@ export class SuiteToolsAppView {
     <p>Please try your request again. If that doesn't work, please contact your administrator.</p>
   </div>
   <div class="mb-2">
-    <p>Oops. Something went wrong.</p>
-    <p>Please try your request again. If that doesn't work, please contact your administrator.</p>
-  </div>
-  <div class="mb-2">
     <p>${e.id}</p>
     <h3 class="text-xl">${e.name}</h3>
     <p>${e.message}</p>
     <p>${stackString}</p>
   </div>
 </div>`;
-    this.stApp.context.response.write(content);
+    this._context.response.write(content);
   }
 
   /**
-   * Renders the Application Issues form.
+   * Render application issues form.
    *
    * @param issues - issues with the application that prevent it from running properly
    */
   public renderAppIssuesForm(issues: string[]): void {
-    log.debug({ title: 'SuiteToolsAppView:renderAppIssuesForm() initiated', details: { issues: issues } });
-
     let issueString = '';
     for (const issue of issues) {
       issueString += `<li>${issue}</li>`;
@@ -279,7 +232,7 @@ export class SuiteToolsAppView {
     </ul>
   </div>
 </div>`;
-    this.stApp.context.response.write(content);
+    this._context.response.write(content);
   }
 
   private getPageFooterComments(): string {

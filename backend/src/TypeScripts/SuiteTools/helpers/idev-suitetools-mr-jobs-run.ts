@@ -25,12 +25,7 @@
 import { EntryPoints } from 'N/types';
 import * as log from 'N/log';
 import * as runtime from 'N/runtime';
-import {
-  SuiteToolsCommonLibraryNetSuiteRecord,
-  SuiteToolsCommonLibraryNetSuiteSuiteQl,
-} from '../idev-suitetools-common';
-const stLibNsSuiteQl = new SuiteToolsCommonLibraryNetSuiteSuiteQl(null);
-const stLibNsRecord = new SuiteToolsCommonLibraryNetSuiteRecord(null);
+import { SuiteToolsApp } from '../idev-suitetools-app';
 
 /**
  * getInputData() stage function
@@ -47,15 +42,18 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
         name: 'custscript_idev_st_mr_jobs_id',
       }),
     );
-    log.debug('getInputData() jobId', jobId);
+    const jobData = runtime.getCurrentScript().getParameter({
+      name: 'custscript_idev_st_mr_jobs_data',
+    });
     if (jobId) {
       // run the specified job
-      const inputData = [{ id: jobId }];
-      log.debug('getInputData() running for job #' + jobId, inputData);
+      const inputData = [{ id: jobId, data: jobData }];
+      log.debug('getInputData() running for job #' + jobId, null);
       return inputData;
     } else {
       // run all active jobs
-      return getJobs();
+      const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
+      return stApp.stCommon.stJobs.getJobs();
     }
   } catch (e) {
     log.error('getInputData() error', JSON.stringify(e));
@@ -70,42 +68,24 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
  */
 export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
   log.debug('reduce() initiated', JSON.stringify(context));
-  let result: object;
-  let completed = false;
-  // get the values from the context
-  // const values = context.values.map((value) => JSON.parse(value));
-  // log.debug('reduce() values =', values);
-
-  // get the record id from the context
+  let jobId = null;
+  let jobData: object;
   const values = JSON.parse(context.values[0]);
-  const jobId = values.id;
-  // const name = values.name;
-  // create new job run record
-  if (jobId) {
-    const jobRunRecordId = createJobRunRecord(jobId);
-
-    // execute the job
-    log.debug('reduce() executing job', { jobId });
-    switch (String(jobId)) {
-      case '1': // Recent Script Errors
-        result = getRecentScriptErrors();
-        completed = true;
-        log.debug('reduce() response.data', result);
-        break;
-      // case '2': // Test Job
-      //   // jobRecord = record.load({ type: type, id: id });
-      //   // jobRecord.setValue('isinactive', true);
-      //   // jobRecord.save();
-      //   log.audit('recordAction() inactivated', { type: type, id: id });
-      // break;
-      default:
-        log.error('record() error', `Unknown job id: ${jobId}`);
+  jobId = values.id;
+  // if we are supplied job data verify that it is valid
+  if (values.data) {
+    try {
+      jobData = JSON.parse(values.data);
+    } catch (e) {
+      log.error('reduce() jobData data was not a valid object', JSON.stringify(e));
     }
+  }
 
-    // update job run record after execution
-    updateJobRunRecord(String(jobRunRecordId), completed, JSON.stringify(result));
+  if (jobId) {
+    const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
+    stApp.stCommon.stJobs.runJob(jobId, jobData);
   } else {
-    log.error('reduce() error', 'No job id provided');
+    log.error('reduce() error', 'No job id found in context');
   }
 }
 
@@ -143,103 +123,4 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
   } catch (e) {
     log.error('summarize() error', JSON.stringify(e));
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getJobs(): any[] {
-  log.debug('getJobs() initiated', null);
-  const customRecord = 'customrecord_idev_suitetools_job';
-  const sql = `SELECT
-    ${customRecord}.id,
-    ${customRecord}.name,
-  FROM
-    ${customRecord}
-  WHERE
-    ${customRecord}.isinactive = 'F'
-  ORDER BY
-    ${customRecord}.id ASC`;
-  const sqlResults = stLibNsSuiteQl.query(sql);
-  if (sqlResults.length === 0) {
-    log.audit(`getJobs() - No active job records found`, null);
-  } else {
-    log.debug({ title: 'SuiteToolsApiModel:getJobs() returning', details: sqlResults });
-  }
-
-  return sqlResults;
-}
-
-function createJobRunRecord(id: string): number {
-  log.debug('createJobRunRecord() initiated', { id });
-  // save new job run record
-  const customRecord = 'customrecord_idev_suitetools_job_run';
-  const jobRunRecordId = stLibNsRecord.createCustomRecord(customRecord, {
-    custrecord_idev_st_mr_job_run_job_id: id,
-  });
-  log.debug({ title: 'SuiteToolsController:getJobInit() created job run record', details: jobRunRecordId });
-
-  return jobRunRecordId;
-}
-
-function updateJobRunRecord(id: string, completed: boolean, results: string) {
-  log.debug('updateJobRunRecord() initiated', { id, completed });
-  // update job run record
-  const customRecord = 'customrecord_idev_suitetools_job_run';
-  stLibNsRecord.updateCustomRecord(customRecord, id, {
-    custrecord_idev_st_mr_job_run_completed: completed,
-    custrecord_idev_st_mr_job_run_results: results,
-  });
-}
-
-// TODO update to use last execution date
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getRecentScriptErrors(): any[] {
-  log.debug({
-    title: `getScriptLogsViaSuiteQL() initiated`,
-    details: null,
-  });
-
-  // get the errors from the script execution log
-  let levels = ['ERROR', 'EMERGENCY', 'SYSTEM'];
-  // const date = '15';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let result: any[] = [];
-
-  let sql = `SELECT
-      ScriptNote.internalid AS id,
-      TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
-      ScriptNote.type,
-      script.scripttype,
-      BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
-      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
-    FROM ScriptNote
-    INNER JOIN script
-      ON ScriptNote.scripttype = script.id`;
-  // add where clause
-  const where: string[] = [];
-  if (levels) {
-    if (Array.isArray(levels)) {
-      levels = levels.map((type) => {
-        return `'${type.toUpperCase()}'`;
-      });
-      where.push(`ScriptNote.type IN (${levels.join(',')})`);
-    }
-  }
-
-  // TODO use something like this to get from last run date
-  // where.push(`ScriptNote.date >= TRUNC( SYSDATE ) - ${date}`);
-
-  where.push(`ScriptNote.date > SYSDATE - ( 15 / 1440 )`);
-  if (where.length > 0) {
-    sql += ` WHERE ${where.join(' AND ')}`;
-  }
-  // add order by
-  sql += ` ORDER BY ScriptNote.internalId DESC`;
-  const sqlResults = stLibNsSuiteQl.query(sql);
-  if (sqlResults.length !== 0) {
-    result = sqlResults;
-  }
-
-  return result;
 }

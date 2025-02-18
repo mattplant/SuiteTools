@@ -173,9 +173,11 @@ export class SuiteToolsApiGet {
         break;
       case 'job':
         response = this.getJob(requestParams);
+        response.data = this.cleanJobData(response.data);
         break;
       case 'jobs':
         response = this.getJobs(requestParams);
+        response = this.cleanJobsData(response);
         break;
       case 'jobRun':
         response = this.getJobRun(requestParams);
@@ -283,6 +285,28 @@ export class SuiteToolsApiGet {
         if (lastlogin) {
           record.lastLogin = lastlogin.lastLogin;
         }
+      });
+    }
+
+    return response;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private cleanJobData(data: any): object {
+    // switch isinactive values to active values
+    if (data.isinactive === 'F') {
+      data.isinactive = false;
+    } else {
+      data.isinactive = true;
+    }
+
+    return data;
+  }
+
+  private cleanJobsData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      response.data.forEach((record) => {
+        this.cleanJobData(record);
       });
     }
 
@@ -964,9 +988,6 @@ export class SuiteToolsApiPost {
       case 'initiateJob':
         response = this.initiateJob(requestBody.data);
         break;
-      case 'lastlogin':
-        response = this.initiateLastLogins(requestBody.data);
-        break;
       default:
         throw error.create({
           name: 'SUITE_TOOLS_INVALID_PARAMETER',
@@ -983,73 +1004,24 @@ export class SuiteToolsApiPost {
    * Initiate Job
    *
    * @param requestParams
-   * @returns settings
+   * @returns message that the job was initiated
    */
   private initiateJob(requestParams: RequestParams): Response {
     log.debug({ title: 'SuiteToolsApiPost:initiateJob() initiated', details: requestParams });
     let id = requestParams.id;
+    let data: object;
     if (!id) {
       // set to 0 to run all active jobs
       id = '0';
     }
-    // initiate the job run
-    this.stApi.stApiModel.initiateJob(id);
+    // check to see if requestParams.data exists
+    if (requestParams.data && typeof requestParams.data === 'object') {
+      data = requestParams.data;
+      log.debug({ title: 'SuiteToolsApiPost:initiateJob() includes data object', details: data });
+    }
+    // initiate the job
+    this.stApi.stApiModel.initiateJob(id, data);
     const message = 'InitiateJob() initiated with with id of ' + id;
-
-    return {
-      status: 200,
-      data: {},
-      message: message,
-    };
-  }
-
-  /**
-   * Initiate last logins script.
-   *
-   * @param requestBodyData
-   * @returns Response
-   */
-  private initiateLastLogins(requestBodyData: object): Response {
-    log.debug({ title: 'SuiteToolsApiPost:initiateLastLogins() initiated', details: requestBodyData });
-    this._stApi.assertIsRequestBodyData(requestBodyData);
-    this.stApi.stCommon.stSettings.getSettings();
-    let message = '';
-    let entityRecords = [];
-    // get the entity records (integration and tokens) from the request body
-    if (requestBodyData && Array.isArray(requestBodyData) && requestBodyData.length > 0) {
-      entityRecords = requestBodyData;
-    }
-    // users
-    const response = this.stApi.stApiModel.getUsers('U');
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      for (const user of response.data) {
-        entityRecords.push({
-          type: 'user',
-          name: user['email'],
-        });
-      }
-      log.debug({
-        title: 'SuiteToolsApiPost:initiateLastLogins() identity records standardizedValues',
-        details: entityRecords,
-      });
-    }
-    if (entityRecords.length > 0) {
-      // submit the task
-      const params = {
-        custscript_idev_st_mr_logins_entity: JSON.stringify(entityRecords),
-        custscript_idev_st_mr_logins_set_id: this.stApi.stCommon.stSettings.recordId,
-      };
-      const scriptTaskId = this.stApi.stCommon.stLib.stLibNs.stLibNsTask.submit(
-        'MAP_REDUCE',
-        'customscript_idev_suitetools_mr_logins',
-        'customdeploy_idev_suitetools_mr_logins',
-        params,
-      );
-      message = 'Last logins script initiated with task id of ' + scriptTaskId;
-      // NOTE: the results are saved in the summary step of the map/reduce script
-    } else {
-      message = 'No active users found';
-    }
 
     return {
       status: 200,
@@ -1097,7 +1069,7 @@ export class SuiteToolsApiPut {
     const devMode = requestBodyData.devMode;
     const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
     this.stApi.stCommon.stSettings.getSettings();
-    const success = this.stApi.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecord(
+    const success = this.stApi.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(
       this.stApi.stCommon.appSettingsRecord,
       String(this.stApi.stCommon.stSettings.recordId),
       updateSettings,
@@ -1231,16 +1203,19 @@ export class SuiteToolsApiModel {
    * Intiate Job
    *
    * @param id - the job to run
+   * @param data - the data to pass to the job
+   *
    * @returns jobId
    */
-  public initiateJob(id: string) {
-    // log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: { id: id } });
+  public initiateJob(id: string, data?: object): void {
+    log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: { id: id, data: data } });
     const scriptTask = task.create({
       taskType: task.TaskType.MAP_REDUCE,
       scriptId: 'customscript_idev_suitetools_mr_jobs_run',
       deploymentId: 'customdeploy_idev_suitetools_mr_jobs_run',
       params: {
         custscript_idev_st_mr_jobs_id: id,
+        custscript_idev_st_mr_jobs_data: data ? JSON.stringify(data) : null,
       },
     });
     const scriptTaskId = scriptTask.submit();
@@ -1263,6 +1238,10 @@ export class SuiteToolsApiModel {
     const sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
+      ${customRecord}.isinactive,
+      ${customRecord}.custrecord_idev_st_mr_job_job_id as jobId,
+      ${customRecord}.custrecord_idev_st_mr_job_config as config,
+      ${customRecord}.custrecord_idev_st_mr_job_desc as description,
     FROM
       ${customRecord}
     WHERE
@@ -1295,6 +1274,10 @@ export class SuiteToolsApiModel {
     let sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
+      ${customRecord}.isinactive,
+      ${customRecord}.custrecord_idev_st_mr_job_job_id as jobId,
+      ${customRecord}.custrecord_idev_st_mr_job_config as config,
+      ${customRecord}.custrecord_idev_st_mr_job_desc as description,
     FROM
       ${customRecord}`;
     // add where clause

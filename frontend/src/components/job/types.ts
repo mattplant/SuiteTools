@@ -1,6 +1,9 @@
 export interface Job {
-  id: number;
+  id: number; // internalid
   name: string;
+  isinactive: boolean;
+  config: string; // JSON string configuration
+  description: string;
   // additional properties
   urlDetail?: string;
 }
@@ -23,6 +26,27 @@ export function assertIsJob(data: unknown): asserts data is Job {
   }
   if (typeof data.name !== 'string') {
     throw new Error('Job data "name" field is not a string');
+  }
+  // isinactive
+  if (!('isinactive' in data)) {
+    throw new Error('Job data is missing the "isinactive" field');
+  }
+  if (typeof data.isinactive !== 'boolean') {
+    throw new Error('Job data "isinactive" field is not a boolean');
+  }
+  // config
+  if (!('config' in data)) {
+    throw new Error('Job data is missing the "config" field');
+  }
+  // if (typeof data.config !== 'string') {
+  //   throw new Error('Job data "config" field is not a string');
+  // }
+  // description
+  if (!('description' in data)) {
+    throw new Error('Job data is missing the "description" field');
+  }
+  if (typeof data.description !== 'string') {
+    throw new Error('Job data "description" field is not a string');
   }
   // ADDITIONAL PROPERTIES
   // urlDetail

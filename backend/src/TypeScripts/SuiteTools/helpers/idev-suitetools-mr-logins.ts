@@ -141,7 +141,7 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
       String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_logins_set_id' })),
     );
     const stLibNsRecord = new SuiteToolsCommonLibraryNetSuiteRecord(null);
-    const success = stLibNsRecord.updateCustomRecord(
+    const success = stLibNsRecord.updateCustomRecordEntry(
       'customrecord_idev_suitetools_settings',
       appSettingsRecordId,
       updateSettings,

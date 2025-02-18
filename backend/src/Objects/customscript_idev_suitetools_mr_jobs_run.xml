@@ -34,12 +34,40 @@
       <setting></setting>
       <storevalue>T</storevalue>
     </scriptcustomfield>
+    <scriptcustomfield scriptid="custscript_idev_st_mr_jobs_data">
+      <accesslevel>2</accesslevel>
+      <applyformatting>F</applyformatting>
+      <checkspelling>F</checkspelling>
+      <defaultchecked>F</defaultchecked>
+      <defaultselection></defaultselection>
+      <defaultvalue></defaultvalue>
+      <description>Any required data for the job to run?</description>
+      <displayheight></displayheight>
+      <displaytype>NORMAL</displaytype>
+      <displaywidth></displaywidth>
+      <dynamicdefault></dynamicdefault>
+      <fieldtype>TEXT</fieldtype>
+      <help>Any required data for the job to run?</help>
+      <isformula>F</isformula>
+      <ismandatory>F</ismandatory>
+      <label>Job Data</label>
+      <linktext></linktext>
+      <maxlength></maxlength>
+      <maxvalue></maxvalue>
+      <minvalue></minvalue>
+      <onparentdelete></onparentdelete>
+      <searchlevel>2</searchlevel>
+      <selectrecordtype></selectrecordtype>
+      <setting></setting>
+      <storevalue>T</storevalue>
+    </scriptcustomfield>
   </scriptcustomfields>
   <scriptdeployments>
     <scriptdeployment scriptid="customdeploy_idev_suitetools_mr_jobs_run">
       <buffersize>1</buffersize>
       <concurrencylimit>1</concurrencylimit>
       <custscript_idev_st_mr_jobs_id></custscript_idev_st_mr_jobs_id>
+      <custscript_idev_st_mr_jobs_data></custscript_idev_st_mr_jobs_data>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <queueallstagesatonce>T</queueallstagesatonce>

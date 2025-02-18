@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
-import { saveData } from '../../api/api';
-import { SavedEndpoint, SavedData, SaveMethod } from '../../api/types';
+import { postData } from '../../api/api';
+import { PostEndpoint, HttpResponse } from '../../api/types';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
 import { useAppSettingsContext } from '../AppSettingsContext';
@@ -15,16 +15,18 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
   const { settings } = useAppSettingsContext();
   const appScriptUrl = settings?.appUrl;
-  const initiateJobClick = async () => {
-    console.log('initiateJobClick() iniitiated');
+  const initiateJobsClick = async () => {
+    console.log('Jobs Crieria: initiateJobsClick() iniitiated');
     // make API call
-    const responseData: SavedData = await saveData(SavedEndpoint.INITIATEJOB, SaveMethod.POST, { id: 0 });
-    console.log('initiateJobClick() response', responseData);
+    const responseData: HttpResponse = await postData(PostEndpoint.INITIATEJOB, { id: 0 });
+    console.log('Jobs Crieria: initiateJobsClick() response', responseData);
     if (responseData.status === 200) {
       // redirect to job status page
-      window.location.href = appScriptUrl + `#/jobRuns`;
+      const redirectToPage = appScriptUrl + `#/jobRuns`;
+      console.log('Jobs Crieria: initiateJobsClick() redirectToPage', redirectToPage);
+      window.location.href = redirectToPage;
     } else {
-      console.error('Failed to initiate job');
+      console.error('Failed to initiate jobs');
     }
   };
 
@@ -45,7 +47,7 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
         type="button"
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.preventDefault();
-          initiateJobClick();
+          initiateJobsClick();
         }}
       >
         Run Jobs
