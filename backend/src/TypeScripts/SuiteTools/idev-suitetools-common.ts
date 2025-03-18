@@ -138,21 +138,24 @@ export class SuiteToolsCommonJobs {
       name: 'Recent Script Errors',
       custrecord_idev_st_mr_job_desc:
         'The job notifies user of recent errors (Error, Emergency, System) across all script execution logs.',
+      custrecord_idev_st_mr_job_scheduled: true,
+      custrecord_idev_st_mr_job_notify: true,
     };
     this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRecord, recentScriptErrorsJob);
     // last logins job
     const lastLoginsJob = {
       name: 'Last Logins',
       custrecord_idev_st_mr_job_desc: 'This job get the last logins for the users, tokens and integrations.',
+      custrecord_idev_st_mr_job_scheduled: false, // script can not be scheduled since it needs to be run in UI
+      custrecord_idev_st_mr_job_notify: false, // no need to notify user since not able to be scheduled
     };
     this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRecord, lastLoginsJob);
-
     log.debug({ title: `SuiteToolsCommonJobs::initializeJobs() completed`, details: null });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getJobs(): any[] {
-    log.debug('SuiteToolsCommonJobs:getJobs() initiated', null);
+  public getScheduledJobs(): any[] {
+    log.debug('SuiteToolsCommonJobs:getScheduledJobs() initiated', null);
 
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
@@ -162,13 +165,14 @@ export class SuiteToolsCommonJobs {
       ${customRecord}
     WHERE
       ${customRecord}.isinactive = 'F'
+      AND custrecord_idev_st_mr_job_scheduled = 'T'
     ORDER BY
       ${customRecord}.id ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      log.audit(`getJobs() - No active job records found`, null);
+      log.audit(`getJobs() - No active scheduled job records found`, null);
     } else {
-      log.debug({ title: 'SuiteToolsCommonJobs:getJobs() returning', details: sqlResults });
+      log.debug({ title: 'SuiteToolsCommonJobs:getScheduledJobs() returning', details: sqlResults });
     }
 
     return sqlResults;
@@ -211,6 +215,34 @@ export class SuiteToolsCommonJobs {
   }
 
   /**
+   * Get Job Last Run
+   *
+   * Look up via the job run records when the last time a job was run
+   *
+   * @param id - the job to look up
+   * @returns results
+   */
+  public getJobLastRun(id: string): string {
+    log.debug({ title: `SuiteToolsCommonJobs:getJobLastRun() initiated`, details: { id: id } });
+    let result = '';
+    const customRecord = this._appJobRunRecord;
+    const sql = `SELECT TOP 1
+        TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS lastrun
+      FROM
+        ${customRecord}
+      WHERE
+        ${customRecord}.custrecord_idev_st_mr_job_run_job_id = ${id}
+      ORDER by
+        ${customRecord}.created DESC`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length !== 0) {
+      result = String(sqlResults[0].lastrun);
+    }
+
+    return result;
+  }
+
+  /**
    * Runs job
    *
    * @param jobId
@@ -222,25 +254,46 @@ export class SuiteToolsCommonJobs {
     let result: object;
     let completed = false;
     if (jobId) {
-      // create new job run record
-      const jobRunId = this.createJobRunRecord(jobId);
-      // execute the job
-      log.debug('SuiteToolsCommonJobs:runJob() executing job', jobId);
-      switch (String(jobId)) {
-        case '1': // Recent Script Errors
-          result = this.getRecentScriptErrorsJob();
-          completed = true;
-          break;
-        case '2': // Last Logins
-          result = this.initiateLastLoginsJob(jobData);
-          completed = true;
-          break;
-        default:
-          log.error('SuiteToolsCommonJobs:runJob() error', `Unknown job id: ${jobId}`);
+      // load job details
+      const jobDetails = this.stCommon.stLib.stLibNs.stLibNsRecord.getCustomRecord(this._appJobRecord, Number(jobId));
+      if (jobDetails) {
+        log.debug('SuiteToolsCommonJobs:runJob() job details', jobDetails);
+        const lastRun = this.getJobLastRun(jobId);
+        // create new job run record
+        const jobRunId = this.createJobRunRecord(jobId);
+        // execute the job
+        log.debug('SuiteToolsCommonJobs:runJob() executing job', jobId);
+        switch (String(jobId)) {
+          case '1': // Recent Script Errors
+            result = this.getRecentScriptErrorsJob(lastRun);
+            completed = true;
+            break;
+          case '2': // Last Logins
+            result = this.initiateLastLoginsJob(jobData);
+            completed = true;
+            break;
+          default:
+            log.error('SuiteToolsCommonJobs:runJob() error', `Unknown job id: ${jobId}`);
+        }
+        log.debug('SuiteToolsCommonJobs:runJob() job processed', { jobId, completed, result });
+        // update job run record after execution
+        this.updateJobRunRecord(String(jobRunId), completed, JSON.stringify(result));
+        // send notification email if job is set to notify
+        const notify = jobDetails.getValue('custrecord_idev_st_mr_job_notify');
+        if (notify) {
+          const notifyAuthor = this.stCommon.stSettings.notifyAuthor;
+          const notifyEmail = this.stCommon.stSettings.notifyEmail;
+          this.stCommon.stLib.stLibNs.stLibNsEmail.sendNotification(
+            notifyAuthor,
+            [notifyEmail],
+            notifyEmail,
+            'SuiteTools Job Notification',
+            JSON.stringify(result),
+          );
+        }
+      } else {
+        log.error('SuiteToolsCommonJobs:runJob() error', `Job details not found for job id: ${jobId}`);
       }
-      log.debug('SuiteToolsCommonJobs:runJob() job processed', { jobId, completed, result });
-      // update job run record after execution
-      this.updateJobRunRecord(String(jobRunId), completed, JSON.stringify(result));
     } else {
       log.error('SuiteToolsCommonJobs:runJob() error', 'No job id provided');
     }
@@ -249,24 +302,19 @@ export class SuiteToolsCommonJobs {
   /**
    * Gets recent script errors
    *
+   * @param lastRun - last run timestamp
    * @returns recent script errors
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getRecentScriptErrorsJob(): any[] {
-    // TODO update to use last execution date
-
+  public getRecentScriptErrorsJob(lastRun: string): any[] {
     log.debug({
       title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`,
-      details: null,
+      details: { lastRun },
     });
-
     // get the errors from the script execution log
     let levels = ['ERROR', 'EMERGENCY', 'SYSTEM'];
-    // const date = '15';
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any[] = [];
-
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -288,11 +336,13 @@ export class SuiteToolsCommonJobs {
         where.push(`ScriptNote.type IN (${levels.join(',')})`);
       }
     }
-
-    // TODO use something like this to get from last run date
-    // where.push(`ScriptNote.date >= TRUNC( SYSDATE ) - ${date}`);
-
-    where.push(`ScriptNote.date > SYSDATE - ( 15 / 1440 )`);
+    // add in time filter
+    if (lastRun) {
+      where.push(`ScriptNote.date > TO_DATE('${lastRun}', 'YYYY-MM-DD HH24:MI:SS')`);
+    } else {
+      where.push(`ScriptNote.date > SYSDATE - ( 60 / 1440 )`); // last 60 minutes
+    }
+    // add where clause
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
@@ -379,6 +429,8 @@ export class SuiteToolsCommonSettings {
   private _cssUrl: string;
   private _jsUrl: string;
   private _devMode: boolean;
+  private _notifyAuthor: number;
+  private _notifyEmail: string;
   private _lastLogins: LastLogins;
 
   get stCommon(): SuiteToolsCommon {
@@ -398,6 +450,12 @@ export class SuiteToolsCommonSettings {
   }
   get devMode(): boolean {
     return this._devMode;
+  }
+  get notifyAuthor(): number {
+    return this._notifyAuthor;
+  }
+  get notifyEmail(): string {
+    return this._notifyEmail;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get lastLogins(): LastLogins {
@@ -421,6 +479,8 @@ export class SuiteToolsCommonSettings {
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_css_url AS cssUrl,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_js_url AS jsUrl,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_dev_mode AS devMode,
+      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_notify_author AS notifyAuthor,
+      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_notify_email AS notifyEmail,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_last_logins AS lastLogins,
     FROM
       ${this.stCommon.appSettingsRecord}
@@ -436,6 +496,8 @@ export class SuiteToolsCommonSettings {
       this._cssUrl = sqlResults[0].cssurl;
       this._jsUrl = sqlResults[0].jsurl;
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+      this._notifyAuthor = sqlResults[0].notifyauthor;
+      this._notifyEmail = sqlResults[0].notifyemail;
       this._lastLogins = JSON.parse(sqlResults[0].lastlogins);
       this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
       settingsFound = true;
@@ -444,38 +506,29 @@ export class SuiteToolsCommonSettings {
     return settingsFound;
   }
 
-  public setCoreConfigs(): void {
-    log.audit({ title: `SuiteToolsCommonSettings:setCoreConfigs() initiated`, details: '' });
-
-    // set the css and js urls
-    const coreConfigs = {
-      custrecord_idev_st_config_css_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile),
-      custrecord_idev_st_config_js_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile),
-    };
-    // update the settings record
-    const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(
-      this.stCommon.appSettingsRecord,
-      String(this._recordId),
-      coreConfigs,
-    );
-
-    log.audit({ title: `SuiteToolsCommonSettings:setCoreConfigs() completed successfully?`, details: success });
-  }
-
   public initializeApp(): void {
     log.audit({ title: `SuiteToolsCommonSettings:initializeApp() initiated`, details: '' });
 
-    // set the css and js urls
-    const coreConfigs = {
-      custrecord_idev_st_config_css_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile),
-      custrecord_idev_st_config_js_url: this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile),
+    const cssUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile);
+    const jsUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile);
+    const notifyEmail = this.stCommon.runtime.getCurrentUser().email;
+    const configs = {
+      custrecord_idev_st_config_css_url: cssUrl,
+      custrecord_idev_st_config_js_url: jsUrl,
+      custrecord_idev_st_setting_dev_mode: false,
+      custrecord_idev_st_setting_notify_author: this.stCommon.runtime.getCurrentUser().id,
+      custrecord_idev_st_setting_notify_email: notifyEmail,
     };
-    this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this.stCommon.appSettingsRecord, coreConfigs);
+    const recId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(
+      this.stCommon.appSettingsRecord,
+      configs,
+    );
+    log.debug({ title: `SuiteToolsCommonSettings:initializeApp() created settings record`, details: recId });
 
     // initialize the jobs
     this.stCommon.stJobs.initializeJobs();
 
-    log.audit({ title: `SuiteToolsCommonSettings:initializeApp() completed`, details: null });
+    log.debug({ title: `SuiteToolsCommonSettings:initializeApp() completed`, details: null });
   }
 }
 
@@ -651,31 +704,35 @@ export class SuiteToolsCommonLibraryNetSuiteEmail {
    * @param subject - email subject
    * @param content - email core content
    */
-  public sendNotification(subject: string, content: string) {
+  public sendNotification(
+    author: number,
+    recipients: [number] | [string],
+    replyTo: string,
+    subject: string,
+    body: string,
+  ): void {
     log.debug({
       title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() initiated',
-      details: { subject: subject },
+      details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body },
     });
 
-    // TODO lookup instead of hardcode these
-    // override values as needed
-    const author = 123456789; // get from current user
-    const replyTo = 'i@idev.systems'; // get from current user
-
-    // TODO add recipient logic
-    const recipients: string | string[] = replyTo; // default to replyTo
-    // recipients = replyTo;
-    // log.debug('sendNotification() recipients', recipients);
-
-    // TODO add wrapper content around content
-    const body = content;
-
-    // send email
-    email.send({ author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body });
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() email sent',
-      details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject },
+      title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() sending email',
+      details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body },
     });
+    // send email
+    try {
+      email.send({ author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body });
+    } catch (error) {
+      log.error({
+        title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() error sending email',
+        details: { error: error },
+      });
+    }
+    // log.debug({
+    //   title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() email sent',
+    //   details: null,
+    // });
   }
 }
 

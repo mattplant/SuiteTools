@@ -1,6 +1,13 @@
 export type Settings = {
-  devMode: boolean;
+  // app settings
   appUrl: string;
+  // core configurations
+  cssUrl: string;
+  jsUrl: string;
+  // settings
+  devMode: boolean;
+  notifyEmail: string;
+  // storage settings
   lastLogins: LastLogins;
   // system
   accountId: string;
@@ -18,6 +25,7 @@ export type Settings = {
   userRole: string;
   userRoleId: number;
   userSubsidiary: number;
+  // user permissions
   isAdmin: true;
 };
 

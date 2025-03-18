@@ -63,6 +63,15 @@ export function JobResult({ data, modal }: Props) {
       <p>
         <b>Description</b>: {data.description}
       </p>
+      <p>
+        <b>Scheduled</b>: {data.scheduled ? 'Yes' : 'No'}
+      </p>
+      <p>
+        <b>Notify</b>: {data.notify ? 'Yes' : 'No'}
+      </p>
+      <p>
+        <b>Last Run</b>: {data.lastRun}
+      </p>
       <Button.Group>
         {modal && (
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>

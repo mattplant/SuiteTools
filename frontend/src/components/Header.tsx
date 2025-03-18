@@ -20,20 +20,29 @@ export default function Header() {
       </NavbarBrand>
       <NavbarToggle />
       <NavbarCollapse>
-        <Dropdown color="light" label={settings?.envType} dismissOnClick={true}>
-          <p>----------</p>
-          <p>NetSuite</p>
-          <p>----------</p>
-          <p>Environment Type: {settings?.envType}</p>
-          <p>Account Id: {settings?.accountId}</p>
-          <p>Version: {settings?.version}</p>
-          <p>Processors: {settings?.processorCount}</p>
-          <p>Queues: {settings?.queueCount}</p>
-          <p>----------</p>
-          <p>SuiteTools</p>
-          <p>----------</p>
-          <p>app-bundle: {settings?.appBundle}</p>
-        </Dropdown>
+        <NavbarLink>
+          <Dropdown color="light" label={settings?.envType} dismissOnClick={true}>
+            <p>----------</p>
+            <a
+              href={'/app/center/card.nl?sc=-29&whence='}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              NetSuite
+            </a>
+            <p>----------</p>
+            <p>Environment Type: {settings?.envType}</p>
+            <p>Account Id: {settings?.accountId}</p>
+            <p>Version: {settings?.version}</p>
+            <p>Processors: {settings?.processorCount}</p>
+            <p>Queues: {settings?.queueCount}</p>
+            <p>----------</p>
+            <p>SuiteTools</p>
+            <p>----------</p>
+            <p>app-bundle: {settings?.appBundle}</p>
+          </Dropdown>
+        </NavbarLink>
         <NavbarLink>
           <Dropdown color="light" label="Tools" dismissOnClick={true}>
             <Dropdown.Item>

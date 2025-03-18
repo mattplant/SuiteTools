@@ -53,7 +53,7 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
     } else {
       // run all active jobs
       const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
-      return stApp.stCommon.stJobs.getJobs();
+      return stApp.stCommon.stJobs.getScheduledJobs();
     }
   } catch (e) {
     log.error('getInputData() error', JSON.stringify(e));

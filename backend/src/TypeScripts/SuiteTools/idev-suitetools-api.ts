@@ -174,6 +174,7 @@ export class SuiteToolsApiGet {
       case 'job':
         response = this.getJob(requestParams);
         response.data = this.cleanJobData(response.data);
+        response.data = this.addJobLastRun(response.data);
         break;
       case 'jobs':
         response = this.getJobs(requestParams);
@@ -311,6 +312,18 @@ export class SuiteToolsApiGet {
     }
 
     return response;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private addJobLastRun(data: any): object {
+    log.debug({ title: 'SuiteToolsApiGet:addJobLastRun() initiated', details: { data } });
+
+    // check if data exists and that data is an object
+    if (typeof data === 'object' && data !== null && data.id) {
+      data.lastRun = this.stApi.stCommon.stJobs.getJobLastRun(data.id);
+    }
+
+    return data;
   }
 
   // // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -688,12 +701,21 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getSettings(): Response {
+    // load settings from the settings custom record
     this.stApi.stCommon.stSettings.getSettings();
+    // build the settings object from this record and other sources
     const result = {
-      devMode: this.stApi.stCommon.stSettings.devMode,
-      appUrl: this.stApi.stCommon.appUrl,
-      lastLogins: this.stApi.stCommon.stSettings.lastLogins,
-      // system
+      // app settings
+      appUrl: this.stApi.stCommon.appUrl, // hardcoded in the app
+      // core configurations
+      cssUrl: this.stApi.stCommon.stSettings.cssUrl, // from custrecord_idev_st_config_css_url
+      jsUrl: this.stApi.stCommon.stSettings.jsUrl, // from custrecord_idev_st_config_js_url
+      // settings
+      devMode: this.stApi.stCommon.stSettings.devMode, // from custrecord_idev_st_setting_dev_mode
+      notifyEmail: this.stApi.stCommon.stSettings.notifyEmail, // from custrecord_idev_st_setting_notify_email
+      // storage settings
+      lastLogins: this.stApi.stCommon.stSettings.lastLogins, // from custrecord_idev_st_config_last_logins
+      // system (these are all from the runtime object)
       accountId: this.stApi.stCommon.runtime.accountId,
       envType: this.stApi.stCommon.runtime.envType,
       isProduction: this.stApi.stCommon.isProduction,
@@ -701,7 +723,7 @@ export class SuiteToolsApiGet {
       processorCount: this.stApi.stCommon.runtime.processorCount,
       queueCount: this.stApi.stCommon.runtime.queueCount,
       appBundle: this.stApi.stCommon.stSettings.appBundle,
-      // user
+      // user - these are all from the runtime object getCurrentUser() method
       userId: this.stApi.stCommon.runtime.getCurrentUser().id,
       userName: this.stApi.stCommon.runtime.getCurrentUser().name,
       userEmail: this.stApi.stCommon.runtime.getCurrentUser().email,
@@ -710,7 +732,8 @@ export class SuiteToolsApiGet {
       userRole: this.stApi.stCommon.runtime.getCurrentUser().roleId, // flipped to have the roleId integer and
       userRoleId: this.stApi.stCommon.runtime.getCurrentUser().role, // the role string like accountId, userId
       userSubsidiary: this.stApi.stCommon.runtime.getCurrentUser().subsidiary,
-      isAdmin: this.stApi.stCommon.isAdmin,
+      //
+      isAdmin: this.stApi.stCommon.isAdmin, // method based of the runtime object getCurrentUser() method role value
     };
 
     return { data: result };
@@ -1239,9 +1262,10 @@ export class SuiteToolsApiModel {
       ${customRecord}.id,
       ${customRecord}.name,
       ${customRecord}.isinactive,
-      ${customRecord}.custrecord_idev_st_mr_job_job_id as jobId,
       ${customRecord}.custrecord_idev_st_mr_job_config as config,
       ${customRecord}.custrecord_idev_st_mr_job_desc as description,
+      ${customRecord}.custrecord_idev_st_mr_job_scheduled as scheduled,
+      ${customRecord}.custrecord_idev_st_mr_job_notify as notify,
     FROM
       ${customRecord}
     WHERE
@@ -1275,7 +1299,6 @@ export class SuiteToolsApiModel {
       ${customRecord}.id,
       ${customRecord}.name,
       ${customRecord}.isinactive,
-      ${customRecord}.custrecord_idev_st_mr_job_job_id as jobId,
       ${customRecord}.custrecord_idev_st_mr_job_config as config,
       ${customRecord}.custrecord_idev_st_mr_job_desc as description,
     FROM
@@ -1292,7 +1315,7 @@ export class SuiteToolsApiModel {
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
-    sql += ` ORDER BY name ASC`;
+    sql += ` ORDER BY ${customRecord}.id ASC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No job records found`;
@@ -2072,15 +2095,17 @@ export class SuiteToolsApiModel {
   public getUser(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
     const response: Response = { data: {} };
-    const sql = `SELECT
+    let sql = `SELECT
       employee.id,
       employee.isinactive,
       employee.email,
       employee.entityid AS name,
       BUILTIN.DF( employee.supervisor ) AS supervisor,
-      employee.title,
-      LISTAGG(role.name, ', ') WITHIN GROUP (ORDER BY role.name) AS role_names,
-      LISTAGG(role.id, ', ') WITHIN GROUP (ORDER BY role.id) AS role_ids
+      employee.title`; //,
+    // TODO add back - functionality broke with release of 2025.1
+    // LISTAGG(role.name, ', ') WITHIN GROUP (ORDER BY role.name) AS role_names,
+    // LISTAGG(role.id, ', ') WITHIN GROUP (ORDER BY role.id) AS role_ids
+    sql += `
     FROM employee
       INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
       INNER JOIN role ON ( role.id = employeerolesforsearch.role )
@@ -2120,10 +2145,12 @@ export class SuiteToolsApiModel {
       employee.email,
       employee.entityid AS name,
       employee.title,
-      MAX(BUILTIN.DF( employee.supervisor )) AS supervisor,
-      LISTAGG(role.name, ', ') WITHIN GROUP (ORDER BY role.name) AS role_names,
-      LISTAGG(role.id, ', ') WITHIN GROUP (ORDER BY role.id) AS role_ids
-    FROM employee
+      MAX(BUILTIN.DF( employee.supervisor )) AS supervisor`; // ,
+    // TODO add back - functionality broke with release of 2025.1
+    // LISTAGG(role.name, ', ') WITHIN GROUP (ORDER BY role.name) AS role_names,
+    // LISTAGG(role.id, ', ') WITHIN GROUP (ORDER BY role.id) AS role_ids
+    sql += `
+      FROM employee
       INNER JOIN employeerolesforsearch ON ( employeerolesforsearch.entity = employee.id )
       INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
     const where = [];

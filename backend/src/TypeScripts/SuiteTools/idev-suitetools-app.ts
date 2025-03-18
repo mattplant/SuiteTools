@@ -110,7 +110,7 @@ export class SuiteToolsApp {
       const appIssues = [];
       // check that core configs are set
       if (!this._stCommon.stSettings.cssUrl || !this._stCommon.stSettings.jsUrl) {
-        appIssues.push('Core config settings were not set.');
+        appIssues.push('Core config settings were not set. Refresh page to see if the issue has been resolved.');
       }
 
       // render the SPA or issues form

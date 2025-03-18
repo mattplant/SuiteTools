@@ -4,7 +4,10 @@ export interface Job {
   isinactive: boolean;
   config: string; // JSON string configuration
   description: string;
+  scheduled: boolean;
+  notify: boolean;
   // additional properties
+  lastRun?: string; // last run timestamp
   urlDetail?: string;
 }
 
@@ -48,7 +51,10 @@ export function assertIsJob(data: unknown): asserts data is Job {
   if (typeof data.description !== 'string') {
     throw new Error('Job data "description" field is not a string');
   }
+  // scheduled
+  // notify
   // ADDITIONAL PROPERTIES
+  // lastRun
   // urlDetail
   if ('urlDetail' in data && typeof data.urlDetail !== 'string') {
     throw new Error('Job data "urlDetail" field is not a string');
