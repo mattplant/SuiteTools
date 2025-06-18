@@ -34,7 +34,7 @@ import {
   ConcurrencyDetailDataViolations,
 } from '../components/concurrency/detail/types';
 import { ConcurrencyRequestData } from '../components/concurrency/request/types';
-
+// import { ConcurrencyRequestLogsData } from '../components/concurrency/requestLogs/types';
 // -----------------------------------------------------------------------------
 // SUMMARY
 // -----------------------------------------------------------------------------
@@ -269,7 +269,6 @@ export async function getConcurrencyRequestData(
  * @param accountId - the NetSuite account ID
  * @param startDate - the start date
  * @param endDate - the end date
- * @parem integration - // TODO need to get
  * @returns url - the url to get the concurrency summary
  */
 function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate: string): string {
@@ -277,20 +276,23 @@ function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate:
     'getConcurrencyRequestUrl() initiated with ' +
       JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }),
   );
+  // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_instances_v2&deploy=customdeploy_nsapm_cd_sl_instances_v2&testmode=F&startDateMS=1748941020000&endDateMS=1748941080000&compfil=(REDACTED)&allocatedList=&concurrencyMode=noallocation&integId=&sort=startDate&dir=ASC&pageLimit=10&startIndex=0
   const path = '/app/site/hosting/scriptlet.nl';
   const params = [];
-  params.push('script=customscript_nsapm_wsod_sl_wsologs_v2'); // script
-  params.push('deploy=customdeploy_nsapm_wsod_sl_wsologs_v2'); // deploy
+  params.push('script=customscript_nsapm_cd_sl_instances_v2'); // script (note cd instead of cm)
+  params.push('deploy=customdeploy_nsapm_cd_sl_instances_v2'); // deploy (note cd instead of cm)
   params.push('testmode=F'); // test mode
   params.push('startDateMS=' + startDate); // start date
   params.push('endDateMS=' + endDate); // end date
-  params.push('operation=search'); // operation
-  params.push('integration=-999'); // TODO Do I need to specify use another integration id?
   params.push('compfil=' + accountId); // account ID
-  params.push('sort=date'); // sort order
+  params.push('allocatedList='); // allocated list (optional)
+  params.push('concurrencyMode=noallocation'); // concurrency mode
+  params.push('integId='); // integration ID (optional)
+  params.push('sort=startDate'); // sort order
   params.push('dir=ASC'); // sort direction
   // params.push('pageLimit=10'); // page limit (note that we do not want to page unless we need to)
   // params.push('startIndex=0'); // start index (note that we do not want to page unless we need to)
+
   const url = path + '?' + params.join('&');
   console.log('getConcurrencyRequestUrl() returning ' + url);
 

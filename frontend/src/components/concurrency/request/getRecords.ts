@@ -18,22 +18,16 @@ export async function getConcurrencyRequest(
   if (window.location.href.includes('localhost')) {
     result = [
       {
-        date: 1733934299089,
-        email: 'i@idev.systems',
-        executionTime: 0.123,
+        startDate: 1748941035512,
+        type: 'RESTLET',
+        integrationId: 12345,
+        operation: 'RESTLET',
+        endDate: 1748941035984,
+        scriptId: 123,
+        integration: 'integration1',
+        scriptName: 'My test integration',
         status: 'FINISHED',
-        totalRecords: 0,
-        operationId: 'aa111a1a-bbb2-33cc-d44d-55555e5ee5e5',
-        frhtId: '111a11a1-2bb2-333-c44c-55e55ee55555',
-      },
-      {
-        date: 1733937418436,
-        email: 'i@idev.systems',
-        executionTime: 0.456,
-        status: 'FINISHED',
-        totalRecords: 0,
-        operationId: 'aa111a1a-bbb2-33cc-d44d-55555e5ee5e6',
-        frhtId: '111a11a1-2bb2-333-c44c-55e55ee55555',
+        wouldBeRejected: false,
       },
     ] as ConcurrencyRequestData;
   } else {

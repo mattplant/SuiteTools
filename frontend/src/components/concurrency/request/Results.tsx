@@ -10,13 +10,25 @@ type Props = {
 };
 
 const columns = [
-  { key: 'date', name: 'Date and Time' },
-  { key: 'email', name: 'Email' },
-  { key: 'executionTime', name: 'Execution Time' },
-  { key: 'totalRecords', name: 'Total Records' },
+  { key: 'startDate', name: 'Start Date' }, // Start Date and Time
+  { key: 'endDate', name: 'End Date' }, // End Date and Time
+  { key: 'type', name: 'Type' }, // Script Type
+  // { key: 'integrationId', name: 'IntegrationId' },
+  { key: 'integration', name: 'Integration' },
+  { key: 'operation', name: 'Operation' }, // Operation Type
+  // { key: 'scriptId', name: 'Script ID' },
+  { key: 'scriptName', name: 'Script Name' },
   { key: 'status', name: 'Status' },
-  { key: 'operationId', name: 'Profiler Details' },
-  { key: 'frhtId', name: 'FRHT ID' },
+  // { key: 'wouldBeRejected', name: 'Would Be Rejected' },
+
+  // ALTERNATIVE COLUMNS
+  // { key: 'date', name: 'Date and Time' },
+  // { key: 'email', name: 'Email' },
+  // { key: 'executionTime', name: 'Execution Time' },
+  // { key: 'totalRecords', name: 'Total Records' },
+  // { key: 'status', name: 'Status' },
+  // { key: 'operationId', name: 'Profiler Details' },
+  // { key: 'frhtId', name: 'FRHT ID' },
 ];
 
 export function ConcurrencyRequestResults({ data }: Props) {
@@ -28,13 +40,14 @@ export function ConcurrencyRequestResults({ data }: Props) {
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
         const formattedResult = {
-          date: formatDate(result.date), // Date and Time
-          email: result.email, // Email Address
-          executionTime: result.executionTime, // Execution Time
-          totalRecords: result.totalRecords, // Total Records
-          status: result.status, // Status
-          operationId: result.operationId, // Profiler Operation ID
-          frhtId: result.frhtId,
+          startDate: formatDate(result.startDate), // Start Date and Time
+          endDate: formatDate(result.endDate), // End Date and Time
+          type: result.type, // Script Type
+          integration: result.integration, // Integration Name
+          operation: result.operation, // Operation Type
+          scriptName: result.scriptName, // Script Name
+          status: result.status, // Request Status
+          // wouldBeRejected: result.wouldBeRejected, // Would Be Rejected
         };
         formattedResults.push(formattedResult);
       }

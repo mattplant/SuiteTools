@@ -1,29 +1,34 @@
 export type CriteriaFields = {
   startDate: string;
   endDate: string;
-  // TODO add integrationId: string;
 };
 
 interface ConcurrencyRequestRow {
-  date: string;
-  email: string;
-  executionTime: number;
+  startDate: string;
+  type: string;
+  // integrationId: number;
+  operation: string;
+  endDate: string;
+  // scriptId: number;
+  integration: string;
+  scriptName: string;
   status: string;
-  totalRecords: number;
-  operationId: string;
-  frhtId?: string;
+  // wouldBeRejected: boolean;
 }
 
 export interface ConcurrencyRequestRows extends Array<ConcurrencyRequestRow> {}
 
 interface ConcurrencyRequestDataRow {
-  date: number;
-  email: string;
-  executionTime: number;
+  startDate: number;
+  type: string;
+  integrationId: number;
+  operation: string;
+  endDate: number;
+  scriptId: number;
+  integration: string;
+  scriptName: string;
   status: string;
-  totalRecords: number;
-  operationId: string;
-  frhtId?: string;
+  wouldBeRejected: boolean;
 }
 
 export interface ConcurrencyRequestData extends Array<ConcurrencyRequestDataRow> {}

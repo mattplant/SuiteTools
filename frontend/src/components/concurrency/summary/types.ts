@@ -57,6 +57,6 @@ export interface ConcurrencySummaryDataViolations {
     resolutionMS: number;
   };
   series: {
-    violation: object;
+    violation: { [key: number]: number }; // key is dateMS, value is violation error rate percentage
   };
 }

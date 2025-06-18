@@ -57,7 +57,12 @@ export function ConcurrencyDetailOverview({ data }: Props) {
         <div className="flex-1 p-5">
           <h3 className="text-xl font-bold tracking-tight text-gray-900">Top Unallocated Integrations</h3>
           <span id="topIntegrations" className="text-sm text-gray-500">
-            {topIntegrationsArray.join('<br />')}
+            {topIntegrationsArray.map((item, idx) => (
+              <span key={idx}>
+                {item}
+                {idx < topIntegrationsArray.length - 1 && <br />}
+              </span>
+            ))}
           </span>
         </div>
       </div>

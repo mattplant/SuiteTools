@@ -11,7 +11,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const days = data!.concurrency.yCategories;
   const daysCount = days.length;
   const width = 1024;
-  const heightPerDay = 40;
+  const heightPerDay = 35;
   const height = daysCount * heightPerDay + margin.top + margin.bottom;
   const boundsHeight = height - margin.top - margin.bottom;
   const boundsWidth = width - margin.right - margin.left;
@@ -26,10 +26,21 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [peaks, height],
   );
-  // console.log('yScale', yScale);
+
+  // get violations
+  const violationData = data!.violations.series.violation;
+  const violations = useMemo(() => {
+    return Object.keys(violationData).map((key) => {
+      return {
+        key: Number(key),
+        value: violationData[Number(key)],
+      };
+    });
+  }, [violationData]);
+
   const colorScale = (value: number) => {
     if (value > 100) {
-      return '#B87241'; // orange for over the limit
+      return '#FBD38D'; // yellow brown for over the limit
     } else if (value > 75) {
       return '#A3C8E8'; // dark blue
     } else if (value > 50) {
@@ -38,12 +49,11 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
       return '#D1E4F4'; // light blue
     } else if (value > 0) {
       return '#E8F1F9'; // very light blue
-    } else if (value < 0) {
-      return '#B85B5B'; // red for violations
     } else {
       return '#FFFFFF'; // white for null
     }
   };
+
   // create the heatmap cell for each data point
   const allShapes = peaks.map((d, i) => {
     const x = xScale(d[0].toString());
@@ -52,11 +62,18 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     if (d[2] === null || !x || !y) {
       return;
     }
+    // lookup corresponding result record for this peak
+    const result = data!.concurrency.results.find((result) => result.startTime === d[3]);
+    // set the fill color
+    let fillColor = colorScale(d[2]);
+    if (violations.find((v) => v.key === d[3])) {
+      fillColor = '#F56565'; // red for violations (text-red-500)
+    }
     return (
       <g key={i}>
         <rect
           cursor="pointer"
-          fill={colorScale(d[2])}
+          fill={fillColor}
           height={yScale.bandwidth()}
           opacity={1}
           r={4}
@@ -67,21 +84,22 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
           y={yScale(d[1].toString())}
         />
         {d[2] > 0 && (
-          <text
-            dominantBaseline="middle"
-            fontSize={10}
-            textAnchor="middle"
-            x={xScale(d[0].toString())! + xScale.bandwidth() / 2}
-            y={yScale(d[1].toString())! + yScale.bandwidth() / 2}
-            fill="black"
-          >
-            {d[2]}
-          </text>
+          <a href={`#/concurrencyDetail/${result?.startTime}/${result?.endTime}`} target="_blank" rel="noreferrer">
+            <text
+              dominantBaseline="middle"
+              fontSize={10}
+              textAnchor="middle"
+              x={xScale(d[0].toString())! + xScale.bandwidth() / 2}
+              y={yScale(d[1].toString())! + yScale.bandwidth() / 2}
+              fill="black"
+            >
+              {result?.peakConcurrency}
+            </text>
+          </a>
         )}
       </g>
     );
   });
-  // add x axis labels
   const xLabels = peaks.map((d, i) => {
     const x = xScale(d[0].toString());
     if (!x) {
@@ -102,8 +120,6 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
       </text>
     );
   });
-  console.log('xLabels', xLabels);
-  // add y axis labels
   const yLabels = allYGroups.map((name, i) => {
     const y = yScale(name);
     if (!y) {
