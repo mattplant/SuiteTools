@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* react-data-grid styling */
+
+#grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+.fill-grid {
+  block-size: 100%;
+}

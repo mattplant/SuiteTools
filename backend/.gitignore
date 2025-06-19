@@ -1,0 +1,24 @@
+# IDEs and editors
+# .vscode
+
+# dependencies
+node_modules
+
+# logs
+npm-debug.log*
+
+# system files
+.DS_Store
+Thumbs.db
+
+# testing
+coverage
+
+# NetSuite SDF project config
+project.json
+
+# SuiteTools backend JavaScript files from the backend build process
+src/**/*.js
+
+# SuiteTools frontend dist files from the frontend build process
+dist

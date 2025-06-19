@@ -1,0 +1,22 @@
+<restlet scriptid="customscript_idev_suitetools_api">
+  <description>The SuiteTools application API endpoint.</description>
+  <isinactive>F</isinactive>
+  <name>SuiteTools API</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/SuiteTools/idev-suitetools-api.js]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_idev_suitetools_api">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>T</allroles>
+      <audslctrole></audslctrole>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <status>RELEASED</status>
+      <title>SuiteTools API</title>
+    </scriptdeployment>
+  </scriptdeployments>
+</restlet>
