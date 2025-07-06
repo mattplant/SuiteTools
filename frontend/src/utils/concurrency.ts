@@ -260,7 +260,12 @@ export async function getConcurrencyRequestData(
   const currencyResponse = await getDataFromPageContent(concurrencyUrl);
   const requests = currencyResponse.data as ConcurrencyRequestData;
 
-  return requests;
+  // filter the requests that are outside of the core timeframe
+  const filteredRequests = requests.filter((request) => {
+    return Number(request.endDate) >= Number(startDate) && Number(request.startDate) <= Number(endDate);
+  });
+
+  return filteredRequests;
 }
 
 /**
@@ -276,13 +281,16 @@ function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate:
     'getConcurrencyRequestUrl() initiated with ' +
       JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }),
   );
+  // widen the duration window to get long running requests
+  const windowExtended = 6 * 60 * 1000; // 5 + 1 minute extra in milliseconds
+  const startDateExtended = Number(startDate) - windowExtended;
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_instances_v2&deploy=customdeploy_nsapm_cd_sl_instances_v2&testmode=F&startDateMS=1748941020000&endDateMS=1748941080000&compfil=(REDACTED)&allocatedList=&concurrencyMode=noallocation&integId=&sort=startDate&dir=ASC&pageLimit=10&startIndex=0
   const path = '/app/site/hosting/scriptlet.nl';
   const params = [];
   params.push('script=customscript_nsapm_cd_sl_instances_v2'); // script (note cd instead of cm)
   params.push('deploy=customdeploy_nsapm_cd_sl_instances_v2'); // deploy (note cd instead of cm)
   params.push('testmode=F'); // test mode
-  params.push('startDateMS=' + startDate); // start date
+  params.push('startDateMS=' + startDateExtended); // start date
   params.push('endDateMS=' + endDate); // end date
   params.push('compfil=' + accountId); // account ID
   params.push('allocatedList='); // allocated list (optional)

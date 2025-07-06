@@ -71,7 +71,7 @@ const router = createHashRouter([
         element: <ConcurrencyDetailPage />,
       },
       {
-        path: 'concurrencyRequest/:startDate/:endDate',
+        path: 'concurrencyRequest/:startDate/:endDate/:peakConcurrency?/:peakConcurrencyTime?',
         element: <ConcurrencyRequestPage />,
       },
       {

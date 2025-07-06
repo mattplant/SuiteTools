@@ -10,17 +10,17 @@ export function ConcurrencySummaryHeatMapWrapper({ data }: Props) {
     <>
       {data && (
         <>
-          <br />
-          <h3 className="text-lg font-bold text-slate-900">Estimated Concurrency Rates</h3>
-          <p>
-            For more accurate data, click the desired hour to view its Concurrency Details. From there you can further
-            drill in to see all the incoming requests for each minute. Where applicable, you can further drill into a
-            particular request and see the execution logs for the script during the request duration.
+          <h3 className="text-lg font-bold text-slate-900">Estimated Concurrency Peaks</h3>
+          <p className="text-sm text-gray-500">
+            Below are the estimated concurrency peaks for the selected date range.
           </p>
-          <br />
-          <p>
-            The darker shade of blue, the higher number of concurrency requests for that hour. Yellow indicates
-            cononcurrency limit exceeded. Red indicates that there were concurrency violations.
+          <p className="text-sm text-gray-500">
+            <b>Click on a cell in the heatmap to view its details.</b> From there you can further drill in to see the
+            incoming requests.
+          </p>
+          <p className="text-sm text-gray-500">
+            The darker shade of blue, the higher number of concurrency requests for that hour. Yellow indicates that the
+            concurrency limit was exceeded. Red indicates that there were concurrency violations.
           </p>
           <div style={{ position: 'relative' }}>
             <ConcurrencySummaryHeatMapContent data={data} />

@@ -45,3 +45,21 @@ export function formatDate(date: number): string {
 
   return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
 }
+
+/**
+ * Format date object into a string with the format mi:ss.
+ *
+ * TODO replace with moment.js
+ *
+ * @param {Date} date - the date object to format
+ * @returns {string} formattedDate - the formatted date string
+ */
+export function formatMinuteSecond(date: number): string {
+  const d = new Date(date);
+  let minute = '' + d.getMinutes();
+  let second = '' + d.getSeconds();
+  if (minute.length < 2) minute = '0' + minute;
+  if (second.length < 2) second = '0' + second;
+
+  return [minute, second].join(':');
+}

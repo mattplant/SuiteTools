@@ -6,7 +6,7 @@ import { ConcurrencySummaryData } from '../components/concurrency/summary/types.
 import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Overview.tsx';
 import { ConcurrencySummaryHeatMapWrapper } from '../components/concurrency/summary/heatMap/Wrapper.tsx';
 import { ConcurrencySummaryViolations } from '../components/concurrency/summary/Violations.tsx';
-import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
+// import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
 import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
 
 export function ConcurrencySummaryPage() {
@@ -44,9 +44,10 @@ export function ConcurrencySummaryPage() {
       ) : (
         <>
           <ConcurrencySummaryOverview data={results} />
+          <br />
           <ConcurrencySummaryHeatMapWrapper data={results} />
           <ConcurrencySummaryViolations data={results} />
-          <ConcurrencySummaryAverage data={results} />
+          {/* <ConcurrencySummaryAverage data={results} /> */}
         </>
       )}
     </div>

@@ -19,13 +19,13 @@ export function ConcurrencySummaryOverview({ data }: Props) {
     <div className="mx-auto text-center">
       <div className="flex bg-gray-50 rounded-lg shadow">
         <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">Concurrency Limit</h3>
+          <h3 className="text-lg font-bold text-slate-900">Concurrency Limit</h3>
           <h1 id="concurrencyLimit" className="text-3xl text-gray-500 p-2">
             {data.concurrency.overview.concurrencyLimit}
           </h1>
         </div>
         <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">Peak Concurrency</h3>
+          <h3 className="text-lg font-bold text-slate-900">Peak Concurrency</h3>
           <h1 id="peakConcurrency" className="text-3xl text-gray-500 p-2">
             {data.concurrency.overview.peakConcurrency.value}
           </h1>
@@ -34,7 +34,7 @@ export function ConcurrencySummaryOverview({ data }: Props) {
           </span>
         </div>
         <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">Close to the Limit</h3>
+          <h3 className="text-lg font-bold text-slate-900">Close to the Limit</h3>
           <h1 id="closeToLimitRate" className="text-3xl text-gray-500 p-2">
             {data.concurrency.overview.timeCloseToLimit.value + '%'}
           </h1>
@@ -46,7 +46,7 @@ export function ConcurrencySummaryOverview({ data }: Props) {
           </span>
         </div>
         <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">Over the Limit</h3>
+          <h3 className="text-lg font-bold text-slate-900">Over the Limit</h3>
           <h1 id="overLimitRate" className="text-3xl text-gray-500 p-2">
             {data.concurrency.overview.timeOverLimit.value + '%'}
           </h1>
@@ -55,7 +55,7 @@ export function ConcurrencySummaryOverview({ data }: Props) {
           </span>
         </div>
         <div className="flex-1 p-5">
-          <h3 className="text-xl font-bold tracking-tight text-red-700">Error Rate</h3>
+          <h3 className="text-lg font-bold text-red-700">Error Rate</h3>
           <h1 id="errorRate" className="text-3xl text-gray-500 p-2">
             {errorRateRounded}
           </h1>

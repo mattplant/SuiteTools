@@ -31,24 +31,15 @@ export function ConcurrencyDetailBarGraphContent({ data }: Props) {
                 const lineHeight = d[1] * yFactor;
                 return (
                   <>
-                    <rect
-                      x={0}
-                      y={height - lineHeight}
-                      width={scaleX.bandwidth()}
-                      height={lineHeight}
-                      fill="steelblue"
-                    />
-                    {d[1] > 0 && (
-                      <text
-                        x={scaleX.bandwidth() / 2}
-                        y={height - lineHeight - 5}
-                        textAnchor="middle"
-                        fontSize={12}
-                        fill="black"
-                      >
-                        {d[1]}
-                      </text>
-                    )}
+                    {' '}
+                    <a href={`#/concurrencyRequest/${d[0]}/${d[0] + 60 * 1000}`} target="_blank" rel="noreferrer">
+                      <rect x={0} y={height - lineHeight} width={scaleX.bandwidth()} height={lineHeight} />
+                      {d[1] > 0 && (
+                        <text x={scaleX.bandwidth() / 2} y={height - lineHeight - 5} textAnchor="middle" fontSize={12}>
+                          {d[1]}
+                        </text>
+                      )}
+                    </a>
                     <text x={scaleX.bandwidth() / 2} y={height + 15} textAnchor="middle" fontSize={12} fill="black">
                       {new Date(d[0]).getMinutes() % 5 === 0 || new Date(d[0]).getMinutes() == 59
                         ? new Date(d[0]).toLocaleTimeString('en-US', {

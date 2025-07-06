@@ -54,7 +54,7 @@ export async function getDataFromPageContent(url: string): Promise<NetSuiteRespo
     console.error('getDataFromPageContent() error parsing JSON data:', error);
     throw error;
   }
-  // verify that the response was successful
+
   if (!data.success && data.message) {
     throw new Error(`getDataFromPageContent() response not successful: ${data.message}`);
   }

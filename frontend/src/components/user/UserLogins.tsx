@@ -36,7 +36,7 @@ export function UserLogins({ userId }: Props) {
   return (
     <>
       <br />
-      <h3 className="font-bold text-slate-900">Logins</h3>
+      <h3 className="text-lg font-bold text-slate-900">Logins</h3>
       <Results type={ResultsTypes.LOGIN} lines={results} getModalData={getLoginFromResults} />
     </>
   );

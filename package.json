@@ -1,0 +1,19 @@
+{
+    "name": "suitetools",
+    "displayName": "SuiteTools monorepo",
+    "description": "The monorepo for SuiteTools",
+    "version": "1.0.0-alpha.2",
+    "author": {
+        "name": "Matt Plant",
+        "url": "https://github.com/mattplant"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mattplant/SuiteTools"
+    },
+    "homepage": "https://github.com/mattplant/SuiteTools#readme","license": "GPL-3.0",
+    "workspaces": [
+        "frontend",
+        "backend"
+    ]
+}

@@ -13,7 +13,7 @@ type Props = {
 const columns = [
   { key: 'startTime', name: 'Start Time' },
   { key: 'endTime', name: 'End Time' },
-  { key: 'averageConcurrency', name: 'Average' },
+  // { key: 'averageConcurrency', name: 'Average' },
   { key: 'peakConcurrency', name: 'Peak' },
   { key: 'peakConcurrencyTime', name: 'Peak Time' },
 ];
@@ -32,7 +32,7 @@ export function ConcurrencyDetailResults({ data }: Props) {
           startTime: formatDate(result.startTime),
           endTimeMS: result.endTime,
           endTime: formatDate(result.endTime),
-          averageConcurrency: result.averageConcurrency,
+          // averageConcurrency: result.averageConcurrency,
           peakConcurrency: result.peakConcurrency,
           peakConcurrencyTime: result.peakConcurrencyTime,
         };
@@ -43,7 +43,8 @@ export function ConcurrencyDetailResults({ data }: Props) {
 
   return (
     <>
-      <h2 className="pt-5 pb-1 text-xl font-bold text-slate-900">Detail Table</h2>
+      <h3 className="text-lg font-bold text-slate-900">Concurrency Details Table</h3>
+      <p className="text-sm text-gray-500">Click the row of the desired minute to view the incoming requests.</p>
       <Export gridRef={gridRef} />
       <div style={{ height: '600px', overflowY: 'auto' }}>
         <DataGrid
@@ -59,7 +60,17 @@ export function ConcurrencyDetailResults({ data }: Props) {
             console.log(cell);
             const startDate = cell.row[`startTimeMS`];
             const endDate = cell.row[`endTimeMS`];
-            const link = settings?.appUrl + `#/concurrencyRequest/${startDate}/${endDate}`;
+            const peakConcurrency = cell.row[`peakConcurrency`];
+            let peakConcurrencyTime = String(cell.row[`peakConcurrencyTime`]);
+            if (peakConcurrencyTime === 'undefined') {
+              peakConcurrencyTime = '';
+            } else {
+              // convert date string (e.g. 2025-07-05 08:25:41) to a number
+              peakConcurrencyTime = String(new Date(peakConcurrencyTime).getTime());
+            }
+            const link =
+              settings?.appUrl +
+              `#/concurrencyRequest/${startDate}/${endDate}/${peakConcurrency}/${peakConcurrencyTime}`;
             window.open(link, '_blank');
           }}
         />

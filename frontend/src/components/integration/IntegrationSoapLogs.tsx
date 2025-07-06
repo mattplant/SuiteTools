@@ -34,7 +34,7 @@ export function IntegrationSoapLogs({ integrations }: Props) {
   return (
     <>
       <br />
-      <h3 className="font-bold text-slate-900">Soap Logs</h3>
+      <h3 className="text-lg font-bold text-slate-900">Soap Logs</h3>
       <Results type={ResultsTypes.SOAPLOG} lines={results} getModalData={getSoapLog} />
     </>
   );

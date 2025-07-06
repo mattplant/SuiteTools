@@ -10,14 +10,8 @@ export function ConcurrencyDetailBarGraphWrapper({ data }: Props) {
     <>
       {data && (
         <>
-          <br />
-          <h3 className="text-lg font-bold text-slate-900">Estimated Concurrency Details</h3>
-          <p>Click the desired minute to view the incoming requests for each minute.</p>
-          <br />
-          <p>
-            Where applicable, you can further drill into a particular request and see the execution logs for the script
-            during the request duration.
-          </p>
+          <h3 className="text-lg font-bold text-slate-900">Concurrency Details Graph</h3>
+          <p className="text-sm text-gray-500">Click the bar of the desired minute to view the incoming requests.</p>
           <div style={{ position: 'relative' }}>
             <ConcurrencyDetailBarGraphContent data={data} />
           </div>

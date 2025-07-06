@@ -10,8 +10,10 @@ type Props = {
 };
 
 const columns = [
+  { key: 'id', name: '#' }, // Unique ID for the request
   { key: 'startDate', name: 'Start Date' }, // Start Date and Time
   { key: 'endDate', name: 'End Date' }, // End Date and Time
+  { key: 'duration', name: 'Duration' }, // Duration in seconds
   { key: 'type', name: 'Type' }, // Script Type
   // { key: 'integrationId', name: 'IntegrationId' },
   { key: 'integration', name: 'Integration' },
@@ -20,15 +22,6 @@ const columns = [
   { key: 'scriptName', name: 'Script Name' },
   { key: 'status', name: 'Status' },
   // { key: 'wouldBeRejected', name: 'Would Be Rejected' },
-
-  // ALTERNATIVE COLUMNS
-  // { key: 'date', name: 'Date and Time' },
-  // { key: 'email', name: 'Email' },
-  // { key: 'executionTime', name: 'Execution Time' },
-  // { key: 'totalRecords', name: 'Total Records' },
-  // { key: 'status', name: 'Status' },
-  // { key: 'operationId', name: 'Profiler Details' },
-  // { key: 'frhtId', name: 'FRHT ID' },
 ];
 
 export function ConcurrencyRequestResults({ data }: Props) {
@@ -40,7 +33,9 @@ export function ConcurrencyRequestResults({ data }: Props) {
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
         const formattedResult = {
+          id: i + 1, // Unique ID for the request
           startDate: formatDate(result.startDate), // Start Date and Time
+          duration: (result.endDate - result.startDate) / 1000, // Duration in seconds
           endDate: formatDate(result.endDate), // End Date and Time
           type: result.type, // Script Type
           integration: result.integration, // Integration Name
@@ -56,7 +51,7 @@ export function ConcurrencyRequestResults({ data }: Props) {
 
   return (
     <>
-      <h2 className="pt-5 pb-1 text-xl font-bold text-slate-900">Request Table</h2>
+      <h3 className="text-lg font-bold text-slate-900">Concurrency Requests Table</h3>
       <Export gridRef={gridRef} />
       <div style={{ height: '600px', overflowY: 'auto' }}>
         <DataGrid
