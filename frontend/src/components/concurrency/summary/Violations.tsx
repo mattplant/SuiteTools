@@ -56,11 +56,9 @@ export function ConcurrencySummaryViolations({ data }: Props) {
 
   return (
     <>
-      <h2 className="pt-5 pb-1 text-xl font-bold text-slate-900">Violations</h2>
-      <p>
-        The following table shows the hours that violations occurred during the selected time period. Click on a row to
-        view the violation details.
-      </p>
+      <h3 className="text-lg font-bold text-slate-900">Concurrency Violations</h3>
+      <p className="text-sm text-gray-500">Below are the violations for the selected date range.</p>
+      <p className="text-sm text-gray-500">Click on a row to view the violation details.</p>
       <Export gridRef={gridRef} />
       <div style={{ height: '600px', overflowY: 'auto' }}>
         <DataGrid

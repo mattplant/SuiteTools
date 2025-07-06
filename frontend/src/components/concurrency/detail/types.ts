@@ -8,7 +8,7 @@ export interface ConcurrencyDetailRows {
   startTime: string;
   endTimeMS: number;
   endTime: string;
-  averageConcurrency: number;
+  // averageConcurrency: number;
   peakConcurrency: number;
   peakConcurrencyTime?: string;
 }

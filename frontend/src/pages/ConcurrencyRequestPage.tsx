@@ -4,17 +4,23 @@ import { CriteriaFields } from '../components/concurrency/request/types.ts';
 import { getConcurrencyRequest } from '../components/concurrency/request/getRecords.ts';
 import { ConcurrencyRequestData } from '../components/concurrency/request/types.ts';
 import { ConcurrencyRequestResults } from '../components/concurrency/request/Results.tsx';
+import { ConcurrencyRequestBarGraphWrapper } from '../components/concurrency/request/barGraph/Wrapper.tsx';
 import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
+import { formatDate, formatMinuteSecond } from '../utils/dates.ts';
 
 type Params = {
   startDate: string;
   endDate: string;
+  peakConcurrency: string;
+  peakConcurrencyTime: string;
 };
 
 export function ConcurrencyRequestPage() {
   const params = useParams<Params>();
   const startDate = params.startDate;
   const endDate = params.endDate;
+  const peakConcurrency = params.peakConcurrency;
+  const peakConcurrencyTime = params.peakConcurrencyTime;
   console.log('ConcurrencyRequestPage inititated with params:', { startDate, endDate });
   if (!startDate || !endDate) {
     throw new Error('Missing required parameters');
@@ -50,8 +56,37 @@ export function ConcurrencyRequestPage() {
 
   return (
     <div className="mx-auto mt-6">
-      <h2 className="text-xl font-bold text-slate-900">Concurrency Request</h2>
-      {loading ? <p>Loading...</p> : <ConcurrencyRequestResults data={results} />}
+      <h2 className="text-xl font-bold text-slate-900">Concurrency Requests</h2>
+      {results && (
+        <>
+          <p className="text-sm text-gray-500">
+            Below are the concurrency requests that executed between {formatDate(Number(startDate))} to{' '}
+            {formatDate(Number(endDate))}.
+          </p>
+          <p className="text-sm text-gray-500">
+            {peakConcurrency && (
+              <>
+                The peak concurrency {peakConcurrencyTime && <> at {formatMinuteSecond(Number(peakConcurrencyTime))}</>}{' '}
+                was {peakConcurrency}.
+              </>
+            )}
+          </p>
+          <p className="text-sm text-gray-500">
+            This page includes requests that started before the selected timeframe and continued into this timeframe.
+            This is useful to see long running requests that may not be visible in the Concurrency APM tool.
+          </p>
+          <br />
+        </>
+      )}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <ConcurrencyRequestBarGraphWrapper data={results} />
+          <br />
+          <ConcurrencyRequestResults data={results} />
+        </>
+      )}
     </div>
   );
 }

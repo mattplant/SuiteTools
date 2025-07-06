@@ -34,7 +34,7 @@ export function UserTokens({ userName }: Props) {
   return (
     <>
       <br />
-      <h3 className="font-bold text-slate-900">Tokens</h3>
+      <h3 className="text-lg font-bold text-slate-900">Tokens</h3>
       <Results type={ResultsTypes.TOKEN} lines={results} getModalData={getToken} />
     </>
   );

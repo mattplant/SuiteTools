@@ -37,7 +37,7 @@ export function JobRuns({ job, completed }: Props) {
     <>
       <br />
       <br />
-      <h3 className="font-bold text-slate-900">Job Executions</h3>
+      <h3 className="text-lg font-bold text-slate-900">Job Executions</h3>
       <Results type={ResultsTypes.JOBRUN} lines={Array.isArray(results) ? results : []} getModalData={getJobRun} />
     </>
   );

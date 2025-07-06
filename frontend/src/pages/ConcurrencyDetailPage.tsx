@@ -52,13 +52,18 @@ export function ConcurrencyDetailPage() {
 
   return (
     <div className="mx-auto mt-6">
-      <h2 className="text-xl font-bold text-slate-900">Concurrency Detail</h2>
+      <h2 className="text-xl font-bold text-slate-900">Concurrency Details</h2>
+      <p className="text-sm text-gray-500">Below are the concurrency peaks for the selected hour.</p>
+      <p className="text-sm text-gray-500">Drill in to see the incoming requests.</p>
+      <br />
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
           <ConcurrencyDetailOverview data={results} />
+          <br />
           <ConcurrencyDetailBarGraphWrapper data={results} />
+          <br />
           <ConcurrencyDetailResults data={results} />
         </>
       )}
