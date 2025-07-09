@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { SoapLog } from './types';
 import { useAppSettingsContext } from '../AppSettingsContext';
 
@@ -59,11 +59,11 @@ export function SoapLogResult({ data, modal }: Props) {
         <b>Response</b>: {data.response}
       </p>
       {modal && (
-        <Button.Group>
+        <ButtonGroup>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View SOAP Log Details
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       )}
     </>
   );

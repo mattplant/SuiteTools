@@ -1,12 +1,26 @@
-# IDEs and editors
-# .vscode/
+# .gitignore for SuiteTools frontend project
+
+# system files
+.DS_Store
+
+# logs
+*.log
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# Vite
+vite.config.ts.timestamp-*.mjs
 
 # dependencies
 node_modules
 
-# logs
-npm-debug.log*
-
-# system files
-.DS_Store
-Thumbs.db
+# build outputs
+dist/
+build/
+*.js
+*.js.map
+*.tsbuildinfo

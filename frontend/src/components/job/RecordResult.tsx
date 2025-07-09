@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { Job } from './types';
 import { postData } from '../../api/api';
 import { PostEndpoint, HttpResponse } from '../../api/types';
@@ -72,14 +72,14 @@ export function JobResult({ data, modal }: Props) {
       <p>
         <b>Last Run</b>: {data.lastRun}
       </p>
-      <Button.Group>
-        {modal && (
+      {modal && (
+        <ButtonGroup>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View Job Details
           </Button>
-        )}
-        <Button onClick={initiateJobClick}>Run Job</Button>
-      </Button.Group>
+          <Button onClick={initiateJobClick}>Run Job</Button>
+        </ButtonGroup>
+      )}
     </>
   );
 }

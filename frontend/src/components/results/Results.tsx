@@ -82,12 +82,10 @@ export function Results({ type, lines, getModalData }: Props) {
     <div className="grid">
       <DynamicResultsRenderer type={type} rows={lines} setId={setId} setOpenModal={setOpenModal} />
       <Modal dismissible show={openModal} size="6xl" onClose={() => setOpenModal(false)}>
-        <Modal.Header>{modalTitle}</Modal.Header>
-        <Modal.Body>
-          <div className="space-y-6 p-6">
-            <ResultsModal type={type} loading={loading} data={data} />
-          </div>
-        </Modal.Body>
+        <div className="px-6 pt-6 text-2xl font-semibold">{modalTitle}</div>
+        <div className="space-y-6 p-6">
+          <ResultsModal type={type} loading={loading} data={data} />
+        </div>
       </Modal>
     </div>
   );

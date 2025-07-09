@@ -13,8 +13,17 @@
     },
     "homepage": "https://github.com/mattplant/SuiteTools#readme",
     "license": "GPL-3.0",
+    "private": true,
     "workspaces": [
         "frontend",
         "backend"
-    ]
+    ],
+    "dependencies": {
+        "typescript": "5.7.3"
+    },
+    "dependenciesMeta": {
+        "@hitc/netsuite-types@2024.2.12": {
+            "unplugged": true
+        }
+    }
 }

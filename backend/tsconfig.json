@@ -10,8 +10,8 @@
     "noUnusedLocals": true,
     "outDir": "./src/FileCabinet/SuiteScripts/SuiteTools",
     "paths": {
-      "N": ["node_modules/@hitc/netsuite-types/N"],
-      "N/*": ["node_modules/@hitc/netsuite-types/N/*"]
+      "N": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N"],
+      "N/*": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N/*"]
     },
     "sourceMap": false,
     "target": "ESNext"

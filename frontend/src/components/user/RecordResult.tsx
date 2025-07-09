@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { User } from './types';
 import { useAppSettingsContext } from '../AppSettingsContext';
 
@@ -38,12 +38,12 @@ export function UserResult({ data, modal }: Props) {
         <b>Role(s)</b>: {data.role_names}
       </p>
       {modal && (
-        <Button.Group>
+        <ButtonGroup>
           <Button onClick={() => window.open(data.urlNs, '_blank')}>View Employee Record</Button>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View User Details
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       )}
     </>
   );

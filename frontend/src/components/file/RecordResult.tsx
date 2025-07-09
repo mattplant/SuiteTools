@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { File } from './types';
 import { useAppSettingsContext } from '../AppSettingsContext';
 
@@ -41,12 +41,12 @@ export function FileResult({ data, modal }: Props) {
         <b>URL</b>: {data.url}
       </p>
       {modal && (
-        <Button.Group>
+        <ButtonGroup>
           <Button onClick={() => window.open(data.urlNs, '_blank')}>View File Record</Button>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View File Details
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       )}
     </>
   );

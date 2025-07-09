@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { Integration } from './types';
 import { addIntegrationLastLogin } from './getRecord';
 import { useAppSettingsContext } from '../AppSettingsContext';
@@ -34,12 +34,12 @@ export function IntegrationResult({ data, modal }: Props) {
         <b>Last Login</b>: {data.lastLogin}
       </p>
       {modal && (
-        <Button.Group>
+        <ButtonGroup>
           <Button onClick={() => window.open(data.urlNs, '_blank')}>View Integration Record</Button>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View Integration Details
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       )}
     </>
   );

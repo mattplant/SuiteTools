@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { Token } from './types';
 import { useAppSettingsContext } from '../AppSettingsContext';
 import { addTokenLastLogin } from './getRecord';
@@ -40,12 +40,12 @@ export function TokenResult({ data, modal }: Props) {
         <b>Created By</b>: {data.createdBy}
       </p>
       {modal && (
-        <Button.Group>
+        <ButtonGroup>
           <Button onClick={() => window.open(data.urlNs, '_blank')}>View Token Record</Button>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View Token Details
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       )}
     </>
   );

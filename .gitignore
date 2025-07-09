@@ -1,0 +1,23 @@
+# .gitignore for SuiteTools project
+
+# system files
+.DS_Store
+
+# logs
+*.log
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# Yarn
+.pnp.*
+!.pnp.cjs
+.yarn/builds/
+.yarn/cache/
+.yarn/install-state.gz
+.yarn/patches/
+.yarn/unplugged/
+node_modules

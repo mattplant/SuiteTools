@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { JobRun } from './types';
 import { useAppSettingsContext } from '../../AppSettingsContext';
 
@@ -28,14 +28,14 @@ export function JobRunResult({ data, modal }: Props) {
       <p>
         <b>Results</b>: {data.results}
       </p>
-      <Button.Group>
+      <ButtonGroup>
         {modal && (
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             Execution Details
           </Button>
         )}
         <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlJob, '_blank')}>Job Details</Button>
-      </Button.Group>
+      </ButtonGroup>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Button } from 'flowbite-react';
+import { Button, ButtonGroup } from 'flowbite-react';
 import { ScriptLog } from './types';
 import { useAppSettingsContext } from '../AppSettingsContext';
 
@@ -38,12 +38,12 @@ export function ScriptLogResult({ data, modal }: Props) {
         <b>Detail</b>: {data.detail}
       </p>
       {modal && (
-        <Button.Group>
+        <ButtonGroup>
           <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Log Record</Button>
           <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
             View Script Log Details
           </Button>
-        </Button.Group>
+        </ButtonGroup>
       )}
     </>
   );

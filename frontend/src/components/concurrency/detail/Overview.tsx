@@ -26,7 +26,7 @@ export function ConcurrencyDetailOverview({ data }: Props) {
 
   return (
     <div className="mx-auto text-center">
-      <div className="flex bg-gray-50 rounded-lg shadow">
+      <div className="flex bg-gray-50 rounded-lg shadow-sm">
         <div className="flex-1 p-5">
           <h3 className="text-lg font-bold text-slate-900">Concurrency Limit</h3>
           <h1 id="concurrencyLimit" className="text-3xl text-gray-500 p-2">

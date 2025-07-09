@@ -1,20 +1,21 @@
-# IDEs and editors
-# .vscode
-
-# dependencies
-node_modules
-
-# logs
-npm-debug.log*
+# .gitignore for SuiteTools backend project
 
 # system files
 .DS_Store
-Thumbs.db
 
-# testing
-coverage
+# logs
+*.log
 
-# NetSuite SDF project config
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# dependencies
+node_modules/
+
+# NetSuite configs
 project.json
 
 # SuiteTools backend JavaScript files from the backend build process

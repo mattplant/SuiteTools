@@ -1,5 +1,5 @@
 {
-  "name": "suitetools-frontend",
+  "name": "frontend",
   "displayName": "SuiteTools Frontend",
   "description": "The frontend for the missing NetSuite tools.",
   "version": "1.0.0-beta.1",
@@ -21,33 +21,33 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
   },
   "dependencies": {
-    "@types/react-router-dom": "5.3.3",
-    "d3": "^7.9.0",
-    "flowbite-react": "^0.10.2",
-    "react": "^18.2.0",
-    "react-data-grid": "^7.0.0-beta.47",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.52.1",
-    "react-router-dom": "6.23.1"
+    "d3": "7.9.0",
+    "flowbite": "^3.1.2",
+    "flowbite-react": "0.10.2",
+    "react": "18.3.1",
+    "react-data-grid": "7.0.0-beta.47",
+    "react-dom": "18.3.1",
+    "react-hook-form": "^7.60.0",
+    "react-router-dom": "6.22.3"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.7",
     "@types/d3": "^7.4.3",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@types/react": "18.3.1",
+    "@types/react-dom": "18.3.1",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.19",
+    "@vitejs/plugin-react": "4.5.0",
+    "autoprefixer": "10.4.21",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "postcss": "^8.4.38",
+    "postcss": "8.4.24",
     "prettier": "3.3.3",
-    "tailwindcss": "^3.4.4",
-    "typescript": "^5.5.3",
-    "vite": "^5.2.0"
-  }
+    "tailwindcss": "3.3.3",
+    "typescript": "5.7.3",
+    "vite": "4.5.0"
+  },
+  "packageManager": "yarn@4.9.2"
 }
