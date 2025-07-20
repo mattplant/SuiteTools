@@ -16,7 +16,6 @@
   <enablenumbering>F</enablenumbering>
   <enableoptimisticlocking>T</enableoptimisticlocking>
   <enablesystemnotes>T</enablesystemnotes>
-  <externalrolepermissionlevel>NONE</externalrolepermissionlevel>
   <hierarchical>F</hierarchical>
   <icon></icon>
   <iconbuiltin>T</iconbuiltin>
@@ -29,7 +28,6 @@
   <numberingmindigits></numberingmindigits>
   <numberingprefix></numberingprefix>
   <numberingsuffix></numberingsuffix>
-  <publicpermissionlevel>NONE</publicpermissionlevel>
   <recordname>SuiteTools Settings</recordname>
   <showcreationdate>F</showcreationdate>
   <showcreationdateonlist>F</showcreationdateonlist>

@@ -1,5 +1,6 @@
 export type CriteriaFields = {
-  dateRange?: string;
+  startDate?: Date;
+  endDate?: Date;
 };
 
 export interface ConcurrencySummaryData {
@@ -44,6 +45,7 @@ export interface ConcurrencySummaryDataConcurrency {
     averageConcurrency: number;
     peakConcurrency: number;
   }[];
+  hourAverages?: number[]; // added field for average concurrency for each hour of the day (0-23)
 }
 
 export interface ConcurrencySummaryDataViolations {

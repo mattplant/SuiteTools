@@ -14,8 +14,10 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "build-and-deploy": "npm run build && npm run deploy:backend",
     "build": "tsc && vite build",
+    "deploy:backend": "cd ../backend && suitecloud project:deploy",
+    "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
@@ -44,6 +46,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "postcss": "8.4.24",
+    "postcss-import": "16.1.1",
+    "postcss-nesting": "12.1.0",
     "prettier": "3.3.3",
     "tailwindcss": "3.3.3",
     "typescript": "5.7.3",

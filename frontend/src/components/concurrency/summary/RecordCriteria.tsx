@@ -8,12 +8,24 @@ interface Props {
 }
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
-  const { register } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
+  const { register, handleSubmit, setValue } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
-  function onChange(criteria: CriteriaFields) {
-    console.log('onChange() initiated', { criteria });
+  function onSubmit(criteria: CriteriaFields) {
+    console.log('Submitted details:', criteria);
     setCriteria(criteria);
   }
 
-  return <RecordCriteriaFieldDateRange register={register} onChange={onChange} />;
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <button
+        type="submit"
+        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center"
+      >
+        Get Server Script Logs
+      </button>
+      <div className="flex gap-4 p-2.5">
+        <RecordCriteriaFieldDateRange register={register} setValue={setValue} defaultValues={defaultCriteria} />
+      </div>
+    </form>
+  );
 }

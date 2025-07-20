@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ConcurrencySummaryData } from '../types';
 
 type Props = {
@@ -7,23 +7,20 @@ type Props = {
 };
 
 export function ConcurrencySummaryHeatMapContent({ data }: Props) {
-  const margin = { top: 10, right: 60, bottom: 30, left: 70 };
+  const margin = { top: 30, right: 60, bottom: 30, left: 70 };
   const days = data!.concurrency.yCategories;
   const daysCount = days.length;
   const width = 1024;
   const heightPerDay = 35;
-  const height = daysCount * heightPerDay + margin.top + margin.bottom;
-  const boundsHeight = height - margin.top - margin.bottom;
+  const height = daysCount * heightPerDay + margin.top + margin.bottom + heightPerDay;
+  const boundsHeight = daysCount * heightPerDay;
   const boundsWidth = width - margin.right - margin.left;
   const peaks = data!.concurrency.series.peak;
   const allXGroups = useMemo(() => [...new Set(peaks.map((d) => d[0].toString()))], [peaks]);
   const allYGroups = useMemo(() => [...new Set(peaks.map((d) => d[1].toString()))], [peaks]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const xScale = useMemo(() => d3.scaleBand().range([0, boundsWidth]).domain(allXGroups).padding(0.05), [peaks, width]);
-  // console.log('xScale', xScale);
   const yScale = useMemo(
     () => d3.scaleBand().range([boundsHeight, 0]).domain(allYGroups).padding(0.05),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [peaks, height],
   );
 
@@ -64,7 +61,6 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     }
     // lookup corresponding result record for this peak
     const result = data!.concurrency.results.find((result) => result.startTime === d[3]);
-    // set the fill color
     let fillColor = colorScale(d[2]);
     if (violations.find((v) => v.key === d[3])) {
       fillColor = '#F56565'; // red for violations (text-red-500)
@@ -133,12 +129,79 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     );
   });
 
+  // added for average concurrency per hour
+  const hourAverages = data!.concurrency.hourAverages || [];
+  // Generate 24 hour labels: '0', '1', ..., '23'
+  const allAvgGroups = useMemo(() => Array.from({ length: 24 }, (_, i) => i.toString()), []);
+  const xAvgScale = useMemo(
+    () => d3.scaleBand().range([0, boundsWidth]).domain(allAvgGroups).padding(0.05),
+    [boundsWidth],
+  );
+  const yAvgScale = useMemo(
+    () => d3.scaleBand().range([heightPerDay, 0]).domain(['Average']).padding(0.05),
+    [heightPerDay],
+  );
+
+  // create the heatmap cell for each hour (0-23)
+  const allAvgShapes = allAvgGroups.map((hour, i) => {
+    const avg = hourAverages[i] ?? null;
+    const x = xAvgScale(hour);
+    const y = yAvgScale('Average');
+    if (avg === null || !x || !y) {
+      return null;
+    }
+    const fillColor = colorScale((avg / data!.concurrency.overview.concurrencyLimit) * 100);
+    return (
+      <g key={i}>
+        <rect
+          cursor="pointer"
+          fill={fillColor}
+          height={yAvgScale.bandwidth()}
+          opacity={1}
+          r={4}
+          rx={5}
+          stroke="white"
+          width={xAvgScale.bandwidth()}
+          x={x}
+          y={y}
+        />
+        {avg > 0 && (
+          <text
+            dominantBaseline="middle"
+            fontSize={10}
+            textAnchor="middle"
+            x={x + xAvgScale.bandwidth() / 2}
+            y={y + heightPerDay / 2}
+            fill="black"
+          >
+            {avg.toFixed(1)}
+          </text>
+        )}
+      </g>
+    );
+  });
+
   return (
     <svg height={height} width={width}>
       <g height={boundsHeight} transform={`translate(${[margin.left, margin.top].join(',')})`} width={boundsWidth}>
+        {xLabels.map((label, i) =>
+          label
+            ? React.cloneElement(label, {
+                key: `top-${i}`,
+                y: -10, // position above the heatmap
+              })
+            : null,
+        )}
         {allShapes}
         {xLabels}
         {yLabels}
+        {/* Average row */}
+        <g transform={`translate(0, ${boundsHeight + 20})`}>
+          {allAvgShapes}
+          <text dominantBaseline="middle" fontSize={12} textAnchor="end" x={-5} y={heightPerDay / 2}>
+            Average
+          </text>
+        </g>
       </g>
     </svg>
   );

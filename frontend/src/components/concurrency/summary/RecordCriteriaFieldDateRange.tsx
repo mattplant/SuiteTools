@@ -1,31 +1,56 @@
-import { UseFormRegister } from 'react-hook-form';
+import { useState } from 'react';
+import { UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { CriteriaFields } from './types';
+import { Datepicker } from 'flowbite-react';
 
 interface RecordCriteriaFieldDateRangeProps {
   register: UseFormRegister<CriteriaFields>;
-  onChange: (criteria: CriteriaFields) => void;
+  setValue: UseFormSetValue<CriteriaFields>;
 }
 
-export function RecordCriteriaFieldDateRange({ register, onChange }: RecordCriteriaFieldDateRangeProps) {
+export function RecordCriteriaFieldDateRange({
+  setValue,
+  defaultValues,
+}: RecordCriteriaFieldDateRangeProps & {
+  defaultValues?: Partial<CriteriaFields>;
+}) {
+  const [startDate, setStartDate] = useState<Date | null>(
+    defaultValues?.startDate ? new Date(defaultValues.startDate) : null,
+  );
+  const [endDate, setEndDate] = useState<Date | null>(defaultValues?.endDate ? new Date(defaultValues.endDate) : null);
+
   return (
-    <div className="mb-4 mt-4 text-sm font-medium text-gray-900">
-      <label htmlFor="dateRange">Date Range: </label>
-      <select
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-0.5"
-        id="dateRange"
-        {...register('dateRange')}
-        onChange={(event) => {
-          const criteria: CriteriaFields = { dateRange: event.currentTarget.value };
-          onChange(criteria);
-        }}
-      >
-        <option value="1">Today</option>
-        <option value="2">Last 2 Days</option>
-        <option value="3">Last 3 Days</option>
-        <option value="7">Last 7 Days</option>
-        <option value="14">Last 14 Days</option>
-        <option value="29">Last 30 Days</option>
-      </select>
-    </div>
+    <>
+      <div className="mb-4 mt-4 text-sm font-medium text-gray-900">
+        <label htmlFor="startDate" className="mr-2">
+          Start Date:
+        </label>
+        <Datepicker
+          id="startDate"
+          value={startDate}
+          minDate={new Date(Date.now() - 29 * 24 * 60 * 60 * 1000)}
+          maxDate={new Date()}
+          onChange={(date: Date | null) => {
+            setStartDate(date);
+            setValue('startDate', date ? date : undefined);
+          }}
+        />
+      </div>
+      <div className="mb-4 mt-4 text-sm font-medium text-gray-900">
+        <label htmlFor="endDate" className="mr-2">
+          End Date:
+        </label>
+        <Datepicker
+          id="endDate"
+          value={endDate}
+          minDate={new Date(Date.now() - 29 * 24 * 60 * 60 * 1000)}
+          maxDate={new Date()}
+          onChange={(date: Date | null) => {
+            setEndDate(date);
+            setValue('endDate', date ? date : undefined);
+          }}
+        />
+      </div>
+    </>
   );
 }

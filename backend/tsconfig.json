@@ -1,20 +1,29 @@
+// backend workspace tsconfig.json
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
+    /* Language and Syntax */
+    "target": "ESNext",
     "lib": ["ESNext", "dom"],
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+
+    /* Module System */
     "module": "amd",
     "moduleResolution": "node",
-    "newLine": "LF",
-    "noUnusedLocals": true,
-    "outDir": "./src/FileCabinet/SuiteScripts/SuiteTools",
+    "baseUrl": ".",
     "paths": {
       "N": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N"],
       "N/*": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N/*"]
     },
+
+    /* Output Settings */
+    "outDir": "./src/FileCabinet/SuiteScripts/SuiteTools",
     "sourceMap": false,
-    "target": "ESNext"
+    "newLine": "LF",
+
+    /* Linting */
+    "noUnusedLocals": true,
   },
   "include": ["."],
   "exclude": ["node_modules"]

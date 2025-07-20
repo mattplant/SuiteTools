@@ -12,7 +12,8 @@ import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
 export function ConcurrencySummaryPage() {
   const { settings } = useAppSettingsContext();
   const defaultCriteria: CriteriaFields = {
-    dateRange: '1',
+    startDate: new Date(),
+    endDate: new Date(),
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ConcurrencySummaryData>();

@@ -61,8 +61,8 @@ export async function getConcurrencySummary(
     };
   } else {
     console.log('getConcurrencySummary() loading concurrency from NetSuite page');
-    if (accountId && fields.dateRange) {
-      result = await getConcurrencySummaryData(accountId, fields.dateRange);
+    if (accountId && fields.startDate && fields.endDate) {
+      result = await getConcurrencySummaryData(accountId, fields.startDate, fields.endDate);
     } else {
       throw new Error('getConcurrencySummary() missing required fields of accountId and dateRange');
     }

@@ -25,5 +25,8 @@
         "@hitc/netsuite-types@2024.2.12": {
             "unplugged": true
         }
+    },
+    "devDependencies": {
+        "prettier": "2.8.8"
     }
 }
