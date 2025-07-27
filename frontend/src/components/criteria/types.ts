@@ -21,6 +21,10 @@ export type CriteriaFields = {
   userName?: string;
   users?: string[];
   versions?: string[];
+  // fields for advanced time picker
+  timemode?: string; // 'now' or 'custom'
+  customdatetime?: number; // timestamp in milliseconds
+  customduration?: string; // e.g., '1', '15', 'hour', 'day', 'week', 'all'
 };
 
 export interface OptionValues {

@@ -13,6 +13,11 @@
     },
     "homepage": "https://github.com/mattplant/SuiteTools#readme",
     "license": "GPL-3.0",
+    "scripts": {
+        "sdf-account-setup": "cd backend && suitecloud account:setup",
+        "watch:backend": "yarn workspace backend run watch",
+        "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'"
+    },
     "private": true,
     "workspaces": [
         "frontend",

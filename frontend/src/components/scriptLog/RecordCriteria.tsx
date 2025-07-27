@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { CriteriaFields } from '../criteria/types';
+import { SearchCriteriaAdvancedTimePicker } from '../criteria/SearchCriteriaAdvancedTimePicker';
 import { SearchCriteriaContent } from '../criteria/SearchCriteriaContent';
-import { SearchCriteriaDateCreated } from '../criteria/SearchCriteriaDateCreated';
 import { SearchCriteriaLevels } from '../criteria/SearchCriteriaLevels';
 import { SearchCriteriaOwners } from '../criteria/SearchCriteriaOwners';
 import { SearchCriteriaRows } from '../criteria/SearchCriteriaRows';
@@ -15,7 +15,9 @@ interface Props {
 }
 
 export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
-  const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
+  const { register, handleSubmit, control } = useForm<CriteriaFields>({
+    defaultValues: defaultCriteria,
+  });
 
   function onSubmit(criteria: CriteriaFields) {
     console.log('Submitted details:', criteria);
@@ -37,7 +39,12 @@ export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
         <SearchCriteriaScriptTypes register={register} />
         <SearchCriteriaScripts register={register} />
         <SearchCriteriaOwners register={register} title="Owners" />
-        <SearchCriteriaDateCreated register={register} title="Date" />
+        <SearchCriteriaAdvancedTimePicker
+          register={register}
+          control={control}
+          dateDefaultValue={new Date(Date.now())}
+          timeDefaultValue={new Date().toLocaleTimeString('en-US', { hour12: false })}
+        />
         <SearchCriteriaContent register={register} />
       </div>
     </form>

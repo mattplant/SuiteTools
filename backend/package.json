@@ -7,8 +7,10 @@
   "repository": "https://github.com/mattplant/SuiteTools/backend",
   "license": "GPL-3.0",
   "scripts": {
+    "build": "npx tsc",
     "deploy": "suitecloud project:deploy",
     "validate": "suitecloud project:validate",
+    "watch": "tsc --watch",
     "lint": "npx eslint . --ext .js --ext .ts",
     "test": "jest",
     "format": "prettier --write ./src"

@@ -39,6 +39,9 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]
     createddate: fields.createddate,
     title: fields.title,
     detail: fields.detail,
+    timemode: fields.timemode,
+    customdatetime: fields.customdatetime ? fields.customdatetime : undefined,
+    customduration: fields.customduration ? fields.customduration : undefined,
   };
   const response = await getData(localTestData, 'scriptLogs', urlParams);
   if (response.message) {

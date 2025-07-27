@@ -16,7 +16,10 @@ export function ScriptLogsPage() {
     scripttypes: [''],
     scriptnames: [''],
     owners: [''],
-    createddate: '15',
+    timemode: 'now',
+    createddate: '15', // default to last 15 minutes
+    customdatetime: undefined, // will be set by SearchCriteriaAdvancedTimePicker
+    customduration: '1', // default to 1 minute
     title: '',
     detail: '',
   };
