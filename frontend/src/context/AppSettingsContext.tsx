@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState, useEffect, useContext } from 'react';
-import { getSettings } from './settings/getSettings.ts';
-import { Settings } from './settings/types.ts';
+import { getSettings } from '../components/settings/getSettings.ts';
+import { Settings } from '../components/settings/types.ts';
 
 type AppContextSettingsType = {
   settings: undefined | Settings;

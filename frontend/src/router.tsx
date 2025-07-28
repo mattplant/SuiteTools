@@ -1,5 +1,5 @@
 import { createHashRouter, RouterProvider, defer } from 'react-router-dom';
-import App from './components/App.tsx';
+import AppLayout from './layout/AppLayout.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 // concurrency
@@ -52,10 +52,10 @@ import { getUser } from './components/user/getRecord.ts';
 import { UserPage } from './pages/UserPage.tsx';
 import { UsersPage } from './pages/UsersPage.tsx';
 
-const router = createHashRouter([
+export const router = createHashRouter([
   {
     path: '/',
-    element: <App />,
+    element: <AppLayout />,
     errorElement: <ErrorPage />,
     children: [
       {

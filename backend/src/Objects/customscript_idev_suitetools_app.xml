@@ -10,9 +10,9 @@
   <scriptdeployments>
     <scriptdeployment scriptid="customdeploy_idev_suitetools_app">
       <allemployees>F</allemployees>
-      <allroles>T</allroles>
-      <audemployee></audemployee>
-      <audslctrole></audslctrole>
+      <allpartners>F</allpartners>
+      <allroles>F</allroles>
+      <audslctrole>ADMINISTRATOR</audslctrole>
       <eventtype></eventtype>
       <isdeployed>T</isdeployed>
       <isonline>F</isonline>

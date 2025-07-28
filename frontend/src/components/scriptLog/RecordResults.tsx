@@ -7,23 +7,24 @@ import { assertIsScriptLogs } from './types.ts';
 
 const columns = [
   {
-    key: 'id',
-    name: 'ID',
+    key: 'type',
+    name: 'Type',
+    width: 75,
     renderSummaryCell() {
       return <strong>Total</strong>;
     },
   },
   {
     key: 'timestamp',
-    name: 'Time Stamp',
+    name: 'Timestamp',
+    width: 160,
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
-  { key: 'type', name: 'Type' },
-  { key: 'scripttype', name: 'Script Type' },
-  { key: 'scriptname', name: 'Script' },
-  { key: 'owner', name: 'Owner' },
+  // { key: 'scripttype', name: 'Script Type', width: 120 },
+  { key: 'scriptname', name: 'Script', width: 160 },
+  // { key: 'owner', name: 'Owner', width: 100 },
   { key: 'title', name: 'Title' },
   { key: 'detail', name: 'Detail' },
 ];

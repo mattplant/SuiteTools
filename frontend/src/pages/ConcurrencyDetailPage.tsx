@@ -6,7 +6,7 @@ import { ConcurrencyDetailData } from '../components/concurrency/detail/types.ts
 import { ConcurrencyDetailOverview } from '../components/concurrency/detail/Overview.tsx';
 import { ConcurrencyDetailBarGraphWrapper } from '../components/concurrency/detail/barGraph/Wrapper.tsx';
 import { ConcurrencyDetailResults } from '../components/concurrency/detail/Results.tsx';
-import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
+import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
 
 type Params = {
   startDate: string;

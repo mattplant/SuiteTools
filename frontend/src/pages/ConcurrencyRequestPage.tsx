@@ -5,7 +5,7 @@ import { getConcurrencyRequest } from '../components/concurrency/request/getReco
 import { ConcurrencyRequestData } from '../components/concurrency/request/types.ts';
 import { ConcurrencyRequestResults } from '../components/concurrency/request/Results.tsx';
 import { ConcurrencyRequestBarGraphWrapper } from '../components/concurrency/request/barGraph/Wrapper.tsx';
-import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
+import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
 import { formatDate, formatMinuteSecond } from '../utils/dates.ts';
 
 type Params = {

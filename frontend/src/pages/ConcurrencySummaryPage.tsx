@@ -7,7 +7,7 @@ import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Ov
 import { ConcurrencySummaryHeatMapWrapper } from '../components/concurrency/summary/heatMap/Wrapper.tsx';
 import { ConcurrencySummaryViolations } from '../components/concurrency/summary/Violations.tsx';
 // import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
-import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
+import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
 
 export function ConcurrencySummaryPage() {
   const { settings } = useAppSettingsContext();

@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import { Token } from './types';
-import { useAppSettingsContext } from '../AppSettingsContext';
+import { useAppSettingsContext } from '../../context/AppSettingsContext';
 import { addTokenLastLogin } from './getRecord';
 
 type Props = {

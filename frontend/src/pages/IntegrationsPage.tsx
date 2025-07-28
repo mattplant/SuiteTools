@@ -6,7 +6,7 @@ import { Integration } from '../components/integration/types.ts';
 import { RecordCriteria } from '../components/integration/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
-import { useAppSettingsContext } from '../components/AppSettingsContext';
+import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
 
 export function IntegrationsPage() {
   const { settings } = useAppSettingsContext();

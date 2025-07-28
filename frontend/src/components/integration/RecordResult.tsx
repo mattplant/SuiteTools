@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import { Integration } from './types';
 import { addIntegrationLastLogin } from './getRecord';
-import { useAppSettingsContext } from '../AppSettingsContext';
+import { useAppSettingsContext } from '../../context/AppSettingsContext';
 
 type Props = {
   data: Integration;

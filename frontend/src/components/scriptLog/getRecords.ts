@@ -1,10 +1,11 @@
 import { getData } from '../../api/api';
-import { NotFound } from '../../api/types';
 import { ScriptLog, assertIsScriptLogs } from './types';
 import { CriteriaFields } from '../criteria/types';
+import { normalizeArrayResponse } from '../../utils/normalize';
 
-export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[] | NotFound> {
-  let result;
+export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]> {
+  let result: ScriptLog[] = [];
+
   const localTestData = {
     data: [
       {
@@ -45,10 +46,9 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]
   };
   const response = await getData(localTestData, 'scriptLogs', urlParams);
   if (response.message) {
-    result = { message: response.message };
+    result = [];
   } else {
-    assertIsScriptLogs(response.data);
-    result = response.data;
+    result = normalizeArrayResponse(response.data, assertIsScriptLogs);
   }
 
   return result;

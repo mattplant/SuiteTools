@@ -1,7 +1,7 @@
 const customTheme = {
   /* flowbite-react Button styling */
   button: {
-    base: 'relative flex items-center justify-center rounded-lg text-center font-medium focus:outline-none focus:ring-4',
+    base: 'relative flex items-center justify-center rounded-lg text-center font-medium focus:outline-none focus:ring-4 leading-normal [&>span]:items-center [&>span]:flex',
     disabled: 'pointer-events-none opacity-50',
     fullSized: 'w-full',
     grouped: 'rounded-none border-l-0 first:rounded-s-lg first:border-l last:rounded-e-lg focus:ring-2',

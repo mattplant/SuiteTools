@@ -14,7 +14,7 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "build-and-deploy": "yarn build && yarn deploy:backend",
+    "build-and-deploy": "yarn build && yarn deploy:backend && echo \"Build and deploy completed at $(date).\"",
     "build": "tsc && vite build",
     "deploy:backend": "cd ../backend && suitecloud project:deploy",
     "dev": "vite",

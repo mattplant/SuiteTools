@@ -6,7 +6,7 @@ import { Token } from '../components/token/types.ts';
 import { RecordCriteria } from '../components/token/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
-import { useAppSettingsContext } from '../components/AppSettingsContext';
+import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
 
 export function TokensPage() {
   const { settings } = useAppSettingsContext();

@@ -8,6 +8,8 @@ import { RecordCriteria } from '../components/scriptLog/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';
 
+import { useInlineMessage } from '../context/MessageContext.tsx';
+
 export function ScriptLogsPage() {
   const defaultCriteria: CriteriaFields = {
     rows: 50,
@@ -31,14 +33,18 @@ export function ScriptLogsPage() {
   }
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ScriptLog[]>([]);
+  const { setMessage, clearMessage } = useInlineMessage();
 
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await getScriptLogs(criteria);
-        if (!('message' in data)) {
-          setResults(data);
+        if (data.length === 0) {
+          setMessage({ text: 'No script logs records found for the gien criteria.', type: 'warning' });
+        } else {
+          clearMessage();
         }
+        setResults(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }

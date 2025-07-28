@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { Button } from 'flowbite-react';
 import { CriteriaFields } from '../criteria/types';
 import { SearchCriteriaActive } from '../criteria/SearchCriteriaActive';
 import { SearchCriteriaIntegrationName } from '../criteria/SearchCriteriaIntegrationName';
@@ -22,12 +23,7 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <button
-        type="submit"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-3 py-2 text-center"
-      >
-        Get Logins
-      </button>
+      <Button type="submit">Get Logins</Button>
       <div className="flex gap-4 p-2.5">
         <SearchCriteriaRows register={register} />
         <SearchCriteriaActive register={register} title="Status" trueLabel="Success" falseLabel="Failure" />

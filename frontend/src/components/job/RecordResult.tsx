@@ -2,7 +2,7 @@ import { Button, ButtonGroup } from 'flowbite-react';
 import { Job } from './types';
 import { postData } from '../../api/api';
 import { PostEndpoint, HttpResponse } from '../../api/types';
-import { useAppSettingsContext } from '../AppSettingsContext';
+import { useAppSettingsContext } from '../../context/AppSettingsContext';
 import { getOptionValues as getIntegrationOptionValues } from '../integration/getOptionValues';
 import { getOptionValues as getTokenOptionValues } from '../token/getOptionValues';
 

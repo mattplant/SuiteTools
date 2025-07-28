@@ -11,8 +11,8 @@
     <scriptdeployment scriptid="customdeploy_idev_suitetools_api">
       <allemployees>F</allemployees>
       <allpartners>F</allpartners>
-      <allroles>T</allroles>
-      <audslctrole></audslctrole>
+      <allroles>F</allroles>
+      <audslctrole>ADMINISTRATOR</audslctrole>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <status>RELEASED</status>

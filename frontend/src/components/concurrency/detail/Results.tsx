@@ -4,7 +4,7 @@ import 'react-data-grid/lib/styles.css';
 import { Export } from '../../results/Export.tsx';
 import { ConcurrencyDetailData, ConcurrencyDetailRows } from './types';
 import { formatDate } from '../../../utils/dates';
-import { useAppSettingsContext } from '../../../components/AppSettingsContext.tsx';
+import { useAppSettingsContext } from '../../../context/AppSettingsContext.tsx';
 
 type Props = {
   data: ConcurrencyDetailData | undefined;
