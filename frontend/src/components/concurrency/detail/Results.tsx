@@ -34,7 +34,7 @@ export function ConcurrencyDetailResults({ data }: Props) {
           endTime: formatDate(result.endTime),
           // averageConcurrency: result.averageConcurrency,
           peakConcurrency: result.peakConcurrency,
-          peakConcurrencyTime: result.peakConcurrencyTime,
+          peakConcurrencyTime: result.peakConcurrencyTime !== undefined ? String(result.peakConcurrencyTime) : '',
         };
         formattedResults.push(formattedResult);
       }

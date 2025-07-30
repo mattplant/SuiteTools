@@ -4835,6 +4835,7 @@ __metadata:
     tailwindcss: "npm:3.3.3"
     typescript: "npm:5.7.3"
     vite: "npm:4.5.0"
+    zod: "npm:^4.0.11"
   languageName: unknown
   linkType: soft
 
@@ -8584,5 +8585,12 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10c0/dceb44c28578b31641e13695d200d34ec4ab3966a5729814d5445b194933c096b7ced71494ce53a0e8820685d1d010df8b2422e5bf2cdea7e469d97ffbea306f
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.0.11":
+  version: 4.0.11
+  resolution: "zod@npm:4.0.11"
+  checksum: 10c0/1c866585ae576a65181c91fb2e27c5d95914b9851e1c00df0cac11fdf1f46ab9bc5a18b877a39015e7315757e42fb1d63c97eb4cc1751861af945d482d4b60c9
   languageName: node
   linkType: hard

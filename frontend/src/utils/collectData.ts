@@ -85,7 +85,11 @@ export async function getDataFromPageTable(
   }
 
   // check to see if NetSuite is reporting that the there are not records to show - [['No records to show.', '']]
-  const noRecords = tableArray.length === 1 && tableArray[0].length === 2 && tableArray[0][0] === 'No records to show.';
+  const noRecords =
+    tableArray.length === 1 &&
+    Array.isArray(tableArray[0]) &&
+    tableArray[0].length === 2 &&
+    tableArray[0][0] === 'No records to show.';
   if (noRecords) {
     console.log('getDataFromPageTable() has no records to show');
     return [];

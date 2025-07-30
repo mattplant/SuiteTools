@@ -23,7 +23,7 @@ export type CriteriaFields = {
   versions?: string[];
   // fields for advanced time picker
   timemode?: string; // 'now' or 'custom'
-  customdatetime?: number; // timestamp in milliseconds
+  customdatetime?: number | undefined; // timestamp in milliseconds
   customduration?: string; // e.g., '1', '15', 'hour', 'day', 'week', 'all'
 };
 

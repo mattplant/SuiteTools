@@ -21,7 +21,7 @@ import { RoleResult } from '../role/RecordResult';
 import { assertIsScript } from '../script/types';
 import { ScriptResult } from '../script/RecordResult';
 // scriptLog
-import { assertIsScriptLog } from '../scriptLog/types';
+import { assertIsScriptLog } from '../scriptLog/scriptLogs.parse';
 import { ScriptLogResult } from '../scriptLog/RecordResult';
 // soapLog
 import { assertIsSoapLog } from '../soapLog/types';

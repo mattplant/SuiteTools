@@ -19,11 +19,10 @@
     /* Type System Behavior */
     "strict": true,
     "skipLibCheck": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": false, // TODO: enable later after updating types with zod
     "types": ["vite/client"],
-    "typeRoots": [
-      "./node_modules",
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["./node_modules", "./node_modules/@types"],
 
     /* Linting */
     "noUnusedLocals": true,
@@ -33,9 +32,6 @@
     /* Monorepo Support */
     "composite": true
   },
-  "include": [
-    "src",
-    "src/vite-env.d.ts"
-  ],
+  "include": ["src", "src/vite-env.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

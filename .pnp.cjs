@@ -7331,7 +7331,8 @@ const RAW_RUNTIME_STATE =
           ["react-router-dom", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:6.22.3"],\
           ["tailwindcss", "npm:3.3.3"],\
           ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
-          ["vite", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:4.5.0"]\
+          ["vite", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:4.5.0"],\
+          ["zod", "npm:4.0.11"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -11674,6 +11675,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../.yarn/berry/cache/yocto-queue-npm-0.1.0-c6c9a7db29-10c0.zip/node_modules/yocto-queue/",\
         "packageDependencies": [\
           ["yocto-queue", "npm:0.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["zod", [\
+      ["npm:4.0.11", {\
+        "packageLocation": "../../../.yarn/berry/cache/zod-npm-4.0.11-2d793231b5-10c0.zip/node_modules/zod/",\
+        "packageDependencies": [\
+          ["zod", "npm:4.0.11"]\
         ],\
         "linkType": "HARD"\
       }]\

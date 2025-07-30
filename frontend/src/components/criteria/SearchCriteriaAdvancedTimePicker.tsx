@@ -8,7 +8,7 @@ import { SearchCriteriaDateTimePicker } from './SearchCriteriaDateTimePicker';
 interface Props {
   register: UseFormRegister<CriteriaFields>;
   control: Control<any>;
-  dateDefaultValue?: Date;
+  dateDefaultValue: Date;
   timeDefaultValue?: String;
 }
 
