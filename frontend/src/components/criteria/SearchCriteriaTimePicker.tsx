@@ -6,7 +6,7 @@ interface Props {
   id: string;
   name: string;
   title: string;
-  defaultValue?: String;
+  defaultValue?: string;
 }
 
 export function SearchCriteriaTimePicker({ control, id, name, title, defaultValue }: Props) {

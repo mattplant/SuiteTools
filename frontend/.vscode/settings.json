@@ -5,5 +5,8 @@
   "editor.formatOnSave": true, // optional
   "editor.formatOnSaveMode": "file", // required to format on save
   "files.autoSave": "onFocusChange",
-  "editor.tabSize": 2 // optional but recommended
+  "editor.tabSize": 2, // optional but recommended
+  "eslint.enable": true, // enable ESLint
+  "eslint.useFlatConfig": true, // need to opt in to use the flat config with ESLint v9+
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "json"]
 }

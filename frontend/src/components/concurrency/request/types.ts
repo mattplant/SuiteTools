@@ -16,6 +16,7 @@ interface ConcurrencyRequestRow {
   // wouldBeRejected: boolean;
 }
 
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
 export interface ConcurrencyRequestRows extends Array<ConcurrencyRequestRow> {}
 
 interface ConcurrencyRequestDataRow {
@@ -31,4 +32,5 @@ interface ConcurrencyRequestDataRow {
   wouldBeRejected: boolean;
 }
 
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
 export interface ConcurrencyRequestData extends Array<ConcurrencyRequestDataRow> {}

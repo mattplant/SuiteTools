@@ -9,7 +9,7 @@ interface Props {
   dateDefaultValue?: Date;
   timeId: string;
   timeName: string;
-  timeDefaultValue?: String | undefined;
+  timeDefaultValue?: string | undefined;
 }
 
 export function SearchCriteriaDateTimePicker({

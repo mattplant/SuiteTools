@@ -8,7 +8,7 @@ export function MessageAutoClear() {
 
   useEffect(() => {
     clearMessage();
-  }, [location.pathname]);
+  }, [location.pathname, clearMessage]);
 
   return null;
 }

@@ -9,7 +9,7 @@ interface Props {
   register: UseFormRegister<CriteriaFields>;
   control: Control<any>;
   dateDefaultValue: Date;
-  timeDefaultValue?: String;
+  timeDefaultValue?: string;
 }
 
 export function SearchCriteriaAdvancedTimePicker({ register, control, dateDefaultValue, timeDefaultValue }: Props) {
