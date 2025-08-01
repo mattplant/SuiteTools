@@ -17,6 +17,8 @@
     "build-and-deploy": "yarn build && yarn deploy:backend && echo \"Build and deploy completed at $(date).\"",
     "build": "tsc && vite build",
     "deploy:backend": "cd ../backend && suitecloud project:deploy",
+    "postinstall": "yarn dlx @yarnpkg/sdks vscode && echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
+    "clean-local": "rm -rf dist",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -31,7 +33,7 @@
     "react-dom": "18.3.1",
     "react-hook-form": "^7.60.0",
     "react-router-dom": "6.22.3",
-    "zod": "^4.0.11"
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",

@@ -16,12 +16,15 @@
     "scripts": {
         "sdf-account-setup": "cd backend && suitecloud account:setup",
         "watch:backend": "yarn workspace backend run watch",
-        "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'"
+        "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
+        "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete"
     },
     "private": true,
     "workspaces": [
+        ".",
         "frontend",
-        "backend"
+        "backend",
+        "shared/validation"
     ],
     "dependencies": {
         "typescript": "5.7.3"
@@ -32,6 +35,10 @@
         }
     },
     "devDependencies": {
-        "prettier": "2.8.8"
+        "prettier": "2.8.8",
+        "zod": "^4.0.13"
+    },
+    "resolutions": {
+        "zod": "^4.0.13"
     }
 }

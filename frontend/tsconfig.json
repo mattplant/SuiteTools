@@ -1,6 +1,6 @@
 // frontend workspace tsconfig.json
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     /* Language and Syntax Support */
     "target": "ES2020",
@@ -33,5 +33,5 @@
     "composite": true
   },
   "include": ["src", "src/vite-env.d.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "../shared/validation" }, { "path": "./tsconfig.node.json" }]
 }

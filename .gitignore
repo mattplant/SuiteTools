@@ -21,3 +21,6 @@
 .yarn/patches/
 .yarn/unplugged/
 node_modules
+
+# TypeScript build info
+*.tsbuildinfo

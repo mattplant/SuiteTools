@@ -1,15 +1,18 @@
 // monorepo tsconfig.json
 {
-    "files": [],
-    "references": [
-      { "path": "./frontend" },
-      { "path": "./backend" }
-    ],
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": {
-        "@types/*": ["types/*"]
-      }
-    },
-    "include": []
-  }
+  "composite": true,
+  "files": [],
+  "references": [
+    { "path": "./shared/validation" },
+    { "path": "./frontend" },
+    { "path": "./backend" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared/validation/*": ["shared/validation/src/*"],
+      "@types/*": ["types/*"]
+    }
+  },
+  "include": []
+}

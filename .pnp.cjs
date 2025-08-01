@@ -21,12 +21,17 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "frontend",\
       "reference": "workspace:frontend"\
+    },\
+    {\
+      "name": "@shared/validation",\
+      "reference": "workspace:shared/validation"\
     }\
   ],\
   "enableTopLevelFallback": true,\
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
+    ["@shared/validation", ["workspace:shared/validation"]],\
     ["backend", ["workspace:backend"]],\
     ["frontend", ["workspace:frontend"]],\
     ["suitetools", ["workspace:."]]\
@@ -40,7 +45,8 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["prettier", "npm:2.8.8"],\
           ["suitetools", "workspace:."],\
-          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"]\
+          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
+          ["zod", "npm:4.0.13"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -3800,6 +3806,16 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@shared/validation", [\
+      ["workspace:shared/validation", {\
+        "packageLocation": "./shared/validation/",\
+        "packageDependencies": [\
+          ["@shared/validation", "workspace:shared/validation"],\
+          ["zod", "npm:4.0.13"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@sinclair/typebox", [\
       ["npm:0.27.8", {\
         "packageLocation": "../../../.yarn/berry/cache/@sinclair-typebox-npm-0.27.8-23e206d653-10c0.zip/node_modules/@sinclair/typebox/",\
@@ -7332,7 +7348,7 @@ const RAW_RUNTIME_STATE =
           ["tailwindcss", "npm:3.3.3"],\
           ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
           ["vite", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:4.5.0"],\
-          ["zod", "npm:4.0.11"]\
+          ["zod", "npm:4.0.13"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -10925,7 +10941,8 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["prettier", "npm:2.8.8"],\
           ["suitetools", "workspace:."],\
-          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"]\
+          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
+          ["zod", "npm:4.0.13"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -11680,10 +11697,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["zod", [\
-      ["npm:4.0.11", {\
-        "packageLocation": "../../../.yarn/berry/cache/zod-npm-4.0.11-2d793231b5-10c0.zip/node_modules/zod/",\
+      ["npm:4.0.13", {\
+        "packageLocation": "../../../.yarn/berry/cache/zod-npm-4.0.13-d19abb2242-10c0.zip/node_modules/zod/",\
         "packageDependencies": [\
-          ["zod", "npm:4.0.11"]\
+          ["zod", "npm:4.0.13"]\
         ],\
         "linkType": "HARD"\
       }]\
