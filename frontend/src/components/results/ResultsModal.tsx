@@ -21,10 +21,10 @@ import { RoleResult } from '../role/RecordResult';
 import { assertIsScript } from '../script/types';
 import { ScriptResult } from '../script/RecordResult';
 // scriptLog
-import { assertIsScriptLog } from '../scriptLog/scriptLogs.parse';
+import { assertValidScriptLog } from 'shared';
 import { ScriptLogResult } from '../scriptLog/RecordResult';
 // soapLog
-import { assertIsSoapLog } from '../soapLog/types';
+import { assertValidSoapLog } from 'shared';
 import { SoapLogResult } from '../soapLog/RecordResult';
 // token
 import { assertIsToken } from '../token/types';
@@ -71,10 +71,10 @@ export function ResultsModal({ type, loading, data }: Props) {
         assertIsScript(data);
         return <ScriptResult data={data} modal={true} />;
       case ResultsTypes.SCRIPTLOG:
-        assertIsScriptLog(data);
+        assertValidScriptLog(data);
         return <ScriptLogResult data={data} modal={true} />;
       case ResultsTypes.SOAPLOG:
-        assertIsSoapLog(data);
+        assertValidSoapLog(data);
         return <SoapLogResult data={data} modal={true} />;
       case ResultsTypes.TOKEN:
         assertIsToken(data);

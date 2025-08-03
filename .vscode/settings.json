@@ -7,7 +7,7 @@
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "tailwindCSS.experimental.configFile": "./tailwind.config.js",
-  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true,
   "editor.formatOnType": false,

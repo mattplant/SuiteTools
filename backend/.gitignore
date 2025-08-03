@@ -1,19 +1,4 @@
-# .gitignore for SuiteTools backend project
-
-# system files
-.DS_Store
-
-# logs
-*.log
-
-# VS Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-!.vscode/tasks.json
-
-# dependencies
-node_modules/
+# .gitignore specific for SuiteTools backend workspace
 
 # NetSuite configs
 project.json

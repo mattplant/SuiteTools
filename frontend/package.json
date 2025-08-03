@@ -3,18 +3,21 @@
   "displayName": "SuiteTools Frontend",
   "description": "The frontend for the missing NetSuite tools.",
   "version": "1.0.0-beta.1",
+  "private": true,
   "author": {
     "name": "Matt Plant",
     "url": "https://github.com/mattplant"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mattplant/SuiteTools/frontend"
+    "url": "https://github.com/mattplant/SuiteTools",
+    "directory": "frontend"
   },
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
     "build-and-deploy": "yarn build && yarn deploy:backend && echo \"Build and deploy completed at $(date).\"",
+    "prebuild": "yarn workspace shared build",
     "build": "tsc && vite build",
     "deploy:backend": "cd ../backend && suitecloud project:deploy",
     "postinstall": "yarn dlx @yarnpkg/sdks vscode && echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
@@ -36,7 +39,7 @@
     "react-dom": "18.3.1",
     "react-hook-form": "^7.60.0",
     "react-router-dom": "6.22.3",
-    "zod": "^4.0.14"
+    "shared": "workspace:*"
   },
   "devDependencies": {
     "@eslint/compat": "^1.3.1",

@@ -1,6 +1,5 @@
 import { getData } from '../../api/api';
-import { ScriptLog } from './scriptLogs.types';
-import { parseScriptLogs } from './scriptLogs.parse';
+import { ScriptLog, parseScriptLogs } from 'shared';
 import { CriteriaFields } from '../criteria/types';
 
 export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]> {
@@ -45,14 +44,15 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLog[]
 
   try {
     const response = await getData(localTestData, 'scriptLogs', urlParams);
-    const { validLogs, errorCount, errorDetails } = parseScriptLogs(response.data);
+    // const { validLogs, errorCount, errorDetails } = parseScriptLogsWithErrors(response.data);
 
-    if (errorCount > 0) {
-      console.warn(`Skipped ${errorCount} invalid script log entries`);
-      errorDetails.forEach((msg) => console.warn(msg));
-    }
+    // if (errorCount > 0) {
+    //   console.warn(`Skipped ${errorCount} invalid script log entries`);
+    //   errorDetails.forEach((msg) => console.warn(msg));
+    // }
 
-    return validLogs;
+    // return validLogs;
+    return parseScriptLogs(response.data);
   } catch (err) {
     console.error('Failed to fetch or parse script logs:', err);
     return [];

@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { ScriptLog } from '../components/scriptLog/scriptLogs.types';
-import { parseScriptLog } from '../components/scriptLog/scriptLogs.parse';
+import { ScriptLog, parseScriptLog } from 'shared';
 
 import { ScriptLogResult } from '../components/scriptLog/RecordResult';
 

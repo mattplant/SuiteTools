@@ -1,0 +1,5 @@
+# .gitignore specific for SuiteTools shared workspace
+
+# build outputs
+dist/
+*.tsbuildinfo

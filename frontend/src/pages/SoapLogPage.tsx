@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsSoapLog, SoapLog } from '../components/soapLog/types';
+import { assertValidSoapLog, SoapLog } from 'shared';
 import { SoapLogResult } from '../components/soapLog/RecordResult';
 
 export function SoapLogPage() {
@@ -14,7 +14,7 @@ export function SoapLogPage() {
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.soapLog}>
           {(record) => {
-            assertIsSoapLog(record);
+            assertValidSoapLog(record);
             return (
               <>
                 <SoapLogResult data={record} />

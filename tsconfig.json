@@ -3,14 +3,13 @@
   "composite": true,
   "files": [],
   "references": [
-    { "path": "./shared/validation" },
+    { "path": "./shared" },
     { "path": "./frontend" },
     { "path": "./backend" }
   ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared/validation/*": ["shared/validation/src/*"],
       "@types/*": ["types/*"]
     }
   },

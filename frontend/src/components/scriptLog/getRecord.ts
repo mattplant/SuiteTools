@@ -1,7 +1,6 @@
 import { getData } from '../../api/api';
 import { NotFound } from '../../api/types';
-import { ScriptLog } from './scriptLogs.types';
-import { parseScriptLog } from './scriptLogs.parse';
+import { ScriptLog, parseScriptLog } from 'shared';
 
 export async function getScriptLog(id: number): Promise<ScriptLog | NotFound> {
   let result;

@@ -1,6 +1,6 @@
 import { getSoapLogs } from './getRecords';
 import { NotFound } from '../../api/types';
-import { cleanSoapLogData, SoapLog } from './types';
+import { cleanSoapLogData, SoapLog } from 'shared';
 
 export async function getSoapLog(id: number): Promise<SoapLog | NotFound> {
   console.log('getSoapLog() initiated', { id });

@@ -1,4 +1,5 @@
-# .gitignore for SuiteTools project
+# .gitignore for SuiteTools monorepo project
+# Applies to all workspaces unless overridden locally
 
 # system files
 .DS_Store

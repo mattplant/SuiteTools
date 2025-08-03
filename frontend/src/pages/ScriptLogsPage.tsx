@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { CriteriaFields } from '../components/criteria/types.ts';
 import { getScriptLog } from '../components/scriptLog/getRecord.ts';
 import { getScriptLogs } from '../components/scriptLog/getRecords.ts';
-import { ScriptLog } from '../components/scriptLog/scriptLogs.types.ts';
+import { ScriptLog } from 'shared';
 import { RecordCriteria } from '../components/scriptLog/RecordCriteria.tsx';
 import { Results } from '../components/results/Results.tsx';
 import { ResultsTypes } from '../components/results/types.ts';

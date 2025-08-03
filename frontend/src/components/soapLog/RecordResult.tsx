@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { SoapLog } from './types';
+import { SoapLog } from 'shared';
 import { useAppSettingsContext } from '../../context/AppSettingsContext';
 
 type Props = {

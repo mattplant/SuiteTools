@@ -1,12 +1,22 @@
 // tsconfig.base.json
 {
   "compilerOptions": {
+    /* Language & Module Settings */
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+
+    /* Type System Behavior */
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "isolatedModules": true
+
+    /* Interop & Compatibility */
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Path Aliases */
+    "baseUrl": "."
   }
 }

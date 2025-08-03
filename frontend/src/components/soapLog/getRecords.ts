@@ -1,5 +1,5 @@
 import { getDataFromPageTable } from '../../utils/collectData';
-import { assertIsSoapLogs, cleanSoapLogsData, SoapLog } from './types';
+import { assertValidSoapLogs, cleanSoapLogsData, SoapLog } from 'shared';
 import { CriteriaFields } from '../criteria/types';
 
 export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
@@ -72,7 +72,7 @@ export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
       response: record[13],
     });
   });
-  assertIsSoapLogs(data);
+  assertValidSoapLogs(data);
   cleanSoapLogsData(data);
   // filter data based on integrationId
   if (urlParams.integrations && urlParams.integrations.length > 0 && urlParams.integrations[0]) {

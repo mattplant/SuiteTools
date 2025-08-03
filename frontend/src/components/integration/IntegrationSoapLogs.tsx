@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../criteria/types.ts';
 import { getSoapLog } from '../soapLog/getRecord.ts';
 import { getSoapLogs } from '../soapLog/getRecords.ts';
-import { SoapLog } from '../soapLog/types.ts';
+import { SoapLog } from 'shared';
 import { Results } from '../results/Results.tsx';
 import { ResultsTypes } from '../results/types.ts';
 
