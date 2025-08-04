@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CriteriaFields } from '../components/concurrency/request/types.ts';
-import { getConcurrencyRequest } from '../components/concurrency/request/getRecords.ts';
-import { ConcurrencyRequestData } from '../components/concurrency/request/types.ts';
-import { ConcurrencyRequestResults } from '../components/concurrency/request/Results.tsx';
-import { ConcurrencyRequestBarGraphWrapper } from '../components/concurrency/request/barGraph/Wrapper.tsx';
-import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
-import { formatDate, formatMinuteSecond } from '../utils/dates.ts';
+import { CriteriaFields } from '../components/features/concurrency/request/types.ts';
+import { getConcurrencyRequest } from '../components/features/concurrency/request/getRecords.ts';
+import { ConcurrencyRequestData } from '../components/features/concurrency/request/types.ts';
+import { ConcurrencyRequestResults } from '../components/features/concurrency/request/Results.tsx';
+import { ConcurrencyRequestBarGraphWrapper } from '../components/features/concurrency/request/barGraph/Wrapper.tsx';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
+import { formatDate, formatMinuteSecond } from '../utils/date.ts';
 
 type Params = {
   startDate: string;

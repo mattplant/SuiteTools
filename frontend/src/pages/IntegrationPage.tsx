@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsIntegration, Integration } from '../components/integration/types';
-import { IntegrationResult } from '../components/integration/RecordResult';
-import { IntegrationSoapLogs } from '../components/integration/IntegrationSoapLogs';
-import { IntegrationTokens } from '../components/integration/IntegrationTokens';
+import { assertIsIntegration, Integration } from '../components/features/integration/types';
+import { IntegrationResult } from '../components/features/integration/RecordResult';
+import { IntegrationSoapLogs } from '../components/features/integration/IntegrationSoapLogs';
+import { IntegrationTokens } from '../components/features/integration/IntegrationTokens';
 
 export function IntegrationPage() {
   const data = useLoaderData();

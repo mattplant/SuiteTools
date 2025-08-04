@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { ScriptLog, parseScriptLog } from 'shared';
 
-import { ScriptLogResult } from '../components/scriptLog/RecordResult';
+import { ScriptLogResult } from '../components/features/scriptLog/RecordResult';
 
 export function ScriptLogPage() {
   const data = useLoaderData();

@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsJobRun, JobRun } from '../components/job/run/types';
-import { JobRunResult } from '../components/job/run/RecordResult';
+import { assertIsJobRun, JobRun } from '../components/features/job/run/types';
+import { JobRunResult } from '../components/features/job/run/RecordResult';
 
 export function JobRunPage() {
   const data = useLoaderData();

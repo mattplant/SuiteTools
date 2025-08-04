@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getIntegration } from '../components/integration/getRecord.ts';
-import { getIntegrations, addIntegrationLastLogins } from '../components/integration/getRecords.ts';
-import { Integration } from '../components/integration/types.ts';
-import { RecordCriteria } from '../components/integration/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
-import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getIntegration } from '../components/features/integration/getRecord.ts';
+import { getIntegrations, addIntegrationLastLogins } from '../components/features/integration/getRecords.ts';
+import { Integration } from '../components/features/integration/types.ts';
+import { RecordCriteria } from '../components/features/integration/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
 
 export function IntegrationsPage() {
   const { settings } = useAppSettingsContext();

@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsFile, File } from '../components/file/types';
-import { FileResult } from '../components/file/RecordResult';
+import { assertIsFile, File } from '../components/features/file/types';
+import { FileResult } from '../components/features/file/RecordResult';
 
 export function FilePage() {
   const data = useLoaderData();

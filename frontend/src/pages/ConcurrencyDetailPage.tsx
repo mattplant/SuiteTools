@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CriteriaFields } from '../components/concurrency/detail/types.ts';
-import { getConcurrencyDetail } from '../components/concurrency/detail/getRecords.ts';
-import { ConcurrencyDetailData } from '../components/concurrency/detail/types.ts';
-import { ConcurrencyDetailOverview } from '../components/concurrency/detail/Overview.tsx';
-import { ConcurrencyDetailBarGraphWrapper } from '../components/concurrency/detail/barGraph/Wrapper.tsx';
-import { ConcurrencyDetailResults } from '../components/concurrency/detail/Results.tsx';
-import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
+import { CriteriaFields } from '../components/features/concurrency/detail/types.ts';
+import { getConcurrencyDetail } from '../components/features/concurrency/detail/getRecords.ts';
+import { ConcurrencyDetailData } from '../components/features/concurrency/detail/types.ts';
+import { ConcurrencyDetailOverview } from '../components/features/concurrency/detail/Overview.tsx';
+import { ConcurrencyDetailBarGraphWrapper } from '../components/features/concurrency/detail/barGraph/Wrapper.tsx';
+import { ConcurrencyDetailResults } from '../components/features/concurrency/detail/Results.tsx';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
 
 type Params = {
   startDate: string;

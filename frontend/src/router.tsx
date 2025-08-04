@@ -1,5 +1,5 @@
 import { createHashRouter, RouterProvider, defer } from 'react-router-dom';
-import AppLayout from './layout/AppLayout.tsx';
+import AppLayout from './components/layout/AppLayout.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/HomePage.tsx';
 // concurrency
@@ -7,48 +7,48 @@ import { ConcurrencySummaryPage } from './pages/ConcurrencySummaryPage.tsx';
 import { ConcurrencyDetailPage } from './pages/ConcurrencyDetailPage.tsx';
 import { ConcurrencyRequestPage } from './pages/ConcurrencyRequestPage.tsx';
 // files
-import { getFile } from './components/file/getRecord.ts';
+import { getFile } from './components/features/file/getRecord.ts';
 import { FilePage } from './pages/FilePage.tsx';
 import { FilesPage } from './pages/FilesPage.tsx';
 // integrations
-import { getIntegration } from './components/integration/getRecord.ts';
+import { getIntegration } from './components/features/integration/getRecord.ts';
 import { IntegrationPage } from './pages/IntegrationPage.tsx';
 import { IntegrationsPage } from './pages/IntegrationsPage.tsx';
 // jobs
-import { getJob } from './components/job/getRecord.ts';
+import { getJob } from './components/features/job/getRecord.ts';
 import { JobPage } from './pages/JobPage.tsx';
 import { JobsPage } from './pages/JobsPage.tsx';
 // jobRuns
-import { getJobRun } from './components/job/run/getRecord.ts';
+import { getJobRun } from './components/features/job/run/getRecord.ts';
 import { JobRunPage } from './pages/JobRunPage.tsx';
 import { JobRunsPage } from './pages/JobRunsPage.tsx';
 // logins
 import { LoginsPage } from './pages/LoginsPage.tsx';
 // roles
-import { getRole } from './components/role/getRecord.ts';
+import { getRole } from './components/features/role/getRecord.ts';
 import { RolePage } from './pages/RolePage.tsx';
 import { RolesPage } from './pages/RolesPage.tsx';
 // scripts
-import { getScript } from './components/script/getRecord.ts';
+import { getScript } from './components/features/script/getRecord.ts';
 import { ScriptPage } from './pages/ScriptPage.tsx';
 import { ScriptsPage } from './pages/ScriptsPage.tsx';
 // script logs
-import { getScriptLog } from './components/scriptLog/getRecord.ts';
+import { getScriptLog } from './components/features/scriptLog/getRecord.ts';
 import { ScriptLogPage } from './pages/ScriptLogPage.tsx';
 import { ScriptLogsPage } from './pages/ScriptLogsPage.tsx';
 // SOAP logs
-import { getSoapLog } from './components/soapLog/getRecord.ts';
+import { getSoapLog } from './components/features/soapLog/getRecord.ts';
 import { SoapLogPage } from './pages/SoapLogPage.tsx';
 import { SoapLogsPage } from './pages/SoapLogsPage.tsx';
 // settings
-import { getSettings } from './components/settings/getSettings.ts';
+import { getSettings } from './components/features/settings/getSettings.ts';
 import { SettingsPage } from './pages/SettingsPage.tsx';
 // tokens
-import { getToken } from './components/token/getRecord.ts';
+import { getToken } from './components/features/token/getRecord.ts';
 import { TokenPage } from './pages/TokenPage.tsx';
 import { TokensPage } from './pages/TokensPage.tsx';
 // users
-import { getUser } from './components/user/getRecord.ts';
+import { getUser } from './components/features/user/getRecord.ts';
 import { UserPage } from './pages/UserPage.tsx';
 import { UsersPage } from './pages/UsersPage.tsx';
 

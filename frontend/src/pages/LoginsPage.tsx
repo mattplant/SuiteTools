@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getLogins } from '../components/login/getRecords.ts';
-import { Login } from '../components/login/types.ts';
-import { RecordCriteria } from '../components/login/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
-import { getLoginFromResults } from '../components/login/getRecordFromResults.ts';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getLogins } from '../components/features/login/getRecords.ts';
+import { Login } from '../components/features/login/types.ts';
+import { RecordCriteria } from '../components/features/login/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
+import { getLoginFromResults } from '../components/features/login/getRecordFromResults.ts';
 
 export function LoginsPage() {
   const defaultCriteria: CriteriaFields = {

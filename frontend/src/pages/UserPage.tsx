@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsUser, User } from '../components/user/types';
-import { UserResult } from '../components/user/RecordResult';
-import { UserLogins } from '../components/user/UserLogins';
-import { UserTokens } from '../components/user/UserTokens';
+import { assertIsUser, User } from '../components/features/user/types';
+import { UserResult } from '../components/features/user/RecordResult';
+import { UserLogins } from '../components/features/user/UserLogins';
+import { UserTokens } from '../components/features/user/UserTokens';
 
 export function UserPage() {
   const data = useLoaderData();

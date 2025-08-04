@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import { assertValidSoapLog, SoapLog } from 'shared';
-import { SoapLogResult } from '../components/soapLog/RecordResult';
+import { SoapLogResult } from '../components/features/soapLog/RecordResult';
 
 export function SoapLogPage() {
   const data = useLoaderData();

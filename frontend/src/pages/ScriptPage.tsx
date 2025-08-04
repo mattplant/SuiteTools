@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsScript, Script } from '../components/script/types';
-import { ScriptResult } from '../components/script/RecordResult';
+import { assertIsScript, Script } from '../components/features/script/types';
+import { ScriptResult } from '../components/features/script/RecordResult';
 
 export function ScriptPage() {
   const data = useLoaderData();

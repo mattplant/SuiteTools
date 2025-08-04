@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getJob } from '../components/job/getRecord.ts';
-import { getJobs } from '../components/job/getRecords.ts';
-import { Job } from '../components/job/types.ts';
-import { RecordCriteria } from '../components/job/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getJob } from '../components/features/job/getRecord.ts';
+import { getJobs } from '../components/features/job/getRecords.ts';
+import { Job } from '../components/features/job/types.ts';
+import { RecordCriteria } from '../components/features/job/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
 
 export function JobsPage() {
   const defaultCriteria: CriteriaFields = {

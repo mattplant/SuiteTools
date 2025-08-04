@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/concurrency/summary/types.ts';
-import { getConcurrencySummary } from '../components/concurrency/summary/getRecords.ts';
-import { RecordCriteria } from '../components/concurrency/summary/RecordCriteria.tsx';
-import { ConcurrencySummaryData } from '../components/concurrency/summary/types.ts';
-import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Overview.tsx';
-import { ConcurrencySummaryHeatMapWrapper } from '../components/concurrency/summary/heatMap/Wrapper.tsx';
-import { ConcurrencySummaryViolations } from '../components/concurrency/summary/Violations.tsx';
+import { CriteriaFields } from '../components/features/concurrency/summary/types.ts';
+import { getConcurrencySummary } from '../components/features/concurrency/summary/getRecords.ts';
+import { RecordCriteria } from '../components/features/concurrency/summary/RecordCriteria.tsx';
+import { ConcurrencySummaryData } from '../components/features/concurrency/summary/types.ts';
+import { ConcurrencySummaryOverview } from '../components/features/concurrency/summary/Overview.tsx';
+import { ConcurrencySummaryHeatMapWrapper } from '../components/features/concurrency/summary/heatMap/Wrapper.tsx';
+import { ConcurrencySummaryViolations } from '../components/features/concurrency/summary/Violations.tsx';
 // import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
-import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
 
 export function ConcurrencySummaryPage() {
   const { settings } = useAppSettingsContext();

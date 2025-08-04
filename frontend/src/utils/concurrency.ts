@@ -21,19 +21,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getDataFromPageContent } from './collectData';
-import { Column } from '../components/concurrency/types';
+import { getDataFromPageContent } from '../lib/netsuite/collectData';
+import { Column } from '../components/features/concurrency/types';
 import {
   ConcurrencySummaryData,
   ConcurrencySummaryDataConcurrency,
   ConcurrencySummaryDataViolations,
-} from '../components/concurrency/summary/types';
+} from '../components/features/concurrency/summary/types';
 import {
   ConcurrencyDetailData,
   ConcurrencyDetailDataConcurrency,
   ConcurrencyDetailDataViolations,
-} from '../components/concurrency/detail/types';
-import { ConcurrencyRequestData } from '../components/concurrency/request/types';
+} from '../components/features/concurrency/detail/types';
+import { ConcurrencyRequestData } from '../components/features/concurrency/request/types';
 // import { ConcurrencyRequestLogsData } from '../components/concurrency/requestLogs/types';
 // -----------------------------------------------------------------------------
 // SUMMARY

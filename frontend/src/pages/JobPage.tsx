@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsJob, Job } from '../components/job/types';
-import { JobResult } from '../components/job/RecordResult';
-import { JobRuns } from '../components/job/JobRuns';
+import { assertIsJob, Job } from '../components/features/job/types';
+import { JobResult } from '../components/features/job/RecordResult';
+import { JobRuns } from '../components/features/job/JobRuns';
 
 export function JobPage() {
   const data = useLoaderData();

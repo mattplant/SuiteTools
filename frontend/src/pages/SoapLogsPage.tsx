@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getSoapLog } from '../components/soapLog/getRecord.ts';
-import { getSoapLogs } from '../components/soapLog/getRecords.ts';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getSoapLog } from '../components/features/soapLog/getRecord.ts';
+import { getSoapLogs } from '../components/features/soapLog/getRecords.ts';
 import { SoapLog } from 'shared';
-import { RecordCriteria } from '../components/soapLog/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import { RecordCriteria } from '../components/features/soapLog/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
 
 export function SoapLogsPage() {
   const defaultCriteria: CriteriaFields = {

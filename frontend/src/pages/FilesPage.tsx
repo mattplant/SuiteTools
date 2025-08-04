@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getFile } from '../components/file/getRecord.ts';
-import { getFiles } from '../components/file/getRecords.ts';
-import { File } from '../components/file/types.ts';
-import { RecordCriteria } from '../components/file/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getFile } from '../components/features/file/getRecord.ts';
+import { getFiles } from '../components/features/file/getRecords.ts';
+import { File } from '../components/features/file/types.ts';
+import { RecordCriteria } from '../components/features/file/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
 
 export function FilesPage() {
   const defaultCriteria: CriteriaFields = {

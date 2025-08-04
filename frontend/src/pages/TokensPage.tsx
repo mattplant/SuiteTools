@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getToken } from '../components/token/getRecord.ts';
-import { getTokens, addTokenLastLogins } from '../components/token/getRecords.ts';
-import { Token } from '../components/token/types.ts';
-import { RecordCriteria } from '../components/token/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
-import { useAppSettingsContext } from '../context/AppSettingsContext.tsx';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getToken } from '../components/features/token/getRecord.ts';
+import { getTokens, addTokenLastLogins } from '../components/features/token/getRecords.ts';
+import { Token } from '../components/features/token/types.ts';
+import { RecordCriteria } from '../components/features/token/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
 
 export function TokensPage() {
   const { settings } = useAppSettingsContext();

@@ -1,6 +1,10 @@
-# SuiteTools Shared Workspace
+# SuiteTools Shared
+
+This is the **shared workspace** for the SuiteTools project.
 
 This workspace centralizes reusable logic—such as validation schemas, utility functions, and shared types—to promote consistency, reduce duplication, and improve maintainability across SuiteTools projects. All modules here are designed to be type-safe, self-contained, and easy to consume from other workspaces.
+
+See the parent directory [README](../README.md) for more information about the SuiteTools project and how to install and use it.
 
 ## Structure
 
@@ -37,4 +41,4 @@ Helper functions for schema validation.
 
 ## License
 
-See [LICENSE](./LICENSE) for details.
+This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the [LICENSE file](LICENSE). By using this project, you agree to comply with the terms of the license.

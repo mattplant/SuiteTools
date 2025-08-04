@@ -1,7 +1,7 @@
 import { RouterProvider } from 'react-router-dom';
 import { Flowbite } from 'flowbite-react';
-import { AppSettingsProvider } from './context/AppSettingsContext.tsx';
-import { MessageProvider } from './context/MessageContext.tsx';
+import { AppSettingsProvider } from './components/shared/context/AppSettingsContext.tsx';
+import { MessageProvider } from './components/shared/context/MessageContext.tsx';
 import { router } from './router.tsx';
 import customTheme from './theme/customTheme.ts';
 

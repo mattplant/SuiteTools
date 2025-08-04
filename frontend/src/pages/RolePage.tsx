@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsRole, Role } from '../components/role/types';
-import { RoleResult } from '../components/role/RecordResult';
+import { assertIsRole, Role } from '../components/features/role/types';
+import { RoleResult } from '../components/features/role/RecordResult';
 
 export function RolePage() {
   const data = useLoaderData();

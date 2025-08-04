@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getScript } from '../components/script/getRecord.ts';
-import { getScripts } from '../components/script/getRecords.ts';
-import { Script } from '../components/script/types.ts';
-import { RecordCriteria } from '../components/script/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getScript } from '../components/features/script/getRecord.ts';
+import { getScripts } from '../components/features/script/getRecords.ts';
+import { Script } from '../components/features/script/types.ts';
+import { RecordCriteria } from '../components/features/script/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
 
 export function ScriptsPage() {
   const defaultCriteria: CriteriaFields = {

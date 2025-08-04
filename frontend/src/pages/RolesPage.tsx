@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getRole } from '../components/role/getRecord.ts';
-import { getRoles } from '../components/role/getRecords.ts';
-import { Role } from '../components/role/types.ts';
-import { RecordCriteria } from '../components/role/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import { CriteriaFields } from '../components/shared/criteria/types.ts';
+import { getRole } from '../components/features/role/getRecord.ts';
+import { getRoles } from '../components/features/role/getRecords.ts';
+import { Role } from '../components/features/role/types.ts';
+import { RecordCriteria } from '../components/features/role/RecordCriteria.tsx';
+import { Results } from '../components/shared/results/Results.tsx';
+import { ResultsTypes } from '../components/shared/results/types.ts';
 
 export function RolesPage() {
   const defaultCriteria: CriteriaFields = {
