@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { File } from './types';
+import { File } from 'shared';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 
 type Props = {

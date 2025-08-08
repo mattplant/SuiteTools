@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/shared/criteria/types.ts';
 import { getFile } from '../components/features/file/getRecord.ts';
 import { getFiles } from '../components/features/file/getRecords.ts';
-import { File } from '../components/features/file/types.ts';
+import { File } from 'shared';
 import { RecordCriteria } from '../components/features/file/RecordCriteria.tsx';
 import { Results } from '../components/shared/results/Results.tsx';
 import { ResultsTypes } from '../components/shared/results/types.ts';

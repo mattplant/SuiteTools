@@ -25,7 +25,7 @@ export const ScriptLogSchema = z.object({
   owner: z.string(),
   scriptname: z.string(),
   title: z.string(),
-  detail: z.string(),
+  detail: z.string().optional().nullable(),
   urlNs: z.string().optional(),
   urlDetail: z.string().optional(),
 });

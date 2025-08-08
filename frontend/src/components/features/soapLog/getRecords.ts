@@ -1,5 +1,5 @@
 import { getDataFromPageTable } from '../../../lib/netsuite/collectData';
-import { assertValidSoapLogs, cleanSoapLogsData, SoapLog } from 'shared';
+import { parseSoapLogs, SoapLog } from 'shared';
 import { CriteriaFields } from '../../shared/criteria/types';
 
 export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
@@ -54,26 +54,23 @@ export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
     );
   }
   // convert array to record objects
-  dataArray.map((record) => {
-    data.push({
-      id: Number(record[0]),
-      startDate: record[1],
-      duration: Number(record[2]),
-      integration: record[3],
-      action: record[4],
-      recordType: record[5],
-      user: record[6],
-      status: record[7],
-      records: Number(record[8]),
-      recordsFinished: Number(record[9]),
-      recordsFailed: Number(record[10]),
-      recordsReturned: Number(record[11]),
-      request: record[12],
-      response: record[13],
-    });
-  });
-  assertValidSoapLogs(data);
-  cleanSoapLogsData(data);
+  const rawData = dataArray.map((record) => ({
+    id: Number(record[0]),
+    startDate: record[1],
+    duration: Number(record[2]),
+    integration: record[3],
+    action: record[4],
+    recordType: record[5],
+    user: record[6],
+    status: record[7],
+    records: Number(record[8]),
+    recordsFinished: Number(record[9]),
+    recordsFailed: Number(record[10]),
+    recordsReturned: Number(record[11]),
+    request: record[12],
+    response: record[13],
+  }));
+  data = parseSoapLogs(rawData);
   // filter data based on integrationId
   if (urlParams.integrations && urlParams.integrations.length > 0 && urlParams.integrations[0]) {
     data = data.filter((record) => {

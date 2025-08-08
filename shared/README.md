@@ -8,10 +8,16 @@ See the parent directory [README](../README.md) for more information about the S
 
 ## Structure
 
-- `src/` — Shared source code:
-  - `validation/` — Zod schemas and validation helpers
-  - `utils/` — General-purpose utilities
-- `dist/` — Compiled output
+```plaintext
+shared/
+├── src/           # Shared source code
+│   ├── validation/    # Zod schemas and validation helpers
+│   └── utils/         # General-purpose utility functions
+├── dist/          # Compiled output
+├── LICENSE        # The GPL-3.0-or-later license file
+├── package.json   # Yarn workspace definition & frontend scripts
+└── README.md      # This README file
+```
 
 ## Usage
 

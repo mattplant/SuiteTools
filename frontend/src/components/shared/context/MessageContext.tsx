@@ -37,11 +37,15 @@ export const messageTypeIcon: Record<MessageType, React.ReactNode> = {
   ),
 };
 
-const InlineMessageContext = createContext<InlineMessageContextType>({
-  message: null,
-  setMessage: () => {},
-  clearMessage: () => {},
-});
+const InlineMessageContext = createContext<InlineMessageContextType | undefined>(undefined);
+
+export const useInlineMessage = () => {
+  const context = useContext(InlineMessageContext);
+  if (!context) {
+    throw new Error('useInlineMessage must be used within a MessageProvider');
+  }
+  return context;
+};
 
 export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [message, setMessage] = useState<InlineMessage | null>(null);
@@ -63,12 +67,4 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       {children}
     </InlineMessageContext.Provider>
   );
-};
-
-export const useInlineMessage = () => {
-  const context = useContext(InlineMessageContext);
-  if (!context) {
-    throw new Error('useInlineMessage must be used within a MessageProvider');
-  }
-  return context;
 };

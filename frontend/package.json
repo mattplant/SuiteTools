@@ -16,10 +16,10 @@
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
-    "build-and-deploy": "yarn build && yarn deploy:backend && echo \"Build and deploy completed at $(date).\"",
+    "build-and-deploy": "yarn build && yarn deploy:frontend && echo \"SutieTools frontend build and deploy completed at $(date).\"",
     "prebuild": "yarn workspace shared build",
     "build": "tsc && vite build",
-    "deploy:backend": "cd ../backend && suitecloud project:deploy",
+    "deploy:frontend": "cd ../backend && suitecloud file:upload --paths /SuiteScripts/SuiteTools/dist/index.html /SuiteScripts/SuiteTools/dist/output.css /SuiteScripts/SuiteTools/dist/app-bundle.js",
     "postinstall": "yarn dlx @yarnpkg/sdks vscode && echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
     "clean-local": "rm -rf dist",
     "dev": "vite",

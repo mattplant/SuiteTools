@@ -23,6 +23,13 @@ export type ResultsProps = {
   setOpenModal: (openModal: boolean) => void;
 };
 
+// TODO: move over to this once I have transitioned over all the types to shared
+// export type ResultsProps<T> = {
+//   rows: T[];
+//   setId: (id: number) => void;
+//   setOpenModal: (open: boolean) => void;
+// };
+
 // using ALL CAPS since we need enum to be of type string for ResultsMap
 export enum ResultsTypes {
   FILE = 'file',

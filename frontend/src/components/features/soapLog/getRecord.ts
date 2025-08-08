@@ -1,13 +1,13 @@
 import { getSoapLogs } from './getRecords';
 import { NotFound } from '../../../api/types';
-import { cleanSoapLogData, SoapLog } from 'shared';
+import { SoapLog, parseSoapLog } from 'shared';
 
 export async function getSoapLog(id: number): Promise<SoapLog | NotFound> {
   console.log('getSoapLog() initiated', { id });
-  let result;
+  let rawResult;
   if (window.location.href.includes('localhost')) {
     // mock data for local development
-    result = {
+    rawResult = {
       id: 1,
       startDate: '12/22/2024 8:53:01 pm',
       duration: 0.123,
@@ -25,21 +25,20 @@ export async function getSoapLog(id: number): Promise<SoapLog | NotFound> {
     };
   } else {
     if (!id) {
-      result = { message: 'Skipping loading SOAP log since id is 0' };
+      rawResult = { message: 'Skipping loading SOAP log since id is 0' };
     } else {
       console.log('getSoapLog() loading SOAP logs from NetSuite page', { id });
       const records = await getSoapLogs({});
-      result = records.find((record) => record.id === id);
-      if (!result) {
+      rawResult = records.find((record) => record.id === id);
+      if (!rawResult) {
         throw new Error(`SoapLog with ID ${id} not found`);
-      } else {
-        // build additional properties
-        result.urlDetail = `#/soapLog/${result.id}`;
-        // clean data
-        result = cleanSoapLogData(result);
       }
     }
   }
+  // now we have the raw result from either mock or NetSuite
+  const parsedResult = parseSoapLog(rawResult);
+  // add additional properties
+  parsedResult.urlDetail = `#/soapLog/${parsedResult.id}`;
 
-  return result;
+  return parsedResult;
 }

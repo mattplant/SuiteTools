@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createSchemaHelpers } from "./helpers";
+import { createSchemaHelpers, createZodDate } from "./helpers";
 
 /**
  * Zod schema for a single SOAP log entry.
@@ -22,11 +22,14 @@ import { createSchemaHelpers } from "./helpers";
  * - `response`: raw response payload
  * - `urlDetail` (optional): additional context URL
  */
-export const SoapLogSchema = z.object({
+export const BaseSoapLog = z.object({
   id: z.number(),
+
   startDate: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
     message: "Invalid ISO timestamp",
   }),
+  // TODO: change over to date with "startDate: createZodDate(),""
+
   duration: z.number(),
   integration: z.string(),
   integrationId: z.number().optional(),
@@ -43,7 +46,34 @@ export const SoapLogSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-export type SoapLog = z.infer<typeof SoapLogSchema>;
+const CleanedSoapLog = BaseSoapLog.transform((data) => {
+  // recordType - strip placeholder recordType
+  if (data.recordType === "&nbsp;") data.recordType = "";
+
+  // integration - strip HTML tags and trim whitespace
+  const integration = data.integration;
+  data.integration = integration.replace(/<[^>]*>?/g, "").trim();
+  // integrationId - extract integrationId from integration string
+  const match = integration.match(/id=(\d+)/);
+  if (match) data.integrationId = Number(match[1]);
+  // strip HTML and extract integrationId
+  // const raw = data.integration;
+  // const match = raw.match(/id=(\d+)/);
+  // if (match) data.integrationId = Number(match[1]);
+  // data.integration = raw.replace(/<[^>]*>?/g, "").trim();
+
+  // rewrite request/response links
+  const rewrite = (txt: string, flag: "T" | "F") => {
+    const m = txt.match(/jobid=([^&"]*)/);
+    return m ? `/app/webservices/wslog.nl?req=${flag}&jobid=${m[1]}` : txt;
+  };
+  data.request = rewrite(data.request, "T");
+  data.response = rewrite(data.response, "F");
+
+  return data;
+});
+
+export type SoapLog = z.infer<typeof BaseSoapLog>;
 
 /**
  * Helpers bound to the single‐entry SOAP schema:
@@ -51,7 +81,7 @@ export type SoapLog = z.infer<typeof SoapLogSchema>;
  * - `parse`: returns `SoapLog` or throws
  * - `safeParse`: returns `{ success; data?; error? }` without throwing
  */
-const singleHelpers = createSchemaHelpers(SoapLogSchema);
+const singleHelpers = createSchemaHelpers(CleanedSoapLog);
 
 /**
  * Asserts that `input` is a valid `SoapLog`.
@@ -87,7 +117,7 @@ export const safeParseSoapLog: typeof singleHelpers.safeParse =
  * - `parse`: returns `SoapLog[]` or throws
  * - `safeParse`: returns `{ success; data?; error? }[]` without throwing
  */
-const arrayHelpers = createSchemaHelpers(SoapLogSchema.array());
+const arrayHelpers = createSchemaHelpers(CleanedSoapLog.array());
 
 /**
  * Asserts that `input` is a valid `SoapLog[]`.
@@ -116,52 +146,3 @@ export const parseSoapLogs: typeof arrayHelpers.parse = arrayHelpers.parse;
  */
 export const safeParseSoapLogs: typeof arrayHelpers.safeParse =
   arrayHelpers.safeParse;
-
-/**
- * Cleans soap log data
- * @param data
- * @returns clean soap log data
- */
-export function cleanSoapLogData(data: SoapLog): SoapLog {
-  // clear recordType field if blank
-  if (data.recordType === "&nbsp;") {
-    data.recordType = "";
-  }
-  if (data.integration) {
-    const matchResult = data.integration.match(/id=(\d+)/);
-    if (matchResult) {
-      data.integrationId = Number(matchResult[1]);
-    }
-    data.integration = data.integration.replace(/<[^>]*>?/gm, "").trim();
-  }
-  if (data.request) {
-    const matchResult = data.request.match(/jobid=([^&"]*)/);
-    if (matchResult) {
-      data.request = `/app/webservices/wslog.nl?req=T&jobid=${matchResult[1]}`;
-    }
-  }
-  if (data.response) {
-    const matchResult = data.response.match(/jobid=([^&"]*)/);
-    if (matchResult) {
-      data.response = `/app/webservices/wslog.nl?req=F&jobid=${matchResult[1]}`;
-    }
-  }
-
-  return data;
-}
-
-/**
- * Cleans soap logs data
- * @param data
- * @returns clean soap logs data
- */
-export function cleanSoapLogsData(data: SoapLog[]): SoapLog[] {
-  console.log("cleanSoapLogsData() initiated", { data });
-  if (data) {
-    data.forEach((record) => {
-      cleanSoapLogData(record);
-    });
-  }
-
-  return data;
-}

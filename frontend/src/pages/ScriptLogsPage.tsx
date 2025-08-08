@@ -50,6 +50,18 @@ export function ScriptLogsPage() {
     }
     fetchData();
 
+    // if (!data) {
+    //   return <NoDataMessage />;
+    // }
+
+    // if (!parseResult.success) {
+    //   return <InvalidDataMessage issues={parseResult.error.issues} />;
+    // }
+
+    // if (unexpectedCondition) {
+    //   return <FallbackMessage title="Unknown state" />;
+    // }
+
     return () => {};
   }, [criteria]);
 

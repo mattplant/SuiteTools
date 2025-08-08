@@ -1,6 +1,18 @@
 import * as z from "zod";
 
 /**
+ * Creates a Zod schema for validating date strings, timestamps, or Date objects.
+ *
+ * This schema will parse valid date strings and timestamps into JavaScript Date objects,
+ * and will throw an error if the input is not a valid date.
+ */
+export function createZodDate(): z.ZodType<Date> {
+  return z.coerce.date().refine((d) => !isNaN(d.getTime()), {
+    message: "Expected a valid date string, timestamp, or Date object",
+  });
+}
+
+/**
  * Generates a set of schema‐bound helpers for parsing and validating data.
  *
  * @template S extends z.ZodTypeAny

@@ -4,7 +4,7 @@ This is the **frontend workspace** for the SuiteTools project.
 
 It provides the user interface and client-side logic for interacting with SuiteTools, built on top of the shared workspace and other internal modules. This workspace is responsible for rendering views, managing client-side state, handling user input, and communicating with backend APIs.
 
-See the parent directory [README](../README.md) for more information about the SuiteTools project and how to install and use it.
+See the parent directory [README](../README.md) for more information about the SuiteTools project.
 
 ## 🧱 Structure
 
@@ -12,26 +12,28 @@ The frontend workspace is organized for clarity, modularity, and long-term maint
 
 ```plaintext
 frontend/
-├── src/
-│   ├── api/
-│   ├── components/
-│   │   ├── features/
-│   │   │   ├── concurrency/
-│   │   │   └── script-log/
-│   │   ├── layout/
-│   │   └── shared/
+├── src/          # Frontend source code
+│   ├── api/         # API client modules for communicating with backend endpoints
+│   ├── components/  # UI components orgarnized in a hybrid structure
+│   │   ├── features/   # Feature-specific composites and data hooks
+│   │   ├── layout/     # Top-level layouts (AppLayout, Header)
+│   │   └── shared/.    # shared components
 │   ├── lib/
 │   ├── pages/
 │   ├── theme/
 │   └── utils/
-├── LICENSE
-└── README.md
+├── .gitignore          # Git ignore file for frontend
+├── .prettierignore     # Prettier ignore
+├── .prettierrc         # Prettier configuration
+├── index.html          # Main HTML entry point
+├── LICENSE             # The GPL-3.0-or-later license file
+├── package.json        # Yarn workspace definition & frontend scripts
+├── postcss.config.js   # PostCSS configuration
+├── README.md           # This README file
+├── tailwind.config.js  # Tailwind CSS configuration
+├── tsconfig.json       # TypeScript configuration
+└── vite.config.ts      # Vite build configuration
 ```
-
-Currently only listing the src folder, as this is the main development area. The structure is designed to separate concerns and promote reusability.
-
-**TODO:** Expand out document to include other folders besides `/src`
-**TODO:** Break out the `/src/components/` section into it own page
 
 ### 📁 `api/`
 
@@ -42,43 +44,7 @@ API client modules for communicating with backend endpoints. These should be thi
 
 ### 📁 `components/`
 
-Reusable React components, organized by domain or type. These are UI-only and should not contain business logic or validation schemas.
-
-SuiteTools uses a hybrid structure for components, separating shared UI elements from feature-specific composites. This allows for better reuse and clearer organization.
-
-#### 📁 `features/`
-
-Feature-specific components that combine multiple atomic elements into cohesive UI blocks.
-
-- `components/features/concurrency/` — Components related to concurrency features
-- `components/features/file/` — Components related to file features
-- `components/features/integration/` — Components related to integration features
-- `components/features/job/` — Components related to job features
-- `components/features/login/` — Components related to login features
-- `components/features/role/` — Components related to role features
-- `components/features/script/` — Components related to script features
-- `components/features/scriptLog/` — Components related to script log features
-- `components/features/settings/` — Components related to settings features
-- `components/features/soapLog/` — Components related to SOAP log features
-- `components/features/token/` — Components related to token features
-- `components/features/user/` — Components related to user features
-
-#### 📁 `layout/`
-
-Layout components that define the overall structure of pages, such as headers, footers, and sidebars. These should be composable and reusable across different views.
-
-- `layout/AppLayout.tsx` — Main application layout
-- `layout/Header.tsx` — Top navigation bar
-
-#### 📁 `shared/`
-
-UI components that can be reused across different features. These should be self-contained and not depend on any specific feature logic.
-
-- `components/shared/context/` — React context providers for managing global state, such as authentication, theme, or user preferences
-- `components/shared/criteria` — Reusable criteria components for filtering and searching
-- `components/shared/messages` — Components for displaying inline messages and notifications
-- `components/shared/results` — Components for displaying results, including tables and export functionality
-- `components/shared/ui/` — Custom UI components that are not included in `flowbite-react` or other imported libraries like `react-data-grid`
+For a deep dive into our hybrid component structure, see [COMPONENTS.md](./COMPONENTS.md).
 
 ### 📁 `lib/`
 
@@ -93,7 +59,33 @@ Frontend-specific utilities and helpers.
 
 Top-level route views, typically matching the app’s routing structure. Each page may compose multiple components and handle its own data fetching and error boundaries.
 
-See code for pages.
+```plaintext
+pages/
+├── ConcurrencyDetailPage.tsx   # Concurrency detail page
+├── ConcurrencyRequestPage.tsx  # Concurrency request page
+├── ConcurrencySummaryPage.tsx  # Concurrency overview page
+├── ErrorPage.tsx        # Error page
+├── FilePage.tsx         # File page
+├── FilesPage.tsx        # Files page
+├── HomePage.tsx         # Home page
+├── IntegrationPage.tsx  # Integration page
+├── JobPage.tsx          # Job page
+├── JobRunPage.tsx       # Jobs execution page
+├── JobRunsPage.tsx      # Jobs executions page
+├── JobsPage.tsx         # Jobs page
+├── RolePage.tsx         # Role page
+├── RolesPage.tsx        # Roles page
+├── ScriptLogPage.tsx    # Script log page
+├── ScriptLogsPage.tsx   # Script logs page
+├── ScriptPage.tsx       # Script page
+├── ScriptsPage.tsx      # Scripts page
+├── SoapLogPage.tsx      # SOAP log page
+├── SoapLogsPage.tsx     # SOAP logs page
+├── TokenPage.tsx        # Token page
+├── TokensPage.tsx       # Tokens page
+├── UserPage.tsx         # User page
+└── UsersPage.tsx        # Users page
+```
 
 ### 📁 `theme/`
 

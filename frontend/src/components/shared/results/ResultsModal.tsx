@@ -1,6 +1,6 @@
 import { ResultsTypes } from './types';
 // file
-import { assertIsFile } from '../../features/file/types';
+import { assertValidFile } from 'shared';
 import { FileResult } from '../../features/file/RecordResult';
 // integration
 import { assertIsIntegration } from '../../features/integration/types';
@@ -50,7 +50,7 @@ export function ResultsModal({ type, loading, data }: Props) {
     // display the modal
     switch (type) {
       case ResultsTypes.FILE:
-        assertIsFile(data);
+        assertValidFile(data);
         return <FileResult data={data} modal={true} />;
       case ResultsTypes.INTEGRATION:
         assertIsIntegration(data);

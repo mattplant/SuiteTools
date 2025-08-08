@@ -1,113 +1,87 @@
 # SuiteTools Monorepo
 
-Welcome to the SuiteTools monorepo!
+Welcome to the **SuiteTools** — *the missing NetSuite tools*.
 
-This repository contains both the backend and frontend codebases for **SuiteTools** - *The missing NetSuite tools*.
+## Summary
+
+SuiteTools is a cohesive suite of NetSuite admin tools that bridge gaps in the native NetSuite UI, delivering faster workflows, richer insights, and an intuitive experience.
+
+SuiteTools fills in the blind spots with high-value tools that minimize friction including:
+
+- Script Logs - Scroll through complete execution logs in one view, with advanced filtering
+- Concurrency Dashboard - See precise* concurrency metrics instead of coarse 25% buckets along with full details without paging
+- Integration Manager - Configure and monitor external integrations with an organized, user-friendly interface
+
+## Design
+
+Under the hood, SuiteTools is a modular monorepo combining:
+
+- React + TypeScript frontend powered by Vite and Flowbite-React for rapid iteration and consistent styling
+- SuiteCloud Development Framework (SDF) backend for seamless deployments
+- Shared workspace centralized TypeScript types, Zod validation schemas, and utility functions
+
+This design delivers:
+
+- A unified developer environment with consistent linting, formatting, and build tooling
+- One source of truth for data shapes and validation
+- Modular, composable feature development for rapid scaling
 
 ## Structure
 
-```bash
+```plaintext
 SuiteTools monorepo
-├── backend/
-└── frontend/
+├── .vscode/       # VS Code workspace settings
+│   ├── extensions.json   # recommended extensions
+│   ├── settings.json     # workspace settings
+│   └── tasks.json        # workspace tasks
+├── .yarn/         # Yarn configuration
+├── backend/       # NetSuite SDF project: SuiteScript backend code, deployment scripts, and SDF configs
+├── frontend/      # React SPA: UI components, feature modules, data fetching hooks, and build setup
+├── shared/        # Types & utilities: shared TypeScript types, validation schemas, and helper functions
+├── LICENSE        # The GPL-3.0-or-later license file
+├── package.json   # Yarn workspace definition & top-level scripts
+└── README.md      # This README file
 ```
 
-## Installation
+### backend/
 
-### Prerequisites
+- Leverages my [NetSuite-TypeScript-SDF template](https://github.com/mattplant/NetSuite-TypeScript-SDF)
+- Contains all backend logic, SuiteScript modules, and deployment scripts for NetSuite
+- For additional information, see the [backend README](backend/README.md)
 
-#### General
+### frontend/
 
-- NetSuite
-- Administrator access to a NetSuite
+- Implements a single-page application with React, TypeScript, Flowbite-React components, and Zod schemas
+- Organizes components in a hybrid structure:
+  - components/shared/ for UI primitives and inline feedback components
+  - components/features/ for feature-specific composites and data hooks
+  - layout/ for top-level layouts (AppLayout, Header)
+- Includes build scripts and optimized bundling via Vite
+- For additional information, see the [frontend README](frontend/README.md)
 
-#### Requirements from NetSuite-TypeScript-SDF template
+### shared/
 
-Since this project was built using the [NetSuite-TypeScript-SDF](https://github.com/mattplant/NetSuite-TypeScript-SDF) template, you will need to have its requirements met along with understanding how to deploy a simple project before working with a more complex project like this.
+- Houses cross-workspace TypeScript types, Zod validation schemas, and utility functions
+- Enables DRY principles by centralizing logic used by both frontend and backend, ensuring consistency in data shapes and validations
+- For additional information, see the [shared README](shared/README.md)
 
-### Initial setup
+## Installing SuiteTools
 
-#### Clone and install dependencies
+For detailed instructions on installing SuiteTools, see the [Installation Guide](docs/installation.md).
 
-```bash
-git clone https://github.com/mattplant/SuiteTools
-cd SuiteTools
-yarn install
-```
+## Customizing SuiteTools
 
-#### Build the monorepo projects
+For detailed instructions on customizing SuiteTools, see the [Customizing Guide](docs/customizing.md).
 
-```bash
-yarn workspace frontend run build
-yarn workspace backend run build
-```
+## 📖 Documentation
 
-#### SDF project account setup
+- [Monorepo Documentation](docs/index.md) - for an overview of the SuiteTools project
 
-We need to set up the backend SDF project to connect to your NetSuite account.
+Note that each workspace has its own documentation.
 
-I have created a script in the root `package.json` to make this easier. It will change directory into the `backend` folder and initiates the `suitecloud account:setup` command for you. You will then need to follow the prompts to set up the connection.
-
-```bash
-yarn run sdf-account-setup
-```
-
-#### Deploying to NetSuite
-
-Use the SuiteCloud Development Framework (SDF) to deploy the both the frontend and backend code to your NetSuite account.
-
-Run the following commands from the root of the monorepo:
-
-```bash
-yarn workspace backend run deploy
-```
-
-## Running SuiteTools
-
-### Via the SuiteTools Suitelet in NetSuite
-
-Navigate to Customization > Scripting > Scripts. Find the script named "SuiteTools App" and click on it. Then, click on the "Deployments" tab to see the deployment record. Click on the "URL" link to open the SuiteTools application.
-
-### Or directly access it with this URL
-
-`https://<account_id>.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idev_suitetools_app&deploy=customdeploy_idev_suitetools_app`
-
-Make sure to replace `<account_id>` with your actual NetSuite account ID.
-
-## Redeployment
-
-When you make changes to your frontend code you will need to build it and deploy your code to NetSuite. This can be done with the following command from the root of the monorepo:
-
-```bash
-yarn workspace frontend run build-and-deploy
-```
-
-You will also need to clear your browser cache to see the latest changes in the SuiteTools frontend application.
-
-If you only changed backend code, you can skip the frontend build step with the following.
-
-```bash
-yarn workspace backend run deploy
-```
-
-## VS Code
-
-I recommend using [Visual Studio Code](https://code.visualstudio.com/) as your code editor for this project. It has great support for TypeScript, and it integrates well with the SuiteCloud Development Framework (SDF).
-
-I have also configured some settings in the `.vscode` folder to help with development including automatically building the backend code.
-
-Just have [SuiteCloud Extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Oracle.suitecloud-vscode-extension) installed and open the `SuiteTools` folder in VS Code.
-
-And instead of executing the `build-and-deploy` command via the terminal, you can click the play icon ("Run") in the NPM Scripts section of the sidebar of the Explorer panel of VS Code.
-
-### VS Code Initial Setup
-
-#### Use Workspace TypeScript Version
-
-1. Open any `.ts` or `.tsx` file
-2. Open the Command Palette (Cmd + Shift + P or Ctrl + Shift + P)
-3. Search for and select **“TypeScript: Select TypeScript Version...”**
-4. Select **“Use Workspace Version”**
+- [Frontend](frontend/README.md)
+- [Backend](backend/README.md)
+- [Shared](shared/README.md)
 
 ## License
 

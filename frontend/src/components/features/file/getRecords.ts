@@ -1,6 +1,6 @@
 import { getData } from '../../../api/api';
 import { NotFound } from '../../../api/types';
-import { File, assertIsFiles } from './types';
+import { File, assertValidFiles } from 'shared';
 import { CriteriaFields } from '../../shared/criteria/types';
 
 export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFound> {
@@ -31,7 +31,7 @@ export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFoun
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsFiles(response.data);
+    assertValidFiles(response.data);
     result = response.data;
   }
 
