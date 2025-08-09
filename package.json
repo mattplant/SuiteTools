@@ -16,7 +16,7 @@
     "scripts": {
         "sdf-account-setup": "cd backend && suitecloud account:setup",
         "watch:backend": "yarn workspace backend run watch",
-        "lint": "eslint frontend shared --report-unused-disable-directives --max-warnings 0",
+        "lint": "eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
         "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
         "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete"
     },
@@ -48,10 +48,12 @@
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-react-refresh": "^0.4.20",
+        "eslint-plugin-suitescript": "^1.4.1",
         "globals": "^16.3.0",
         "prettier": "^3.6.2"
     },
     "resolutions": {
-        "zod": "^4.0.14"
+        "zod": "^4.0.14",
+        "eslint": "^9.33.0"
     }
 }

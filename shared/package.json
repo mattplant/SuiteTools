@@ -25,6 +25,7 @@
     },
     "scripts": {
         "build": "yarn pnpify tsc -b --verbose",
+        "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "clean-local": "rm -rf dist tsconfig.tsbuildinfo",
         "test": "echo \"No tests specified\" && exit 0"
     },
@@ -32,6 +33,7 @@
         "zod": "^4.0.14"
     },
     "devDependencies": {
-        "@yarnpkg/pnpify": "^4.1.5"
+        "@yarnpkg/pnpify": "^4.1.5",
+        "eslint": "*"
     }
 }

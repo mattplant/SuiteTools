@@ -1,8 +1,0 @@
-# skip the node modules
-node_modules/
-
-# skip the generated NetSuite JavaScript files
-src/FileCabinet/SuiteScripts/
-
-# skip the generated frontend SuiteTools files
-src/FileCabinet/SuiteScripts/SuiteTools/dist/

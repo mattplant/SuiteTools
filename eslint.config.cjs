@@ -2,10 +2,12 @@ const { defineConfig, globalIgnores } = require("eslint/config");
 const globals = require("globals");
 const { fixupConfigRules, fixupPluginRules } = require("@eslint/compat");
 const tsParser = require("@typescript-eslint/parser");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
 const reactRefresh = require("eslint-plugin-react-refresh");
 const _import = require("eslint-plugin-import");
 const jsdoc = require("eslint-plugin-jsdoc");
 const js = require("@eslint/js");
+const suitescript = require("eslint-plugin-suitescript");
 const { FlatCompat } = require("@eslint/eslintrc");
 
 const compat = new FlatCompat({
@@ -21,6 +23,41 @@ const suiteToolsIgnores = [
 ];
 
 module.exports = defineConfig([
+  // Backend workspace
+  {
+    files: ["backend/**/*.{ts,tsx}"],
+    languageOptions: {
+      ecmaVersion: 2021,
+      sourceType: "module",
+      parser: tsParser,
+      parserOptions: {
+        project: ["./backend/tsconfig.json"],
+        tsconfigRootDir: __dirname,
+      },
+      globals: {
+        ...globals.node,
+        define: "readonly",
+        require: "readonly",
+        module: "readonly",
+        exports: "readonly",
+        N: "readonly", // NetSuite global
+      },
+    },
+    plugins: {
+      "@typescript-eslint": fixupPluginRules(
+        require("@typescript-eslint/eslint-plugin")
+      ),
+      suitescript,
+    },
+    rules: {
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
+    },
+  },
   // Frontend workspace
   {
     files: ["frontend/**/*.{ts,tsx}"],
@@ -29,9 +66,7 @@ module.exports = defineConfig([
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
-      globals: {
-        ...globals.browser,
-      },
+      globals: globals.node,
       parser: tsParser,
       parserOptions: {
         project: ["./frontend/tsconfig.json"],
@@ -123,7 +158,6 @@ module.exports = defineConfig([
     rules: {},
   },
 
-  // Global ignores
   globalIgnores([
     "**/node_modules/",
     "**/dist/",
