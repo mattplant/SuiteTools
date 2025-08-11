@@ -3,7 +3,7 @@ import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../../shared/results/Export.tsx';
 import { ResultsProps, SummaryRow } from '../../../shared/results/types.ts';
-import { assertIsJobRuns } from './types.ts';
+import { JobRun } from 'shared';
 
 const columns = [
   {
@@ -35,7 +35,7 @@ const columns = [
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertIsJobRuns(rows);
+  JobRun.array.assert(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [

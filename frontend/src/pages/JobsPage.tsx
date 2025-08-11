@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/shared/criteria/types.ts';
 import { getJob } from '../components/features/job/getRecord.ts';
 import { getJobs } from '../components/features/job/getRecords.ts';
-import { Job } from '../components/features/job/types.ts';
+import { Jobs } from 'shared';
 import { RecordCriteria } from '../components/features/job/RecordCriteria.tsx';
 import { Results } from '../components/shared/results/Results.tsx';
 import { ResultsTypes } from '../components/shared/results/types.ts';
@@ -12,7 +12,7 @@ export function JobsPage() {
     active: 'T',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Job[]>([]);
+  const [results, setResults] = useState<Jobs>([]);
 
   useEffect(() => {
     async function fetchData() {

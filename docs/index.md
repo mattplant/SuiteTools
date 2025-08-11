@@ -1,12 +1,13 @@
 # SuiteTools Monorepo Documentation
 
-This is the **monorepo documentation** for the SuiteTools project which contains overarching guides and documentation that span multiple workspaces.
+This is the **monorepo documentation** SuiteTools, containing _suite-wide_ guides and cross-cutting patterns that apply across all workspaces.
 
 ## Monorepo Documentation
 
-- [Installation Guide](installation.md) - guide to install SuiteTools in your NetSuite account
+- [Installation Guide](installation.md) - setup and deployment to your NetSuite account
+- [Architecture Overview](architecture.md) - overview of the SuiteTools architecture, including design principles and patterns
 - [Customizing Guide](customizing.md) - guide to developing and deploying SuiteTools customizations
-- [VS Code](vscode.md) - guide to using VS Code with SuiteTools
+- [VS Code](vscode.md) - editor setup and recommended tasks
 - [License](LICENSE)
 
 ## Other Documentation
@@ -21,4 +22,4 @@ For workspace-specific documentation, see the individual workspace directories:
 
 ## License
 
-This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the LICENSE file. By using this project, you agree to comply with the terms of the license.
+This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the [LICENSE file](../LICENSE). By using this project, you agree to comply with the terms of the license.

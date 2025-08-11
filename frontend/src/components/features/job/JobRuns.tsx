@@ -3,7 +3,7 @@ import { NotFound } from '../../../api/types.ts';
 import { CriteriaFields } from '../../shared/criteria/types.ts';
 import { getJobRun } from './run/getRecord.ts';
 import { getJobRuns } from './run/getRecords.ts';
-import { JobRun } from './run/types.ts';
+import { JobRun } from 'shared';
 import { Results } from '../../shared/results/Results.tsx';
 import { ResultsTypes } from '../../shared/results/types.ts';
 

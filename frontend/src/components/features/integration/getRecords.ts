@@ -1,5 +1,5 @@
 import { getDataFromPageTable } from '../../../lib/netsuite/collectData.ts';
-import { Integration } from './types.ts';
+import { Integration } from 'shared';
 import { CriteriaFields } from '../../shared/criteria/types.ts';
 import { Settings } from '../settings/types.ts';
 

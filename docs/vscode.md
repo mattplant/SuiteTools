@@ -1,5 +1,11 @@
 # VS Code
 
+TODO: write intro:
+thoughts:
+
+- editor setup and recommended tasks
+- guide to using VS Code with SuiteTools
+
 I recommend using [Visual Studio Code](https://code.visualstudio.com/) as your code editor for this project. It has great support for TypeScript, and it integrates well with the SuiteCloud Development Framework (SDF).
 
 I have also configured some settings in the `.vscode` folder to help with development including automatically building the backend code.

@@ -3,7 +3,7 @@ import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../shared/results/Export.tsx';
 import { ResultsProps, SummaryRow } from '../../shared/results/types.ts';
-import { assertValidSoapLogs } from 'shared';
+import { SoapLogBundle } from 'shared';
 
 const columns = [
   {
@@ -32,7 +32,7 @@ const columns = [
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
-  assertValidSoapLogs(rows);
+  SoapLogBundle.assertMany(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [

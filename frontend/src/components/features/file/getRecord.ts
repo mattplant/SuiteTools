@@ -1,6 +1,6 @@
 import { getData } from '../../../api/api';
 import { NotFound } from '../../../api/types';
-import { File, assertValidFile } from 'shared';
+import { File } from 'shared';
 
 export async function getFile(id: number): Promise<File | NotFound> {
   let result;
@@ -22,7 +22,7 @@ export async function getFile(id: number): Promise<File | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertValidFile(response.data);
+    File.assert(response.data);
     // build additional properties
     response.data.urlNs = `/app/common/media/mediaitem.nl?id=${response.data.id}`;
     response.data.urlDetail = `#/file/${response.data.id}`;

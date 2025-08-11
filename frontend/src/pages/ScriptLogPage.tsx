@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { ScriptLog, parseScriptLog } from 'shared';
+import { ScriptLog } from 'shared';
 
 import { ScriptLogResult } from '../components/features/scriptLog/RecordResult';
 
@@ -15,7 +15,7 @@ export function ScriptLogPage() {
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.scriptLog}>
           {(scriptLog) => {
-            parseScriptLog(scriptLog);
+            ScriptLog.parse(scriptLog);
             return <ScriptLogResult data={scriptLog} />;
           }}
         </Await>

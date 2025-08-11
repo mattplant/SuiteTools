@@ -1,6 +1,6 @@
 import { getData } from '../../../api/api';
 import { NotFound } from '../../../api/types';
-import { ScriptLog, parseScriptLog } from 'shared';
+import { ScriptLog } from 'shared';
 
 export async function getScriptLog(id: number): Promise<ScriptLog | NotFound> {
   let result;
@@ -20,7 +20,7 @@ export async function getScriptLog(id: number): Promise<ScriptLog | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    const data = parseScriptLog(response.data);
+    const data = ScriptLog.parse(response.data);
     // build additional properties
     data.urlNs = `/app/common/scripting/scriptnote.nl?id=${data.id}`;
     data.urlDetail = `#/scriptLog/${data.id}`;

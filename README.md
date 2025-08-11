@@ -36,8 +36,9 @@ SuiteTools monorepo
 │   └── tasks.json        # workspace tasks
 ├── .yarn/         # Yarn configuration
 ├── backend/       # NetSuite SDF project: SuiteScript backend code, deployment scripts, and SDF configs
+├── docs/          # Documentation: overarching guides and cross-cutting documentation
 ├── frontend/      # React SPA: UI components, feature modules, data fetching hooks, and build setup
-├── shared/        # Types & utilities: shared TypeScript types, validation schemas, and helper functions
+├── shared/        # Types & utilities: shared TypeScript types, validation schemas, and utilities
 ├── LICENSE        # The GPL-3.0-or-later license file
 ├── package.json   # Yarn workspace definition & top-level scripts
 └── README.md      # This README file

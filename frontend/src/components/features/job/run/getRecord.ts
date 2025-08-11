@@ -1,6 +1,6 @@
 import { getData } from '../../../../api/api';
 import { NotFound } from '../../../../api/types';
-import { JobRun, assertIsJobRun } from './types';
+import { JobRun } from 'shared';
 
 export async function getJobRun(id: number): Promise<JobRun | NotFound> {
   let result;
@@ -14,7 +14,7 @@ export async function getJobRun(id: number): Promise<JobRun | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsJobRun(response.data);
+    JobRun.assert(response.data);
     // build additional properties
     response.data.urlDetail = `#/jobRun/${response.data.id}`;
     response.data.urlJob = `#/job/${response.data.jobid}`;

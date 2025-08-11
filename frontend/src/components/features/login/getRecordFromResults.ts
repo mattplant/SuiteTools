@@ -1,7 +1,7 @@
 import { NotFound } from '../../../api/types';
 import { Login, assertIsLogins } from './types';
 
-export async function getLoginFromResults(id: number, lines?: unknown[]): Promise<Login | NotFound> {
+export async function getLoginFromResults(id: number, lines?: readonly unknown[]): Promise<Login | NotFound> {
   let result;
   if (lines) {
     assertIsLogins(lines);

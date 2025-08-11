@@ -1,15 +1,15 @@
 import { ResultsTypes } from './types';
 // file
-import { assertValidFile } from 'shared';
+import { File } from 'shared';
 import { FileResult } from '../../features/file/RecordResult';
 // integration
-import { assertIsIntegration } from '../../features/integration/types';
+import { Integration } from 'shared';
 import { IntegrationResult } from '../../features/integration/RecordResult';
 // job
-import { assertIsJob } from '../../features/job/types';
+import { JobBundle } from 'shared';
 import { JobResult } from '../../features/job/RecordResult';
 // jobRun
-import { assertIsJobRun } from '../../features/job/run/types';
+import { JobRun } from 'shared';
 import { JobRunResult } from '../../features/job/run/RecordResult';
 // login
 import { assertIsLogin } from '../../features/login/types';
@@ -21,10 +21,10 @@ import { RoleResult } from '../../features/role/RecordResult';
 import { assertIsScript } from '../../features/script/types';
 import { ScriptResult } from '../../features/script/RecordResult';
 // scriptLog
-import { assertValidScriptLog } from 'shared';
+import { ScriptLog } from 'shared';
 import { ScriptLogResult } from '../../features/scriptLog/RecordResult';
 // soapLog
-import { assertValidSoapLog } from 'shared';
+import { SoapLogBundle } from 'shared';
 import { SoapLogResult } from '../../features/soapLog/RecordResult';
 // token
 import { assertIsToken } from '../../features/token/types';
@@ -50,16 +50,16 @@ export function ResultsModal({ type, loading, data }: Props) {
     // display the modal
     switch (type) {
       case ResultsTypes.FILE:
-        assertValidFile(data);
+        File.assert(data);
         return <FileResult data={data} modal={true} />;
       case ResultsTypes.INTEGRATION:
-        assertIsIntegration(data);
+        Integration.assert(data);
         return <IntegrationResult data={data} modal={true} />;
       case ResultsTypes.JOB:
-        assertIsJob(data);
+        JobBundle.assert(data);
         return <JobResult data={data} modal={true} />;
       case ResultsTypes.JOBRUN:
-        assertIsJobRun(data);
+        JobRun.assert(data);
         return <JobRunResult data={data} modal={true} />;
       case ResultsTypes.LOGIN:
         assertIsLogin(data);
@@ -71,10 +71,10 @@ export function ResultsModal({ type, loading, data }: Props) {
         assertIsScript(data);
         return <ScriptResult data={data} modal={true} />;
       case ResultsTypes.SCRIPTLOG:
-        assertValidScriptLog(data);
+        ScriptLog.assert(data);
         return <ScriptLogResult data={data} modal={true} />;
       case ResultsTypes.SOAPLOG:
-        assertValidSoapLog(data);
+        SoapLogBundle.assert(data);
         return <SoapLogResult data={data} modal={true} />;
       case ResultsTypes.TOKEN:
         assertIsToken(data);

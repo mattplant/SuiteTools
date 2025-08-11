@@ -1,9 +1,10 @@
 import { getData } from '../../../api/api';
 import { NotFound } from '../../../api/types';
-import { Job, assertIsJobs } from './types';
 import { CriteriaFields } from '../../shared/criteria/types';
+import { JobBundle } from 'shared';
+import type { Jobs } from 'shared';
 
-export async function getJobs(fields: CriteriaFields): Promise<Job[] | NotFound> {
+export async function getJobs(fields: CriteriaFields): Promise<Jobs | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -21,7 +22,8 @@ export async function getJobs(fields: CriteriaFields): Promise<Job[] | NotFound>
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsJobs(response.data);
+    JobBundle.assertMany(response.data);
+    // assertValidJobs(response.data);
     result = response.data;
   }
   return result;

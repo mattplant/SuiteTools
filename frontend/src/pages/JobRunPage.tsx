@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsJobRun, JobRun } from '../components/features/job/run/types';
+import { JobRun } from 'shared';
 import { JobRunResult } from '../components/features/job/run/RecordResult';
 
 export function JobRunPage() {
@@ -14,7 +14,7 @@ export function JobRunPage() {
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.jobRun}>
           {(record) => {
-            assertIsJobRun(record);
+            JobRun.assert(record);
             return <JobRunResult data={record} />;
           }}
         </Await>

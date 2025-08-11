@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { createSchemaHelpers, createZodDate } from "./helpers";
+import { zNetSuite } from "./zNetSuite";
+import type { ZodBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single File record.
@@ -34,29 +35,10 @@ const CleanedFile = BaseFile.transform((data) => {
   return data;
 });
 
-export type File = z.infer<typeof BaseFile>;
+export type File = z.infer<typeof CleanedFile>;
+export type Files = File[];
 
 /**
- * Single‐entry helpers (assert/parse/safeParse)
+ * Bundled schema + helpers for File
  */
-const singleHelpers = createSchemaHelpers(CleanedFile);
-
-export const assertValidFile: typeof singleHelpers.assert =
-  singleHelpers.assert;
-
-export const parseFile: typeof singleHelpers.parse = singleHelpers.parse;
-
-export const safeParseFile: typeof singleHelpers.safeParse =
-  singleHelpers.safeParse;
-
-/**
- * Array‐of‐entries helpers (assert/parse/safeParse)
- */
-const arrayHelpers = createSchemaHelpers(CleanedFile.array());
-
-export const assertValidFiles: typeof arrayHelpers.assert = arrayHelpers.assert;
-
-export const parseFiles: typeof arrayHelpers.parse = arrayHelpers.parse;
-
-export const safeParseFiles: typeof arrayHelpers.safeParse =
-  arrayHelpers.safeParse;
+export const File: ZodBundle<File> = zNetSuite.createBundle(CleanedFile);

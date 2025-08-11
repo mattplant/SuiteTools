@@ -7,8 +7,8 @@ import { ResultsModal } from './ResultsModal.tsx';
 
 type Props = {
   type: ResultsTypes;
-  lines: unknown[];
-  getModalData: (id: number, lines?: unknown[]) => Promise<ModalResult | NotFound>;
+  lines: readonly unknown[];
+  getModalData: (id: number, lines?: readonly unknown[]) => Promise<ModalResult | NotFound>;
 };
 
 export function Results({ type, lines, getModalData }: Props) {
@@ -34,7 +34,6 @@ export function Results({ type, lines, getModalData }: Props) {
     fetchData();
 
     return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // determine modal title based on modal type

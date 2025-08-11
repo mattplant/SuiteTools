@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { Job } from './types';
+import { Job } from 'shared';
 import { postData } from '../../../api/api';
 import { PostEndpoint, HttpResponse } from '../../../api/types';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
@@ -17,6 +17,8 @@ export function JobResult({ data, modal }: Props) {
   const initiateJobClick = async () => {
     console.log('JobResult: initiateJobClick() iniitiated');
     const entityRecords: { type: string; name: string }[] = [];
+
+    // TODO: why is this here? Did I copy and paste and not clean out?
     // get integrations
     const integrationOptions = await getIntegrationOptionValues(true);
     integrationOptions.forEach((option) => {
@@ -33,6 +35,8 @@ export function JobResult({ data, modal }: Props) {
         name: option.text,
       });
     });
+
+    // TODO: also what does this do?
     // make API call
     const responseData: HttpResponse = await postData(PostEndpoint.INITIATEJOB, {
       id: data.id,

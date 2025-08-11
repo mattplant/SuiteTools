@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsIntegration, Integration } from '../components/features/integration/types';
+import { Integration } from 'shared';
 import { IntegrationResult } from '../components/features/integration/RecordResult';
 import { IntegrationSoapLogs } from '../components/features/integration/IntegrationSoapLogs';
 import { IntegrationTokens } from '../components/features/integration/IntegrationTokens';
@@ -16,7 +16,7 @@ export function IntegrationPage() {
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.integration}>
           {(record) => {
-            assertIsIntegration(record);
+            Integration.assert(record);
             return (
               <>
                 <IntegrationResult data={record} />

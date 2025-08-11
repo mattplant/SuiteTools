@@ -1,6 +1,6 @@
 import { getIntegrations } from './getRecords';
 import { NotFound } from '../../../api/types';
-import { Integration } from './types';
+import { Integration } from 'shared';
 import { Settings } from '../settings/types';
 
 export async function getIntegration(id: number): Promise<Integration | NotFound> {

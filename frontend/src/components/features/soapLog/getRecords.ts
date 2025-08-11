@@ -1,13 +1,13 @@
 import { getDataFromPageTable } from '../../../lib/netsuite/collectData';
-import { parseSoapLogs, SoapLog } from 'shared';
+import { SoapLogBundle } from 'shared';
 import { CriteriaFields } from '../../shared/criteria/types';
-
-export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
+import type { SoapLogs } from 'shared';
+export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLogs> {
   console.log('getSoapLogs() initiated', { fields });
   const urlParams = {
     integrations: fields.integrations,
   };
-  let data: SoapLog[] = [];
+  let data: SoapLogs = [];
   let dataArray: string[][] = [];
   if (window.location.href.includes('localhost')) {
     // mock data for local development
@@ -70,7 +70,7 @@ export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLog[]> {
     request: record[12],
     response: record[13],
   }));
-  data = parseSoapLogs(rawData);
+  data = SoapLogBundle.parseMany(rawData);
   // filter data based on integrationId
   if (urlParams.integrations && urlParams.integrations.length > 0 && urlParams.integrations[0]) {
     data = data.filter((record) => {

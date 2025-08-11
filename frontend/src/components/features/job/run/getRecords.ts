@@ -1,6 +1,6 @@
 import { getData } from '../../../../api/api';
 import { NotFound } from '../../../../api/types';
-import { JobRun, assertIsJobRuns } from './types';
+import { JobRun } from 'shared';
 import { CriteriaFields } from '../../../shared/criteria/types';
 
 export async function getJobRuns(fields: CriteriaFields): Promise<JobRun[] | NotFound> {
@@ -21,7 +21,7 @@ export async function getJobRuns(fields: CriteriaFields): Promise<JobRun[] | Not
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsJobRuns(response.data);
+    JobRun.array.assert(response.data);
     result = response.data;
   }
 

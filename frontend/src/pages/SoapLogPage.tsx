@@ -1,20 +1,21 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertValidSoapLog, SoapLog } from 'shared';
+import { SoapLogBundle } from 'shared';
 import { SoapLogResult } from '../components/features/soapLog/RecordResult';
 
 export function SoapLogPage() {
   const data = useLoaderData();
-  assertIsData(data);
+  // assertIsData(data);
+  SoapLogBundle.assert(data);
 
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">SOAP Log</h2>
       <br />
       <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data.soapLog}>
+        <Await resolve={data}>
           {(record) => {
-            assertValidSoapLog(record);
+            SoapLogBundle.assert(record);
             return (
               <>
                 <SoapLogResult data={record} />
@@ -27,18 +28,18 @@ export function SoapLogPage() {
   );
 }
 
-type Data = {
-  soapLog: SoapLog;
-};
+// type Data = {
+//   soapLog: SoapLog;
+// };
 
-function assertIsData(data: unknown): asserts data is Data {
-  if (typeof data !== 'object') {
-    throw new Error('Data is not an object');
-  }
-  if (data === null) {
-    throw new Error('Data is null');
-  }
-  if (!('soapLog' in data)) {
-    throw new Error('Data does not contain integration');
-  }
-}
+// function assertIsData(data: unknown): asserts data is Data {
+//   if (typeof data !== 'object') {
+//     throw new Error('Data is not an object');
+//   }
+//   if (data === null) {
+//     throw new Error('Data is null');
+//   }
+//   if (!('soapLog' in data)) {
+//     throw new Error('Data does not contain integration');
+//   }
+// }

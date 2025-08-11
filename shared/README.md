@@ -19,6 +19,15 @@ shared/
 └── README.md      # This README file
 ```
 
+## Naming and folder conventions
+
+> TODO: Thinking of moving to this structure:
+
+- **Schemas:** shared/schemas/<domain>.ts — zod schemas by domain.
+- **Types:** shared/types/<domain>.ts — inferred from schemas; avoid manual duplication.
+- **Errors:** shared/errors/<domain>Errors.ts — error constructors and codes.
+- **Helpers:** shared/utils/<category>/ — assertion, result, and small helpers.
+
 ## Usage
 
 Import the shared modules as needed. We use barrel files to simplify imports, so you can import directly from the `shared` package without needing to specify subfolders.

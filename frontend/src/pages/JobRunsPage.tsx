@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/shared/criteria/types.ts';
 import { getJobRun } from '../components/features/job/run/getRecord.ts';
 import { getJobRuns } from '../components/features/job/run/getRecords.ts';
-import { JobRun } from '../components/features/job/run/types.ts';
+import { JobRun } from 'shared';
 import { RecordCriteria } from '../components/features/job/run/RecordCriteria.tsx';
 import { Results } from '../components/shared/results/Results.tsx';
 import { ResultsTypes } from '../components/shared/results/types.ts';

@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../../shared/criteria/types.ts';
 import { getSoapLog } from '../soapLog/getRecord.ts';
 import { getSoapLogs } from '../soapLog/getRecords.ts';
-import { SoapLog } from 'shared';
+import { SoapLogBundle } from 'shared';
 import { Results } from '../../shared/results/Results.tsx';
 import { ResultsTypes } from '../../shared/results/types.ts';
+import type { SoapLogs } from 'shared';
 
 type Props = {
   integrations: string[];
 };
 
 export function IntegrationSoapLogs({ integrations }: Props) {
-  const [results, setResults] = useState<SoapLog[]>([]);
+  const [results, setResults] = useState<SoapLogs>([]);
 
   useEffect(() => {
     const criteria: CriteriaFields = {
@@ -21,6 +22,7 @@ export function IntegrationSoapLogs({ integrations }: Props) {
     async function fetchData() {
       try {
         const data = await getSoapLogs(criteria);
+        SoapLogBundle.assertMany(data);
         setResults(data);
       } catch (error) {
         console.error('Error fetching data:', error);

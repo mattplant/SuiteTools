@@ -18,7 +18,7 @@ export function assertIsModalResult(data: unknown): asserts data is ModalResult 
 }
 
 export type ResultsProps = {
-  rows: unknown[];
+  rows: readonly unknown[];
   setId: (id: number) => void;
   setOpenModal: (openModal: boolean) => void;
 };

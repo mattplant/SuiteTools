@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { CriteriaFields } from '../components/shared/criteria/types.ts';
 import { getIntegration } from '../components/features/integration/getRecord.ts';
 import { getIntegrations, addIntegrationLastLogins } from '../components/features/integration/getRecords.ts';
-import { Integration } from '../components/features/integration/types.ts';
+import { Integration } from 'shared';
 import { RecordCriteria } from '../components/features/integration/RecordCriteria.tsx';
 import { Results } from '../components/shared/results/Results.tsx';
 import { ResultsTypes } from '../components/shared/results/types.ts';

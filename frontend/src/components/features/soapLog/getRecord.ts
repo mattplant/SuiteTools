@@ -1,6 +1,7 @@
 import { getSoapLogs } from './getRecords';
 import { NotFound } from '../../../api/types';
-import { SoapLog, parseSoapLog } from 'shared';
+import { SoapLogBundle } from 'shared';
+import type { SoapLog } from 'shared';
 
 export async function getSoapLog(id: number): Promise<SoapLog | NotFound> {
   console.log('getSoapLog() initiated', { id });
@@ -36,7 +37,7 @@ export async function getSoapLog(id: number): Promise<SoapLog | NotFound> {
     }
   }
   // now we have the raw result from either mock or NetSuite
-  const parsedResult = parseSoapLog(rawResult);
+  const parsedResult = SoapLogBundle.parse(rawResult);
   // add additional properties
   parsedResult.urlDetail = `#/soapLog/${parsedResult.id}`;
 
