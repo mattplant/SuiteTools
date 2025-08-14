@@ -5,7 +5,7 @@
   "version": "1.0.0-beta.1",
   "private": true,
   "author": {
-    "name": "Matt Plant",
+    "name": "Matthew Plant",
     "url": "https://github.com/mattplant"
   },
   "repository": {
@@ -13,7 +13,7 @@
     "url": "https://github.com/mattplant/SuiteTools",
     "directory": "frontend"
   },
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-or-later",
   "type": "module",
   "scripts": {
     "build-and-deploy": "yarn build && yarn deploy && echo \"SutieTools frontend build and deploy completed at $(date).\"",

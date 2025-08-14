@@ -3,8 +3,9 @@
     "displayName": "SuiteTools monorepo",
     "description": "The monorepo for SuiteTools",
     "version": "1.0.0-beta.1",
+    "packageManager": "yarn@4.9.2",
     "author": {
-        "name": "Matt Plant",
+        "name": "Matthew Plant",
         "url": "https://github.com/mattplant"
     },
     "repository": {
@@ -12,13 +13,15 @@
         "url": "https://github.com/mattplant/SuiteTools"
     },
     "homepage": "https://github.com/mattplant/SuiteTools#readme",
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "sdf-account-setup": "cd backend && suitecloud account:setup",
         "watch:backend": "yarn workspace backend run watch",
         "lint": "eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
         "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
-        "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete"
+        "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
+        "yarn:reset": "./scripts/resetYarn.sh",
+        "generate-third-party-licenses": "./scripts/generate-third-party-licenses.sh"
     },
     "private": true,
     "workspaces": [

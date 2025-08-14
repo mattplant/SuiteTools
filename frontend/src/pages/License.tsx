@@ -1,3 +1,10 @@
+export default function License() {
+  return (
+    <div className="p-4">
+      <div className="mx-auto max-w-4xl text-center">
+        <h1 className="text-2xl text-slate-900">LICENSES</h1>
+        <pre className="text-slate-600 mt-4 text-left whitespace-pre-wrap">
+          {`
 SuiteTools — the missing NetSuite tools
 Copyright (C) 2025 Matthew Plant
 
@@ -88,7 +95,7 @@ modification follow.
 
                        TERMS AND CONDITIONS
 
-  1. Definitions.
+  0. Definitions.
 
   "This License" refers to version 3 of the GNU General Public License.
 
@@ -671,11 +678,11 @@ Also add information on how to contact you by electronic and paper mail.
 notice like this when it starts in an interactive mode:
 
     <program>  Copyright (C) <year>  <name of author>
-    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
+    This program comes with ABSOLUTELY NO WARRANTY; for details type \`show w'.
     This is free software, and you are welcome to redistribute it
-    under certain conditions; type `show c' for details.
+    under certain conditions; type \`show c' for details.
 
-The hypothetical commands `show w' and `show c' should show the appropriate
+The hypothetical commands \`show w' and \`show c' should show the appropriate
 parts of the General Public License.  Of course, your program's commands
 might be different; for a GUI interface, you would use an "about box".
 
@@ -690,3 +697,9 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
+`}
+        </pre>
+      </div>
+    </div>
+  );
+}

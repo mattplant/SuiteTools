@@ -38,6 +38,41 @@ yarn workspace frontend run build-and-deploy
 
 Remember to also clear your browser cache to see the latest changes.
 
+## License Compliance
+
+SuiteTools is licensed under **GPL‑3.0‑or‑later**, which carries strong copyleft requirements. All contributors share responsibility for ensuring that every direct and transitive dependency is license‑compatible. This safeguards legal clarity for our team, downstream users, and the open‑source community.
+
+### Why It Matters
+
+- Preserves the integrity of SuiteTools’ licensing model.
+- Avoids legal or distribution issues for downstream projects.
+- Promotes trust and transparency with community.
+
+### Compliance Best Practices
+
+- Audit new dependencies for GPLv3 compatibility
+- Use `license-checker` or `yarn licenses list` to audit transitive license metadata
+- For GPLv3 compatibility, avoid dependencies with restrictive or incompatible licenses (e.g., SSPL, BUSL)
+- Prefer well-maintained packages with SPDX-compliant metadata (e.g., `"GPL-3.0-only"`, `"MIT"`, `"Apache-2.0"`)
+- Maintain a `LICENSES.md` file to document manual reviews, overrides, and known exceptions
+
+### Avoid GPLv3-Incompatible Licenses
+
+GPLv3 is a strong copyleft license. Dependencies must not impose additional restrictions that conflict with its terms. The following license types are commonly incompatible:
+
+| License | Why It's Incompatible | Notes |
+|--------|------------------------|-------|
+| **SSPL** (Server Side Public License) | Adds restrictions on network use and service deployment | Considered non-free by OSI and incompatible with GPLv3 |
+| **BUSL** (Business Source License) | Restricts commercial use until a future date | Not an open-source license; violates GPLv3 redistribution terms |
+| **Commons Clause** | Prohibits commercial use of otherwise permissive licenses | Adds non-GPLv3-compliant restrictions |
+| **Proprietary / Custom Licenses** | Often lack redistribution or modification rights | Must be manually reviewed for compatibility |
+
+### If You Find a License Violation
+
+If you discover a direct or transitive dependency that is **GPLv3‑incompatible**, please raise it immediately via an issue or pull request. Your vigilance helps keep SuiteTools safe, compliant, and welcoming — thank you for protecting our project’s integrity.
+
+---
+
 ## License
 
 This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the [LICENSE file](../LICENSE). By using this project, you agree to comply with the terms of the license.

@@ -6,6 +6,7 @@ This is the **monorepo documentation** SuiteTools, containing _suite-wide_ guide
 
 - [Installation Guide](installation.md) - setup and deployment to your NetSuite account
 - [Architecture Overview](architecture.md) - overview of the SuiteTools architecture, including design principles and patterns
+- [Yarn Configuration](yarn.md) - suite‑wide package management, Plug’n’Play, and workspace boundaries
 - [Customizing Guide](customizing.md) - guide to developing and deploying SuiteTools customizations
 - [VS Code](vscode.md) - editor setup and recommended tasks
 - [License](LICENSE)

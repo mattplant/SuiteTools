@@ -25,3 +25,6 @@ node_modules
 
 # TypeScript build info
 *.tsbuildinfo
+
+# Local commit message drafts to be prevented from being committed
+commit-draft.md

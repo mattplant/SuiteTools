@@ -7,7 +7,7 @@
     "types": "dist/index.d.ts",
     "private": true,
     "author": {
-        "name": "Matt Plant",
+        "name": "Matthew Plant",
         "url": "https://github.com/mattplant"
     },
     "repository": {
@@ -15,7 +15,7 @@
         "url": "https://github.com/mattplant/SuiteTools",
         "directory": "shared"
     },
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-or-later",
     "exports": {
         ".": {
             "require": "./dist/index.js",

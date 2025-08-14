@@ -22,6 +22,8 @@ import { JobsPage } from './pages/JobsPage.tsx';
 import { getJobRun } from './components/features/job/run/getRecord.ts';
 import { JobRunPage } from './pages/JobRunPage.tsx';
 import { JobRunsPage } from './pages/JobRunsPage.tsx';
+// license
+import License from './pages/License.tsx';
 // logins
 import { LoginsPage } from './pages/LoginsPage.tsx';
 // roles
@@ -82,6 +84,10 @@ export const router = createHashRouter([
       {
         path: 'files',
         element: <FilesPage />,
+      },
+      {
+        path: 'licenses',
+        element: <License />,
       },
       {
         path: 'integration/:id',

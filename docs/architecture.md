@@ -59,7 +59,7 @@ Certain patterns and practices are applied across all workspaces to preserve con
 
 ## Monorepo architecture
 
-SuiteTools is structured as a monorepo—a single repository containing multiple related workspaces. This organization enables strong separation of concerns while making suite-wide patterns easy to maintain, extend, and share across frontend, backend, and shared logic.
+SuiteTools is organized as a monorepo—housing multiple related workspaces within a single repository. This architecture supports clear boundaries, shared utilities, and consistent tooling across frontend, backend, and cross-cutting logic. It also enables suite-wide patterns to be defined once, then reused and enforced across projects.
 
 ### Workspaces
 
@@ -69,6 +69,42 @@ SuiteTools is structured as a monorepo—a single repository containing multiple
   - Owns backend integration with NetSuite via API and HTTP handlers.
 - **shared/**
   - Cross-cutting types, Zod schemas, assertion helpers and utility functions.
+
+#### Benefits of Workspaces
+
+- **Shared dependencies** reduce duplication and improve install performance
+- **Consistent tooling** across packages (e.g. linting, formatting, testing)
+- **Unified workflows** enable commands like `yarn workspaces foreach` or `yarn workspaces focus`
+- **Explicit boundaries** prevent accidental coupling and improve contributor clarity
+
+#### Workspace Boundary Enforcement
+
+SuiteTools enforces strict workspace boundaries to preserve modularity, reproducibility, and long-term maintainability. This prevents:
+
+- ❌ Accidental hoisting of undeclared dependencies
+- ❌ Cross-workspace leakage of dev-only tools
+- ❌ Hidden coupling between unrelated packages
+
+##### Why It Matters
+
+| ✅ Benefit                            | 📘 Description                                                                 |
+|--------------------------------------|--------------------------------------------------------------------------------|
+| Declared Dependency Usage            | Each workspace must explicitly declare its runtime and peer dependencies       |
+| Isolation of Dev Tools               | Dev-only tools (e.g. test runners, linters) must not leak into runtime paths   |
+| Clear Contributor Expectations       | Onboarding is easier when dependency intent is explicit                        |
+| Reproducible Builds                  | CI failures are easier to trace when boundaries are enforced                   |
+
+### Enforcement Mechanisms
+
+These mechanisms are implemented and must be followed for every contribution:
+
+| Mechanism                  | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| Plug’n’Play (`.pnp.cjs`)  | Enforces resolution only through declared dependencies                      |
+| `dependencies:` hygiene   | Contributors must declare all runtime deps in their own `package.json`      |
+| `peerDependencies:` rules | Used for shared interfaces or plugin-style relationships                    |
+| `devDependencies:` scope  | Dev-only tools must not leak into runtime or other workspaces               |
+| `yarn constraints.pro`    | Custom rules defining allowed workspace access                              |
 
 #### Workspace Boundaries
 
@@ -87,92 +123,23 @@ Maintaining these boundaries protects layering, reduces cognitive load for contr
 
 > TODO: To preserve suite-wide clarity and layered modularity, strict import boundaries I plan to enforce via  TypeScript path aliases and ESLint rules that will surface violations during development.
 
+#### Workspace Management Details
+
+SuiteTools uses **Yarn Berry** (v3+) with **Plug’n’Play** and **workspaces** to manage its modular monorepo and streamline development workflows.
+
+For detailed yarn usage and configuration, see [docs/yarn.md](./yarn.md).
+
 ---
 
 ## Linting
 
-Linting in SuiteTools reinforces architectural principles, improves maintainability, and supports a consistent developer experience.
+Linting is wired into our suite-wide tooling strategy:
 
-The lint config encodes suite-wide preferences that preserve DX while codifyings expectations around correctness, boundaries, formatting, and type safety ergonomics.
+- **Flat ESLint configs** support layered rule composition and override ergonomics.
+- **Workspace-specific extensions** allow domain-aware enforcement where needed.
+- **Custom rules** codify architecture: blocking cross-layer imports, ensuring validation symmetry, and guiding type usage.
 
-> TODO: Create [linting.md](./linting.md) to document  and enforce the following practices.
->
-> - Linting rules and conventions
-> - Workspace boundaries
->
-> This should include:
->
-> - Enforcement: lint rules + TypeScript path maps and aliases.
->
->And ideas from below.
->
-> Note that some are conventions that are not enforced by linting, but are good practices to follow. I will clean up the linting rules and conventions later.
-
-### Linting stack
-
-- **ESLint** with TypeScript support via `@typescript-eslint`
-- **Flat config (ESLint v9+)** for per-workspace flexibility and deduplication
-- **Prettier** formatting enforcement if not fully covered by ESLint
-- **Custom rules and overrides** to codify architectural expectations
-- **TypeScript path maps and aliases** for enforcing dependency boundaries
-
-### Conventions
-
-Suite-wide linting is enforced via shared ESLint config, custom rules, and TypeScript path aliases.
-Violations surface during development to maintain architectural integrity.
-
-> TODO: Note that this is a work in progress. I will refine these rules and conventions over time.
-
-Some rules are advisory (conventions); others are enforced via tooling.
-
-#### Code correctness
-
-- catch runtime errors early: `no-undef`, `no-unused-vars`
-- ban structural holes in type safety: `no-explicit-any`
-- ensure predictable scoping: `prefer-const`, `no-var`
-
-TODO: Look into `no-unsafe-assignment`, `consistent-type-exports`, `prefer-readonly`
-
-#### TypeScript consistency
-
-- TODO: `consistent-type-exports`: all types exported explicitly and predictably
-- TODO: `prefer-readonly`: guide safe object mutation policies
-- TODO: `no-unsafe-assignment`: tighten type widening from untyped inputs
-
-#### Formatting and style
-
-- Use Prettier (or equivalent ESLint rules) for quotes, spacing, semicolons, trailing commas
-- TODO: Sorted and grouped imports (e.g. `import/order`)
-- TODO: File naming conventions: kebab-case, domain-based folders
-
-#### Workspace boundaries
-
-Preserve modular clarity and enforce architectural constraints across workspaces to maintain clean separation and contributor ergonomics:
-
-- TODO: **Prevent cross-workspace imports** via ESLINT `no-restricted-imports` patterns and TypeScript config paths except for shared.
-- TODO: **Public API** enforced exports via use public entry points (`index.ts`) with ESLint `import/no-internal-modules`; Disallow deep imports.
-- TODO: **TypeScript path hygiene** - Use TS path maps with ESLint resolver and restriction patterns to avoid drift.
-
-#### Assertion and schema usage
-
-- Prefer shared assertion helpers over ad-hoc `z.parse`, `z.safeParse`, or manual narrowing
-- Enforce stable error shapes with codes from shared registry
-- Require stable error codes for `ValidationError`; discourage leaking Zod messages
-- Enforce transform symmetry between transport/domain/view layers
-
-#### Documentation and exports
-
-- TODO: Require JSDoc for exported functions, public APIs, and helpers
-- TODO: Ban unused exports and enforce explicit module boundaries
-- TODO: Enforce description presence for errors and assertion helpers
-- Prefer code comments where logic is non-obvious
-- Avoid anonymous default exports unless the value is conceptually singular
-
-#### Type safety ergonomics
-
-- TODO:Encourage branded types for opaque identifiers.
-- TODO:Ban unsafe casts (`as unknown as`) unless justified.
-- TODO:Avoid union ambiguity in helpers unless overloads are documented.
+For detailed rule breakdowns and config practices, see [docs/linting.md](./linting.md).
 
 ---
 
@@ -355,10 +322,10 @@ SuiteTools uses consistent versioning and changelog documentation:
 
 - [docs/installation.md](./installation.md) — setup and deployment
 - [docs/customizing.md](./customizing.md) — extension points and patterns
+- [docs/linting.md](./linting.md) - tooling overview, config composition, and enforcement strategy
 - [docs/vscode.md](./vscode.md) — editor setup and recommended tasks
 - > TODO: [CHANGELOG.md](../CHANGELOG.md) — suite-wide changelog
 - > TODO: docs/validation.md — schemas, assertions, and error handling strategy
-- > TODO: docs/linting.md — lint rules and boundary enforcement
 
 ---
 

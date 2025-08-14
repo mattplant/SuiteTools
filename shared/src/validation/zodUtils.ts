@@ -189,23 +189,22 @@ type ZEntityBundleWithoutNormalize<
 };
 
 /**
- * Give zCreateEntity an explicit, fully generic return type, so any variable assigned to it will carry assertion signatures concretely.
+ * Constructs an entity bundle without normalization—returns raw Zod output.
+ *
+ * @template TSchema - Zod object schema defining the entity shape.
+ * @template TName - Entity name used for metadata and pluralization.
+ *
+ * @param schema - Zod schema for single entity validation.
+ * @param meta - Metadata including fields, plural name, and display name.
+ * @param arraySchema - Zod array schema for validating multiple entities.
+ *
+ * @returns A bundle with parsing, assertion, and metadata utilities that return raw Zod output.
+ *
+ * @remarks
+ * - Use when no normalization is needed.
+ * - Metadata is frozen to prevent accidental mutation.
+ * - Parsing functions return `z.output<TSchema>` directly.
  */
-// type ZEntityReturn<
-//   TSchema extends z.ZodObject<any>,
-//   TNormalized,
-//   TName extends string,
-// > = [TNormalized] extends [z.output<TSchema>]
-//   ? ZEntityBundleWithoutNormalize<TSchema, TName>
-//   : ZEntityBundleWithNormalize<TSchema, TNormalized, TName>;
-type ZEntityReturn<
-  TSchema extends z.ZodObject<any>,
-  TNormalized,
-  TName extends string,
-> =
-  | ZEntityBundleWithoutNormalize<TSchema, TName>
-  | ZEntityBundleWithNormalize<TSchema, TNormalized, TName>;
-
 function makeWithoutNormalize<
   TSchema extends z.ZodObject<any>,
   TName extends string,
@@ -258,6 +257,25 @@ function makeWithoutNormalize<
   };
 }
 
+/**
+ * Constructs an entity bundle with normalization applied after Zod parsing.
+ *
+ * @template TSchema - Zod object schema defining the entity shape.
+ * @template TNormalized - Output type after normalization.
+ * @template TName - Entity name used for metadata and pluralization.
+ *
+ * @param schema - Zod schema for single entity validation.
+ * @param normalize - Function to transform parsed Zod output into normalized shape.
+ * @param meta - Metadata including fields, plural name, and display name.
+ * @param arraySchema - Zod array schema for validating multiple entities.
+ *
+ * @returns A bundle with parsing, assertion, and metadata utilities that return normalized output.
+ *
+ * @remarks
+ * - All parsing functions apply `normalize` after Zod validation.
+ * - Metadata is frozen to prevent accidental mutation.
+ * - Use `assertMany` to surface per-item normalization errors.
+ */
 function makeWithNormalize<
   TSchema extends z.ZodObject<any>,
   TNormalized,
@@ -309,17 +327,13 @@ function makeWithNormalize<
   };
 }
 
-/**
- * zCreateEntity overload signature for optional normalization.
- */
+// zCreateEntity overload signature for optional normalization.
 function zCreateEntity<TSchema extends z.ZodObject<any>, TName extends string>(
   schema: TSchema,
   options?: { meta?: ZEntityMeta<TSchema, TName> }
 ): ZEntityBundleWithoutNormalize<TSchema, TName>;
 
-/**
- * zCreateEntity overload signature where normalization function is applied after parsing.
- */
+// zCreateEntity overload signature where normalization function is applied after parsing.
 function zCreateEntity<
   TSchema extends z.ZodObject<any>,
   TNormalized,
@@ -332,6 +346,37 @@ function zCreateEntity<
   }
 ): ZEntityBundleWithNormalize<TSchema, TNormalized, TName>;
 
+/**
+ * Creates a Zod-backed entity bundle with optional normalization and metadata.
+ *
+ * This function supports two modes:
+ * - With `normalize`: returns a bundle where all parsing functions apply normalization after Zod validation.
+ * - Without `normalize`: returns raw Zod output as the entity shape.
+ *
+ * @template TSchema - Zod schema defining the entity shape.
+ * @template TNormalized - Output type after normalization.
+ * @template TName - Entity name used for metadata and pluralization.
+ *
+ * @param schema - Zod object schema representing the entity.
+ * @param options - Optional configuration:
+ *   @param options.normalize - Function to transform parsed Zod output into a normalized shape.
+ *   @param options.meta - Metadata used for pluralization, display name, and field overrides.
+ *
+ * @returns A typed entity bundle with parsing, assertion, and metadata utilities.
+ *
+ * @remarks
+ * - If `normalize` is provided, all parsing functions will return `TNormalized`.
+ * - Metadata fields are inferred from schema shape unless overridden.
+ * - Use `assertMany` to surface per-item errors with index context.
+ *
+ * @example
+ * ```ts
+ * const userEntity = zCreateEntity(userSchema, {
+ *   normalize: (data) => ({ ...data, fullName: `${data.first} ${data.last}` }),
+ *   meta: { entity: "user" }
+ * });
+ * ```
+ */
 function zCreateEntity<
   TSchema extends z.ZodObject<any>,
   TNormalized,
