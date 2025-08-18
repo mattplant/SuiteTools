@@ -1,9 +1,10 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { assertIsScripts, Script } from './types';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { ScriptBundle } from '@suiteworks/suitetools-shared';
+import type { Scripts } from '@suiteworks/suitetools-shared';
 
-export async function getScripts(fields: CriteriaFields): Promise<Script[] | NotFound> {
+export async function getScripts(fields: CriteriaFields): Promise<Scripts | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -33,7 +34,7 @@ export async function getScripts(fields: CriteriaFields): Promise<Script[] | Not
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsScripts(response.data);
+    ScriptBundle.assertMany(response.data);
     result = response.data;
   }
 

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getJobRun } from '../components/features/job/run/getRecord.ts';
-import { getJobRuns } from '../components/features/job/run/getRecords.ts';
-import { JobRun } from 'shared';
-import { RecordCriteria } from '../components/features/job/run/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getJobRun } from '../components/features/job/run/getRecord';
+import { getJobRuns } from '../components/features/job/run/getRecords';
+import type { JobRuns } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/job/run/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function JobRunsPage() {
   const defaultCriteria: CriteriaFields = {
@@ -14,7 +14,7 @@ export function JobRunsPage() {
     completed: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<JobRun[]>([]);
+  const [results, setResults] = useState<JobRuns>([]);
 
   useEffect(() => {
     async function fetchData() {

@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { File } from 'shared';
+import type { File } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 
 type Props = {
@@ -20,10 +20,10 @@ export function FileResult({ data, modal }: Props) {
         <b>Folder</b>: {data.folder}
       </p>
       <p>
-        <b>Created Date</b>: {data.createddate}
+        <b>Created Date</b>: {data.createddate.toLocaleString()}
       </p>
       <p>
-        <b>Lastmodified Date</b>: {data.lastmodifieddate}
+        <b>Lastmodified Date</b>:{data.lastmodifieddate.toLocaleString()}
       </p>
       <p>
         <b>Type</b>: {data.filetypename}
@@ -34,9 +34,9 @@ export function FileResult({ data, modal }: Props) {
       <p>
         <b>File Size</b>: {data.filesize}
       </p>
-      {/* <p>
-                  <b>Description</b>: {data.description}
-                </p> */}
+      <p>
+        <b>Description</b>: {data.description}
+      </p>
       <p>
         <b>URL</b>: {data.url}
       </p>

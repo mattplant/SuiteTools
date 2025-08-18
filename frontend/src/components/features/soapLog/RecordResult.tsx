@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { SoapLog } from 'shared';
+import type { SoapLog } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 
 type Props = {

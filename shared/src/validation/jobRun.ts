@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
-import type { ZodBundle } from "./zodUtils";
+import { zHelpers } from "./zodUtils";
+import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
 
 /**
  * Zod schema for a single JobRun record.
@@ -15,31 +16,31 @@ import type { ZodBundle } from "./zodUtils";
  * - `urlDetail`: optional URL for additional context
  * - `urlJob`: optional URL for the job details
  */
-export const BaseJobRun = z.object({
+export const JobRunSchema = z.object({
   id: z.number(),
   created: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
     message: "Invalid ISO timestamp",
   }),
   jobid: z.number(),
   jobname: z.string(),
-  completed: z.boolean().optional(),
+  completed: zNetSuite.booleanFromTF.schema,
   results: z.string().optional().nullable(),
   // additional properties
   urlDetail: z.string().optional(),
   urlJob: z.string().optional(),
 });
 
-/**
- * Currently no transformations are applied to the JobRun schema.
- */
-const CleanedJobRun = BaseJobRun.transform((data) => {
-  return data;
+const JobRunBundle: ZEntityBundleWithoutNormalize<
+  typeof JobRunSchema,
+  "JobRun"
+> = zHelpers.zCreateEntity(JobRunSchema, {
+  meta: { entity: "JobRun" },
 });
 
-export type JobRun = z.infer<typeof CleanedJobRun>;
-export type JobRuns = JobRun[];
+// ───────────────────────────────────────────────────────────
+// Public Exports
+// ───────────────────────────────────────────────────────────
 
-/**
- * Bundled schema + helpers for JobRun
- */
-export const JobRun: ZodBundle<JobRun> = zNetSuite.createBundle(CleanedJobRun);
+export { JobRunBundle };
+export type JobRun = typeof JobRunBundle.types.single;
+export type JobRuns = typeof JobRunBundle.types.array;

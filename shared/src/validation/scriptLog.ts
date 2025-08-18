@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
-import type { ZodBundle } from "./zodUtils";
+import { zHelpers } from "./zodUtils";
+import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
 
 /**
  * Zod schema for a single script log entry.
@@ -16,7 +17,7 @@ import type { ZodBundle } from "./zodUtils";
  * - `detail`: detailed message or payload
  * - `urlNs`, `urlDetail` (optional): additional context properties
  */
-export const BaseScriptLog = z.object({
+export const ScriptLogSchema = z.object({
   id: z.number(),
   timestamp: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
     message: "Invalid ISO timestamp",
@@ -31,18 +32,17 @@ export const BaseScriptLog = z.object({
   urlDetail: z.string().optional(),
 });
 
-/**
- * Currently no transformations are applied to the ScriptLog schema.
- */
-const CleanedScriptLog = BaseScriptLog.transform((data) => {
-  return data;
+const ScriptLogBundle: ZEntityBundleWithoutNormalize<
+  typeof ScriptLogSchema,
+  "ScriptLog"
+> = zHelpers.zCreateEntity(ScriptLogSchema, {
+  meta: { entity: "ScriptLog" },
 });
 
-export type ScriptLog = z.infer<typeof CleanedScriptLog>;
-export type ScriptLogs = ScriptLog[];
+// ───────────────────────────────────────────────────────────
+// Public Exports
+// ───────────────────────────────────────────────────────────
 
-/**
- * Bundled schema + helpers for ScriptLog
- */
-export const ScriptLog: ZodBundle<ScriptLog> =
-  zNetSuite.createBundle(CleanedScriptLog);
+export { ScriptLogBundle };
+export type ScriptLog = typeof ScriptLogBundle.types.single;
+export type ScriptLogs = typeof ScriptLogBundle.types.array;

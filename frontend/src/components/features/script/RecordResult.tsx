@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { Script } from './types';
+import type { Script } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 
 type Props = {

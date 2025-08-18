@@ -1,5 +1,5 @@
 import { getIntegrations } from './getRecords';
-import { OptionValues } from '../../shared/criteria/types';
+import type { OptionValues } from '../../shared/criteria/types';
 
 export async function getOptionValues(key: boolean): Promise<OptionValues[]> {
   const records = await getIntegrations({});

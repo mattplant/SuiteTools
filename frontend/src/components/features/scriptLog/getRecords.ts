@@ -1,9 +1,11 @@
 import { getData } from '../../../api/api';
-import { ScriptLog } from 'shared';
-import { CriteriaFields } from '../../shared/criteria/types';
-import { ScriptLogs } from 'shared';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { ScriptLogBundle } from '@suiteworks/suitetools-shared';
+import type { ScriptLogs } from '@suiteworks/suitetools-shared';
 
-export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLogs> {
+export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLogs | NotFound> {
+  let result;
   const localTestData = {
     data: [
       {
@@ -42,20 +44,13 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLogs>
     customdatetime: fields.customdatetime ? fields.customdatetime : undefined,
     customduration: fields.customduration ? fields.customduration : undefined,
   };
-
-  try {
-    const response = await getData(localTestData, 'scriptLogs', urlParams);
-    // const { validLogs, errorCount, errorDetails } = parseScriptLogsWithErrors(response.data);
-
-    // if (errorCount > 0) {
-    //   console.warn(`Skipped ${errorCount} invalid script log entries`);
-    //   errorDetails.forEach((msg) => console.warn(msg));
-    // }
-
-    // return validLogs;
-    return ScriptLog.array.parse(response.data);
-  } catch (err) {
-    console.error('Failed to fetch or parse script logs:', err);
-    return [];
+  const response = await getData(localTestData, 'scriptLogs', urlParams);
+  if (response.message) {
+    result = { message: response.message };
+  } else {
+    ScriptLogBundle.assertMany(response.data);
+    result = response.data;
   }
+
+  return result;
 }

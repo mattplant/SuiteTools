@@ -1,9 +1,10 @@
 import { getData } from '../../../../api/api';
-import { NotFound } from '../../../../api/types';
-import { JobRun } from 'shared';
-import { CriteriaFields } from '../../../shared/criteria/types';
+import type { NotFound } from '../../../../api/types';
+import type { CriteriaFields } from '../../../shared/criteria/types';
+import { JobRunBundle } from '@suiteworks/suitetools-shared';
+import type { JobRuns } from '@suiteworks/suitetools-shared';
 
-export async function getJobRuns(fields: CriteriaFields): Promise<JobRun[] | NotFound> {
+export async function getJobRuns(fields: CriteriaFields): Promise<JobRuns | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -21,7 +22,7 @@ export async function getJobRuns(fields: CriteriaFields): Promise<JobRun[] | Not
   if (response.message) {
     result = { message: response.message };
   } else {
-    JobRun.array.assert(response.data);
+    JobRunBundle.assertMany(response.data);
     result = response.data;
   }
 

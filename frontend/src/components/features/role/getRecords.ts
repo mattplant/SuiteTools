@@ -1,9 +1,10 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { Role, assertIsRoles } from './types';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { RoleBundle } from '@suiteworks/suitetools-shared';
+import type { Roles } from '@suiteworks/suitetools-shared';
 
-export async function getRoles(fields: CriteriaFields): Promise<Role[] | NotFound> {
+export async function getRoles(fields: CriteriaFields): Promise<Roles | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -25,7 +26,7 @@ export async function getRoles(fields: CriteriaFields): Promise<Role[] | NotFoun
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsRoles(response.data);
+    RoleBundle.assertMany(response.data);
     result = response.data;
   }
 

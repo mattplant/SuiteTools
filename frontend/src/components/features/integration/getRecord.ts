@@ -1,7 +1,7 @@
 import { getIntegrations } from './getRecords';
-import { NotFound } from '../../../api/types';
-import { Integration } from 'shared';
-import { Settings } from '../settings/types';
+import type { NotFound } from '../../../api/types';
+import type { Integration } from '@suiteworks/suitetools-shared';
+import type { Settings } from '../settings/types';
 
 export async function getIntegration(id: number): Promise<Integration | NotFound> {
   console.log('getIntegration() initiated', { id });

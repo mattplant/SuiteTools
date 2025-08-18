@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getFile } from '../components/features/file/getRecord.ts';
-import { getFiles } from '../components/features/file/getRecords.ts';
-import { File } from 'shared';
-import { RecordCriteria } from '../components/features/file/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getFile } from '../components/features/file/getRecord';
+import { getFiles } from '../components/features/file/getRecords';
+import type { Files } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/file/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function FilesPage() {
   const defaultCriteria: CriteriaFields = {
@@ -15,7 +15,7 @@ export function FilesPage() {
     lastmodifieddate: 'today',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<File[]>([]);
+  const [results, setResults] = useState<Files>([]);
 
   useEffect(() => {
     async function fetchData() {

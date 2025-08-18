@@ -31,6 +31,38 @@ Yarn workspaces allow SuiteTools to manage dependencies at the monorepo level wh
 
 For our workspace philosophy and enforcement rationale, see [Architecture: Workspaces](../docs/architecture.md#workspaces).
 
+### Conventions
+
+- Decide early which workspaces should be **first‑class packages** (versioned and maybe published) versus which are purely tooling and marked private.
+- Keep published vs internal only packages clearly marked in the `private` field in `package.json`.
+
+### Package Naming Best Practices
+
+Naming conventions are crucial for clarity and consistency in a monorepo. SuiteTools follows these guidelines.
+
+- **Use scoped packages**: All SuiteTools packages are scoped under the `@suiteworks` organization
+- **Prefix with `suitetools-`**: This distinguishes SuiteTools packages from future `@suiteworks` projects
+- **Use descriptive names**: Each package name should clearly indicate its purpose:
+  - Short but descriptive: Aim for clarity without excessive length, balancing brevity with meaningfulness
+  - Lowercase letters: Package names in lowercase to maintain consistency and avoid case sensitivity issues
+  - Hyphens to separate words: Improves readability and follows common npm naming conventions
+  - Avoid special characters: Stick to alphanumeric characters and hyphens
+  - Avoid generic names: Ensures clarity and prevents conflicts with unrelated packages
+- **Use `@suiteworks/suitetools-<scope>` for specific scopes**
+  - Allows for clear separation of concerns and modularity
+  - Core Product Packages
+    - `@suiteworks/suitetools-shared` - for common types, utilities, and schema logic used across layers
+    - TODO: move `/frontend` to `@suiteworks/suitetools-frontend` for UI rendering, user interaction, and SuiteScript client-side code
+    - TODO: move `/backend` to `@suiteworks/suitetools-backend` for server-side SuiteScript, metadata loading, and record access
+  - Engineering Support Packages
+    - TODO: ??? `@suiteworks/suitetools-linting` for ESLint config, rulesets, and boundary enforcement logic
+    - TODO: ??? `@suiteworks/suitetools-build` for bundling, release tasks, and build config and tooling
+
+Use root directories for the following instead of packages.
+
+- Documentation in `docs/` directory
+- Place any infra scripts in `infra/` directory
+
 ### Enforcement Mechanisms
 
 > TODO: Does this outline make sense? If so the implement it.

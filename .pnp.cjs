@@ -23,7 +23,7 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:frontend"\
     },\
     {\
-      "name": "shared",\
+      "name": "@suiteworks/suitetools-shared",\
       "reference": "workspace:shared"\
     }\
   ],\
@@ -31,9 +31,9 @@ const RAW_RUNTIME_STATE =
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
+    ["@suiteworks/suitetools-shared", ["workspace:shared"]],\
     ["backend", ["workspace:backend"]],\
     ["frontend", ["workspace:frontend"]],\
-    ["shared", ["workspace:shared"]],\
     ["suitetools", ["workspace:."]]\
   ],\
   "fallbackPool": [\
@@ -4020,6 +4020,18 @@ const RAW_RUNTIME_STATE =
           ["@sinonjs/fake-timers", "npm:10.3.0"]\
         ],\
         "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@suiteworks/suitetools-shared", [\
+      ["workspace:shared", {\
+        "packageLocation": "./shared/",\
+        "packageDependencies": [\
+          ["@suiteworks/suitetools-shared", "workspace:shared"],\
+          ["@yarnpkg/pnpify", "npm:4.1.5"],\
+          ["eslint", "virtual:95f336220ce4c5815669adf15b91d30070ec89a3f7694b31d1c6b90432ef8d6f62b499699e4fe5670adae306a17f97551aacf905828c103ba152b16f0ce9b719#npm:9.33.0"],\
+          ["zod", "npm:4.0.17"]\
+        ],\
+        "linkType": "SOFT"\
       }]\
     ]],\
     ["@szmarczak/http-timer", [\
@@ -8075,6 +8087,7 @@ const RAW_RUNTIME_STATE =
           ["@eslint/compat", "virtual:95f336220ce4c5815669adf15b91d30070ec89a3f7694b31d1c6b90432ef8d6f62b499699e4fe5670adae306a17f97551aacf905828c103ba152b16f0ce9b719#npm:1.3.2"],\
           ["@eslint/eslintrc", "npm:3.3.1"],\
           ["@eslint/js", "npm:9.33.0"],\
+          ["@suiteworks/suitetools-shared", "workspace:shared"],\
           ["@types/d3", "npm:7.4.3"],\
           ["@types/react", "npm:18.3.1"],\
           ["@types/react-dom", "npm:18.3.1"],\
@@ -8103,7 +8116,6 @@ const RAW_RUNTIME_STATE =
           ["react-dom", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:18.3.1"],\
           ["react-hook-form", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:7.62.0"],\
           ["react-router-dom", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:6.22.3"],\
-          ["shared", "workspace:shared"],\
           ["tailwindcss", "npm:3.3.3"],\
           ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
           ["vite", "virtual:129c180801e06ed395e4da371c76ab19371e66a3c2230c25e2f8aa53715d8f66998096a34403ac325c10f7034d54eaa1a82bf612b0d4bf56a1d1943388d98f11#npm:4.5.0"]\
@@ -11543,18 +11555,6 @@ const RAW_RUNTIME_STATE =
           ["set-proto", "npm:1.0.0"]\
         ],\
         "linkType": "HARD"\
-      }]\
-    ]],\
-    ["shared", [\
-      ["workspace:shared", {\
-        "packageLocation": "./shared/",\
-        "packageDependencies": [\
-          ["@yarnpkg/pnpify", "npm:4.1.5"],\
-          ["eslint", "virtual:95f336220ce4c5815669adf15b91d30070ec89a3f7694b31d1c6b90432ef8d6f62b499699e4fe5670adae306a17f97551aacf905828c103ba152b16f0ce9b719#npm:9.33.0"],\
-          ["shared", "workspace:shared"],\
-          ["zod", "npm:4.0.17"]\
-        ],\
-        "linkType": "SOFT"\
       }]\
     ]],\
     ["shebang-command", [\

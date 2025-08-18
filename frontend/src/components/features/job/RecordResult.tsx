@@ -1,10 +1,9 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { Job } from 'shared';
+import type { Job } from '@suiteworks/suitetools-shared';
 import { postData } from '../../../api/api';
-import { PostEndpoint, HttpResponse } from '../../../api/types';
+import { PostEndpoint } from '../../../api/types';
+import type { HttpResponse } from '../../../api/types';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
-import { getOptionValues as getIntegrationOptionValues } from '../integration/getOptionValues';
-import { getOptionValues as getTokenOptionValues } from '../token/getOptionValues';
 
 type Props = {
   data: Job;
@@ -17,26 +16,6 @@ export function JobResult({ data, modal }: Props) {
   const initiateJobClick = async () => {
     console.log('JobResult: initiateJobClick() iniitiated');
     const entityRecords: { type: string; name: string }[] = [];
-
-    // TODO: why is this here? Did I copy and paste and not clean out?
-    // get integrations
-    const integrationOptions = await getIntegrationOptionValues(true);
-    integrationOptions.forEach((option) => {
-      entityRecords.push({
-        type: 'integration',
-        name: option.text,
-      });
-    });
-    // get tokens
-    const tokenOptions = await getTokenOptionValues(true);
-    tokenOptions.forEach((option) => {
-      entityRecords.push({
-        type: 'token',
-        name: option.text,
-      });
-    });
-
-    // TODO: also what does this do?
     // make API call
     const responseData: HttpResponse = await postData(PostEndpoint.INITIATEJOB, {
       id: data.id,
@@ -74,7 +53,7 @@ export function JobResult({ data, modal }: Props) {
         <b>Notify</b>: {data.notify ? 'Yes' : 'No'}
       </p>
       <p>
-        <b>Last Run</b>: {data.lastRun}
+        <b>Last Run</b>: {data.lastRun.toLocaleDateString()}
       </p>
       {modal && (
         <ButtonGroup>

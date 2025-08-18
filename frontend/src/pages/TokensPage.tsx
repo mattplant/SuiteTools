@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getToken } from '../components/features/token/getRecord.ts';
-import { getTokens, addTokenLastLogins } from '../components/features/token/getRecords.ts';
-import { Token } from '../components/features/token/types.ts';
-import { RecordCriteria } from '../components/features/token/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
-import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getToken } from '../components/features/token/getRecord';
+import { getTokens, addTokenLastLogins } from '../components/features/token/getRecords';
+import type { Tokens } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/token/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext';
 
 export function TokensPage() {
   const { settings } = useAppSettingsContext();
@@ -18,7 +18,7 @@ export function TokensPage() {
     // roles: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Token[]>([]);
+  const [results, setResults] = useState<Tokens>([]);
 
   useEffect(() => {
     async function fetchData() {

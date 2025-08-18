@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { NotFound } from '../../../api/types.ts';
-import { CriteriaFields } from '../../shared/criteria/types.ts';
-import { getJobRun } from './run/getRecord.ts';
-import { getJobRuns } from './run/getRecords.ts';
-import { JobRun } from 'shared';
-import { Results } from '../../shared/results/Results.tsx';
-import { ResultsTypes } from '../../shared/results/types.ts';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { getJobRun } from './run/getRecord';
+import { getJobRuns } from './run/getRecords';
+import type { JobRuns } from '@suiteworks/suitetools-shared';
+import { Results } from '../../shared/results/Results';
+import { ResultsTypes } from '../../shared/results/types';
 
 type Props = {
   job: string;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function JobRuns({ job, completed }: Props) {
-  const [results, setResults] = useState<JobRun[] | NotFound>([]);
+  const [results, setResults] = useState<JobRuns | NotFound>([]);
 
   useEffect(() => {
     const criteria: CriteriaFields = {

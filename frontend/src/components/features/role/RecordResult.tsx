@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { Role } from './types';
+import type { Role } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 
 type Props = {

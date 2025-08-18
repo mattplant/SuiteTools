@@ -1,9 +1,10 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { File } from 'shared';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { FileBundle } from '@suiteworks/suitetools-shared';
+import type { Files } from '@suiteworks/suitetools-shared';
 
-export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFound> {
+export async function getFiles(fields: CriteriaFields): Promise<Files | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -31,7 +32,7 @@ export async function getFiles(fields: CriteriaFields): Promise<File[] | NotFoun
   if (response.message) {
     result = { message: response.message };
   } else {
-    File.array.assert(response.data);
+    FileBundle.assertMany(response.data);
     result = response.data;
   }
 

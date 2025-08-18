@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../../shared/criteria/types.ts';
-import { getLogins } from '../login/getRecords.ts';
-import { Login } from '../login/types.ts';
-import { Results } from '../../shared/results/Results.tsx';
-import { ResultsTypes } from '../../shared/results/types.ts';
-import { getLoginFromResults } from '../login/getRecordFromResults.ts';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { getLogins } from '../login/getRecords';
+import type { Login } from '@suiteworks/suitetools-shared';
+import { Results } from '../../shared/results/Results';
+import { ResultsTypes } from '../../shared/results/types';
+import { getLoginFromResults } from '../login/getRecordFromResults';
 
 type Props = {
   userId: string;
@@ -12,7 +12,7 @@ type Props = {
 
 export function UserLogins({ userId }: Props) {
   console.log('UserLogins userId', userId);
-  const [results, setResults] = useState<Login[]>([]);
+  const [results, setResults] = useState<readonly Login[]>([]);
 
   useEffect(() => {
     const criteria: CriteriaFields = {

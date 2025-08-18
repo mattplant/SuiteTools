@@ -6,7 +6,7 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true, // optional
+    "emitDeclarationOnly": false,
     "outDir": "dist",
     "rootDir": "src"
   },

@@ -1,4 +1,4 @@
-import { Login } from './types';
+import type { Login } from '@suiteworks/suitetools-shared';
 
 type Props = {
   data: Login;

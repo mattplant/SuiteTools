@@ -1,6 +1,7 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { Script, assertIsScript } from './types';
+import type { NotFound } from '../../../api/types';
+import { ScriptBundle } from '@suiteworks/suitetools-shared';
+import type { Script } from '@suiteworks/suitetools-shared';
 
 export async function getScript(id: number): Promise<Script | NotFound> {
   let result;
@@ -22,7 +23,7 @@ export async function getScript(id: number): Promise<Script | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsScript(response.data);
+    ScriptBundle.assert(response.data);
     // build additional properties
     response.data.urlNs = `/app/common/scripting/script.nl?id=${response.data.id}`;
     response.data.urlDetail = `#/script/${response.data.id}`;

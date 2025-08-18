@@ -1,7 +1,7 @@
 import { getSoapLogs } from './getRecords';
-import { NotFound } from '../../../api/types';
-import { SoapLogBundle } from 'shared';
-import type { SoapLog } from 'shared';
+import type { NotFound } from '../../../api/types';
+import { SoapLogBundle } from '@suiteworks/suitetools-shared';
+import type { SoapLog } from '@suiteworks/suitetools-shared';
 
 export async function getSoapLog(id: number): Promise<SoapLog | NotFound> {
   console.log('getSoapLog() initiated', { id });

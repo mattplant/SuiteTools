@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../../shared/criteria/types.ts';
-import { getSoapLog } from '../soapLog/getRecord.ts';
-import { getSoapLogs } from '../soapLog/getRecords.ts';
-import { SoapLogBundle } from 'shared';
-import { Results } from '../../shared/results/Results.tsx';
-import { ResultsTypes } from '../../shared/results/types.ts';
-import type { SoapLogs } from 'shared';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { getSoapLog } from '../soapLog/getRecord';
+import { getSoapLogs } from '../soapLog/getRecords';
+import { SoapLogBundle } from '@suiteworks/suitetools-shared';
+import { Results } from '../../shared/results/Results';
+import { ResultsTypes } from '../../shared/results/types';
+import type { SoapLogs } from '@suiteworks/suitetools-shared';
 
 type Props = {
   integrations: string[];

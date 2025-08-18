@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
 import { postData } from '../../../api/api';
 import { PostEndpoint, HttpResponse } from '../../../api/types';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
 import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getUser } from '../components/features/user/getRecord.ts';
-import { getUsers } from '../components/features/user/getRecords.ts';
-import { User } from '../components/features/user/types.ts';
-import { RecordCriteria } from '../components/features/user/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getUser } from '../components/features/user/getRecord';
+import { getUsers } from '../components/features/user/getRecords';
+import type { Users } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/user/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function UsersPage() {
   const defaultCriteria: CriteriaFields = {
@@ -14,7 +14,7 @@ export function UsersPage() {
     owners: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<User[]>([]);
+  const [results, setResults] = useState<Users>([]);
 
   useEffect(() => {
     async function fetchData() {

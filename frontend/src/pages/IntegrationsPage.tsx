@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getIntegration } from '../components/features/integration/getRecord.ts';
-import { getIntegrations, addIntegrationLastLogins } from '../components/features/integration/getRecords.ts';
-import { Integration } from 'shared';
-import { RecordCriteria } from '../components/features/integration/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
-import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext.tsx';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getIntegration } from '../components/features/integration/getRecord';
+import { getIntegrations, addIntegrationLastLogins } from '../components/features/integration/getRecords';
+import type { Integrations } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/integration/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
+import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext';
 
 export function IntegrationsPage() {
   const { settings } = useAppSettingsContext();
@@ -14,7 +14,7 @@ export function IntegrationsPage() {
     active: 'T',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Integration[]>([]);
+  const [results, setResults] = useState<Integrations>([]);
 
   useEffect(() => {
     async function fetchData() {

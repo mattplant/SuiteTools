@@ -1,6 +1,7 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { File } from 'shared';
+import type { NotFound } from '../../../api/types';
+import { FileBundle } from '@suiteworks/suitetools-shared';
+import type { File } from '@suiteworks/suitetools-shared';
 
 export async function getFile(id: number): Promise<File | NotFound> {
   let result;
@@ -22,7 +23,7 @@ export async function getFile(id: number): Promise<File | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    File.assert(response.data);
+    FileBundle.assert(response.data);
     // build additional properties
     response.data.urlNs = `/app/common/media/mediaitem.nl?id=${response.data.id}`;
     response.data.urlDetail = `#/file/${response.data.id}`;

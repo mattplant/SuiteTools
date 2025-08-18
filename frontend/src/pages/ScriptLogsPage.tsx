@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getScriptLog } from '../components/features/scriptLog/getRecord.ts';
-import { getScriptLogs } from '../components/features/scriptLog/getRecords.ts';
-import { ScriptLog } from 'shared';
-import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
-import { useInlineMessage } from '../components/shared/context/MessageContext.tsx';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getScriptLog } from '../components/features/scriptLog/getRecord';
+import { getScriptLogs } from '../components/features/scriptLog/getRecords';
+import type { ScriptLogs } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
+import { useInlineMessage } from '../components/shared/context/MessageContext';
 
 export function ScriptLogsPage() {
   const defaultCriteria: CriteriaFields = {
@@ -31,36 +31,25 @@ export function ScriptLogsPage() {
     defaultCriteria.levels = ['']; // clear the level criteria
   }
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<ScriptLog[]>([]);
+  const [results, setResults] = useState<ScriptLogs>([]);
   const { setMessage, clearMessage } = useInlineMessage();
 
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await getScriptLogs(criteria);
-        if (data.length === 0) {
-          setMessage({ text: 'No script logs records found for the gien criteria.', type: 'warning' });
+        if ('message' in data) {
+          console.error('Error fetching script logs:', data.message);
+          setMessage({ text: data.message, type: 'warning' });
         } else {
           clearMessage();
+          setResults(data);
         }
-        setResults(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     }
     fetchData();
-
-    // if (!data) {
-    //   return <NoDataMessage />;
-    // }
-
-    // if (!parseResult.success) {
-    //   return <InvalidDataMessage issues={parseResult.error.issues} />;
-    // }
-
-    // if (unexpectedCondition) {
-    //   return <FallbackMessage title="Unknown state" />;
-    // }
 
     return () => {};
   }, [criteria]);

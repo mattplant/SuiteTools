@@ -1,6 +1,7 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { User, assertIsUser } from './types';
+import type { NotFound } from '../../../api/types';
+import { UserBundle } from '@suiteworks/suitetools-shared';
+import type { User } from '@suiteworks/suitetools-shared';
 
 export async function getUser(id: number): Promise<User | NotFound> {
   let result;
@@ -20,7 +21,7 @@ export async function getUser(id: number): Promise<User | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsUser(response.data);
+    UserBundle.assert(response.data);
     // build additional properties
     response.data.urlNs = `/app/common/entity/employee.nl?id=${response.data.id}`;
     response.data.urlDetail = `#/user/${response.data.id}`;

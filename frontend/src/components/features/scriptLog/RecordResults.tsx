@@ -1,9 +1,9 @@
 import { useMemo, useRef } from 'react';
 import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import { Export } from '../../shared/results/Export.tsx';
-import { ResultsProps, SummaryRow } from '../../shared/results/types.ts';
-import { ScriptLog } from 'shared';
+import { Export } from '../../shared/results/Export';
+import type { ResultsProps, SummaryRow } from '../../shared/results/types';
+import { ScriptLogBundle } from '@suiteworks/suitetools-shared';
 
 const columns = [
   {
@@ -30,7 +30,7 @@ const columns = [
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
-  ScriptLog.array.assert(rows);
+  ScriptLogBundle.assertMany(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [

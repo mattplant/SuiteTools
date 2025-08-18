@@ -1,11 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { BundleOf, BundleArrayOf } from "./zodUtils";
-import type {
-  ZEntityBundleWithNormalize,
-  ZEntityBundleWithoutNormalize,
-} from "./zodUtils";
+import type { ZEntityBundleWithNormalize } from "./zodUtils";
 
 /**
  * Zod schema for a single SOAP log entry.
@@ -50,6 +46,13 @@ export const SoapLogSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
+// const SoapLogBundle: ZEntityBundleWithoutNormalize<
+//   typeof SoapLogSchema,
+//   "SoapLog"
+// > = zHelpers.zCreateEntity(SoapLogSchema, {
+//   meta: { entity: "SoapLog" },
+// });
+
 /**
  * SoapLog schema transformations:
  * - `recordType`: strips placeholder value "&nbsp;" if present
@@ -79,37 +82,23 @@ const NormalizedSoapLogSchema = SoapLogSchema.transform((data) => {
   return data;
 });
 
-/**
- * Bundled schema + helpers.
- */
+// Output type after transform
+type SoapLogNormalized = z.infer<typeof NormalizedSoapLogSchema>;
 
-// const SoapLogBundle: ZEntityBundleWithNormalize<> = zHelpers.zCreateEntity(
-//   SoapLogSchema,
-//   {
-//     normalize: (data) => ({ ...data, name: data.integration.trim() }),
-//   }
-// );
-
-const SoapLogBundle: ZEntityBundleWithoutNormalize<
+const SoapLogBundle: ZEntityBundleWithNormalize<
   typeof SoapLogSchema,
+  SoapLogNormalized,
   "SoapLog"
 > = zHelpers.zCreateEntity(SoapLogSchema, {
   meta: { entity: "SoapLog" },
+  normalize: (data: z.output<typeof SoapLogSchema>) =>
+    NormalizedSoapLogSchema.parse(data),
 });
-
-/**
- * Output type of the schema.
- */
-type SoapLog = BundleOf<typeof SoapLogBundle>;
-
-/**
- * Output type of the array schema.
- */
-type SoapLogs = BundleArrayOf<typeof SoapLogBundle>;
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
 // ───────────────────────────────────────────────────────────
 
-export type { SoapLog, SoapLogs };
-export { SoapLogBundle, zNetSuite };
+export { SoapLogBundle };
+export type SoapLog = typeof SoapLogBundle.types.single;
+export type SoapLogs = typeof SoapLogBundle.types.array;

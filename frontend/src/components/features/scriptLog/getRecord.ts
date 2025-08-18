@@ -1,6 +1,7 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { ScriptLog } from 'shared';
+import type { NotFound } from '../../../api/types';
+import { ScriptLogBundle } from '@suiteworks/suitetools-shared';
+import type { ScriptLog } from '@suiteworks/suitetools-shared';
 
 export async function getScriptLog(id: number): Promise<ScriptLog | NotFound> {
   let result;
@@ -20,11 +21,11 @@ export async function getScriptLog(id: number): Promise<ScriptLog | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    const data = ScriptLog.parse(response.data);
+    ScriptLogBundle.assert(response.data);
     // build additional properties
-    data.urlNs = `/app/common/scripting/scriptnote.nl?id=${data.id}`;
-    data.urlDetail = `#/scriptLog/${data.id}`;
-    result = data;
+    response.data.urlNs = `/app/common/scripting/scriptnote.nl?id=${response.data.id}`;
+    response.data.urlDetail = `#/scriptLog/${response.data.id}`;
+    result = response.data;
   }
 
   return result;

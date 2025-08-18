@@ -1,6 +1,7 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { Role, assertIsRole } from './types';
+import type { NotFound } from '../../../api/types';
+import { RoleBundle } from '@suiteworks/suitetools-shared';
+import type { Role } from '@suiteworks/suitetools-shared';
 
 export async function getRole(id: number): Promise<Role | NotFound> {
   let result;
@@ -19,7 +20,7 @@ export async function getRole(id: number): Promise<Role | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsRole(response.data);
+    RoleBundle.assert(response.data);
     // build additional properties
     response.data.urlNs = `/app/setup/role.nl?id=${response.data.id}`;
     response.data.urlDetail = `#/role/${response.data.id}`;

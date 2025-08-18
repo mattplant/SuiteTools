@@ -83,7 +83,7 @@ export function Results({ type, lines, getModalData }: Props) {
       <Modal dismissible show={openModal} size="6xl" onClose={() => setOpenModal(false)}>
         <div className="px-6 pt-6 text-2xl font-semibold">{modalTitle}</div>
         <div className="space-y-6 p-6">
-          <ResultsModal type={type} loading={loading} data={data} />
+          {loading ? <div>Loading...</div> : <ResultsModal type={type} loading={loading} data={data} />}
         </div>
       </Modal>
     </div>

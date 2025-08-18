@@ -4,7 +4,7 @@ import { zHelpers } from "./zodUtils";
 import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
 
 /**
- * Zod schema for a single Job record.
+ * Zod schema for a single Token record.
  *
  * Fields:
  * - `id`: unique numeric identifier
@@ -17,27 +17,33 @@ import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
  * - `lastRun`: optional timestamp of the last run
  * - `urlDetail`: optional URL for additional context
  */
-const JobSchema = z.object({
+const TokenSchema = z.object({
   id: z.number().positive(),
   name: z.string(),
-  isinactive: zNetSuite.booleanFromTF.schema,
-  config: zNetSuite.stringOrEmpty.schema, // JSON string configuration
-  description: z.string(),
-  scheduled: zNetSuite.booleanFromTF.schema,
-  notify: zNetSuite.booleanFromTF.schema,
-  lastRun: zNetSuite.dateFromString.schema,
+  userName: z.string(),
+  roleName: z.string(),
+  integrationName: z.string(),
+
+  state: z.string(), // TODO: change to boolean
+  // state: zNetSuite.booleanFromTF.schema,
+
+  dateCreated: z.string(), // ISO date string?
+  createdBy: z.string(),
+  lastLogin: z.string().optional(), // ISO date string?
+  // additional properties
+  urlNs: z.string().optional(),
   urlDetail: z.string().optional(),
 });
 
-const JobBundle: ZEntityBundleWithoutNormalize<typeof JobSchema, "Job"> =
-  zHelpers.zCreateEntity(JobSchema, {
-    meta: { entity: "Job" },
+const TokenBundle: ZEntityBundleWithoutNormalize<typeof TokenSchema, "Token"> =
+  zHelpers.zCreateEntity(TokenSchema, {
+    meta: { entity: "Token" },
   });
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
 // ───────────────────────────────────────────────────────────
 
-export { JobBundle };
-export type Job = typeof JobBundle.types.single;
-export type Jobs = typeof JobBundle.types.array;
+export { TokenBundle };
+export type Token = typeof TokenBundle.types.single;
+export type Tokens = typeof TokenBundle.types.array;

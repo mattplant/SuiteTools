@@ -1,9 +1,10 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { Login, assertIsLogins } from './types';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import type { Logins } from '@suiteworks/suitetools-shared';
+import { LoginBundle } from '@suiteworks/suitetools-shared';
 
-export async function getLogins(fields: CriteriaFields): Promise<Login[] | NotFound> {
+export async function getLogins(fields: CriteriaFields): Promise<Logins | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -39,7 +40,7 @@ export async function getLogins(fields: CriteriaFields): Promise<Login[] | NotFo
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsLogins(response.data);
+    LoginBundle.assertMany(response.data);
     result = response.data;
   }
 

@@ -1,7 +1,30 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * SuiteTools Zod Schema Helpers — centralized utilities for normalizing and validating common NetSuite field formats.
+ *
+ * @fileoverview
+ * Provides a single source of truth for coercing raw NetSuite values into well-typed JS values using `z.preprocess`.
+ *
+ * ## Included Helpers
+ * - booleanFromTF: `"T"` → true; all else → false
+ * - dateFromString: ISO string or Date → Date object
+ * - numberFromString: number-like string or number → number
+ * - stringOrEmpty: any non-string value → empty string
+ *
+ * Each helper is bundled with parse/assert utilities from `zHelpers` for convenient, type-safe usage across the codebase.
+ *
+ * @module zNetSuite
+ * @see Zod documentation https://github.com/colinhacks/zod
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at https://github.com/mattplant/SuiteTools/blob/main/LICENSE
+ */
+
 import { z } from "zod";
 import { zHelpers } from "./zodUtils";
 
-// --- Preprocessing Schemas ---
+// Preprocessing Schemas
 
 /**
  * Converts NetSuite "T"/"F" string flags to booleans.
@@ -13,10 +36,13 @@ const zBooleanFromTF = z.preprocess((val) => val === "T", z.boolean());
 /**
  * Converts ISO date string or Date to Date object
  */
-const zDateFromString = z.preprocess(
-  (val) => (typeof val === "string" ? new Date(val) : val),
-  z.date()
-);
+const zDateFromString = z.preprocess((val) => {
+  if (typeof val === "string") {
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? undefined : date;
+  }
+  return val;
+}, z.date());
 
 /**
  * Converts number-like string or number to number
@@ -35,22 +61,12 @@ const zStringOrEmpty = z.preprocess(
   z.string()
 );
 
-// --- Semantic Namespaces ---
+// Semantic Namespaces
 
 /**
  * Bundled schema helpers for NetSuite-specific field formats.
  */
 const zNetSuite = {
-  // raw: {
-  //   /** Converts "T"/"F" strings into booleans. */
-  //   booleanFromTF: zBooleanFromTF,
-  //   /** Parses ISO date strings or Date objects into Date instances. */
-  //   dateFromString: zDateFromString,
-  //   /** Coerces number-like strings and numbers into numeric types. */
-  //   numberFromString: zNumberFromString,
-  //   /** Converts any non-string value (null, undefined, number) to an empty string. */
-  //   stringOrEmpty: zStringOrEmpty,
-  // },
   booleanFromTF: {
     schema: zBooleanFromTF,
     ...zHelpers.zParseHelpers(zBooleanFromTF),
@@ -67,7 +83,7 @@ const zNetSuite = {
     schema: zStringOrEmpty,
     ...zHelpers.zParseHelpers(zStringOrEmpty),
   },
-  createBundle: zHelpers.zCreateBundle, // TODO: remove after verifying zCreateEntity works
+  zCreateEntity: zHelpers.zCreateEntity,
 };
 
 // --- Public Exports ---

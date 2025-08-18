@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { Integration } from 'shared';
+import type { Integration } from '@suiteworks/suitetools-shared';
 import { addIntegrationLastLogin } from './getRecord';
 import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
 

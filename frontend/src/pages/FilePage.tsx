@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { File } from 'shared';
+import { FileBundle } from '@suiteworks/suitetools-shared';
 import { FileResult } from '../components/features/file/RecordResult';
 
 export function FilePage() {
@@ -14,7 +14,7 @@ export function FilePage() {
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.file}>
           {(file) => {
-            File.assert(file);
+            FileBundle.assert(file);
             return <FileResult data={file} />;
           }}
         </Await>

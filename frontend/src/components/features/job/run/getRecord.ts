@@ -1,6 +1,7 @@
 import { getData } from '../../../../api/api';
-import { NotFound } from '../../../../api/types';
-import { JobRun } from 'shared';
+import type { NotFound } from '../../../../api/types';
+import { JobRunBundle } from '@suiteworks/suitetools-shared';
+import type { JobRun } from '@suiteworks/suitetools-shared';
 
 export async function getJobRun(id: number): Promise<JobRun | NotFound> {
   let result;
@@ -14,7 +15,7 @@ export async function getJobRun(id: number): Promise<JobRun | NotFound> {
   if (response.message) {
     result = { message: response.message };
   } else {
-    JobRun.assert(response.data);
+    JobRunBundle.assert(response.data);
     // build additional properties
     response.data.urlDetail = `#/jobRun/${response.data.id}`;
     response.data.urlJob = `#/job/${response.data.jobid}`;

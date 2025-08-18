@@ -1,14 +1,48 @@
-import { getDataFromPageTable } from '../../../lib/netsuite/collectData.ts';
-import { Integration } from 'shared';
-import { CriteriaFields } from '../../shared/criteria/types.ts';
-import { Settings } from '../settings/types.ts';
+import { getDataFromPageTable } from '../../../lib/netsuite/collectData';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { IntegrationBundle } from '@suiteworks/suitetools-shared';
+import type { Integration, Integrations } from '@suiteworks/suitetools-shared';
+import { Settings } from '../settings/types';
 
-export async function getIntegrations(fields: CriteriaFields): Promise<Integration[]> {
+// Local helpers
+const stripHtml = (s: string) => s.replace(/<[^>]*>/g, '').trim();
+
+function parseTable(rows: string[][]) {
+  return rows.map((cols) => {
+    const id = Number(cols[0]);
+    const nameHtml = cols[1] ?? '';
+    const applicationId = cols[2] ?? '';
+    const state = cols[3] ?? '';
+    const dateCreated = cols[4] ?? '';
+
+    // extract href if present (optional)
+    const hrefMatch = nameHtml.match(/href="([^"]+)"/);
+    const urlNs = hrefMatch?.[1];
+
+    // clean display name
+    let name = stripHtml(nameHtml);
+    // handle SuiteCloud rename
+    if (name === 'SuiteCloud IDE & CLI') {
+      name = 'SuiteCloud Development Integration';
+    }
+
+    return {
+      id,
+      name,
+      applicationId,
+      state,
+      dateCreated,
+      urlNs,
+      urlDetail: `#/integration/${id}`,
+    };
+  });
+}
+
+export async function getIntegrations(fields: CriteriaFields): Promise<Integrations> {
   console.log('getIntegrations() initiated', { fields });
   const urlParams = {
     active: fields.active,
   };
-  const data: Integration[] = [];
   let dataArray: string[][] = [];
   if (window.location.href.includes('localhost')) {
     // mock data for local development
@@ -34,27 +68,20 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
   }
   // filter data based on active status
   if (urlParams.active == 'T') {
-    dataArray = dataArray.filter((integration) => integration[3] === 'Enabled');
+    dataArray = dataArray.filter((cols) => cols[3] === 'Enabled');
   } else if (urlParams.active == 'F') {
-    dataArray = dataArray.filter((integration) => integration[3] === 'Blocked');
+    dataArray = dataArray.filter((cols) => cols[3] === 'Blocked');
   }
-  // convert array to Integration objects
-  dataArray.map((integration) => {
-    // TODO if integrationName = 'SuiteCloud IDE & CLI' then set integrationName = 'SuiteCloud Development Integration'
+  const mapped = parseTable(dataArray);
+  const integrations = IntegrationBundle.parseMany(mapped); // TODO: is this necessary? "as Integrations";
 
-    data.push({
-      id: Number(integration[0]),
-      name: integration[1].replace(/<[^>]*>?/gm, '').trim(),
-      applicationId: integration[2],
-      state: integration[3],
-      dateCreated: integration[4],
-    });
-  });
-
-  return data;
+  return integrations;
 }
 
-export function addIntegrationLastLogins(integrations: Integration[], settings: Settings | undefined): Integration[] {
+export function addIntegrationLastLogins(
+  integrations: readonly Integration[],
+  settings: Settings | undefined,
+): readonly Integration[] {
   if (
     settings &&
     settings.lastLogins &&

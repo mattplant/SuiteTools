@@ -1,11 +1,10 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { SoapLogBundle } from 'shared';
+import { SoapLogBundle } from '@suiteworks/suitetools-shared';
 import { SoapLogResult } from '../components/features/soapLog/RecordResult';
 
 export function SoapLogPage() {
   const data = useLoaderData();
-  // assertIsData(data);
   SoapLogBundle.assert(data);
 
   return (
@@ -27,19 +26,3 @@ export function SoapLogPage() {
     </div>
   );
 }
-
-// type Data = {
-//   soapLog: SoapLog;
-// };
-
-// function assertIsData(data: unknown): asserts data is Data {
-//   if (typeof data !== 'object') {
-//     throw new Error('Data is not an object');
-//   }
-//   if (data === null) {
-//     throw new Error('Data is null');
-//   }
-//   if (!('soapLog' in data)) {
-//     throw new Error('Data does not contain integration');
-//   }
-// }

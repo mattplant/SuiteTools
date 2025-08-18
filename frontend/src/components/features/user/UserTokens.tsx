@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../../shared/criteria/types.ts';
-import { getToken } from '../token/getRecord.ts';
-import { getTokens } from '../token/getRecords.ts';
-import { Token } from '../token/types.ts';
-import { Results } from '../../shared/results/Results.tsx';
-import { ResultsTypes } from '../../shared/results/types.ts';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { getToken } from '../token/getRecord';
+import { getTokens } from '../token/getRecords';
+import type { Tokens } from '@suiteworks/suitetools-shared';
+import { Results } from '../../shared/results/Results';
+import { ResultsTypes } from '../../shared/results/types';
 
 type Props = {
   userName: string;
 };
 
 export function UserTokens({ userName }: Props) {
-  const [results, setResults] = useState<Token[]>([]);
+  const [results, setResults] = useState<Tokens>([]);
 
   useEffect(() => {
     const criteria: CriteriaFields = {

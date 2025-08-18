@@ -101,7 +101,7 @@ export const router = createHashRouter([
       {
         path: 'job/:id',
         element: <JobPage />,
-        loader: async ({ params }) => defer({ job: getJob(Number(params.id)) }),
+        loader: async ({ params }) => await getJob(Number(params.id)),
       },
       {
         path: 'jobs',

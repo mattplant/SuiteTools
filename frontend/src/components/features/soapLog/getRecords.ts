@@ -1,7 +1,8 @@
 import { getDataFromPageTable } from '../../../lib/netsuite/collectData';
-import { SoapLogBundle } from 'shared';
-import { CriteriaFields } from '../../shared/criteria/types';
-import type { SoapLogs } from 'shared';
+import { SoapLogBundle } from '@suiteworks/suitetools-shared';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import type { SoapLogs } from '@suiteworks/suitetools-shared';
+
 export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLogs> {
   console.log('getSoapLogs() initiated', { fields });
   const urlParams = {

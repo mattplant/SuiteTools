@@ -1,16 +1,16 @@
-import { getDataFromPageTable } from '../../../lib/netsuite/collectData.ts';
-import { assertIsTokens, Token } from './types.ts';
-import { CriteriaFields } from '../../shared/criteria/types.ts';
-import { Settings } from '../settings/types.ts';
+import { getDataFromPageTable } from '../../../lib/netsuite/collectData';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { TokenBundle } from '@suiteworks/suitetools-shared';
+import type { Token, Tokens } from '@suiteworks/suitetools-shared';
+import { Settings } from '../settings/types';
 
-export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
+export async function getTokens(fields: CriteriaFields): Promise<Tokens> {
   const urlParams = {
     active: fields.active,
     integrationName: fields.integrationName,
     userName: fields.userName,
     roleName: fields.roleName,
   };
-  const data: Token[] = [];
   let dataArray: string[][] = [];
   if (window.location.href.includes('localhost')) {
     // mock data for local development
@@ -36,25 +36,37 @@ export async function getTokens(fields: CriteriaFields): Promise<Token[]> {
   if (urlParams.roleName) {
     dataArray = dataArray.filter((record) => record[4] === urlParams.roleName);
   }
-  // convert array to record objects
-  dataArray.map((record) => {
-    data.push({
-      id: Number(record[1]),
-      name: record[2],
-      userName: record[3],
-      roleName: record[4],
-      integrationName: record[5],
-      state: record[6] === 'No' ? 'Active' : 'Inactive',
-      dateCreated: record[7],
-      createdBy: record[8],
-    });
-  });
-  assertIsTokens(data);
+  // // convert array to record objects
+  // dataArray.map((record) => {
+  //   data.push({
+  //     id: Number(record[1]),
+  //     name: record[2],
+  //     userName: record[3],
+  //     roleName: record[4],
+  //     integrationName: record[5],
+  //     state: record[6] === 'No' ? 'Active' : 'Inactive',
+  //     dateCreated: record[7],
+  //     createdBy: record[8],
+  //   });
+  // });
+
+  const records: Token[] = dataArray.map((record) => ({
+    id: Number(record[1]),
+    name: record[2],
+    userName: record[3],
+    roleName: record[4],
+    integrationName: record[5],
+    state: record[6], //  === 'No' ? 'Active' : 'Inactive',
+    dateCreated: record[7],
+    createdBy: record[8],
+  }));
+  // Validate and get readonly array back
+  const data = TokenBundle.parseMany(records);
 
   return data;
 }
 
-export function addTokenLastLogins(tokens: Token[], settings: Settings | undefined): Token[] {
+export function addTokenLastLogins(tokens: Tokens, settings: Settings | undefined): Tokens {
   if (
     settings &&
     settings.lastLogins &&

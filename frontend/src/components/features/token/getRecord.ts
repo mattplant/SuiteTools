@@ -1,6 +1,7 @@
 import { getTokens } from './getRecords';
-import { NotFound } from '../../../api/types';
-import { Token } from './types';
+import type { NotFound } from '../../../api/types';
+import { TokenBundle } from '@suiteworks/suitetools-shared';
+import type { Token } from '@suiteworks/suitetools-shared';
 import { Settings } from '../settings/types';
 
 export async function getToken(id: number): Promise<Token | NotFound> {
@@ -27,6 +28,7 @@ export async function getToken(id: number): Promise<Token | NotFound> {
       if (!result) {
         throw new Error(`Token with ID ${id} not found`);
       } else {
+        TokenBundle.assert(result);
         // build additional properties
         result.urlNs = `/app/setup/accesstoken.nl?id=${result.id}`;
         result.urlDetail = `#/token/${result.id}`;

@@ -1,7 +1,7 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { JobBundle } from 'shared';
-import type { Job } from 'shared';
+import type { NotFound } from '../../../api/types';
+import { JobBundle } from '@suiteworks/suitetools-shared';
+import type { Job } from '@suiteworks/suitetools-shared';
 
 export async function getJob(id: number): Promise<Job | NotFound> {
   let result;
@@ -23,17 +23,6 @@ export async function getJob(id: number): Promise<Job | NotFound> {
     // build additional properties
     response.data.urlDetail = `#/job/${response.data.id}`;
     result = response.data;
-    // try {
-    //   const base = JobBundle.parse(response.data); // or JobBundle.assert(response.data) then use response.data
-    //   // build additional properties
-    //   // const job: Job = { ...base, urlDetail: `#/job/${base.id}` };
-
-    //   let job: Job = { ...base, urlDetail: `#/job/${base.id}` };
-    //   job.urlDetail = `#/job/${base.id}`;
-    //   result = job;
-    // } catch {
-    //   return { message: 'Invalid job payload' };
-    // }
   }
 
   return result;

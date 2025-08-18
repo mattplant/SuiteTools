@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getRole } from '../components/features/role/getRecord.ts';
-import { getRoles } from '../components/features/role/getRecords.ts';
-import { Role } from '../components/features/role/types.ts';
-import { RecordCriteria } from '../components/features/role/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getRole } from '../components/features/role/getRecord';
+import { getRoles } from '../components/features/role/getRecords';
+import type { Roles } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/role/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function RolesPage() {
   const defaultCriteria: CriteriaFields = {
     active: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Role[]>([]);
+  const [results, setResults] = useState<Roles>([]);
 
   useEffect(() => {
     async function fetchData() {

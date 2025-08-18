@@ -1,9 +1,10 @@
 import { getData } from '../../../api/api';
-import { NotFound } from '../../../api/types';
-import { User, assertIsUsers } from './types';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { NotFound } from '../../../api/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
+import { UserBundle } from '@suiteworks/suitetools-shared';
+import type { Users } from '@suiteworks/suitetools-shared';
 
-export async function getUsers(fields: CriteriaFields): Promise<User[] | NotFound> {
+export async function getUsers(fields: CriteriaFields): Promise<Users | NotFound> {
   let result;
   const localTestData = {
     data: [
@@ -28,7 +29,7 @@ export async function getUsers(fields: CriteriaFields): Promise<User[] | NotFoun
   if (response.message) {
     result = { message: response.message };
   } else {
-    assertIsUsers(response.data);
+    UserBundle.assertMany(response.data);
     result = response.data;
   }
 

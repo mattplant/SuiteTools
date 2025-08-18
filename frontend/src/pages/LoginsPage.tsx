@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/shared/criteria/types.ts';
-import { getLogins } from '../components/features/login/getRecords.ts';
-import { Login } from '../components/features/login/types.ts';
-import { RecordCriteria } from '../components/features/login/RecordCriteria.tsx';
-import { Results } from '../components/shared/results/Results.tsx';
-import { ResultsTypes } from '../components/shared/results/types.ts';
-import { getLoginFromResults } from '../components/features/login/getRecordFromResults.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+
+// TODO: switch from getLoginFromResults to getLogin
+// import { getLogin } from '../components/features/login/getRecord';
+import { getLoginFromResults } from '../components/features/login/getRecordFromResults';
+
+import { getLogins } from '../components/features/login/getRecords';
+import type { Logins } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/login/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function LoginsPage() {
   const defaultCriteria: CriteriaFields = {
@@ -17,7 +21,7 @@ export function LoginsPage() {
     roles: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Login[]>([]);
+  const [results, setResults] = useState<Logins>([]);
 
   useEffect(() => {
     async function fetchData() {

@@ -1,5 +1,5 @@
 {
-    "name": "shared",
+    "name": "@suiteworks/suitetools-shared",
     "displayName": "SuiteTools Shared",
     "description": "Shared utilities for SuiteTools",
     "version": "0.1.0",
@@ -25,6 +25,7 @@
     },
     "scripts": {
         "build": "yarn pnpify tsc -b --verbose",
+        "watch": "yarn pnpify tsc -b --watch --verbose --diagnostics --listEmittedFiles",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "clean-local": "rm -rf dist tsconfig.tsbuildinfo",
         "test": "echo \"No tests specified\" && exit 0"
@@ -34,6 +35,6 @@
     },
     "devDependencies": {
         "@yarnpkg/pnpify": "^4.1.5",
-        "eslint": "*"
+        "eslint": "^9.32.0"
     }
 }

@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
-import { CriteriaFields } from '../../shared/criteria/types';
+import type { CriteriaFields } from '../../shared/criteria/types';
 import { SearchCriteriaAdvancedTimePicker } from '../../shared/criteria/SearchCriteriaAdvancedTimePicker';
 import { SearchCriteriaContent } from '../../shared/criteria/SearchCriteriaContent';
 import { SearchCriteriaLevels } from '../../shared/criteria/SearchCriteriaLevels';
