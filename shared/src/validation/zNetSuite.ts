@@ -83,7 +83,7 @@ const zNetSuite = {
     schema: zStringOrEmpty,
     ...zHelpers.zParseHelpers(zStringOrEmpty),
   },
-  zCreateEntity: zHelpers.zCreateEntity,
+  zCreateBundle: zHelpers.zCreateBundle,
 };
 
 // --- Public Exports ---

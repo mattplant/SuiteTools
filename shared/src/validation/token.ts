@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single Token record.
@@ -35,9 +35,9 @@ const TokenSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const TokenBundle: ZEntityBundleWithoutNormalize<typeof TokenSchema, "Token"> =
-  zHelpers.zCreateEntity(TokenSchema, {
-    meta: { entity: "Token" },
+const TokenBundle: ZEntityBundle<typeof TokenSchema, "Token"> =
+  zHelpers.zCreateBundle(TokenSchema, {
+    meta: { entity: "Token", plural: "Tokens" },
   });
 
 // ───────────────────────────────────────────────────────────

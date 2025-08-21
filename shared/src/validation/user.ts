@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single User record.
@@ -33,9 +33,9 @@ const UserSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const UserBundle: ZEntityBundleWithoutNormalize<typeof UserSchema, "User"> =
-  zHelpers.zCreateEntity(UserSchema, {
-    meta: { entity: "User" },
+const UserBundle: ZEntityBundle<typeof UserSchema, "User"> =
+  zHelpers.zCreateBundle(UserSchema, {
+    meta: { entity: "User", plural: "Users" },
   });
 
 // ───────────────────────────────────────────────────────────

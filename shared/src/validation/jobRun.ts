@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single JobRun record.
@@ -30,12 +30,10 @@ export const JobRunSchema = z.object({
   urlJob: z.string().optional(),
 });
 
-const JobRunBundle: ZEntityBundleWithoutNormalize<
-  typeof JobRunSchema,
-  "JobRun"
-> = zHelpers.zCreateEntity(JobRunSchema, {
-  meta: { entity: "JobRun" },
-});
+const JobRunBundle: ZEntityBundle<typeof JobRunSchema, "JobRun"> =
+  zHelpers.zCreateBundle(JobRunSchema, {
+    meta: { entity: "JobRun", plural: "JobRuns" },
+  });
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

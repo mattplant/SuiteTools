@@ -32,6 +32,13 @@ export function JobResult({ data, modal }: Props) {
     }
   };
 
+  function formatLastRun(lastRun: Date | undefined): string {
+    if (lastRun instanceof Date) {
+      return lastRun.toLocaleString();
+    }
+    return 'Never run';
+  }
+
   return (
     <>
       <p>
@@ -53,7 +60,7 @@ export function JobResult({ data, modal }: Props) {
         <b>Notify</b>: {data.notify ? 'Yes' : 'No'}
       </p>
       <p>
-        <b>Last Run</b>: {data.lastRun.toLocaleDateString()}
+        <b>Last Run</b>: {formatLastRun(data.lastRun)}
       </p>
       {modal && (
         <ButtonGroup>

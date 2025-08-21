@@ -62,9 +62,13 @@ function zParseHelpers<S extends z.ZodTypeAny>(schema: S) {
   };
 }
 
-type NormalizedSafeParse<TSchema extends z.ZodObject<any>, TData> =
-  | { success: true; data: TData }
-  | { success: false; error: z.ZodError<z.input<TSchema>> };
+function toJSON<T>(data: T): Record<string, unknown> {
+  return JSON.parse(JSON.stringify(data));
+}
+
+// ───────────────────────────────────────────────────────────
+// Type Definitions
+// ───────────────────────────────────────────────────────────
 
 type ShapeKeys<TSchema extends z.ZodObject<any>> = keyof TSchema["shape"];
 
@@ -72,17 +76,20 @@ type ZEntityMeta<
   TSchema extends z.ZodObject<any>,
   TName extends string = string,
 > = {
-  entity?: TName;
-  version?: string;
-  plural?: string;
-  displayName?: string;
-  namespace?: string;
-  source?: string;
-  deprecated?: boolean;
-  experimental?: boolean;
+  entity?: TName; // Singular name of the entity
+  version?: string; // Version of the schema
+  plural: string; // Plural name of the entity
+  displayName?: string; // Human-readable name for display
   /** Auto-filled when schema is a ZodObject */
   fields?: ReadonlyArray<ShapeKeys<TSchema>>;
 };
+
+type Final<
+  TSchema extends z.ZodObject<any>,
+  TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined,
+> = TNormalizeFn extends (...a: any) => any
+  ? ReturnType<NonNullable<TNormalizeFn>>
+  : z.output<TSchema>;
 
 type ZEntityTypes<TSchema extends z.ZodTypeAny, TNormalized> = {
   /** Pre-transform input type */
@@ -95,467 +102,189 @@ type ZEntityTypes<TSchema extends z.ZodTypeAny, TNormalized> = {
   array: ReadonlyArray<TNormalized>;
 };
 
-interface ZEntityBundle<
+type ZEntityBundle<
   TSchema extends z.ZodObject<any>,
-  TNormalized,
-  TName extends string = string,
-> {
-  /** Original schema */
-  schema: TSchema;
-  /** Array(schema) convenience */
-  arraySchema: z.ZodArray<TSchema>;
-
-  /** Optional normalization step applied after parse/safeParse */
-  normalize?: (data: z.output<TSchema>) => TNormalized;
-
-  /** Runtime helpers (normalize applied if present) */
-  parse: (input: unknown) => TNormalized;
-  safeParse: (input: unknown) => NormalizedSafeParse<TSchema, TNormalized>;
-  assert: (input: unknown) => asserts input is TNormalized;
-  parseMany: (input: unknown[]) => ReadonlyArray<TNormalized>;
-  safeParseMany: (
-    input: unknown[]
-  ) => ReadonlyArray<NormalizedSafeParse<TSchema, TNormalized>>;
-  assertMany: (input: unknown) => asserts input is ReadonlyArray<TNormalized>;
-
-  /** Types (purely phantom—no runtime cost) */
-  types: ZEntityTypes<TSchema, TNormalized>;
-
-  /** Introspection metadata (frozen at runtime) */
-  meta: Readonly<ZEntityMeta<TSchema, TName>>;
-}
-
-function defaultPluralize(name?: string): string | undefined {
-  if (!name) return undefined;
-  // naive pluralization; swap with a smarter util if needed
-  return name.endsWith("s") ? name : `${name}s`;
-}
-
-type ZEntityBundleWithNormalize<
-  TSchema extends z.ZodObject<any>,
-  TNormalized,
   TName extends string,
+  TNormalizeFn extends
+    | ((data: z.output<TSchema>) => any)
+    | undefined = undefined,
 > = {
   schema: TSchema;
   arraySchema: z.ZodArray<TSchema>;
-  normalize: (data: z.output<TSchema>) => TNormalized;
-  parse: (input: unknown) => TNormalized;
-  safeParse: (input: unknown) => NormalizedSafeParse<TSchema, TNormalized>;
-  assert: (input: unknown) => asserts input is TNormalized;
-  parseMany: (input: ReadonlyArray<unknown>) => ReadonlyArray<TNormalized>;
-  safeParseMany: (
-    input: unknown[] | null | undefined
-  ) => ReadonlyArray<NormalizedSafeParse<TSchema, TNormalized>>;
-  assertMany: (input: unknown) => asserts input is ReadonlyArray<TNormalized>;
-  types: ZEntityTypes<TSchema, TNormalized>;
-  meta: ZEntityMeta<TSchema, TName>;
-};
 
-type ZEntityBundleWithoutNormalize<
-  TSchema extends z.ZodObject<any>,
-  TName extends string,
-> = {
-  schema: TSchema;
-  arraySchema: z.ZodArray<TSchema>;
-  parse: (input: unknown) => z.output<TSchema>;
+  parse: (input: unknown) => Final<TSchema, TNormalizeFn>;
   safeParse: (
     input: unknown
-  ) => NormalizedSafeParse<TSchema, z.output<TSchema>>;
-  assert: (input: unknown) => asserts input is z.output<TSchema>;
+  ) =>
+    | { success: true; data: Final<TSchema, TNormalizeFn> }
+    | { success: false; error: ZodError<z.input<TSchema>> };
+
+  // Explicit predicate annotations prevent TS2775
+  assert: (input: unknown) => asserts input is Final<TSchema, TNormalizeFn>;
+
   parseMany: (
     input: ReadonlyArray<unknown>
-  ) => ReadonlyArray<z.output<TSchema>>;
+  ) => ReadonlyArray<Final<TSchema, TNormalizeFn>>;
   safeParseMany: (
     input: unknown[] | null | undefined
-  ) => ReadonlyArray<NormalizedSafeParse<TSchema, z.output<TSchema>>>;
+  ) => ReadonlyArray<
+    | { success: true; data: Final<TSchema, TNormalizeFn> }
+    | { success: false; error: ZodError<z.input<TSchema>> }
+  >;
+
+  // Explicit predicate annotations prevent TS2775
   assertMany: (
     input: unknown
-  ) => asserts input is ReadonlyArray<z.output<TSchema>>;
-  types: ZEntityTypes<TSchema, z.output<TSchema>>;
+  ) => asserts input is ReadonlyArray<Final<TSchema, TNormalizeFn>>;
+
+  types: ZEntityTypes<TSchema, Final<TSchema, TNormalizeFn>>;
   meta: ZEntityMeta<TSchema, TName>;
+
+  toJSON: (data: Final<TSchema, TNormalizeFn>) => Record<string, unknown>;
+
+  /** Optional normalization function, strictly typed if present */
+  normalize?: TNormalizeFn;
 };
 
-// zCreateEntity overload signature for optional normalization.
-function zCreateEntity<TSchema extends z.ZodObject<any>, TName extends string>(
-  schema: TSchema,
-  options?: { meta?: ZEntityMeta<TSchema, TName> }
-): ZEntityBundleWithoutNormalize<TSchema, TName>;
-
-// zCreateEntity overload signature where normalization function is applied after parsing.
-function zCreateEntity<
-  TSchema extends z.ZodObject<any>,
-  TNormalized,
-  TName extends string,
->(
-  schema: TSchema,
-  options: {
-    normalize: (data: z.output<TSchema>) => TNormalized;
-    meta?: ZEntityMeta<TSchema, TName>;
-  }
-): ZEntityBundleWithNormalize<TSchema, TNormalized, TName>;
-
 /**
- * Creates a Zod-backed entity bundle with optional normalization and metadata.
+ * Creates an entity bundle from a Zod schema with optional normalization.
  *
- * This function supports two modes:
- * - With `normalize`: returns a bundle where all parsing functions apply normalization after Zod validation.
- * - Without `normalize`: returns raw Zod output as the entity shape.
- *
- * @template TSchema - Zod schema defining the entity shape.
- * @template TNormalized - Output type after normalization.
- * @template TName - Entity name used for metadata and pluralization.
- *
- * @param schema - Zod object schema representing the entity.
- * @param options - Optional configuration:
- *   @param options.normalize - Function to transform parsed Zod output into a normalized shape.
- *   @param options.meta - Metadata used for pluralization, display name, and field overrides.
- *
- * @returns A typed entity bundle with parsing, assertion, and metadata utilities.
- *
- * @remarks
- * - If `normalize` is provided, all parsing functions will return `TNormalized`.
- * - Metadata fields are inferred from schema shape unless overridden.
- * - Use `assertMany` to surface per-item errors with index context.
- *
- * @example
- * ```ts
- * const userEntity = zCreateEntity(userSchema, {
- *   normalize: (data) => ({ ...data, fullName: `${data.first} ${data.last}` }),
- *   meta: { entity: "user" }
- * });
- * ```
+ * @param schema - Zod schema defining the entity shape
+ * @param options - Options for the bundle
+ *   @param options.normalize - Optional normalization function applied after parsing
+ *   @param options.meta - Metadata for the entity, including fields, plural name, and display name
+ * @returns A typed entity bundle with parsing, assertion, and metadata utilities
  */
-function zCreateEntity<
-  TSchema extends z.ZodObject<any>,
-  TNormalized,
-  TName extends string,
+function zCreateBundle<
+  const TSchema extends z.ZodObject<any>,
+  const TName extends string,
+  TNormalizeFn extends
+    | ((data: z.output<TSchema>) => any)
+    | undefined = undefined,
 >(
   schema: TSchema,
-  options?: {
-    normalize?: (data: z.output<TSchema>) => TNormalized;
-    meta?: ZEntityMeta<TSchema, TName>;
-  }
-) {
+  options: { normalize?: TNormalizeFn; meta: ZEntityMeta<TSchema, TName> }
+): ZEntityBundle<TSchema, TName, TNormalizeFn> {
+  const { normalize } = options;
+
   const arraySchema = z.array(schema);
+  const meta = {
+    ...options.meta,
+    // auto-fill fields if not provided
+    fields:
+      options.meta.fields ??
+      (Object.keys(schema.shape) as readonly ShapeKeys<TSchema>[]),
+    plural:
+      options.meta.plural ??
+      (options.meta.entity ? `${options.meta.entity}s` : ""),
+    displayName:
+      options.meta.displayName ??
+      (options.meta.entity ?? "").replace(/([a-z])([A-Z])/g, "$1 $2"),
+  } as const;
 
-  // Compute fields if schema is a ZodObject
-  const fields =
-    schema instanceof z.ZodObject
-      ? (Object.keys(schema.shape) as Array<keyof typeof schema.shape>)
-      : undefined;
+  // Final output type
+  type Final = TNormalizeFn extends (...a: any) => any
+    ? ReturnType<NonNullable<TNormalizeFn>>
+    : z.output<TSchema>;
 
-  function resolvePlural(meta?: ZEntityMeta<any>): string | undefined {
-    if (meta?.plural !== undefined) return meta.plural;
-    if (meta?.entity !== undefined) return defaultPluralize(meta.entity);
-    if (meta?.displayName !== undefined)
-      return defaultPluralize(meta.displayName);
-    return undefined;
-  }
-
-  const plural = resolvePlural(options?.meta);
-
-  function createMergedMeta<
-    TSchema extends z.ZodObject<any>,
-    TName extends string,
-  >(
-    base: Partial<ZEntityMeta<TSchema, TName>>,
-    fields: ReadonlyArray<ShapeKeys<TSchema>>,
-    plural: string | undefined
-  ): ZEntityMeta<TSchema, TName> {
-    return {
-      fields: base.fields ?? fields,
-      ...(plural !== undefined ? { plural } : {}),
-      ...base,
-    };
-  }
-
-  const resolvedFields =
-    options?.meta?.fields ??
-    fields ??
-    ([] as ReadonlyArray<ShapeKeys<TSchema>>);
-
-  const mergedMeta = createMergedMeta(
-    options?.meta ?? {},
-    resolvedFields,
-    plural
-  );
-
-  const normalize = options?.normalize;
-
-  if (options?.normalize) {
-    return makeWithNormalize(
-      schema,
-      options.normalize,
-      mergedMeta,
-      arraySchema
-    );
-  }
-
-  return makeWithoutNormalize(schema, mergedMeta, arraySchema);
-}
-
-function safeParseFactory<TSchema extends z.ZodObject<any>, TOut>(
-  schema: TSchema,
-  transform?: (parsed: z.output<TSchema>) => TOut
-) {
-  return (input: unknown): NormalizedSafeParse<TSchema, TOut> => {
-    const res = schema.safeParse(input);
-    if (!res.success) {
-      return {
-        success: false,
-        error: res.error as z.ZodError<z.input<TSchema>>,
-      };
-    }
-    const value = transform
-      ? transform(res.data as z.output<TSchema>)
-      : (res.data as unknown as TOut);
-    return { success: true, data: value };
+  // Single-item helpers
+  const parse: (input: unknown) => Final = (input) => {
+    const parsed = schema.parse(input) as z.output<TSchema>;
+    return normalize ? (normalize(parsed) as Final) : (parsed as Final);
   };
-}
-
-/**
- * Constructs an entity bundle with normalization applied after Zod parsing.
- * @internal
- *
- * @template TSchema - Zod object schema defining the entity shape.
- * @template TNormalized - Output type after normalization.
- * @template TName - Entity name used for metadata and pluralization.
- *
- * @param schema - Zod schema for single entity validation.
- * @param normalize - Function to transform parsed Zod output into normalized shape.
- * @param meta - Metadata including fields, plural name, and display name.
- * @param arraySchema - Zod array schema for validating multiple entities.
- *
- * @returns A bundle with parsing, assertion, and metadata utilities that return normalized output.
- *
- * @remarks
- * - All parsing functions apply `normalize` after Zod validation.
- * - Metadata is frozen to prevent accidental mutation.
- * - Use `assertMany` to surface per-item normalization errors.
- */
-function makeWithNormalize<
-  TSchema extends z.ZodObject<any>,
-  TNormalized,
-  TName extends string,
->(
-  schema: TSchema,
-  normalize: (d: z.output<TSchema>) => TNormalized,
-  meta: ZEntityMeta<TSchema, TName>,
-  arraySchema: z.ZodArray<TSchema>
-): ZEntityBundleWithNormalize<TSchema, TNormalized, TName> {
-  const { parse, parseMany, assert, assertMany } = makeZHelpers({
-    schema,
-    normalize,
-  });
-  const safeParse = (
+  const safeParse: (
     input: unknown
-  ): NormalizedSafeParse<TSchema, TNormalized> => {
+  ) =>
+    | { success: true; data: Final }
+    | { success: false; error: ZodError<z.input<TSchema>> } = (input) => {
     const res = schema.safeParse(input);
     if (!res.success) {
       return { success: false, error: res.error as ZodError<z.input<TSchema>> };
     }
-    return { success: true, data: normalize(res.data) };
+    const data = normalize
+      ? (normalize(res.data as z.output<TSchema>) as Final)
+      : (res.data as Final);
+    return { success: true, data };
   };
-  const safeParseMany = (
-    input: unknown[] | null | undefined
-  ): readonly NormalizedSafeParse<TSchema, TNormalized>[] => {
-    if (!input) return [];
-    return input.map((item) => safeParse(item));
-  };
-
-  return {
-    schema,
-    arraySchema,
-    normalize,
-    parse,
-    safeParse,
-    assert,
-    parseMany,
-    safeParseMany,
-    assertMany,
-    types: undefined as unknown as ZEntityTypes<TSchema, TNormalized>,
-    meta,
-  };
-}
-
-/**
- * Constructs an entity bundle without normalization—returns raw Zod output.
- *
- * @internal
- * @template TSchema - Zod object schema defining the entity shape.
- * @template TName - Entity name used for metadata and pluralization.
- *
- * @param schema - Zod schema for single entity validation.
- * @param meta - Metadata including fields, plural name, and display name.
- * @param arraySchema - Zod array schema for validating multiple entities.
- *
- * @returns A bundle with parsing, assertion, and metadata utilities that return raw Zod output.
- *
- * @remarks
- * - Use when no normalization is needed.
- * - Metadata is frozen to prevent accidental mutation.
- * - Parsing functions return `z.output<TSchema>` directly.
- */
-function makeWithoutNormalize<
-  TSchema extends z.ZodObject<any>,
-  TName extends string,
->(
-  schema: TSchema,
-  meta: ZEntityMeta<TSchema, TName>,
-  arraySchema: z.ZodArray<TSchema>
-): ZEntityBundleWithoutNormalize<TSchema, TName> {
-  const { parse, parseMany, assert, assertMany } = makeZHelpers({
-    schema,
-  });
-  const safeParse = (
-    input: unknown
-  ): NormalizedSafeParse<TSchema, z.output<TSchema>> => {
-    const res = schema.safeParse(input);
-    if (!res.success) {
-      return {
-        success: false,
-        error: res.error as ZodError<z.input<TSchema>>,
-      };
-    }
-    return { success: true, data: res.data };
-  };
-  const safeParseMany = (
-    input: unknown[] | null | undefined
-  ): readonly NormalizedSafeParse<TSchema, z.output<TSchema>>[] => {
-    if (!input) return [];
-    return input.map((item) => safeParse(item));
-  };
-  return {
-    schema,
-    arraySchema,
-    parse,
-    safeParse,
-    assert,
-    parseMany,
-    safeParseMany,
-    assertMany,
-    types: undefined as unknown as ZEntityTypes<TSchema, z.output<TSchema>>,
-    meta,
-  };
-}
-
-/**
- * A compact, stable safeParse result for single or many.
- */
-type SafeResult<TSchema extends z.ZodTypeAny, TData> =
-  | { success: true; data: TData }
-  | { success: false; error: ZodError<z.input<TSchema>> };
-
-/**
- * Factory function to create Zod helpers with optional normalization.
- * @internal
- * Overload: no normalize -> normalized type is z.output<TSchema>.
- */
-function makeZHelpers<TSchema extends z.ZodTypeAny>(opts: {
-  schema: TSchema;
-}): {
-  schema: TSchema;
-
-  // single
-  parse: (input: unknown) => z.output<TSchema>;
-  assert: (input: unknown) => asserts input is z.output<TSchema>;
-
-  // many
-  parseMany: (input: unknown) => readonly z.output<TSchema>[];
-  assertMany: (input: unknown) => asserts input is readonly z.output<TSchema>[];
-};
-
-/**
- * Factory function to create Zod helpers with optional normalization.
- * @internal
- * Overload: with normalize -> normalized type is TNormalized.
- */
-function makeZHelpers<TSchema extends z.ZodTypeAny, TNormalized>(opts: {
-  schema: TSchema;
-  normalize: (value: z.output<TSchema>) => TNormalized;
-}): {
-  schema: TSchema;
-
-  // single
-  parse: (input: unknown) => TNormalized;
-  assert: (input: unknown) => asserts input is TNormalized;
-
-  // many
-  parseMany: (input: unknown) => readonly TNormalized[];
-  assertMany: (input: unknown) => asserts input is readonly TNormalized[];
-};
-
-/**
- * Creates Zod helpers with parsing, assertion, and normalization utilities.
- * @internal
- */
-function makeZHelpers<TSchema extends z.ZodTypeAny, TNormalized>(opts: {
-  schema: TSchema;
-  normalize?: (value: z.output<TSchema>) => TNormalized;
-}) {
-  const { schema, normalize } = opts;
-  const arraySchema = z.array(schema);
-
-  type Out = z.output<TSchema>;
-  type Norm = TNormalized extends unknown
-    ? typeof normalize extends (...args: any) => any
-      ? TNormalized
-      : Out
-    : Out;
-
-  const normOne = (value: Out): Norm =>
-    (normalize ? normalize(value as Out) : (value as unknown)) as Norm;
-
-  // ——— single ———
-
-  const parse = (input: unknown): Norm => {
-    const parsed = schema.parse(input) as Out;
-    return normOne(parsed);
+  const assert: (input: unknown) => asserts input is Final = (input) => {
+    void parse(input); // throws if invalid; narrows on success
   };
 
-  const assert = (input: unknown): asserts input is Norm => {
-    // Validates; does not mutate input. After this returns, `input` is treated as Norm.
-    schema.parse(input);
-  };
-
-  // ——— many ———
-
-  const parseMany = (input: unknown): readonly Norm[] => {
-    if (input == null) return [];
-    if (!Array.isArray(input)) {
-      throw new TypeError(
-        "Expected an array, null, or undefined for parseMany."
+  // Many-items helpers
+  const parseMany: (input: ReadonlyArray<unknown>) => ReadonlyArray<Final> = (
+    input
+  ) =>
+    arraySchema
+      .parse(input)
+      .map((val) =>
+        normalize
+          ? (normalize(val as z.output<TSchema>) as Final)
+          : (val as Final)
       );
-    }
-    // Throws on first invalid element; preserves error fidelity.
-    const parsed = arraySchema.parse(input) as Out[];
-    return parsed.map(normOne);
+  const safeParseMany: (
+    input: unknown[] | null | undefined
+  ) => ReadonlyArray<
+    | { success: true; data: Final }
+    | { success: false; error: ZodError<z.input<TSchema>> }
+  > = (input) => {
+    if (!input) return [];
+    return input.map((item) => safeParse(item));
   };
-
-  const assertMany = (input: unknown): asserts input is readonly Norm[] => {
-    // Strict: null/undefined or non-arrays throw.
+  const assertMany: (
+    input: unknown
+  ) => asserts input is ReadonlyArray<Final> = (input) => {
     arraySchema.parse(input);
   };
 
-  return {
-    schema,
-
-    // single
-    parse,
-    assert,
-
-    // many
-    parseMany,
-    assertMany,
+  const toJSON = (data: Final): Record<string, unknown> => {
+    return JSON.parse(JSON.stringify(data));
   };
+
+  const bundle = {
+    schema,
+    arraySchema,
+    normalize: normalize as TNormalizeFn,
+    parse,
+    safeParse,
+    assert,
+    parseMany,
+    safeParseMany,
+    assertMany,
+    types: undefined as unknown as ZEntityTypes<
+      TSchema,
+      TNormalizeFn extends (...a: any) => any
+        ? ReturnType<NonNullable<TNormalizeFn>>
+        : z.output<TSchema>
+    >,
+    meta,
+    toJSON,
+  } satisfies ZEntityBundle<TSchema, TName, TNormalizeFn>;
+
+  return Object.freeze(bundle);
 }
 
-/**
- * Namespaced Zod factory helpers for reusable parsing logic.
- */
+// /**
+//  * Upstreamed helper: fully binds zCreateBundle’s generics.
+//  * Contributors only need to pass TSchema — TName and TNormalizeFn are inferred/defaulted.
+//  */
+// type Bundle<
+//   TSchema extends z.ZodObject<any, any>,
+//   TName extends string = string,
+//   TNormalizeFn extends
+//     | ((arg: z.output<TSchema>) => any)
+//     | undefined = undefined,
+// > = ReturnType<
+//   // Pretend to call zCreateBundle with the right generics, so TS binds and infers correctly.
+//   (
+//     schema: TSchema,
+//     options: { normalize?: TNormalizeFn; meta: { entity: TName } }
+//   ) => ReturnType<typeof zCreateBundle<TSchema, TName, TNormalizeFn>>
+// >;
+
 const zHelpers = {
   zParseHelpers,
-  zCreateEntity,
+  zCreateBundle,
+  toJSON,
 };
 
 // ───────────────────────────────────────────────────────────
@@ -564,4 +293,4 @@ const zHelpers = {
 
 export { zHelpers };
 
-export type { ZEntityBundleWithoutNormalize, ZEntityBundleWithNormalize };
+export type { ZEntityBundle };

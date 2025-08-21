@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single Integration record.
@@ -28,11 +28,11 @@ export const IntegrationSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const IntegrationBundle: ZEntityBundleWithoutNormalize<
+const IntegrationBundle: ZEntityBundle<
   typeof IntegrationSchema,
   "Integration"
-> = zHelpers.zCreateEntity(IntegrationSchema, {
-  meta: { entity: "Integration" },
+> = zHelpers.zCreateBundle(IntegrationSchema, {
+  meta: { entity: "Integration", plural: "Integrations" },
 });
 
 // ───────────────────────────────────────────────────────────

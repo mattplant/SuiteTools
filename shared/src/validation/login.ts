@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single login entry.
@@ -48,9 +48,9 @@ export const LoginSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const LoginBundle: ZEntityBundleWithoutNormalize<typeof LoginSchema, "Login"> =
-  zHelpers.zCreateEntity(LoginSchema, {
-    meta: { entity: "Login" },
+const LoginBundle: ZEntityBundle<typeof LoginSchema, "Login"> =
+  zHelpers.zCreateBundle(LoginSchema, {
+    meta: { entity: "Login", plural: "Logins" },
   });
 
 // ───────────────────────────────────────────────────────────

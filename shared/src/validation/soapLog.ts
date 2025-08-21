@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single SOAP log entry.
@@ -82,15 +82,8 @@ const NormalizedSoapLogSchema = SoapLogSchema.transform((data) => {
   return data;
 });
 
-// Output type after transform
-type SoapLogNormalized = z.infer<typeof NormalizedSoapLogSchema>;
-
-const SoapLogBundle: ZEntityBundleWithNormalize<
-  typeof SoapLogSchema,
-  SoapLogNormalized,
-  "SoapLog"
-> = zHelpers.zCreateEntity(SoapLogSchema, {
-  meta: { entity: "SoapLog" },
+const SoapLogBundle = zHelpers.zCreateBundle(SoapLogSchema, {
+  meta: { entity: "SoapLog", plural: "SoapLogs" },
   normalize: (data: z.output<typeof SoapLogSchema>) =>
     NormalizedSoapLogSchema.parse(data),
 });

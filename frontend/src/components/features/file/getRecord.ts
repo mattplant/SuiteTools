@@ -4,7 +4,7 @@ import { FileBundle } from '@suiteworks/suitetools-shared';
 import type { File } from '@suiteworks/suitetools-shared';
 
 export async function getFile(id: number): Promise<File | NotFound> {
-  let result;
+  let result: File | NotFound;
   const localTestData = {
     data: {
       id: 1,

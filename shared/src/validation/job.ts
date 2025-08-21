@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single Job record.
@@ -25,14 +25,22 @@ const JobSchema = z.object({
   description: z.string(),
   scheduled: zNetSuite.booleanFromTF.schema,
   notify: zNetSuite.booleanFromTF.schema,
-  lastRun: zNetSuite.dateFromString.schema,
+  lastRun: zNetSuite.dateFromString.schema.optional(),
   urlDetail: z.string().optional(),
+  json: z.string().optional(),
 });
 
-const JobBundle: ZEntityBundleWithoutNormalize<typeof JobSchema, "Job"> =
-  zHelpers.zCreateEntity(JobSchema, {
-    meta: { entity: "Job" },
-  });
+const NormalizedJobSchema = JobSchema.transform((data) => {
+  data.json = JSON.stringify(zHelpers.toJSON(data));
+
+  return data;
+});
+
+const JobBundle = zHelpers.zCreateBundle(JobSchema, {
+  meta: { entity: "Job", plural: "Jobs", displayName: "Job Record" },
+  normalize: (data: z.output<typeof JobSchema>) =>
+    NormalizedJobSchema.parse(data),
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

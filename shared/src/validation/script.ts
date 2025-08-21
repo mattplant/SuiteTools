@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single Script record.
@@ -38,12 +38,11 @@ const ScriptSchema = z.object({
   urlScriptLogs: z.string().optional(),
 });
 
-const ScriptBundle: ZEntityBundleWithoutNormalize<
-  typeof ScriptSchema,
-  "Script"
-> = zHelpers.zCreateEntity(ScriptSchema, {
-  meta: { entity: "Script" },
-});
+const ScriptBundle: ZEntityBundle<typeof ScriptSchema, "Script"> =
+  zHelpers.zCreateBundle(ScriptSchema, {
+    // normalize: (d) => ({ ...d, id: Number(d.id) }),
+    meta: { entity: "Script", plural: "Scripts" },
+  });
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

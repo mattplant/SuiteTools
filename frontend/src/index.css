@@ -4,15 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@plugin 'flowbite/plugin';
-
 /*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+  Tailwind CSS v3 uses `gray.200` as the default border color.
+  This shim preserves that behavior when upgrading to v4, which
+  changes the default to `currentColor`.
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  Safe to remove once all border usage is audited and explicitly styled.
 */
 @layer base {
   *,
@@ -20,7 +17,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: theme('colors.gray.200', currentcolor);
   }
 }
 

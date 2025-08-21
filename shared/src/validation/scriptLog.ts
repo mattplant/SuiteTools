@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single script log entry.
@@ -32,12 +32,10 @@ export const ScriptLogSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const ScriptLogBundle: ZEntityBundleWithoutNormalize<
-  typeof ScriptLogSchema,
-  "ScriptLog"
-> = zHelpers.zCreateEntity(ScriptLogSchema, {
-  meta: { entity: "ScriptLog" },
-});
+const ScriptLogBundle: ZEntityBundle<typeof ScriptLogSchema, "ScriptLog"> =
+  zHelpers.zCreateBundle(ScriptLogSchema, {
+    meta: { entity: "ScriptLog", plural: "ScriptLogs" },
+  });
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

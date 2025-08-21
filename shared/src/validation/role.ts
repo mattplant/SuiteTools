@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zNetSuite } from "./zNetSuite";
 import { zHelpers } from "./zodUtils";
-import type { ZEntityBundleWithoutNormalize } from "./zodUtils";
+import type { ZEntityBundle } from "./zodUtils";
 
 /**
  * Zod schema for a single Role record.
@@ -30,9 +30,9 @@ const RoleSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const RoleBundle: ZEntityBundleWithoutNormalize<typeof RoleSchema, "Role"> =
-  zHelpers.zCreateEntity(RoleSchema, {
-    meta: { entity: "Role" },
+const RoleBundle: ZEntityBundle<typeof RoleSchema, "Role"> =
+  zHelpers.zCreateBundle(RoleSchema, {
+    meta: { entity: "Role", plural: "Roles" },
   });
 
 // ───────────────────────────────────────────────────────────
