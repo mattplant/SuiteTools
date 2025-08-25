@@ -50,9 +50,9 @@ import { getToken } from './components/features/token/getRecord.ts';
 import { TokenPage } from './pages/TokenPage.tsx';
 import { TokensPage } from './pages/TokensPage.tsx';
 // users
-import { getUser } from './components/features/user/getRecord.ts';
-import { UserPage } from './pages/UserPage.tsx';
-import { UsersPage } from './pages/UsersPage.tsx';
+import { userLoader } from './routes/userLoader';
+import { UserPage } from './pages/UserPage';
+import { UsersPage } from './pages/UsersPage';
 
 export const router = createHashRouter([
   {
@@ -173,7 +173,7 @@ export const router = createHashRouter([
       {
         path: 'user/:id',
         element: <UserPage />,
-        loader: async ({ params }) => defer({ user: getUser(Number(params.id)) }),
+        loader: userLoader,
       },
       {
         path: 'users',

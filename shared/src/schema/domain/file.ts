@@ -11,13 +11,13 @@
  * @see zNetSuite – NetSuite-specific Zod parsing helpers
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- * See the LICENSE file at https://github.com/mattplant/SuiteTools/blob/main/LICENSE
+ * See the LICENSE file at <https://github.com/mattplant/SuiteTools/blob/main/LICENSE>
  */
 
 import { z } from "zod";
-import { zNetSuite } from "./zNetSuite";
-import { zHelpers } from "./zodUtils";
-import type { ZEntityBundle } from "./zodUtils";
+import { zNetSuite } from "../zNetSuite";
+import { zHelpers } from "../zodUtils";
+import type { ZEntityBundle } from "../zodUtils";
 
 /**
  * Zod schema for a single NetSuite `File` record.

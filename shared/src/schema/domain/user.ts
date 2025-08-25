@@ -1,7 +1,9 @@
 import { z } from "zod";
-import { zNetSuite } from "./zNetSuite";
-import { zHelpers } from "./zodUtils";
-import type { ZEntityBundle } from "./zodUtils";
+import { zNetSuite } from "../zNetSuite";
+import { zHelpers } from "../zodUtils";
+import type { ZEntityBundle } from "../zodUtils";
+
+import { orNotFoundSchema, OrNotFound } from "./utils/orNotFound";
 
 /**
  * Zod schema for a single User record.
@@ -18,7 +20,7 @@ import type { ZEntityBundle } from "./zodUtils";
  * - `urlNs`: optional URL for NetSuite context
  * - `urlDetail`: optional URL for additional context
  */
-const UserSchema = z.object({
+const schema = z.object({
   id: z.number().positive(),
   isinactive: zNetSuite.booleanFromTF.schema,
   email: z.string(),
@@ -33,10 +35,12 @@ const UserSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const UserBundle: ZEntityBundle<typeof UserSchema, "User"> =
-  zHelpers.zCreateBundle(UserSchema, {
+const UserBundle: ZEntityBundle<typeof schema, "User"> = zHelpers.zCreateBundle(
+  schema,
+  {
     meta: { entity: "User", plural: "Users" },
-  });
+  }
+);
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -45,3 +49,13 @@ const UserBundle: ZEntityBundle<typeof UserSchema, "User"> =
 export { UserBundle };
 export type User = typeof UserBundle.types.single;
 export type Users = typeof UserBundle.types.array;
+
+// ----- Convenience union for single User -----
+export const userOrNotFoundSchema = orNotFoundSchema(schema);
+export type UserOrNotFound = OrNotFound<User>;
+
+// ----- Convenience union for multiple Users -----
+export const usersOrNotFoundSchema = orNotFoundSchema(
+  UserBundle.schema.array()
+);
+export type UsersOrNotFound = OrNotFound<Users>;

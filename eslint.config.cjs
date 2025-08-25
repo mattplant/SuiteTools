@@ -46,7 +46,13 @@ const standardPlugins = {
 
 const standardRules = {
   "jsdoc/require-jsdoc": ["warn", { publicOnly: true }], // Require JSDoc for public APIs
-  "jsdoc/check-tag-names": "warn", // Enforce JSDoc standard tags like @param, @returns
+  "jsdoc/check-tag-names": "warn",
+  "jsdoc/check-tag-names": [
+    "warn", // Enforce JSDoc standard tags like @param, @returns
+    {
+      definedTags: ["remarks", "note"], // Additional custom tags
+    },
+  ],
   "@typescript-eslint/explicit-function-return-type": "warn", // Require explicit return types for functions
   "@typescript-eslint/no-unsafe-return": "warn", // Warn on unsafe returns
   "@typescript-eslint/consistent-type-imports": "warn", // Prefer type imports for clarity

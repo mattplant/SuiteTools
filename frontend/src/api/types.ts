@@ -1,3 +1,5 @@
+// TODO: remove after verifying refactored netSuiteClient.ts works as expected
+
 export interface NotFound {
   message: string;
 }

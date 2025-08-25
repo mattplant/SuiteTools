@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { zNetSuite } from "./zNetSuite";
-import { zHelpers } from "./zodUtils";
-import type { ZEntityBundle } from "./zodUtils";
+import { zNetSuite } from "../zNetSuite";
+import { zHelpers } from "../zodUtils";
+import type { ZEntityBundle } from "../zodUtils";
 
 /**
  * Zod schema for a single JobRun record.

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { UseFormRegister } from 'react-hook-form';
+import type { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from './getOptionValues';
-import { CriteriaFields, OptionValues, OptionValuesTypes } from './types';
+import type { OptionValues } from '@suiteworks/suitetools-shared';
+import { OptionValuesTypes } from './types';
+import type { CriteriaFields } from './types';
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
@@ -9,10 +11,10 @@ interface Props {
 }
 
 export function SearchCriteriaOwners({ register, title }: Props) {
-  const [values, setValues] = useState<OptionValues[]>([]);
+  const [values, setValues] = useState<OptionValues>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       const data = await getOptionValues(OptionValuesTypes.OWNER);
       setValues(data);
     }

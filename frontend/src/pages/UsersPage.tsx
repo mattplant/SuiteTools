@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getUser } from '../components/features/user/getRecord';
-import { getUsers } from '../components/features/user/getRecords';
+import { getUser } from '../adapters/api/user';
+import { getUsers, toUsersArray } from '../adapters/api/users';
 import type { Users } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/user/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
@@ -13,23 +13,32 @@ export function UsersPage() {
     roles: [''],
     owners: [''],
   };
+
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<Users>([]);
 
   useEffect(() => {
+    let ignore = false;
+
     async function fetchData() {
       try {
         const data = await getUsers(criteria);
-        if (!('message' in data)) {
-          setResults(data);
+        const normalized = toUsersArray(data);
+        if (!ignore) {
+          setResults(normalized);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching users:', error);
+        if (!ignore) {
+          setResults([]); // fail safe: still give empty array
+        }
       }
     }
-    fetchData();
 
-    return () => {};
+    fetchData();
+    return () => {
+      ignore = true;
+    };
   }, [criteria]);
 
   return (

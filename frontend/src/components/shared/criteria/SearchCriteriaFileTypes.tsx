@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
-import { UseFormRegister } from 'react-hook-form';
+import type { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from './getOptionValues';
-import { OptionValues, OptionValuesTypes } from './types';
-import { CriteriaFields } from './types';
+import type { OptionValues } from '@suiteworks/suitetools-shared';
+import { OptionValuesTypes } from './types';
+import type { CriteriaFields } from './types';
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaFileTypes({ register }: Props) {
-  const [values, setValues] = useState<OptionValues[]>([]);
+/**
+ * Renders a select input for filtering by file types.
+ * @param props - The props object.
+ * @param props.register - The register function from react-hook-form.
+ * @returns The rendered select input component.
+ */
+export function SearchCriteriaFileTypes({ register }: Props): JSX.Element {
+  const [values, setValues] = useState<OptionValues>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       const data = await getOptionValues(OptionValuesTypes.FILETYPE);
       setValues(data);
     }

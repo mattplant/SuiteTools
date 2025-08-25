@@ -15,8 +15,8 @@
   },
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "build": "npx tsc",
     "deploy": "suitecloud project:deploy",
+    "build": "npx tsc",
     "validate": "suitecloud project:validate",
     "watch": "tsc --watch",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",

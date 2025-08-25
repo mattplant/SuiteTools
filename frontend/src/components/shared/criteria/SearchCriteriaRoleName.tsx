@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { UseFormRegister } from 'react-hook-form';
+import type { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from './getOptionValues';
-import { OptionValues, OptionValuesTypes } from './types';
-import { CriteriaFields } from './types';
+import type { OptionValues } from '@suiteworks/suitetools-shared';
+import { OptionValuesTypes } from './types';
+import type { CriteriaFields } from './types';
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaRoleName({ register }: Props) {
-  const [values, setValues] = useState<OptionValues[]>([]);
+export function SearchCriteriaRoleName({ register }: Props): JSX.Element {
+  const [values, setValues] = useState<OptionValues>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       const data = await getOptionValues(OptionValuesTypes.ROLE);
       setValues(data);
     }
