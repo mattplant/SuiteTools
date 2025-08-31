@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { SoapLog } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
+import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
 
 type Props = {
   data: SoapLog;

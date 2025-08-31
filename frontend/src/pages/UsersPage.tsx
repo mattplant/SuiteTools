@@ -6,8 +6,16 @@ import type { Users } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/user/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError } from '@suiteworks/suitetools-shared';
 
-export function UsersPage() {
+/**
+ * UsersPage component displays the users list and criteria filter.
+ * @returns The rendered UsersPage component.
+ */
+export function UsersPage(): React.ReactElement {
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     active: '',
     roles: [''],
@@ -20,26 +28,26 @@ export function UsersPage() {
   useEffect(() => {
     let ignore = false;
 
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       try {
         const data = await getUsers(criteria);
         const normalized = toUsersArray(data);
         if (!ignore) {
           setResults(normalized);
         }
-      } catch (error) {
-        console.error('Error fetching users:', error);
+      } catch (err) {
         if (!ignore) {
           setResults([]); // fail safe: still give empty array
         }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
 
     fetchData();
-    return () => {
+    return (): void => {
       ignore = true;
     };
-  }, [criteria]);
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">

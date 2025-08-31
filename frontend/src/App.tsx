@@ -1,22 +1,26 @@
 import { RouterProvider } from 'react-router-dom';
 import { Flowbite } from 'flowbite-react';
 import { AppSettingsProvider } from './components/shared/context/AppSettingsContext';
-import { MessageProvider } from './components/shared/context/MessageContext';
+import { InlineMessageProvider } from './components/shared/context/MessageContext';
 // import { MessageAutoClear } from './components/shared/messages/MessageAutoClear';
 import { InlineMessage } from './components/shared/messages/InlineMessage';
-import { router } from './router.tsx';
-import customTheme from './theme/customTheme.ts';
+import { router } from './router';
+import customTheme from './theme/customTheme';
 
-export default function App() {
+/**
+ * The root application component.
+ * @returns The rendered app.
+ */
+export default function App(): React.ReactElement {
   return (
     <Flowbite theme={{ theme: customTheme }}>
       <div className="min-w-[1280px] w-full mx-auto px-4">
         <AppSettingsProvider>
-          <MessageProvider>
+          <InlineMessageProvider>
             {/* <MessageAutoClear /> */}
             <InlineMessage />
             <RouterProvider router={router} />
-          </MessageProvider>
+          </InlineMessageProvider>
         </AppSettingsProvider>
       </div>
     </Flowbite>

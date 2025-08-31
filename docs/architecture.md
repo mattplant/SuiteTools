@@ -143,7 +143,7 @@ For detailed rule breakdowns and config practices, see [docs/linting.md](./linti
 
 ---
 
-## Data and control flow
+## Application Data & Control Flow
 
 1. **Inbound:** Requests enter backend, validated at the transport layer, converted to domain models.
 2. **Core logic:** Services operate on domain-safe types; no IO or validation here.
@@ -223,64 +223,15 @@ parseOr(schema, value, fallback) // returns typed value or fallback
 
 ---
 
-## Error modeling and handling
+## Error Handling & Reporting
 
-> TODO: Establish a small, namespaced error code taxonomy and expand intentionally.
-> Below are some initial ideas.
+SuiteTools applies a unified error handling strategy across all workspaces to ensure predictable behavior and a safe user experience in production.
 
-SuiteTools adopts a layered, code-driven error strategy that balances developer ergonomics, UX clarity, and backend stability.
+Errors are classified into well‑defined types, surfaced consistently through React error boundaries and overlays, and reported via a central utility to support both development diagnostics and future telemetry.
 
-This section outlines the error taxonomy, mapping conventions, and preferred patterns for core logic and frontend messaging.
+For detailed patterns, utilities, and contributor guidelines—including error taxonomy, escalation flows, and code examples—see the dedicated [Error Handling & Reporting Guide](./error.md).
 
-### Error Design Principles
-
-- **Error taxonomy:** DomainError, ValidationError, IntegrationError with stable codes.
-  - Use ZodError for validation failures; map to ValidationError with stable codes.
-- **Mapping:** Backend maps errors → HTTP shape; frontend maps codes → UX messages.
-  - Backend maps internal errors to HTTP responses with stable codes and a safe message.
-- **Non-throwing paths:** Prefer Result-like returns in core logic; throw only at boundaries.
-  - Frontend converts codes to user-facing messages (do not display raw internal details).
-
-### Error Taxonomy
-
-Errors are modeled explicitly by category and namespaced with stable codes for predictability:
-
-| Type               | Namespace | Sample Codes                             |
-|--------------------|-----------|------------------------------------------|
-| ValidationError    | `VAL.`    | `VAL.MISSING_FIELD`, `VAL.INVALID_DATE`, `VAL.INVALID_SHAPE` |
-| DomainError        | `DOM.`    | `DOM.UNEXPECTED_STATE`, `DOM.BIZ_RULE_VIOLATION` |
-| IntegrationError   | `INT.`    | `INT.NETSUITE_TIMEOUT`, `INT.BAD_PAYLOAD` |
-
-Error codes should be safe to log and serialize.
-
->TODO: Expand error code registry intentionally over time—maintain discoverability and semantic clarity.
-
-### Validation Mapping
-
-Validation errors are backed by Zod and mapped from `ZodError` to stable, structured formats.
-This ensures consistent error handling across the stack while preserving the original validation context.
-
-```ts
-function mapZodError(error: ZodError): ValidationError {
-  return {
-    code: 'VAL.INVALID_SHAPE',
-    message: 'Payload does not match expected format',
-    details: error.issues, // logged only; not shown to users
-  };
-}
-```
-
-### Error Shape
-
-All errors map to a consistent internal format:
-
-```ts
-interface SuiteError {
-  code: string;        // stable namespaced identifier
-  message: string;     // safe, consumable message
-  details?: unknown;   // optional debug payload (never sent to users)
-}
-```
+---
 
 ## Build and Release
 
@@ -323,6 +274,7 @@ SuiteTools uses consistent versioning and changelog documentation:
 - [docs/installation.md](./installation.md) — setup and deployment
 - [docs/customizing.md](./customizing.md) — extension points and patterns
 - [docs/linting.md](./linting.md) - tooling overview, config composition, and enforcement strategy
+- [docs/error.md](./error.md) — error handling and reporting strategy
 - [docs/vscode.md](./vscode.md) — editor setup and recommended tasks
 - > TODO: [CHANGELOG.md](../CHANGELOG.md) — suite-wide changelog
 - > TODO: docs/validation.md — schemas, assertions, and error handling strategy

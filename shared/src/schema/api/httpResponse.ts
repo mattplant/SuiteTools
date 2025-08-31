@@ -21,6 +21,7 @@
  */
 
 import { z } from "zod";
+import type { MergeShapes } from "../domain/utils/mergeShapes";
 
 /**
  * Internal base HTTP response schema.
@@ -36,12 +37,6 @@ export { _zHttpResponse as httpResponse };
 
 /** Static TypeScript type inferred from the base HTTP response schema. */
 export type HttpResponse = z.infer<typeof _zHttpResponse>;
-
-/** Utility type to merge the base shape with endpoint‑specific shapes. */
-type MergeShapes<
-  A extends z.ZodRawShape,
-  B extends z.ZodRawShape,
-> = z.ZodObject<A & B>;
 
 /**
  * Factory to create a new HTTP response schema with additional fields.

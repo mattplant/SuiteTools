@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { User } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
+import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
 import { EntityFields, type EntityField } from '../../shared/ui/EntityFields';
 
 type Props = {

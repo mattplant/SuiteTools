@@ -7,7 +7,7 @@ import type { ScriptLogs } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
-import { useInlineMessage } from '../components/shared/context/MessageContext';
+import { useInlineMessage } from '../hooks/useInlineMessage';
 
 export function ScriptLogsPage() {
   const defaultCriteria: CriteriaFields = {

@@ -38,18 +38,12 @@ export async function getUsers(fields: CriteriaFields): Promise<Users> {
     owners: fields.owners,
   };
 
-  try {
-    const response = await getData('users', urlParams);
-    // console.log('[users:getUsers] raw data:', JSON.stringify(response, null, 2));
-    const parsed = usersRequestResponseSchema.parse(response);
+  const response = await getData('users', urlParams);
+  const parsed = usersRequestResponseSchema.parse(response);
 
-    if (isNotFound(parsed.data)) return [];
+  if (isNotFound(parsed.data)) return [];
 
-    return toUsersArray(parsed.data);
-  } catch (err) {
-    console.error('[users:getUsers] failed', err);
-    throw err;
-  }
+  return toUsersArray(parsed.data);
 }
 
 // TODO: Do I even need this helper?

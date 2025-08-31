@@ -6,7 +6,7 @@ import type { Tokens } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/token/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
-import { useAppSettingsContext } from '../components/shared/context/AppSettingsContext';
+import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
 
 export function TokensPage() {
   const { settings } = useAppSettingsContext();

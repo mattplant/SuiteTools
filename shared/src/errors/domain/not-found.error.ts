@@ -1,6 +1,6 @@
-import { SuiteToolsError } from "../base";
+import { SuiteError } from "../base";
 
-export class NotFoundError extends SuiteToolsError {
+export class NotFoundError extends SuiteError {
   constructor(
     public readonly resource: string,
     public readonly id: string | number

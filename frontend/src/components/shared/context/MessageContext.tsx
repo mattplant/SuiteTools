@@ -1,5 +1,4 @@
-import { createContext, useContext, useState } from 'react';
-import { useEffect } from 'react';
+import { createContext, useState, useEffect, ReactNode } from 'react';
 
 type MessageType = 'success' | 'error' | 'info' | 'warning';
 
@@ -13,6 +12,8 @@ type InlineMessageContextType = {
   setMessage: (msg: InlineMessage | null) => void;
   clearMessage: () => void;
 };
+
+export const InlineMessageContext = createContext<InlineMessageContextType | undefined>(undefined);
 
 export const messageTypeIcon: Record<MessageType, React.ReactNode> = {
   success: (
@@ -37,17 +38,11 @@ export const messageTypeIcon: Record<MessageType, React.ReactNode> = {
   ),
 };
 
-const InlineMessageContext = createContext<InlineMessageContextType | undefined>(undefined);
-
-export const useInlineMessage = () => {
-  const context = useContext(InlineMessageContext);
-  if (!context) {
-    throw new Error('useInlineMessage must be used within a MessageProvider');
-  }
-  return context;
+type Props = {
+  children: ReactNode;
 };
 
-export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function InlineMessageProvider({ children }: Props) {
   const [message, setMessage] = useState<InlineMessage | null>(null);
 
   const clearMessage = () => setMessage(null);
@@ -58,7 +53,7 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const timer = setTimeout(() => {
         clearMessage();
       }, MESSAGE_TIMEOUT_MS);
-      return () => clearTimeout(timer);
+      return (): void => clearTimeout(timer);
     }
   }, [message]);
 
@@ -67,4 +62,4 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       {children}
     </InlineMessageContext.Provider>
   );
-};
+}

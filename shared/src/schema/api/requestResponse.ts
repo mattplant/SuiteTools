@@ -29,16 +29,8 @@ import { z } from "zod";
  * The `_` prefix signals "for internal composition only".
  */
 const _zRequestResponse = z.object({
-  /**
-   * Numeric status code returned from the API (e.g., 200, 404).
-   *
-   * @remarks
-   * Currently optional during migration; will be required once all endpoints conform.
-   */
-  status: z
-    .number()
-    .optional()
-    .describe("TEMP: will be required after migration"),
+  /** Numeric status code returned from the API (e.g., 200, 404). */
+  status: z.number().int().min(100).max(599),
 
   /** Arbitrary payload; refine in endpoint schemas for stronger type‑safety. */
   data: z.unknown(),

@@ -1,0 +1,25 @@
+
+# NOTICE
+
+**SuiteTools — the missing NetSuite tools**
+Copyright © 2025 [Matthew Plant](https://github.com/mattplant)
+
+[![Code License: GPL-3.0-or-later](https://img.shields.io/badge/Code%20License-GPL--3.0--or--later-blue)](./LICENSE)
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey)](./LICENSE-DOCS.md)
+[![Attribution Guide](https://img.shields.io/badge/Attribution%20Formats-docs%2FATTRIBUTION.md-green)](./docs/ATTRIBUTION.md)
+
+This project is licensed under the [GNU General Public License v3.0 or later (GPL-3.0-or-later)](./LICENSE).
+See [`LICENSE`](./LICENSE) for full terms.
+
+Documentation—including onboarding guides, diagrams, and taxonomy references—is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+See [`LICENSE-DOCS.md`](./LICENSE-DOCS.md) for details.
+
+Attribution formats and reuse snippets are available in [`docs/ATTRIBUTION.md`](./docs/ATTRIBUTION.md), including Markdown and plaintext templates for downstream documentation reuse.
+
+All third-party dependencies are listed in [`package.json`](./package.json) and governed by their respective licenses.
+
+SuiteTools contributors are responsible for ensuring that all direct and transitive dependencies are compatible with GPL-3.0-or-later.
+
+This NOTICE file provides attribution and licensing context. It does not modify the terms of any license referenced herein.
+
+_Last updated: August 30, 2025_

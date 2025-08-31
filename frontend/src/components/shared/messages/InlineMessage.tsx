@@ -1,5 +1,6 @@
 import { Alert } from 'flowbite-react';
-import { useInlineMessage, messageTypeIcon } from '../context/MessageContext.tsx';
+import { messageTypeIcon } from '../context/MessageContext';
+import { useInlineMessage } from '../../../hooks/useInlineMessage';
 
 export function InlineMessage() {
   const { message, clearMessage } = useInlineMessage();

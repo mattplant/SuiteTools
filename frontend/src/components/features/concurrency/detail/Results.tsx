@@ -1,10 +1,10 @@
 import { useRef } from 'react';
 import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import { Export } from '../../../shared/results/Export.tsx';
-import { ConcurrencyDetailData, ConcurrencyDetailRows } from './types.ts';
-import { formatDate } from '../../../../utils/date.ts';
-import { useAppSettingsContext } from '../../../shared/context/AppSettingsContext.tsx';
+import { Export } from '../../../shared/results/Export';
+import type { ConcurrencyDetailData, ConcurrencyDetailRows } from './types';
+import { formatDate } from '../../../../utils/date';
+import { useAppSettingsContext } from '../../../../hooks/useAppSettingsContext';
 
 type Props = {
   data: ConcurrencyDetailData | undefined;

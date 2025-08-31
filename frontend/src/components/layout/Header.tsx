@@ -9,7 +9,7 @@ import {
   NavbarLink,
   NavbarToggle,
 } from 'flowbite-react';
-import { useAppSettingsContext } from '../shared/context/AppSettingsContext';
+import { useAppSettingsContext } from '../../hooks/useAppSettingsContext';
 
 export default function Header() {
   const { settings } = useAppSettingsContext();

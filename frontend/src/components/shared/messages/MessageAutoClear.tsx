@@ -1,7 +1,7 @@
 // src/components/shared/messages/MessageAutoClear.tsx
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useInlineMessage } from '../context/MessageContext';
+import { useInlineMessage } from '../../../hooks/useInlineMessage';
 
 export function MessageAutoClear() {
   const { clearMessage } = useInlineMessage();

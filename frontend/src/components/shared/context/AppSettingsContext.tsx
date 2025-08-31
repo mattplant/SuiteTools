@@ -1,26 +1,36 @@
-import { createContext, ReactNode, useState, useEffect, useContext } from 'react';
-import { getSettings } from '../../features/settings/getSettings.ts';
-import { Settings } from '../../features/settings/types.ts';
+import { createContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { getSettings } from '../../features/settings/getSettings';
+import type { Settings } from '../../features/settings/types';
 
 type AppContextSettingsType = {
   settings: undefined | Settings;
   loading: boolean;
 };
+
 const initialState: AppContextSettingsType = {
   settings: undefined,
   loading: true,
 };
-const AppSettingsContext = createContext<AppContextSettingsType>({ ...initialState });
+
+export const AppSettingsContext = createContext<AppContextSettingsType>({ ...initialState });
 
 type Props = {
   children: ReactNode;
 };
-export function AppSettingsProvider({ children }: Props) {
-  const [settings, setSettings] = useState(Object);
+
+/**
+ * Provides application settings context to its children.
+ * @param root0 - The props object.
+ * @param root0.children - The child components.
+ * @returns The provider component wrapping its children.
+ */
+export function AppSettingsProvider({ children }: Props): JSX.Element {
+  const [settings, setSettings] = useState<Settings | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchSettings = async (): Promise<void> => {
       try {
         const data = await getSettings();
         setSettings(data);
@@ -36,5 +46,3 @@ export function AppSettingsProvider({ children }: Props) {
 
   return <AppSettingsContext.Provider value={{ settings, loading }}>{children}</AppSettingsContext.Provider>;
 }
-
-export const useAppSettingsContext = () => useContext(AppSettingsContext);

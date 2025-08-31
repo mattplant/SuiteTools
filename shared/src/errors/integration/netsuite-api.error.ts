@@ -1,6 +1,6 @@
-import { SuiteToolsError } from "../base";
+import { SuiteError } from "../base";
 
-export class NetSuiteApiError extends SuiteToolsError {
+export class NetSuiteApiError extends SuiteError {
   public readonly service = "NetSuite";
   public readonly endpoint: string;
   public readonly status: number | undefined;

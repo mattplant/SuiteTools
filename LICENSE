@@ -1,3 +1,15 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+SuiteTools is licensed under the GNU General Public License v3.0 or later (GPL-3.0-or-later).
+You may copy, modify, and distribute this software under the terms of that license.
+See below for full terms, or visit <https://www.gnu.org/licenses/gpl-3.0.html>.
+
+This license applies to SuiteTools source code only.
+Documentation, diagrams, and onboarding materials are licensed separately under [CC BY 4.0](./LICENSE-DOCS.md).
+For attribution formats and reuse guidelines, see [docs/ATTRIBUTION.md](./docs/ATTRIBUTION.md).
+
+----------------------------------------------------------------------
+
 SuiteTools — the missing NetSuite tools
 Copyright (C) 2025 Matthew Plant
 
@@ -88,7 +100,7 @@ modification follow.
 
                        TERMS AND CONDITIONS
 
-  0. Definitions.
+  1. Definitions.
 
   "This License" refers to version 3 of the GNU General Public License.
 

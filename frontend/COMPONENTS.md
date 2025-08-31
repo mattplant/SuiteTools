@@ -34,7 +34,7 @@ UI components that can be reused across different features. These should be self
 
 - `components/shared/context/` — React context providers for managing global state, such as authentication, theme, or user preferences
 - `components/shared/criteria` — Reusable criteria components for filtering and searching
-- `components/shared/feedback` — UI Components for responses to state (e.g. validation, errors, empty)
+- `components/shared/errors` — Error display components (TODO: should I use feedback instead? What about messages?)
 - `components/shared/results` — Components for displaying results, including tables and export functionality
 - `components/shared/ui/` — Custom UI components that are not included in `flowbite-react` or other imported libraries like `react-data-grid`
 

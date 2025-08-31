@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
-import { ScriptLog } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
+import type { ScriptLog } from '@suiteworks/suitetools-shared';
+import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
 
 type Props = {
   data: ScriptLog;

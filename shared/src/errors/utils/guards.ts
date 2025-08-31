@@ -1,4 +1,4 @@
-import { SuiteToolsError } from "../base";
+import { SuiteError } from "../base";
 import { NetSuiteApiError } from "../integration/netsuite-api.error";
 import { NotFoundError } from "../domain/not-found.error";
 import { SchemaValidationError } from "../domain/schema-validation.error";
@@ -6,8 +6,8 @@ import { SchemaValidationError } from "../domain/schema-validation.error";
 /**
  * Runtime check for any SuiteTools-defined error.
  */
-export const isSuiteToolsError = (err: unknown): err is SuiteToolsError =>
-  err instanceof SuiteToolsError;
+export const isSuiteError = (err: unknown): err is SuiteError =>
+  err instanceof SuiteError;
 
 /**
  * Runtime check for NetSuiteApiError.

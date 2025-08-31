@@ -138,7 +138,7 @@ export class SuiteToolsApi {
 type RequestParams = { [key: string]: string };
 
 export type Response = {
-  status?: number;
+  status: number;
   data: object;
   message?: string;
 };
@@ -162,7 +162,7 @@ export class SuiteToolsApiGet {
   public process(requestParams: unknown): Response {
     log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
     this.assertIsGetRequestParams(requestParams);
-    let response: Response = { data: null };
+    let response: Response;
     const endpoint = requestParams.endpoint;
     switch (endpoint) {
       case 'file':
@@ -235,6 +235,8 @@ export class SuiteToolsApiGet {
           notifyOff: true,
         });
     }
+
+    log.debug({ title: 'get() response', details: response });
 
     return response;
   }
@@ -789,7 +791,7 @@ export class SuiteToolsApiGet {
       isAdmin: this.stApi.stCommon.isAdmin, // method based of the runtime object getCurrentUser() method role value
     };
 
-    return { data: result };
+    return { status: 200, data: result };
   }
 
   /**
@@ -893,7 +895,7 @@ export class SuiteToolsApiGetOptions {
       result = optionValues;
     }
 
-    return { data: result };
+    return { status: 200, data: result };
   }
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
@@ -1185,7 +1187,7 @@ export class SuiteToolsApiModel {
   public getFile(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getFile() initiated`, details: { id: id } });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       file.id,
       file.folder,
@@ -1231,7 +1233,7 @@ export class SuiteToolsApiModel {
     //     modifiedDate: modifiedDate,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       file.id,
       file.folder,
@@ -1309,7 +1311,7 @@ export class SuiteToolsApiModel {
    */
   public getJob(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
       ${customRecord}.id,
@@ -1346,7 +1348,7 @@ export class SuiteToolsApiModel {
     //     active: active,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job';
     let sql = `SELECT
       ${customRecord}.id,
@@ -1388,7 +1390,7 @@ export class SuiteToolsApiModel {
   public getJobRun(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     const sql = `SELECT
       ${customRecord}.id,
@@ -1428,7 +1430,7 @@ export class SuiteToolsApiModel {
     //     completed: completed,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     let sql = `SELECT
       ${customRecord}.id,
@@ -1497,7 +1499,7 @@ export class SuiteToolsApiModel {
       },
     });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       TO_CHAR ( loginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
       loginAudit.status,
@@ -1612,7 +1614,7 @@ export class SuiteToolsApiModel {
    */
   public getRole(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getRole() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       role.id,
       role.scriptId,
@@ -1651,7 +1653,7 @@ export class SuiteToolsApiModel {
     //   },
     // });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       role.id,
       role.scriptId,
@@ -1695,7 +1697,7 @@ export class SuiteToolsApiModel {
    */
   public getScript(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       script.id,
       script.apiversion,
@@ -1746,7 +1748,7 @@ export class SuiteToolsApiModel {
     //   title: `SuiteToolsApiModel:getScripts() initiated`,
     //   details: { active: active, versions: versions, types: types, scripts: scripts, owners: owners, files: files },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       script.id,
       script.apiversion,
@@ -1836,7 +1838,7 @@ export class SuiteToolsApiModel {
     //     id: id,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -2082,7 +2084,7 @@ export class SuiteToolsApiModel {
     //     detail: detail,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -2168,7 +2170,7 @@ export class SuiteToolsApiModel {
    */
   public getUser(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       employee.id,
       employee.isinactive,
@@ -2194,6 +2196,7 @@ export class SuiteToolsApiModel {
       employee.title`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
+      response.status = 404;
       response.message = `No user found with id of ${id}`;
     } else {
       response.data = sqlResults[0];
@@ -2212,7 +2215,7 @@ export class SuiteToolsApiModel {
     //   title: `SuiteToolsApiModel:getUsers() initiated`,
     //   details: { active: active, roles: roles, supervisors: supervisors },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       employee.id,
       employee.isinactive,

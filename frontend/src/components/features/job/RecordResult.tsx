@@ -3,7 +3,7 @@ import type { Job } from '@suiteworks/suitetools-shared';
 import { postData } from '../../../api/api';
 import { PostEndpoint } from '../../../api/types';
 import type { HttpResponse } from '../../../api/types';
-import { useAppSettingsContext } from '../../shared/context/AppSettingsContext';
+import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
 
 type Props = {
   data: Job;

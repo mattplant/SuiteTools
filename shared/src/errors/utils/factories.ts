@@ -1,3 +1,5 @@
+import type { ZodIssue } from "zod";
+
 import { NetSuiteApiError } from "../integration/netsuite-api.error";
 import { NotFoundError } from "../domain/not-found.error";
 import { SchemaValidationError } from "../domain/schema-validation.error";
@@ -22,7 +24,7 @@ export const makeNotFoundError = (
 /**
  * Factory to create a SchemaValidationError instance.
  */
-export const makeSchemaValidationError = (
-  schema: string,
-  issues: string[]
-): SchemaValidationError => new SchemaValidationError(schema, issues);
+
+export function makeSchemaValidationError(schema: string, issues: ZodIssue[]) {
+  return new SchemaValidationError(schema, issues);
+}
