@@ -34,10 +34,6 @@ UI components that can be reused across different features. These should be self
 
 - `components/shared/context/` — React context providers for managing global state, such as authentication, theme, or user preferences
 - `components/shared/criteria` — Reusable criteria components for filtering and searching
-- `components/shared/errors` — Error display components (TODO: should I use feedback instead? What about messages?)
+- `components/shared/errors` — Error display components <!-- TODO: should I use feedback instead? What about messages? -->
 - `components/shared/results` — Components for displaying results, including tables and export functionality
 - `components/shared/ui/` — Custom UI components that are not included in `flowbite-react` or other imported libraries like `react-data-grid`
-
-## License
-
-This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the [LICENSE file](LICENSE). By using this project, you agree to comply with the terms of the license.

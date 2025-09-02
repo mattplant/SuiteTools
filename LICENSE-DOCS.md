@@ -1,5 +1,14 @@
 # SuiteTools Documentation Licensing
 
+> This document is part of the SuiteTools governance set.
+> See `/docs/governance` for related policies and resources.
+
+_Last updated: September 1, 2025_
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+
 SuiteTools documentation is more than reference material—it’s a contributor-first resource designed to teach, guide, and inspire.
 To ensure these materials remain accessible and remixable across the open source ecosystem, SuiteTools applies a Creative Commons license to all developer-facing documentation, diagrams, and onboarding guides.
 
@@ -36,7 +45,7 @@ You must:
 
 ## Attribution Guidelines
 
-To reuse or reference SuiteTools documentation, please follow the formats in [docs/ATTRIBUTION.md](./docs/ATTRIBUTION.md).
+To reuse or reference SuiteTools documentation, please follow the formats in [docs/ATTRIBUTION.md](ATTRIBUTION.md).
 
 This includes Markdown-ready snippets, plain text attribution, and visual asset reuse—designed to make attribution easy and copy-pasteable.
 
@@ -61,7 +70,7 @@ These materials are licensed under [CC BY 4.0](https://creativecommons.org/licen
 
 This license does **not** apply to:
 
-- Source code files (licensed under GPL-3.0-or-later; see [`LICENSE`](./LICENSE))
+- Source code files (licensed under GPL-3.0-or-later; see [`LICENSE`](LICENSE))
 - Build scripts, configuration files, or compiled assets
 - Internal comments within source code
 - Third-party libraries or dependencies
@@ -76,7 +85,7 @@ Licensed documentation is discoverable via:
 - References to `LICENSE-DOCS.md` and `ATTRIBUTION.md` in documentation headers
 - Inclusion in curated onboarding flows and contributor guides
 
-If you're unsure whether a file is covered, check for a CC badge or consult [`docs/ATTRIBUTION.md`](./docs/ATTRIBUTION.md).
+If you're unsure whether a file is covered, check for a CC badge or consult [`docs/ATTRIBUTION.md`](ATTRIBUTION.md).
 
 Contributors are encouraged to include CC BY 4.0 badges and attribution references in new documentation files to maintain clarity and reuse consistency.
 
@@ -85,5 +94,3 @@ Contributors are encouraged to include CC BY 4.0 badges and attribution referenc
 ## License Summary
 
 This is a human-readable summary of (and not a substitute for) the full [CC BY 4.0 legal text](https://creativecommons.org/licenses/by/4.0/legalcode).
-
-_Last updated: August 30, 2025_

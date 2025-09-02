@@ -1,5 +1,11 @@
 # Linting with SuiteTools
 
+_Last updated: September 1, 2025_
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+
 This document outlines the linting stack, practices, and rule structure used across SuiteTools to ensure consistency, architectural integrity, and scalable ergonomics.
 
 Linting is central to our development workflow. It prevents errors early, enforces boundaries, and improves developer experience (DX) while reducing total cost of ownership (TCO) across the suite.
@@ -158,9 +164,3 @@ Reduce review friction and cognitive load:
 - Prettier or ESLint-equivalent rules: quotes, spacing, semicolons
 - `import/order` – Grouped imports
 - File naming conventions: kebab-case, domain-oriented folders
-
----
-
-## License
-
-This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the [LICENSE file](../LICENSE). By using this project, you agree to comply with the terms of the license.

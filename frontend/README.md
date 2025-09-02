@@ -1,44 +1,47 @@
-# SuiteTools Frontend
+# SuiteTools — Frontend Workspace
 
-<!-- License badges: keep in sync with LICENSE and LICENSE-DOCS.md -->
-[![Source License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPLv3+-blue.svg)](./LICENSE)
-[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md)
-[![Attribution Guide](https://img.shields.io/badge/Attribution%20Formats-docs%2FATTRIBUTION.md-blue)](../docs/ATTRIBUTION.md)
+_Last updated: September 1, 2025_
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
 This is the **frontend workspace** for the SuiteTools project.
 
-It provides the user interface and client-side logic for interacting with SuiteTools, built on top of the shared workspace and other internal modules. This workspace is responsible for rendering views, managing client-side state, handling user input, and communicating with backend APIs.
+It provides the user interface and client‑side logic for interacting with SuiteTools, built on top of the shared workspace and other internal modules.
+
+**Out of scope:** backend logic, server‑only modules, or shared utilities that assume a Node.js context.
 
 See the parent directory [README](../README.md) for more information about the SuiteTools project.
 
-## Structure
+## 🧱 Structure
 
 The frontend workspace is organized for clarity, modularity, and long-term maintainability. Each folder has a clear purpose and avoids ambiguous overlap with shared or backend concerns.
 
 ```plaintext
 frontend/
-├── src/          # Frontend source code
-│   ├── adapters/    # Adapters for transforming data between frontend and backend shapes
-│   │   ├── api/        # API request/response transformations
-│   ├── components/  # UI components orgarnized in a hybrid structure
-│   │   ├── features/   # Feature-specific composites
-│   │   ├── layout/     # Top-level layouts (AppLayout, Header, Footer)
-│   │   └── shared/     # Shared components
-│   │       ├── context/   # React contexts + providers for global/cross‑feature state
-│   │       ├── errors/    # Error display components
-│   │       └── ui/        # Reusable UI primitives (buttons, modals, etc.)
-│   ├── hooks/       # Feature‑agnostic UI hooks (can consume contexts)
-│   ├── lib/         # Frontend-specific utilities and helpers
-│   │   └── netsuite/   # NetSuite-specific utilities
-│   ├── pages/       # Top-level route views
-│   ├── routes/      # App routing configuration
-│   ├── theme/       # Flowbite theme extensions and custom styles
-│   └── utils/       # Frontend-specific utility functions and helpers
+├── src/             # Frontend source code
+│   ├── adapters/       # 🛠 SuiteTools-specific — transforms data between frontend & backend
+│   │   ├── api/           # API request/response transformations
+│   ├── components/     # 🛠 SuiteTools-specific — hybrid UI structure
+│   │   ├── features/      # Feature-specific composites
+│   │   ├── layout/        # Top-level layouts (AppLayout, Header, Footer)
+│   │   └── shared/        # Shared components
+│   │       ├── context/      # React contexts + providers for global/cross-feature state
+│   │       ├── errors/       # Error display components
+│   │       └── ui/           # Reusable UI primitives
+│   ├── hooks/          # 🛠 SuiteTools-specific — feature‑agnostic UI hooks
+│   ├── lib/            # 🛠 SuiteTools-specific — frontend utilities
+│   │   └── netsuite/      # NetSuite-specific utilities
+│   ├── pages/          # Top-level route views
+│   ├── routes/         # App routing configuration
+│   ├── theme/          # Flowbite theme extensions & custom styles
+│   └── utils/          # Frontend-specific utility functions
 ├── .gitignore          # Git ignore file for frontend
 ├── .prettierignore     # Prettier ignore
 ├── .prettierrc         # Prettier configuration
 ├── index.html          # Main HTML entry point
-├── LICENSE             # The GPL-3.0-or-later license file
+├── LICENSE             # GPL-3.0-or-later
 ├── package.json        # Yarn workspace definition & frontend scripts
 ├── postcss.config.js   # PostCSS configuration
 ├── README.md           # This README file
@@ -57,7 +60,7 @@ One adapter per schema, lives in /adapters.
 
 ### 📁 `components/`
 
-For a deep dive into our hybrid component structure, see [COMPONENTS.md](./COMPONENTS.md).
+For a deep dive into our hybrid component structure, see [COMPONENTS.md](./docs/COMPONENTS.md).
 
 ### 📁 `lib/`
 
@@ -113,7 +116,7 @@ Utility functions and helpers that are specific to the frontend. These should no
 - `utils/concurrency.ts` — functionality to support NetSuite concurrency reporting
 - `utils/date.ts` — Date formatting and parsing
 
-## Design Principles
+## 🎯 Design Principles
 
 - **Type Safety First** — All modules are written in TypeScript.
 - **Frontend-Only Logic** — Avoid importing backend or shared modules that assume Node.js or server context.
@@ -167,15 +170,9 @@ This folder contains **custom React hooks** (`useX`) used in the SuiteTools UI l
 - `useInlineMessage` → Reads from `InlineMessageContext` for showing temporary messages.
 - `useErrorBoundaryTrigger` → Schedules an error to be thrown in render so `AppErrorBoundary` can show the dev overlay in **development mode**.
 
-#### React HookGuidelines
+#### React Hook Guidelines
 
 1. **One hook per file** — keep names and file contents aligned.
 2. **Keep hooks UI‑specific** — avoid importing server‑only modules or schema code.
 3. **Prefer composition over config flags** — build small hooks and combine them in components.
 4. **Type everything** — especially arguments and return values, for DX consistency.
-
-> 📚 This workspace is part of the SuiteTools monorepo.
-> Licensing and contributor guidelines are defined at the [root README](../README.md).
-> Documentation is covered by [CC BY 4.0](../LICENSE-DOCS.md); source code by [GPL-3.0-or-later](../LICENSE).
-
-_Last updated: August 30, 2025_

@@ -33,13 +33,17 @@ Use this guide to choose meaningful `type` and `scope` labels for your commit me
 
 Describe the **nature of the change**.
 
-| Type     | Purpose                                                       | Example Commit Title                                      |
-|----------|---------------------------------------------------------------|-----------------------------------------------------------|
-| feat     | Introduces a new feature or capability                        | `#42 feat(validation): infer type from custom schema`     |
-| fix      | Corrects a bug or faulty behavior                             | `#18 fix(frontend): debounce search input`                |
-| chore    | Routine tasks, tooling updates, dependency changes            | `#77 chore(build): bump esbuild to latest version`        |
-| docs     | Updates documentation or inline comments                      | `#30 docs(shared): clarify schema validation rules`       |
-| refactor | Internal restructuring without functional changes             | `#21 refactor(backend): isolate error parsing logic`      |
+| Type     | Purpose                                              | Example Commit Title                                   |
+|----------|------------------------------------------------------|--------------------------------------------------------|
+| feat     | Introduces a new feature or capability               | `#11 feat(validation): infer type from custom schema`  |
+| fix      | Corrects a bug or faulty behavior                    | `#12 fix(frontend): fix spacing issue in footer`       |
+| docs     | Updates documentation or inline comments             | `#13 docs(shared): add governance documentation`       |
+| refactor | Internal restructuring without functional changes    | `#14 refactor(backend): isolate parsing logic issue`   |
+| perf     | Performance improvements                             | `#15 perf(backend): optimize data processing loop`     |
+| style    | Code style changes that do not affect functionality  | `#16 style(shared): apply formatting rules`            |
+| chore    | Routine tasks, tooling updates, dependency changes   | `#17 chore(build): bump eslint to latest version`      |
+
+**Why Types?** They drive changelog automation, semantic versioning, and help reviewers instantly understand the nature of a change.
 
 ---
 
@@ -47,16 +51,18 @@ Describe the **nature of the change**.
 
 Specify the **affected area of the suite**.
 
-| Scope     | Description                                                   |
-|-----------|---------------------------------------------------------------|
-| validation| Zod schemas, custom rules, inference utilities                |
-| linting   | ESLint config, rulesets, boundary enforcement logic           |
-| frontend  | UI rendering, user interaction, SuiteScript client-side code  |
-| backend   | Server-side SuiteScript, metadata loading, record access      |
-| shared    | Common types, utilities, or schema logic used across layers   |
-| docs      | Contributor guides, onboarding materials, markdown updates    |
-| infra     | CI/CD pipelines, environment setup, deployment configs        |
-| build     | Bundling, release tasks, build config and tooling             |
+| Scope      | Description                                                   |
+|------------|---------------------------------------------------------------|
+| frontend   | UI rendering, user interaction, SuiteScript client-side code  |
+| backend    | Server-side SuiteScript, metadata loading, record access      |
+| shared     | Common types, utilities, or schema logic used across layers   |
+| validation | Zod schemas, custom rules, inference utilities                |
+| linting    | ESLint config, rulesets, boundary enforcement logic           |
+| build      | Bundling, release tasks, build config and tooling             |
+| infra      | CI/CD pipelines, environment setup, deployment configs        |
+| docs       | Contributor guides, onboarding materials, markdown updates    |
+
+**Why Scopes?** They pinpoint the affected area of the suite, making it easier to review and trace changes.
 
 ---
 

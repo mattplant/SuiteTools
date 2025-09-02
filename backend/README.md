@@ -1,15 +1,17 @@
-# SuiteTools
+# SuiteTools — Backend Workspace
 
-<!-- License badges: keep in sync with LICENSE and LICENSE-DOCS.md -->
-[![Source License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPLv3+-blue.svg)](./LICENSE)
-[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md)
-[![Attribution Guide](https://img.shields.io/badge/Attribution%20Formats-docs%2FATTRIBUTION.md-blue)](../docs/ATTRIBUTION.md)
+_Last updated: September 1, 2025_
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
 This is the **backend workspace** for the SuiteTools project.
 
-The backend workspace provides the server-side logic, API endpoints, and data processing capabilities for SuiteTools to connect to NetSuite.
 
----
+It contains all server‑side logic, API endpoints, and data processing for SuiteTools’ NetSuite integration.
+
+**Out of scope:** frontend assets, shared UI modules, or client‑only utilities.
 
 ## 🧱 Structure
 
@@ -17,17 +19,17 @@ SuiteTools uses the standard NetSuite SuiteCloud Development Framework (SDF) str
 
 ```plaintext
 backend/
-├── src/     # Backend Source code
-│   ├── FileCabinet/
+├── src/     # Backend source code
+│   ├── FileCabinet/   # 📦 SDF standard
 │   │   └── SuiteScripts/
-│   │       └── SuiteTools/   # SuiteTools' SuiteScripts (JavaScript)
-│   ├── Objects/       # SuiteTools' NetSuite object definitions
-│   ├── TypeScript/    # SuiteTools' SuiteScripts (TypeScript)
-│   ├── deploy.xml     # SDF deployment configuration
-│   └── manifest.xml   # SDF manifest file
-├── LICENSE        # The GPL-3.0-or-later license file
-├── project.json   # SDF project definition
-├── package.json   # Yarn workspace definition & backend scripts
+│   │       └── SuiteTools/   # 🛠 SuiteTools-specific JavaScript
+│   ├── Objects/       # 📦 SDF standard — NetSuite object definitions
+│   ├── TypeScript/    # 🛠 SuiteTools-specific TypeScript (compiled to JS)
+│   ├── deploy.xml     # 📦 SDF standard — deployment config
+│   └── manifest.xml   # 📦 SDF standard — manifest file
+├── LICENSE            # GPL-3.0-or-later
+├── project.json       # SDF project definition
+├── package.json       # Yarn workspace definition & backend scripts
 └── README.md      # This README file
 ```
 
@@ -35,14 +37,8 @@ backend/
 
 ---
 
-## Design Principles
+## 🎯 Design Principles
 
 - **Type Safety First** — All modules are written in TypeScript.
 - **Backend-Only Logic** — Avoid importing frontend or shared modules.
 - **DX Matters** — All code should be easy to read, test, and onboard into.
-
-> 📚 This workspace is part of the SuiteTools monorepo.
-> Licensing and contributor guidelines are defined at the [root README](../README.md).
-> Documentation is covered by [CC BY 4.0](../LICENSE-DOCS.md); source code by [GPL-3.0-or-later](../LICENSE).
-
-_Last updated: August 30, 2025_

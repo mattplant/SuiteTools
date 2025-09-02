@@ -1,12 +1,17 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
+> This document is part of the SuiteTools governance set.
+> See `/docs/governance` for related policies and resources.
+
+_Last updated: September 1, 2025_
+
 SuiteTools is licensed under the GNU General Public License v3.0 or later (GPL-3.0-or-later).
 You may copy, modify, and distribute this software under the terms of that license.
 See below for full terms, or visit <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 This license applies to SuiteTools source code only.
 Documentation, diagrams, and onboarding materials are licensed separately under [CC BY 4.0](./LICENSE-DOCS.md).
-For attribution formats and reuse guidelines, see [docs/ATTRIBUTION.md](./docs/ATTRIBUTION.md).
+For attribution formats and reuse guidelines, see [ATTRIBUTION.md](./ATTRIBUTION.md).
 
 ----------------------------------------------------------------------
 

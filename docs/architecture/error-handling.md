@@ -1,4 +1,14 @@
-# Error Handling & Reporting
+# Error Handling
+
+_A Unified Lifecycle for Predictable, Discoverable, and Safe Error Management_
+
+_Last updated: September 1, 2025_
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+
+<!-- TODO: split the doc into multiple pages -->
 
 SuiteTools uses a **single, predictable pattern** for catching, normalizing, and reporting errors across the suite for **robust error management** and **clear, user‑friendly feedback**.
 
@@ -535,5 +545,3 @@ try {
 - Keeps async and render‑time error handling consistent.
 - Avoids "invisible" async failures that never surface in the UI.
 - Ensures the error flows through `handleError()` --> display --> report.
-
-_Last updated: August 30, 2025_

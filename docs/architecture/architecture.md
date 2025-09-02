@@ -1,26 +1,54 @@
 # SuiteTools Architecture: A Documentation-Led Guide to Clarity
 
-This document outlines SuiteTools’ architecture—its structure, rationale, and the principles and conventions that keep it maintainable.
+_The Structural Blueprint for Predictable, Discoverable, and Sustainable Development_
 
-Originally drafted as my personal reference for building and evolving SuiteTools, it now also serves as a resource for other end-users to confidently understand and customize SuiteTools.
+_Last updated: September 1, 2025_
 
-SuiteTools is licensed GPL-3.0-or-later. See [LICENSE file](../LICENSE) for terms on use, modification, and redistribution.
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+
+This guide defines the architecture of SuiteTools — its structure, rationale, and the suite‑wide principles and conventions that ensure long‑term maintainability.
+
+Originally drafted as a personal reference during SuiteTools’ evolution, it now serves as a living resource enabling end‑users to confidently understand, extend, and customize the suite.
+
+## License
+
+SuiteTools is released under a dual‑license model to ensure both clarity and flexibility in use:
+
+- **Source code** — Licensed under [GPL‑3.0‑or‑later](../../LICENSE).
+- **Documentation** — Licensed under [CC BY 4.0](../../LICENSE-DOCS.md), unless otherwise noted.
+
+By using, modifying, or redistributing this project, you agree to comply with the applicable license terms.
+For full details, see the [LICENSE](../../LICENSE) and [LICENSE‑DOCS.md](../../LICENSE-DOCS.md) files.
 
 ---
 
-## Core design principles
+## Architecture Design Principles
 
-- **Types-first architecture:** Models defined once, reused everywhere. Runtime validation matches types.
-- **Scalable:** Designed to handle growing complexity as new features and integrations are added.
+SuiteTools is built on seven architectural principles that guide every workspace, module, and contributor experience. From layered boundaries to reproducible governance, these foundations ensure clarity, trust, and long-term maintainability.
+
+### Architecture & Structure
+
+SuiteTools is organized into clearly defined layers, each with scoped responsibilities and shared patterns. These principles ensure modularity, discoverability, and architectural clarity.
+
+- **Layered workspace boundaries:** Each workspace belongs to a clear architectural layer, enforces scoped contracts, and avoids cross-contamination—centralizing shared logic where appropriate.
+- **Suite-wide consistency and composability:** Small, reusable utilities, shared schemas, and unified tooling ensure modularity, clarity, and a uniform developer experience across workspaces.
+- **Documentation-led clarity over cleverness:** SuiteTools favors simple, well-documented helpers over fragile “magic,” using docs to shape architecture and ensure discoverability.
+
+### Experience & Performance
+
+SuiteTools is designed with both developers and end-users in mind—balancing intuitive interfaces with scalable, NetSuite-aware performance.
+
 - **User-centric:** Prioritizes user experience with intuitive interfaces and responsive design.
-- **Layered modularity:** Each workspace fits into a clear architectural layer, with shared logic centralized and responsibilities scoped.
-- **Composable building blocks:** Small, reusable utilities over one-off implementations.
-- **Performance-conscious:** Optimized for NetSuite’s constraints, with efficient data handling and minimal API calls.
-- **Validate aggressively:** Validate at boundaries; keep core logic on trusted data.
-- **Cross-workspace consistency:** Shared types, validation schemas, and utility functions to avoid duplication and ensure uniformity.
-- **Consistent tooling:** Shared linting, formatting, and build tools across workspaces.
-- **Developer clarity over cleverness:** Prefer simple, documented helpers to fragile “magic.”
-- **Documentation-led clarity:** Written documentation shapes architectural decisions, enforces clarity across workspaces, and supports core design principles.
+- **Scalable and performance‑conscious:** SuiteTools is designed to grow with complexity while remaining efficient within NetSuite’s constraints.
+
+### Quality & Maintainability
+
+SuiteTools enforces trust and long-term maintainability through typed models, schema-driven validation, and transparent governance.
+
+- **Typed, schema‑driven, and validation‑first:** Enforces clarity through reusable models, schema-led flows, and strict boundary validation—ensuring trusted data.
+- **Governance by design:** Licensing, attribution, and compliance are modeled clearly and reproducibly.
 
 ---
 
@@ -46,14 +74,14 @@ SuiteTools is licensed GPL-3.0-or-later. See [LICENSE file](../LICENSE) for term
 
 ---
 
-## Suite-wide concerns
+## Suite-Wide Enforcement Patterns
 
-Certain patterns and practices are applied across all workspaces to preserve consistency and maintainability:
+Certain patterns and enforcement strategies apply across all workspaces to preserve architectural consistency, contributor clarity, and long-term maintainability.
 
-- **Validation and types:** Centralized schema strategy with layered transforms
-- **Error modeling:** Shared taxonomy, codes, and mapping strategy
-- **Linting and conventions:** Enforced boundaries and type safety expectations
-- TODO: **Dependency rules:** Workspace-level import constraints with tooling enforcement
+- **Validation and types:** Centralized schema strategy with layered transforms and runtime alignment.
+- **Error modeling:** Shared taxonomy, error codes, and mapping utilities for consistent reporting.
+- **Linting and conventions:** Enforced boundaries, type safety expectations, and formatting standards.
+- TODO: **Dependency rules:** Workspace-level import constraints enforced via tooling (e.g. custom lint rules).
 
 ---
 
@@ -121,13 +149,13 @@ Maintaining these boundaries protects layering, reduces cognitive load for contr
 | `backend/`  | `shared/`            | `frontend/`                   |
 | `shared/`   | (none internally)    | `frontend/`, `backend/`       |
 
-> TODO: To preserve suite-wide clarity and layered modularity, strict import boundaries I plan to enforce via  TypeScript path aliases and ESLint rules that will surface violations during development.
+> TODO: To preserve suite-wide clarity and layered modularity, strict import boundaries I plan to enforce via TypeScript path aliases and ESLint rules that will surface violations during development.
 
 #### Workspace Management Details
 
 SuiteTools uses **Yarn Berry** (v3+) with **Plug’n’Play** and **workspaces** to manage its modular monorepo and streamline development workflows.
 
-For detailed yarn usage and configuration, see [docs/yarn.md](./yarn.md).
+For detailed yarn usage and configuration, see [Yarn Configuration and Usage](../guides/yarn.md).
 
 ---
 
@@ -139,7 +167,7 @@ Linting is wired into our suite-wide tooling strategy:
 - **Workspace-specific extensions** allow domain-aware enforcement where needed.
 - **Custom rules** codify architecture: blocking cross-layer imports, ensuring validation symmetry, and guiding type usage.
 
-For detailed rule breakdowns and config practices, see [docs/linting.md](./linting.md).
+For detailed rule breakdowns and config practices, see [docs/linting.md](../guides/linting.md).
 
 ---
 
@@ -158,7 +186,7 @@ Prefer pure functions for transforms. Keep IO (HTTP, NetSuite API) at the edges.
 
 SuiteTools enforces consistent, layered validation and type safety across packages. This section documents schemas, assertion helpers, and error handling conventions.
 
-> TODO: Create [validation.md](./valiation.md) to document including:
+> TODO: Create [validation.md](./validation.md) to document including:
 >
 >- **Schemas:** Use Zod for runtime validation; schemas live in shared/validation.
 >   - **Single source of truth:** Schemas live in shared/, with typed inference for compile-time parity.
@@ -223,13 +251,15 @@ parseOr(schema, value, fallback) // returns typed value or fallback
 
 ---
 
-## Error Handling & Reporting
+## Error Handling
 
-SuiteTools applies a unified error handling strategy across all workspaces to ensure predictable behavior and a safe user experience in production.
+SuiteTools applies a centralized error strategy for predictable behavior and safe recovery across all workspaces.
 
-Errors are classified into well‑defined types, surfaced consistently through React error boundaries and overlays, and reported via a central utility to support both development diagnostics and future telemetry.
+- Errors flow through handleError() from top-level try/catch blocks and global hooks.
+- Development surfaces overlays; production prefers silent logging and rethrowing.
+- Recovery is intentional—no double-handling.
 
-For detailed patterns, utilities, and contributor guidelines—including error taxonomy, escalation flows, and code examples—see the dedicated [Error Handling & Reporting Guide](./error.md).
+See the [Error Handling Guide](./error-handling.md) for patterns and utilities.
 
 ---
 
@@ -266,21 +296,3 @@ SuiteTools uses consistent versioning and changelog documentation:
 - Versioning follows [SemVer](https://semver.org/) per suite-wide tagging.
 - Breaking changes must document impact and migration path in `CHANGELOG.md`.
 - Consumers are notified through release notes and update summaries.
-
----
-
-## Related documents
-
-- [docs/installation.md](./installation.md) — setup and deployment
-- [docs/customizing.md](./customizing.md) — extension points and patterns
-- [docs/linting.md](./linting.md) - tooling overview, config composition, and enforcement strategy
-- [docs/error.md](./error.md) — error handling and reporting strategy
-- [docs/vscode.md](./vscode.md) — editor setup and recommended tasks
-- > TODO: [CHANGELOG.md](../CHANGELOG.md) — suite-wide changelog
-- > TODO: docs/validation.md — schemas, assertions, and error handling strategy
-
----
-
-## License
-
-This project is licensed under the GPL-3.0-or-later license. For detailed license terms and conditions, refer to the [LICENSE file](../LICENSE). By using this project, you agree to comply with the terms of the license.

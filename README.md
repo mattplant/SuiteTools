@@ -1,9 +1,10 @@
 # SuiteTools README
 
-<!-- License badges: keep in sync with LICENSE and LICENSE-DOCS.md -->
-[![Source License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPLv3+-blue.svg)](./LICENSE)
-[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](./LICENSE-DOCS.md)
-[![Attribution Guide](https://img.shields.io/badge/Attribution%20Formats-docs%2FATTRIBUTION.md-blue)](./docs/ATTRIBUTION.md)
+_Last updated: August 31, 2025_
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
 Welcome to the **SuiteTools** — *the missing NetSuite tools* — monorepo! This repository contains a cohesive suite of tools designed to enhance the NetSuite admin experience, bridging gaps in the native UI and delivering faster workflows, richer insights, and an intuitive experience.
 
@@ -95,7 +96,7 @@ For detailed instructions on customizing SuiteTools, see the [Customizing Guide]
 
 ## Documentation
 
-See [SuiteTools Monorepo Documentation](docs/index.md) for suite-wide guides and cross-cutting patterns that apply across all workspaces.
+See [SuiteTools Monorepo Documentation](docs/README.md) for suite-wide guides and cross-cutting patterns that apply across all workspaces.
 
 Note that each workspace also has its own documentation.
 
@@ -129,5 +130,3 @@ This safeguards legal clarity for our team, downstream users, and the open‑sou
 #### If You Find a License Violation
 
 If you discover a direct or transitive dependency that is **GPLv3‑incompatible**, please raise it immediately via an email, issue or pull request. Your vigilance helps keep SuiteTools safe, compliant, and welcoming — thank you for protecting our project’s integrity.
-
-_Last updated: August 30, 2025_
