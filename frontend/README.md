@@ -1,25 +1,40 @@
 # SuiteTools — Frontend Workspace
 
-_Last updated: September 1, 2025_
+Last updated: September 22, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
 [![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
-This is the **frontend workspace** for the SuiteTools project.
+---
 
-It provides the user interface and client‑side logic for interacting with SuiteTools, built on top of the shared workspace and other internal modules.
+## 🎯 Purpose & Scope
 
-**Out of scope:** backend logic, server‑only modules, or shared utilities that assume a Node.js context.
+This workspace provides the SuiteTools frontend — the user interface and client‑side logic for interacting with SuiteTools.
+It builds on the shared workspace and internal modules to deliver composable, type‑safe views.
+
+**Out of scope:** backend logic, server‑only modules, or shared utilities.
 
 See the parent directory [README](../README.md) for more information about the SuiteTools project.
 
-## 🧱 Structure
+---
+
+## 🧱 Design Principles
+
+- **Type Safety First** — All modules are written in TypeScript.
+- **Frontend-Only Logic** — Avoid importing backend or shared modules that assume Node.js or server context.
+- **Composable Views** — Pages should be composed from reusable components and hooks, not monolithic logic.
+- **DX Matters** — All code should be easy to read, test, and onboard into.
+
+---
+
+## 📐 Structure
 
 The frontend workspace is organized for clarity, modularity, and long-term maintainability. Each folder has a clear purpose and avoids ambiguous overlap with shared or backend concerns.
 
 ```plaintext
 frontend/
+├── docs/            # Frontend documentation
 ├── src/             # Frontend source code
 │   ├── adapters/       # 🛠 SuiteTools-specific — transforms data between frontend & backend
 │   │   ├── api/           # API request/response transformations
@@ -38,8 +53,6 @@ frontend/
 │   ├── theme/          # Flowbite theme extensions & custom styles
 │   └── utils/          # Frontend-specific utility functions
 ├── .gitignore          # Git ignore file for frontend
-├── .prettierignore     # Prettier ignore
-├── .prettierrc         # Prettier configuration
 ├── index.html          # Main HTML entry point
 ├── LICENSE             # GPL-3.0-or-later
 ├── package.json        # Yarn workspace definition & frontend scripts
@@ -116,12 +129,46 @@ Utility functions and helpers that are specific to the frontend. These should no
 - `utils/concurrency.ts` — functionality to support NetSuite concurrency reporting
 - `utils/date.ts` — Date formatting and parsing
 
-## 🎯 Design Principles
+---
 
-- **Type Safety First** — All modules are written in TypeScript.
-- **Frontend-Only Logic** — Avoid importing backend or shared modules that assume Node.js or server context.
-- **Composable Views** — Pages should be composed from reusable components and hooks, not monolithic logic.
-- **DX Matters** — All code should be easy to read, test, and onboard into.
+## 📦 Dependencies
+
+This workspace requires the following tools and libraries:
+
+- **Yarn (Berry)** — v4.9.2 (workspace and package manager)
+
+### Runtime Dependencies
+
+Installed via `package.json`:
+
+- **React** — 18.3.x (UI library)
+- **React DOM** — 18.3.x (DOM renderer)
+- **React Router DOM** — 6.22.x (routing)
+- **React Hook Form** — ^7.60.x (form state management)
+- **Flowbite** — ^3.1.x (UI components)
+- **Flowbite React** — 0.10.x (React bindings for Flowbite)
+- **React Data Grid** — 7.0.0‑beta.x (data grid component)
+- **D3** — 7.9.x (data visualization)
+- **@suiteworks/suitetools-shared** — workspace module (shared logic)
+
+### Development Dependencies
+
+Installed via `package.json`:
+
+- **TypeScript** — 5.7.x (type safety)
+- **Vite** — 4.5.x (build tool)
+- **@vitejs/plugin-react** — 4.5.x (React plugin for Vite)
+- **Tailwind CSS** — 3.3.x (utility‑first styling)
+- **PostCSS** — 8.5.x (CSS transformations)
+  - `postcss-import`, `postcss-nested`, `postcss-nesting` (CSS preprocessing)
+- **Autoprefixer** — 10.4.x (CSS vendor prefixing)
+- **ESLint + plugins** — linting rules (`eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-import`, `eslint-plugin-react-refresh`)
+- **Prettier** — 3.3.x (code formatting)
+- **@typescript-eslint/eslint-plugin / parser** — TypeScript linting support
+- **@types/react / @types/react-dom / @types/d3** — type definitions
+- **Globals** — ^16.x (ESLint globals config)
+
+---
 
 ## React
 
@@ -176,3 +223,10 @@ This folder contains **custom React hooks** (`useX`) used in the SuiteTools UI l
 2. **Keep hooks UI‑specific** — avoid importing server‑only modules or schema code.
 3. **Prefer composition over config flags** — build small hooks and combine them in components.
 4. **Type everything** — especially arguments and return values, for DX consistency.
+
+---
+
+## 🗒️ Stewardship Notes
+
+- Update when React, Vite, or Tailwind versions change
+- Review annually for structure drift and component patterns

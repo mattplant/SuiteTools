@@ -1,103 +1,121 @@
 # 📘 SuiteTools Monorepo Documentation
 
-_Last updated: September 1, 2025_
+> Part of the SuiteTools governance set.
+> See `/docs/governance` for related policies and resources.
+
+Last updated: September 22, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
 [![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](./../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
-Welcome to the SuiteTools **Monorepo Documentation**—a living system of suite-wide knowledge, reproducible design principles, and cross-cutting patterns built to support every workspace with clarity and intent.
+---
 
-This documentation is not an accessory to the codebase—it’s a foundational layer of SuiteTools: architecture in prose, stewarded for discoverability, transparency, and long-term maintainability.
+## 🎯 Purpose & Scope
 
-Modular by design, this living system spans setup, governance, attribution, and workspace-specific implementation. Whether onboarding, developing within a workspace, or refining system design, clarity is embedded in every page.
+This README is the **entry point** to SuiteTools documentation.
+It orients contributors, maintainers, and future developers to the suite‑wide documentation system and how to navigate it.
 
-For a high-level overview of SuiteTools’ philosophy and modular architecture, see the [Project README](../README.md).
-
-In addition to suite-wide guides, each workspace maintains its own documentation—focused on implementation details, customization patterns, and architectural responsibilities within the suite.
+> **This documentation is not an accessory to the codebase—it’s a foundational layer of SuiteTools: architecture in prose, stewarded for discoverability, transparency, and long‑term maintainability.**
 
 ---
 
-## Suite-Wide Documentation
+## 📖 About This Documentation
 
-The following suite-wide guides form the backbone of SuiteTools—supporting reproducibility, onboarding, and architectural clarity across all workspaces.
+SuiteTools documentation is **modular by design**. It spans:
 
-### 📜 Governance & Licensing
+- **Governance** — enforceable standards, licensing, and stewardship practices
+- **Architecture** — cross‑cutting patterns, boundaries, and documentation standards
+- **Developer Guides** — practical, task‑oriented instructions for setup, customization, and release
+- **Workspace Docs** — frontend, backend, and shared module responsibilities
 
-- [Attribution Guide](../ATTRIBUTION.md) – Reusable attribution formats for documentation and visuals
-- [Code of Conduct](../CODE_OF_CONDUCT.md) – Community standards and expectations
-- [Contributing Guide](../CONTRIBUTING.md) – How to propose changes and contribute
-- [Governance](./governance/GOVERNANCE.md) – Principles, stewardship model, and workspace boundaries
-- [Source Code License](../LICENSE) – GPL‑3.0‑or‑later
-- [Documentation License](../LICENSE-DOCS.md) – CC BY 4.0
-- [Notice](../NOTICE) – Third‑party code and attribution obligations
-- [Security Policy](../SECURITY.md) – Security policy and reporting guidelines
-- [Style Guide](../STYLE.md) – Suite‑wide style guide (prose + code)
-
-### 🏛 Architecture
-
-- [Architecture Overview](./architecture/architecture.md) – A Documentation-Led Guide to Clarity
-- [SuiteTools Documentation as Architecture](./architecture/docs-architecture.md) Living Standards for Structure, Style, and Stewardship
-- [Error Handling](./architecture/error-handling.md) – A Unified Lifecycle for Predictable, Discoverable, and Safe Error Management
-
-### 📚 Guides
-
-- [Installation Guide](./guides/installation.md) – Setup and deployment to your NetSuite account
-- [Customizing Guide](./guides/customizing.md) – Developing and deploying SuiteTools-aligned customizations
-- [Linting](./guides/linting.md) – Tooling overview, config composition, and enforcement strategy
-- [VS Code](./guides/vscode.md) – Editor setup and recommended tasks
-- [Yarn Configuration](./guides/yarn.md) – Suite-wide package management and workspace boundaries
+For SuiteTools’ philosophy and modular architecture, see the [Project README](../README.md).
+For workspace‑specific details, see the [Frontend](../frontend/README.md), [Backend](../backend/README.md), and [Shared](../shared/README.md).
 
 ---
 
-## Other Documentation
+## 🗂️ Documentation Map
+
+| Layer            | Purpose                                | Key Docs |
+|------------------|----------------------------------------|----------|
+| **Governance**   | Enforceable standards & policies       | [Governance Index](./governance/README.md), [Attribution](../ATTRIBUTION.md), [Emoji Usage](./governance/emoji.md), [Badge Clusters](./governance/standards/badge-clusters.md) |
+| **Architecture** | Philosophy & cross‑cutting rules       | [Documentation as Architecture](./architecture/docs-architecture.md), [Error Handling](./architecture/error-handling-architecture.md), [Validation & Type Safety](./architecture/validation.md), [Monorepo & Workspace Boundaries](./architecture/monorepo-and-workspace-boundaries.md) |
+| **Developer Guides** | Practical, task‑oriented setup & workflows | [Installation](./guides/installation.md), [Customizing](./guides/customizing.md), [Build & Release](./guides/build-release.md), [Linting](./guides/linting.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md) |
+| **Workspaces**   | Implementation details                 | [Frontend](../frontend/README.md), [Backend](../backend/README.md), [Shared](../shared/README.md) |
+| **Reference**    | Legal & versioning anchors             | [LICENSE](../LICENSE), [LICENSE-DOCS](../LICENSE-DOCS.md), [License Compliance](./governance/license-compliance.md), [CHANGELOG](../CHANGELOG.md) |
+
+---
+
+## 📚 Suite‑Wide Documentation
+
+These guides form the backbone of SuiteTools documentation.
+They provide suite‑wide standards, reproducible patterns, and onboarding clarity across all workspaces.
+
+### 📜 Governance
+
+Enforceable standards, licensing, and stewardship practices.
+
+| Artifact | Purpose | Scope |
+|----------|---------|-------|
+| [Attribution Guide](../ATTRIBUTION.md) | Reusable attribution formats for documentation and visuals | Legal |
+| [Code of Conduct](../CODE_OF_CONDUCT.md) | Community standards and expectations | Community |
+| [Governance](./governance/GOVERNANCE.md) | Principles, stewardship roles, and decision‑making process | Project‑wide |
+| [Source Code License](../LICENSE) | License terms for SuiteTools source code | Legal |
+| [Documentation License](../LICENSE-DOCS.md) | License terms for SuiteTools documentation | Legal |
+| [NOTICE](../NOTICE) | Required legal notices and attributions | Legal |
+| [License Compliance](./governance/license-compliance.md) | Licensing model, attribution rules, and contributor responsibilities | Legal |
+| [Security Policy](../SECURITY.md) | Security policy and reporting guidelines. | Security |
+| [Style Guide](./governance/STYLE.md) | Suite‑wide style guide (prose + code) | Micro‑level |
+
+See the [Governance Index](./governance/README.md) for the full set.
+
+#### 📂 Governance Standards
+
+Enforceable governance standards — including naming conventions, licensing headers, and compliance requirements — are maintained in the **[Standards Index](./governance/standards/README.md)**.
+
+### 📐 Architecture
+
+Cross‑cutting patterns, boundaries, and documentation standards.
+
+<!-- “why + rules” layer -->
+- [Architecture Overview](./architecture/architecture.md) – Documentation‑led guide to clarity
+- [Documentation as Architecture](./architecture/docs-architecture.md) – Living standards for structure, style, and stewardship
+- [Error Handling](./architecture/error-handling-architecture.md) – Unified lifecycle for predictable and safe error management
+- [Monorepo & Workspace Boundaries](./architecture/monorepo-and-workspace-boundaries.md) – Structure, benefits, and enforcement rules
+- [Validation & Type Safety](./architecture/validation.md) – Suite‑wide schema and type strategy
+
+### 🧑‍💻 Developer Guides
+
+Practical, task‑oriented instructions for contributors.
+
+<!-- “how + steps” layer -->
+- **Setup**: [Installation](./guides/installation.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md)
+- **Development**: [Customizing](./guides/customizing.md), [Linting](./guides/linting.md)
+- **Release**: [Build & Release](./guides/build-release.md)
+
+---
+
+## 📖 Other Documentation
 
 ### Project Overview
 
-For a suite-wide introduction to SuiteTools—its philosophy, modular architecture, and onboarding standards—see the [Project README](../README.md).
+For a suite‑wide introduction to SuiteTools—its philosophy, modular architecture, and onboarding standards—see the [Project README](../README.md).
 It provides a high-level overview of the system’s structure, licensing model, and developer-facing documentation practices.
+
+### Reference Documents
+
+Root‑level files that provide legal and versioning anchors:
+
+- [LICENSE](../LICENSE) – Source code license (GPL‑3.0‑or‑later)
+- [LICENSE‑DOCS](../LICENSE-DOCS.md) – Documentation license (CC BY 4.0)
+- [CHANGELOG.md](../CHANGELOG.md) – Versioned updates across the monorepo
 
 ### Workspace Documentation
 
-Each workspace maintains its own documentation, focused on implementation details, customization patterns, and architectural responsibilities within the suite:
+Each workspace maintains its own documentation, focused on implementation details, customization patterns, and architectural responsibilities:
 
-- [Frontend](../frontend/README.md)
-- [Backend](../backend/README.md)
-- [Shared](../shared/README.md)
+- [Frontend](../frontend/README.md) – UI components and client‑side logic
+- [Backend](../backend/README.md) – NetSuite SDF project and server‑side logic
+- [Shared](../shared/README.md) – Types, schemas, and utilities shared across workspaces
 
-These documents complement the suite-wide system by surfacing workspace-specific logic, constraints, and integration points—helping developers understand how each part contributes to the whole.
-
----
-
-## Governance
-
-> **Governance Philosophy**
-> SuiteTools governance is built on empathy, reproducibility, and architectural clarity.
-> Decisions are made upstream-first, documented with context, and designed to empower future contributors—not just protect the present.
-
-SuiteTools is actively maintained by its core steward. While external contributions are currently paused, the system is architected for future contributors—designed to be discoverable, reproducible, and welcoming by default.
-
-For stewardship principles, contribution boundaries, and governance structure, see the [Governance document](../GOVERNANCE.md).
-
----
-
-## Licensing Model
-
-### License Structure
-
-**SuiteTools separates source and documentation licensing to balance copyleft protections with remixable, attribution-friendly docs.**
-
-| Component      | License                          | Purpose                                        |
-|----------------|----------------------------------|------------------------------------------------|
-| Source Code    | [GPL-3.0-or-later](../LICENSE)   | Ensures strong copyleft protections            |
-| Documentation  | [CC BY 4.0](../LICENSE-DOCS.md)  | Encourages reuse and remixing with attribution |
-
-Please preserve SPDX headers and NOTICE references when referencing SuiteTools in your own work.
-
-### Attribution Badges
-
-Badge clusters are used throughout SuiteTools to signal licensing, attribution, and compliance status—reinforcing visual discoverability and suite-wide stewardship.
-
-Each badge is a compact signal of reuse boundaries, contributor intent, and documentation integrity.
-
-For formats, usage patterns, and integration guidance, see the [Attribution Guide](../ATTRIBUTION.md).
+These complement the suite‑wide system by surfacing workspace‑specific logic, constraints, and integration points.

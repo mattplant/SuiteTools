@@ -21,7 +21,8 @@
     "javascriptreact",
     "typescript",
     "typescriptreact",
-    "json"
+    "json",
+    "markdown"
   ],
   "eslint.packageManager": "yarn",
   "eslint.nodePath": ".yarn/sdks"

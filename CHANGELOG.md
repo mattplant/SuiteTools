@@ -1,41 +1,74 @@
 # Change Log
 
-> This document is part of the SuiteTools governance set.
+> Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-_Last updated: September 1, 2025_
+Last updated: September 26, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
 [![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
-## [1.0.0-beta.1] - Unreleased
+## [1.0.0-beta.1] — Unreleased
 
-**Why:** Establishes and aligns SuiteTools’ governance, licensing, and documentation architecture into a reproducible, discoverable system — reinforcing transparent stewardship, predictable onboarding, and developer empowerment.
-**Scope:** Foundational governance and documentation framework for the 1.0.0‑beta series.
+### ⭐ Highlights
 
-### 🆕 Added
+- Clarified dual licensing: GPL‑3.0‑or‑later for code, CC BY 4.0 for docs
+- Introduced layered error handling docs (standards, guide, advanced, cheat sheet)
+- Expanded governance standards (documentation, emoji, linting, yarn, configs)
+- Added CHANGELOG.md as a governed artifact with Why/Scope/Impact structure
 
-- [`LICENSE-DOCS.md`](LICENSE-DOCS.md): Introduces the [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) license for documentation reuse, including scope for onboarding guides, diagrams, and taxonomy references
-- Governance docs: [`ATTRIBUTION.md`](ATTRIBUTION.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), [`GOVERNANCE.md`](GOVERNANCE.md), [`NOTICE`](NOTICE), [`SECURITY.md`](SECURITY.md), [`STYLE.md`](STYLE.md) — formalizing suite‑wide principles, security reporting, style conventions, and attribution formats
-- [`CHANGELOG.md`](CHANGELOG.md): Establishes versioned tracking across workspaces for reproducibility and governance transparency
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): Defines contributor pathways, PR expectations, and review flow to support predictable onboarding
-- [`docs-architecture.md`](docs-architecture.md): Documents SuiteTools’ documentation structure, cross‑linking strategy, and discoverability patterns
+### 📚 Documentation Overhaul
 
-...
+#### Why
 
-### 🔧 Updated
+SuiteTools’ documentation had grown unevenly over time — some areas were missing, others were too dense, and governance rules weren’t consistently discoverable.
+This release restructures the documentation into **bite‑sized, enforceable standards and practical guides**, filling gaps with new documents and aligning everything under a consistent style, taxonomy, and stewardship model.
 
-- Root `README.md`: Refined dual‑license model — GPL for code, CC BY 4.0 for documentation — to reinforce SuiteTools’ developer‑first licensing philosophy
-- Monorepo root and workspace `README.md` files for clarity, consistency, and alignment
-- Linked governance, attribution, and licensing consistently across major documentation touchpoints
+It also clarifies licensing:
+
+- **Source code** is explicitly documented as **GPL‑3.0‑or‑later** (as it always was).
+- **Documentation** is explicitly licensed under **CC BY 4.0**, encouraging reuse with attribution.
+- **CHANGELOG.md** was added as a governed artifact, ensuring every release documents its **Why**, **Scope**, and **Developer Impact**. Contributors are expected to provide feedback and keep it updated in lockstep with governance changes.
+
+#### Scope
+
+- **Governance standards** — Added and expanded rules for documentation, emoji usage, error handling, linting, yarn, callouts, badge clusters, and configuration (ESLint, Prettier, TypeScript, Yarn).
+- **Architecture docs** — Added guides for error handling, monorepo/workspace boundaries, and validation; updated core architecture references.
+- **Contributor guides** — Added installation, customizing, VS Code setup, linting, build & release (guide + checklist), yarn workflows, and JSDoc standards.
+- **Error handling** — Introduced a layered set of resources — standards, core guide, advanced guide, and cheat sheet.
+- **Root governance/legal files** — Updated attribution, licenses, notice, code of conduct, contributing, governance, security, style docs, and commit template for clarity and consistency.
+- **Workspace docs** — Refreshed backend, frontend, shared, and component READMEs to align with governance standards.
+- **Consistency** — Standardized purpose sections, icons, and stewardship notes across all docs; improved cross‑linking; corrected typos and clarified enforceable rules.
+
+#### 🏛️ Governance & Legal
+
+- Updated **ATTRIBUTION.md**, **LICENSE**, **LICENSE-DOCS.md**, **NOTICE**, **README.md**, **STYLE.md**, **CODE_OF_CONDUCT.md**, **CONTRIBUTING.md**, **GOVERNANCE.md**, **SECURITY.md**, and **commit-draft-TEMPLATE.md**.
+- Added **CHANGELOG.md** as a governed artifact with required structure and contributor feedback loop.
+- Added **docs/governance/README.md** and **license-compliance.md**.
+- Introduced **docs/governance/standards** index with new standards:
+  - **Documentation Standard** (header, body, footer, sections)
+  - **Emoji Usage & Reference**
+  - **Error Handling Standards**
+  - **Linting Standards**
+  - **Yarn Dependencies**
+  - **Badge Clusters** and **Callout Blocks**
+  - **Config Standards** (ESLint, Prettier, TypeScript, Yarn)
+  - **Governance Document Definition**
+
+#### 👩‍💻 Developer Impact
+
+- **Reuse** — Developers can confidently reuse documentation and visual assets under CC BY 4.0.
+- **Onboard** — Contributors have a single, discoverable entry point for governance, licensing, and style guidance.
+- **Extend** — Documentation structure is explicitly modeled, making it easier to extend and maintain.
+- **Discover** — Suite‑wide discoverability is reinforced through consistent linking, naming, and attribution patterns.
+- **Trace** — Every release now has a governed changelog entry with clear Why, Scope, and Impact, making history auditable and feedback actionable.
+- **Contribute** — Contributors are expected to provide feedback and keep docs in sync with governance standards.
 
 ---
 
-### 👩‍💻 Developer Impact
+## 🧭 Stewardship Callout
 
-- Developers can confidently reuse documentation and visual assets under CC BY 4.0, with clear attribution formats and badge signals
-- Contributors have a single, discoverable entry point for governance, licensing, and style guidance
-- Documentation structure is now explicitly modeled, making it easier to extend and maintain without breaking suite‑wide patterns
-- Error‑handling utilities (`handleError`, `AppErrorBoundary`) offer consistent patterns for managing SuiteScript exceptions
-- Suite‑wide discoverability is reinforced through consistent linking, naming, and attribution patterns
+- Each release entry must include **Why**, **Scope**, and **Developer Impact**.
+- Keep artifact links valid and scoped to canonical governance sources.
+- Update this changelog in lockstep with governance and documentation changes.

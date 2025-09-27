@@ -204,6 +204,24 @@ module.exports = defineConfig([
     rules: {},
   },
 
+  // Global Markdown heading capitalization enforcement
+  {
+    files: ["**/*.md"],
+    languageOptions: {
+      parser: require("./scripts/eslint-rules/noop-parser.js"),
+    },
+    plugins: {
+      "heading-title-case": {
+        rules: {
+          "heading-title-case": require("./scripts/eslint-rules/heading-title-case.js"),
+        },
+      },
+    },
+    rules: {
+      "heading-title-case/heading-title-case": "error",
+    },
+  },
+
   globalIgnores([
     "**/node_modules/",
     "**/dist/",

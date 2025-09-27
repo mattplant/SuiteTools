@@ -1,10 +1,9 @@
-
 # NOTICE
 
-> This document is part of the SuiteTools governance set.
+> Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-_Last updated: September 1, 2025_
+Last updated: September 22, 2025
 
 ---
 
@@ -15,16 +14,29 @@ Copyright © 2025 [Matthew Plant](https://github.com/mattplant)
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
 [![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
-This project is licensed under the [GNU General Public License v3.0 or later (GPL-3.0-or-later)](./LICENSE).
-See [`LICENSE`](./LICENSE) for full terms.
+---
 
-Documentation—including onboarding guides, diagrams, and taxonomy references—is licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
-See [`LICENSE-DOCS.md`](./LICENSE-DOCS.md) for details.
+## 📜 License Overview
+
+- **Source code** is licensed under [GPL‑3.0‑or‑later](./LICENSE).
+- **Documentation** (onboarding guides, diagrams, taxonomy references) is licensed under [CC BY 4.0](./LICENSE-DOCS.md).
+
+---
+
+## 🏷️ Attribution Formats
 
 Attribution formats and reuse snippets are available in [`docs/ATTRIBUTION.md`](./docs/ATTRIBUTION.md), including Markdown and plaintext templates for downstream documentation reuse.
 
-All third-party dependencies are listed in [`package.json`](./package.json) and governed by their respective licenses.
+---
 
-SuiteTools contributors are responsible for ensuring that all direct and transitive dependencies are compatible with GPL-3.0-or-later.
+## 📦 Third‑Party Dependencies
 
-This NOTICE file provides attribution and licensing context. It does not modify the terms of any license referenced herein.
+- All third‑party dependencies are listed in [`package.json`](./package.json) and governed by their respective licenses.
+- Contributors are responsible for ensuring that all direct and transitive dependencies are compatible with GPL‑3.0‑or‑later.
+
+---
+
+## 🧭 Stewardship Note
+
+This NOTICE file provides attribution and licensing context.
+It does not modify the terms of any license referenced herein.

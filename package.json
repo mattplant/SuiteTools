@@ -18,6 +18,7 @@
         "sdf-account-setup": "cd backend && suitecloud account:setup",
         "watch:backend": "yarn workspace backend run watch",
         "lint": "eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
+        "lint:docs": "eslint '**/*.md'",
         "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
         "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
         "yarn:reset": "./scripts/resetYarn.sh",
@@ -53,7 +54,9 @@
         "eslint-plugin-react-refresh": "^0.4.20",
         "eslint-plugin-suitescript": "^1.4.1",
         "globals": "^16.3.0",
-        "prettier": "^3.6.2"
+        "prettier": "^3.6.2",
+        "remark": "^15.0.1",
+        "title-case": "^4.3.2"
     },
     "resolutions": {
         "zod": "^4.0.14",

@@ -1,14 +1,27 @@
-# Linting with SuiteTools
+# 📏 Linting Guide
 
-_Last updated: September 1, 2025_
+Last updated: September 22, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
 [![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
 
-This document outlines the linting stack, practices, and rule structure used across SuiteTools to ensure consistency, architectural integrity, and scalable ergonomics.
+---
+
+## Overview
+
+This document outlines the linting stack and practices used across SuiteTools to ensure consistency, architectural integrity, and scalable ergonomics.
 
 Linting is central to our development workflow. It prevents errors early, enforces boundaries, and improves developer experience (DX) while reducing total cost of ownership (TCO) across the suite.
+
+### 🔗 Related Governance
+
+- [Linting Standards](../governance/standards/linting-standards.md) - rule categories and rule list
+  - [Linting Standards — Rule Reference](../governance/standards/linting-standards.md#-rule-reference)
+- [ESLint Config](../governance/standards/config/eslint.md)
+- [View `eslint.config.cjs`](../governance/standards/config/eslint.md)
+- [Prettier Config](../governance/standards/config/prettier.md) — formatting alignment.
+- [TypeScript Config](../governance/standards/config/typescript.md) — type‑checking alignment.
 
 ---
 
@@ -26,7 +39,7 @@ This setup is modular and extensible: suite-wide rules provide global consistenc
 
 ---
 
-## Linting Tool Matrix
+## 🛠️ Linting Tool Matrix
 
 A breakdown of each tool and its implementation role within SuiteTools:
 
@@ -42,32 +55,23 @@ A breakdown of each tool and its implementation role within SuiteTools:
   - Enforces consistent formatting (quotes, spacing, semicolons, commas)
   - Complements ESLint by standardizing stylistic surface area
 
-### New ESLint Plugin Installation Guidelines
+---
 
-To ensure consistent tooling across the SuiteTools monorepo, **all ESLint plugins must be installed from the monorepo root**, even if they’re primarily used in a single workspace (e.g. `backend` or `frontend`).
+## ⚙️ Flat Config Overview
 
-This guarantees:
+SuiteTools uses ESLint’s modern **Flat Config** (`defineConfig`) instead of legacy `.eslintrc.*` files.
 
-- 🔧 Centralized dependency management via root `package.json`
-- 🧵 Proper plugin resolution by shared ESLint configs
-- 🚀 Cleaner CI/CD environments and reproducible installs
+**Why Flat Config?**
 
-### 🛠 How to install
+- **Composable** — multiple workspace configs in one file.
+- **Explicit** — no hidden merges from `.eslintrc` inheritance.
+- **Targeted** — `files` and `ignores` arrays allow precise scoping.
+- **Future‑proof** — aligns with ESLint’s long‑term direction.
 
-If your are not in the project root use the `-W` flag to target the **workspace root**:
+### 🔌 Plugin Installation Policy
 
-```bash
-yarn add -W -D eslint-plugin-jsdoc
-yarn add -W -D eslint-plugin-suitescript
-```
-
-### Why this matters
-
-Local installs inside workspaces (without the `-W` flag) can lead to:
-
-- Redundant dependency trees
-- ESLint failing to resolve plugins correctly
-- Confusion during onboarding or CI setup
+All ESLint plugins are installed from the monorepo root — even if used in a single workspace — to ensure consistent resolution and reproducible installs.
+Local installs inside workspaces can cause redundant dependency trees, plugin resolution failures, and onboarding/CI confusion.
 
 ---
 
@@ -86,81 +90,23 @@ Shared and workspace-specific rule composition ensures scalable enforcement:
 
 Core practices maintain architectural clarity and code hygiene across the suite.
 
-### Rule Tiers
-
-- **Enforced Rules**
-  Wired into ESLint and CI pipelines. Blocking violations must be resolved before commits and PRs proceed.
-
-- **Advisory Conventions**
-  Guide preferred patterns and best practices. May surface warnings but don't block progress.
+See Rule Tiers, Rule Categories, and the full Rules at [Linting Standards](../governance/standards/linting-standards.md).
 
 ---
 
-## Rule Categories
+## Next Steps
 
-Organized into thematic groups for clarity and actionability.
+- Review the [Linting Standards](../governance/standards/linting-standards.md) to understand the rules we enforce.
+- Explore the [ESLint Config Guide](../governance/standards/config/eslint.md) to see how these rules are implemented across workspaces.
+- Check [Prettier Config](../governance/standards/config/prettier.md) and [TypeScript Config](../governance/standards/config/typescript.md) for formatting and type‑checking alignment.
 
-> ⚠️ **Work in Progress**
-> This is a first draft and it is currently aspirational.
+---
 
-### Code Correctness
+## 📋 Stewardship Notes
 
-Catch runtime risks and enforce safer authoring:
+- Treat linting as part of SuiteTools’ **architectural contract** — not just style enforcement.
+- Keep this guide in sync with the [Linting Standards](../governance/standards/linting-standards.md) and root `eslint.config.cjs`.
+- Update this guide whenever new custom rules, plugins, or enforcement practices are introduced.
+- Ensure contributors understand that linting is **binding**: violations block merges until resolved.
 
-- `no-undef` – Catch undeclared variables
-- `no-unused-vars` – Eliminate dead bindings
-- `no-explicit-any` – Prevent structural holes in type safety
-- `prefer-const`, `no-var` – Ensure predictable scoping
-
-> TODO: Review `no-unsafe-assignment`, `consistent-type-exports`, `prefer-readonly`
-
-### TypeScript Consistency
-
-Modeling and mutation rules for predictability:
-
-- `consistent-type-exports` – Enforce explicit and stable type exports
-- `prefer-readonly` – Guide safe object mutation policies
-- `no-unsafe-assignment` – Avoid widening from untyped inputs
-
-### Type Safety Ergonomics
-
-Tighten type constraints without sacrificing clarity:
-
-- Use branded types for opaque identifiers
-- Ban unsafe casts (`as unknown as`) unless justified
-- Avoid ambiguous unions in helpers; document overloads explicitly
-
-### Workspace Boundaries
-
-Preserve modular clarity and enforce layering:
-
-- `no-restricted-imports` – Block cross-workspace imports (except `shared/`)
-- `import/no-internal-modules` – Enforce public API usage
-- TypeScript alias hygiene with ESLint resolver
-
-### Assertion and Schema Usage
-
-Promote validation symmetry and error modeling:
-
-- Shared assertion helpers preferred over ad hoc usage
-- Error codes must come from the registry (`ValidationError`)
-- Avoid Zod leakage to user-facing surfaces
-- Preserve transform symmetry across transport/domain/view
-
-### Documentation and Exports
-
-Public-facing surfaces must be clear and discoverable:
-
-- Require JSDoc for exports and helpers
-- Ban unused exports; enforce explicit boundaries
-- Require descriptions for error codes and assertions
-- Use code comments for non-obvious logic
-- Avoid anonymous default exports unless conceptually singular
-
-### Formatting and Style
-
-Reduce review friction and cognitive load:
-
-- Prettier or ESLint-equivalent rules: quotes, spacing, semicolons
-- `import/order` – Grouped imports
-- File naming conventions: kebab-case, domain-oriented folders
+By following these practices, contributors help keep SuiteTools code **predictable, maintainable, and discoverable** across all workspaces.

@@ -1,5 +1,9 @@
 # SuiteTools Commit Message Template
 
+Last updated: September 21, 2025
+
+---
+
 Save time by starting your draft commit message as you work instead of scrambling to reconstruct your changes at commit time.
 
 It also helps ensure your final commit message is complete and structured. Commit clarity improves traceability, onboarding, and architectural enforcement.

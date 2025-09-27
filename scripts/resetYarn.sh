@@ -13,4 +13,4 @@ yarn install --check-cache
 echo "🛠 Rebuilding all workspaces…"
 yarn workspaces foreach --all run build
 
-echo "✅ Monorepo reset complete on Yarn $(yarn --version)"
+echo "✅ Monorepo reset complete — Yarn $(yarn --version)"
