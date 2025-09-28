@@ -3,14 +3,17 @@
 import { z } from "zod";
 
 /**
- * Shape returned when an entity is not found.
- * Keep this schema minimal and universal.
+ * Canonical "Not Found" domain primitive.
+ * Minimal, universal shape for representing absence across SuiteTools.
  */
 export const notFoundSchema = z.object({
   message: z.string(),
-  code: z.literal("NOT_FOUND").default("NOT_FOUND"),
+  code: z.literal("NOT_FOUND"), // always required, always literal
 });
 
+/**
+ * Strongly typed NotFound object.
+ */
 export type NotFound = z.infer<typeof notFoundSchema>;
 
 /**

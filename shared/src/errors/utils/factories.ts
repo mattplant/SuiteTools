@@ -1,3 +1,16 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * @file factories.ts
+ * @description
+ * Convenience factories for constructing common SuiteTools errors.
+ *
+ * These wrappers exist to:
+ * - Provide a consistent construction API
+ * - Allow future injection of defaults or telemetry
+ * - Keep call sites clean and uniform
+ */
+
 import type { ZodIssue } from "zod";
 
 import { NetSuiteApiError } from "../integration/netsuite-api.error";

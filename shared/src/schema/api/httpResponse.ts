@@ -21,7 +21,7 @@
  */
 
 import { z } from "zod";
-import type { MergeShapes } from "../domain/utils/mergeShapes";
+import type { MergeShapes } from "../domain/utils/schemaHelpers";
 
 /**
  * Internal base HTTP response schema.

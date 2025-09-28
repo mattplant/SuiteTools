@@ -46,7 +46,7 @@ type HandleErrorOpts = {
 
 /**
  * Normalize, log, optionally surface (dev‑only), and rethrow any thrown value.
-
+ *
  * ## Usage
  * Call `handleError()` in `catch` blocks for async flows or promise rejections
  * where you want:
@@ -63,6 +63,7 @@ type HandleErrorOpts = {
  * @param [opts] - Optional configuration for error handling behavior.
  * @param [opts.reactTrigger] - In dev mode, a callback to trigger React error overlays/boundaries.
  * @throws Always throws the normalized error after logging and optional surfacing.
+ * @returns never
  *
  * @example
  * try {
@@ -71,30 +72,31 @@ type HandleErrorOpts = {
  *   handleError(err, { reactTrigger: triggerOverlay });
  * }
  */
-export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
-  const isDev = true; // TODO: replace with env/config getter
 
-  // Normalize to a NormalizedError and attach original value for unknown types (non-Error)
+export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
+  const isDev = true; // TODO: adapt for NetSuite env (env/config getter)
+
+  // // Normalize to a NormalizedError and attach original value for unknown types (non-Error)
+  // const normalized: NormalizedError =
+  //   err instanceof Error
+  //     ? (err as NormalizedError)
+  //     : Object.assign(new Error(String(err), { cause: err }), {
+  //         original: err,
+  //       });
+  // if (!(err instanceof Error)) {
+  //   (normalized as any).original = err;
+  // }
+
+  // Normalize to a NormalizedError
   const normalized: NormalizedError =
     err instanceof Error
       ? (err as NormalizedError)
       : Object.assign(new Error(String(err), { cause: err }), {
           original: err,
         });
-  if (!(err instanceof Error)) {
-    (normalized as any).original = err;
-  }
 
   // Log with consistent prefix
-  if (normalized instanceof SuiteError) {
-    console.error(`[SuiteTools] ${normalized.toString()}`);
-  } else {
-    console.error(
-      `[SuiteTools] ${normalized.name}: ${normalized.message}`,
-      normalized.stack
-    );
-  }
-  // TODO: should SuiteErrors also include stack traces?
+  console.error(`[SuiteTools] ${normalized.toString?.() ?? normalized}`);
 
   // Dev-mode React overlay trigger
   if (isDev && opts.reactTrigger) {

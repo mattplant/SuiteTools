@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](./README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: September 28, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
@@ -40,7 +40,7 @@ This guide exists to:
 
 | Pillar | Scope | Role | Link |
 |--------|-------|------|------|
-| **Documentation as Architecture** | Conceptual | **`Why` we document** — guiding _philosophy_ for documentation as governed architecture. | [Philosophy](../architecture/docs-architecture.md) |
+| **Documentation as Architecture** | Conceptual | **`Why` we document** — guiding *philosophy* for documentation as governed architecture. | [Philosophy](../architecture/docs-architecture.md) |
 | **Standards Index** | Macro‑level | **`What` to follow** — enforceable patterns for doc structure, placement, and governance. | [Standards Index](standards/README.md) |
 | **Style Guide** | Micro‑level | **`How` to express** — tone, structure, formatting, and naming conventions for all artifacts. | [Style Guide](STYLE.md) |
 
@@ -64,6 +64,29 @@ This guide exists to:
 - Names should be **descriptive, not abbreviated**, unless the abbreviation is widely understood.
 - Use **kebab-case** for file and directory names.
 - Group related files into directories by feature or domain.
+
+### Schema Artifacts
+
+To ensure clarity and predictability across SuiteTools schemas:
+
+- **Schemas** → lowercase, camelCase
+  - Example: `notFoundSchema`, `userSchema`
+- **Types** → PascalCase
+  - Example: `NotFound`, `User`
+- **Bundles** → PascalCase with `Bundle` suffix
+  - Example: `NotFoundBundle`, `UserBundle`
+
+**Rationale:**
+
+- Lowercase signals schema definitions and aligns with file naming.
+- PascalCase matches TypeScript idioms for types.
+- The `Bundle` suffix makes grouped schema/type exports instantly recognizable.
+
+This convention ensures contributors can distinguish artifact categories at a glance:
+
+- lowercase = schema definition
+- PascalCase = type or bundle
+- `Bundle` suffix = grouped exports
 
 ---
 

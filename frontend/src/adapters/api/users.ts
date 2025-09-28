@@ -43,13 +43,11 @@ export async function getUsers(fields: CriteriaFields): Promise<Users> {
 
   if (isNotFound(parsed.data)) return [];
 
-  return toUsersArray(parsed.data);
-}
+  // TODO: Extend adapter to support paging + metadata once backend provides it.
+  //   - Update `usersRequestResponseSchema` to validate the new envelope
+  //   - Change return type of `getUsers` (likely `{ data: Users; meta: Meta }`)
+  //   - Update all consumers of `getUsers` to handle the new shape
+  // Until then, keep the contract: always return a `Users` array.
 
-// TODO: Do I even need this helper?
-/**
- * Convert a `Users` array-like value into a properly typed `Users` array.
- * @param res - Raw Users array to normalize.
- * @returns A `Users` array.
- */
-export const toUsersArray = toArray<Users[number]>;
+  return toArray<Users[number]>(parsed.data);
+}

@@ -1,26 +1,28 @@
-// helpers
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * @file schema/index.ts
+ * @description
+ * Root barrel for SuiteTools schema system.
+ *
+ * Curates and re‑exports:
+ * - NetSuite schemas
+ * - API schemas
+ * - Domain schemas
+ * - Domain schema utilities
+ * - Type guards
+ *
+ * Consumers should import from this file rather than deep paths.
+ */
+
+// NetSuite schemas
 export * from "./zNetSuite";
-// schemas
-// schemas - api
-export * from "./api/endpoints";
-export * from "./api/httpResponse";
-export * from "./api/notFound";
-export * from "./api/requestBody";
-export * from "./api/requestResponse";
-// schemas - domain
-export * from "./domain/file";
-export * from "./domain/integration";
-export * from "./domain/job";
-export * from "./domain/jobRun";
-export * from "./domain/login";
-export * from "./domain/optionValues";
-export * from "./domain/role";
-export * from "./domain/script";
-export * from "./domain/token";
-export * from "./domain/scriptLog";
-export * from "./domain/soapLog";
-export * from "./domain/user";
-// schemas - domain - utils
-export * from "./domain/utils";
-// guards
+
+// API schemas
+export * from "./api";
+
+// Domain schemas
+export * from "./domain";
+
+// Type guards
 export * from "../typeGuards";

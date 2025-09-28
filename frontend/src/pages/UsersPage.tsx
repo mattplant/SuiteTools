@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getUser } from '../adapters/api/user';
-import { getUsers, toUsersArray } from '../adapters/api/users';
+import { getUsers } from '../adapters/api/users';
 import type { Users } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/user/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
 import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError } from '@suiteworks/suitetools-shared';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
 /**
  * UsersPage component displays the users list and criteria filter.
@@ -31,7 +31,7 @@ export function UsersPage(): React.ReactElement {
     async function fetchData(): Promise<void> {
       try {
         const data = await getUsers(criteria);
-        const normalized = toUsersArray(data);
+        const normalized = toArray<Users[number]>(data);
         if (!ignore) {
           setResults(normalized);
         }
