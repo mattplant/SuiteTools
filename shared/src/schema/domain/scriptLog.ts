@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { z } from "zod";
-import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
 

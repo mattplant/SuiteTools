@@ -9,17 +9,23 @@ import { SuiteError } from "../base/SuiteError";
  * HTTP status, and optional NetSuite error code.
  */
 export class NetSuiteApiError extends SuiteError {
+  /** Machine-readable taxonomy code. */
+  public readonly code = "NETSUITE_API_ERROR";
+
+  /** Severity level for governance and logging. */
+  public readonly severity = "error" as const;
+
   /** The service name (always "NetSuite"). */
   public readonly service = "NetSuite";
 
   /** The API endpoint that was called. */
   public readonly endpoint: string;
 
-  /** The HTTP status code returned by the API, if available. */
+  /** The HTTP status code returned by the API. */
   public readonly status: number | undefined;
 
   /** Optional NetSuite error code returned in the response. */
-  public readonly code: string | undefined;
+  public readonly nsErrorCode: string | undefined;
 
   /**
    * Constructs a new NetSuiteApiError.
@@ -29,7 +35,12 @@ export class NetSuiteApiError extends SuiteError {
    */
   constructor(
     message: string,
-    opts: { endpoint: string; status?: number; code?: string; cause?: unknown }
+    opts: {
+      endpoint: string;
+      status?: number;
+      nsErrorCode?: string;
+      cause?: unknown;
+    }
   ) {
     super(message, {
       cause: opts.cause,
@@ -37,12 +48,12 @@ export class NetSuiteApiError extends SuiteError {
         service: "NetSuite",
         endpoint: opts.endpoint,
         status: opts.status,
-        code: opts.code,
+        nsErrorCode: opts.nsErrorCode,
       },
     });
 
     this.endpoint = opts.endpoint;
     this.status = opts.status;
-    this.code = opts.code;
+    this.nsErrorCode = opts.nsErrorCode;
   }
 }

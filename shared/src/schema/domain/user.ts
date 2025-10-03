@@ -1,8 +1,9 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
-
 import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
@@ -50,11 +51,11 @@ export { UserBundle };
 export type User = typeof UserBundle.types.single;
 export type Users = typeof UserBundle.types.array;
 
-// ----- Convenience union for single User -----
+// Convenience union for single entity
 export const userOrNotFoundSchema = orNotFoundSchema(schema);
 export type UserOrNotFound = OrNotFound<User>;
 
-// ----- Convenience union for multiple Users -----
+// Convenience union for multiple entities
 export const usersOrNotFoundSchema = orNotFoundSchema(
   UserBundle.schema.array()
 );

@@ -1,13 +1,19 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getRole } from '../components/features/role/getRecord';
-import { getRoles } from '../components/features/role/getRecords';
+import { getRole } from '../adapters/api/role';
+import { getRoles } from '../adapters/api/roles';
 import type { Roles } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/role/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
 
-export function RolesPage() {
+/**
+ * Renders the Roles page, allowing users to view and filter roles.
+ * @returns The rendered Roles page component.
+ */
+export function RolesPage(): React.ReactElement {
   const defaultCriteria: CriteriaFields = {
     active: '',
   };
@@ -15,7 +21,7 @@ export function RolesPage() {
   const [results, setResults] = useState<Roles>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       try {
         const data = await getRoles(criteria);
         if (!('message' in data)) {
@@ -27,7 +33,7 @@ export function RolesPage() {
     }
     fetchData();
 
-    return () => {};
+    return (): void => {};
   }, [criteria]);
 
   return (

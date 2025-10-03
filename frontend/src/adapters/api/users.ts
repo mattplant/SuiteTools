@@ -17,7 +17,6 @@
 import { makeRequestResponseSchema, usersOrNotFoundSchema, isNotFound, toArray } from '@suiteworks/suitetools-shared';
 import type { Users } from '@suiteworks/suitetools-shared';
 import type { CriteriaFields } from '../../components/shared/criteria/types';
-
 import { getData } from './netSuiteClient';
 
 const usersRequestResponseSchema = makeRequestResponseSchema(usersOrNotFoundSchema);
@@ -28,6 +27,7 @@ const usersRequestResponseSchema = makeRequestResponseSchema(usersOrNotFoundSche
  * @param fields - Criteria to filter the users list (active, roles, owners, etc.).
  * @returns A Promise resolving to a `Users` array (empty if none found).
  * @throws {ZodError} When the response fails schema validation.
+ * @throws {Error} When the underlying request fails (network, auth, etc.).
  */
 export async function getUsers(fields: CriteriaFields): Promise<Users> {
   console.log('[users:getUsers] criteria: %o', fields);
@@ -42,12 +42,6 @@ export async function getUsers(fields: CriteriaFields): Promise<Users> {
   const parsed = usersRequestResponseSchema.parse(response);
 
   if (isNotFound(parsed.data)) return [];
-
-  // TODO: Extend adapter to support paging + metadata once backend provides it.
-  //   - Update `usersRequestResponseSchema` to validate the new envelope
-  //   - Change return type of `getUsers` (likely `{ data: Users; meta: Meta }`)
-  //   - Update all consumers of `getUsers` to handle the new shape
-  // Until then, keep the contract: always return a `Users` array.
 
   return toArray<Users[number]>(parsed.data);
 }

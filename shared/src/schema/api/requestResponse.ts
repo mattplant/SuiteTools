@@ -22,6 +22,7 @@
  */
 
 import { z } from "zod";
+import type { BaseSchema } from "../domain/baseSchema";
 
 /**
  * Internal Zod schema for the base request–response envelope.
@@ -64,26 +65,42 @@ export type Envelope<Payload> = {
 };
 
 /**
- * Creates a schema for the standard API response envelope around a payload schema.
- * Fully generic: preserves payload type so `.parse()` is type-safe.
- */
-/**
- * Factory to create a new request–response schema with additional fields.
- *
- * @typeParam T - Additional Zod shape to merge with the base schema.
- * @param shape - Additional fields for the extended envelope.
- * @returns A Zod schema that includes the base request–response fields and your additional fields.
+ * Wrap a payload Zod schema in an API envelope and expose a BaseSchema<T> so consumers remain Zod‑free.
+ * - Returns only the typed envelope fields (status?, message?, data)
+ * - Omits optional keys when undefined to satisfy exactOptionalPropertyTypes
+ * @typeParam S - The Zod schema type for the payload.
+ * @param payloadSchema - The Zod schema describing the payload.
+ * @returns A BaseSchema<T> with a `.parse()` method that validates the envelope.
  */
 export function makeRequestResponseSchema<S extends z.ZodTypeAny>(
   payloadSchema: S
-) {
-  return z.object({
+): BaseSchema<z.output<S>> {
+  const envelope = z.object({
     status: z.number().optional(),
     message: z.string().optional(),
     data: payloadSchema,
-  }) as unknown as z.ZodType<
-    Envelope<z.infer<S>>,
-    // omit Def — let Zod supply it internally
-    Envelope<z.input<S>>
-  >;
+  });
+
+  return {
+    parse: (input: unknown) => {
+      // Parse with Zod, then project into the exact BaseSchema shape.
+      // Single, contained cast to stabilize the inferred object type.
+      const r = envelope.parse(input) as {
+        status?: number;
+        message?: string;
+        data: z.output<S>;
+      };
+
+      const out: {
+        data: z.output<S>;
+        status?: number;
+        message?: string;
+      } = { data: r.data };
+
+      if (r.status !== undefined) out.status = r.status;
+      if (r.message !== undefined) out.message = r.message;
+
+      return out;
+    },
+  };
 }

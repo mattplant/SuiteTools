@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
+import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for a single Role record.
@@ -17,7 +20,7 @@ import type { ZEntityBundle } from "../zodUtils";
  * - `urlNs`: optional URL for NetSuite context
  * - `urlDetail`: optional URL for additional context
  */
-const RoleSchema = z.object({
+const schema = z.object({
   id: z.number().positive(),
   isinactive: zNetSuite.booleanFromTF.schema,
   name: z.string(),
@@ -30,10 +33,12 @@ const RoleSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const RoleBundle: ZEntityBundle<typeof RoleSchema, "Role"> =
-  zHelpers.zCreateBundle(RoleSchema, {
+const RoleBundle: ZEntityBundle<typeof schema, "Role"> = zHelpers.zCreateBundle(
+  schema,
+  {
     meta: { entity: "Role", plural: "Roles" },
-  });
+  }
+);
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -42,3 +47,13 @@ const RoleBundle: ZEntityBundle<typeof RoleSchema, "Role"> =
 export { RoleBundle };
 export type Role = typeof RoleBundle.types.single;
 export type Roles = typeof RoleBundle.types.array;
+
+// Convenience union for single entity
+export const roleOrNotFoundSchema = orNotFoundSchema(schema);
+export type RoleOrNotFound = OrNotFound<Role>;
+
+// Convenience union for multiple entities
+export const rolesOrNotFoundSchema = orNotFoundSchema(
+  RoleBundle.schema.array()
+);
+export type RolesOrNotFound = OrNotFound<Roles>;

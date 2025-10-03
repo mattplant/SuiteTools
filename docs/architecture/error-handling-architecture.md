@@ -2,7 +2,7 @@
 
 A Unified Lifecycle for Predictable, Discoverable, and Safe Error Management
 
-Last updated: September 22, 2025
+Last updated: September 29, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
@@ -20,9 +20,6 @@ Our approach is:
 - **Discoverable** — contributors can quickly trace and understand error flows.
 - **Consistent** — users and developers see the same patterns across all workspaces.
 
-It is **not** a governance document.
-For binding rules and taxonomy definitions, see [Error Handling Standards](../governance/standards/error-handling-standards.md).
-
 This page covers:
 
 - Why SuiteTools standardizes error handling
@@ -33,7 +30,7 @@ This page covers:
 This lifecycle applies consistently across both SPA and backend contexts, giving developers one mental model for error handling and reducing cognitive load.
 
 > 📜 **Looking for the rules?**
-> This document is narrative and educational.
+> This document is narrative and educational. It is **not** a governance document.
 > For binding requirements, see [📜 Error Handling Standards](../governance/standards/error-handling-standards.md).
 
 ---

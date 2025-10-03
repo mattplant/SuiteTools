@@ -13,14 +13,28 @@
  * Consumers should use `EndpointName` instead of hard‑coding strings.
  */
 
-export const endpointMap = {
+/** Frozen map of API endpoint names to their descriptions. */
+export const endpointMap = Object.freeze({
+  role: "Fetch a single role by ID",
+  roles: "List roles with optional filters",
   user: "Fetch a single user by ID",
   users: "List users with optional filters",
-  optionValues: "Retrieve option values",
-} as const;
+  optionValues: "List option values",
+} as const);
 
 /** Union type of all valid endpoint names. */
 export type EndpointName = keyof typeof endpointMap;
+
+/** Endpoint names that do not end with "s". */
+export type SingularEntityName =
+  Extract<EndpointName, `${string}`> extends infer T
+    ? T extends `${infer _}s`
+      ? never
+      : T
+    : never;
+
+/** Endpoint names that end with "s". */
+export type PluralEntityName = Extract<EndpointName, `${string}s`>;
 
 /** Helper array of endpoint names for safe iteration. */
 export const endpointNames = Object.keys(endpointMap) as EndpointName[];

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { Role } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
@@ -20,19 +22,19 @@ export function RoleResult({ data, modal }: Props) {
         <b>Name</b>: {data.name}
       </p>
       <p>
-        <b>Active</b>: {data.isinactive}
+        <b>Active</b>: {data.isinactive ? 'No' : 'Yes'}
       </p>
       <p>
         <b>Center Type</b>: {data.centertype}
       </p>
       <p>
-        <b>Sales Role</b>: {data.issalesrole}
+        <b>Sales Role</b>: {data.issalesrole ? 'Yes' : 'No'}
       </p>
       <p>
-        <b>Support Role</b>: {data.issupportrole}
+        <b>Support Role</b>: {data.issupportrole ? 'Yes' : 'No'}
       </p>
       <p>
-        <b>Web Service Only</b>: {data.iswebserviceonlyrole}
+        <b>Web Service Only</b>: {data.iswebserviceonlyrole ? 'Yes' : 'No'}
       </p>
       {modal && (
         <ButtonGroup>

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // /shared/tsconfig.json
 {
   "extends": "../tsconfig.base.json",
@@ -6,7 +8,7 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": true, // only emit types
     "outDir": "dist",
     "rootDir": "src"
   },

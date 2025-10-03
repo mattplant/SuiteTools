@@ -1,4 +1,4 @@
-# .gitignore specific for SuiteTools backend workspace
+# .gitignore for SuiteTools backend workspace
 
 # NetSuite configs
 project.json

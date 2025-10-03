@@ -12,6 +12,12 @@ import { SuiteError } from "../base/SuiteError";
  * machine‑readable logging.
  */
 export class SchemaValidationError extends SuiteError {
+  /** Stable taxonomy code for schema validation failures. */
+  public readonly code = "SCHEMA_VALIDATION_ERROR";
+
+  /** Severity level for governance and logging. */
+  public readonly severity = "error" as const;
+
   /**
    * The list of Zod issues that caused validation to fail.
    */

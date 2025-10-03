@@ -12,12 +12,9 @@
  * See the LICENSE file at <https://github.com/mattplant/SuiteTools/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, userOrNotFoundSchema, isNotFound } from '@suiteworks/suitetools-shared';
-import type { User, UserOrNotFound } from '@suiteworks/suitetools-shared';
-
-import { getData } from './netSuiteClient';
-
-const userRequestResponseSchema = makeRequestResponseSchema(userOrNotFoundSchema);
+import { makeRequestResponseSchema, userOrNotFoundSchema } from '@suiteworks/suitetools-shared';
+import type { User } from '@suiteworks/suitetools-shared';
+import { makeSingularAdapter } from './adapterUtils';
 
 /**
  * Transform a validated `User` payload into the enriched view model used by the frontend.
@@ -32,33 +29,13 @@ function adaptUser(user: User): User {
   };
 }
 
-/**
- * Handle a NotFound payload.
- * Currently returns the payload untouched, but this is the place to log, instrument, or wrap errors if needed.
- * @param payload - The NotFound payload object.
- * @param payload.message - The error message describing the not found condition.
- * @param payload.code - The error code, always 'NOT_FOUND'.
- * @returns The NotFound payload object unchanged.
- */
-function handleNotFound(payload: { message: string; code: 'NOT_FOUND' }): { message: string; code: 'NOT_FOUND' } {
-  return payload;
-}
+const userRequestResponseSchema = makeRequestResponseSchema(userOrNotFoundSchema);
 
 /**
  * Fetch and validate a single `User` record by ID.
  * - Uses shared schemas for runtime validation and type inference.
  * - Adds `urlNs` and `urlDetail` to valid `User` records.
- * - Returns a `NotFound` payload unchanged.
  * @param id - The ID of the user to retrieve.
  * @returns A Promise resolving to a User object or NotFound payload.
  */
-export async function getUser(id: number): Promise<UserOrNotFound> {
-  const response = await getData('user', { id });
-  // console.log('[users:getUser] raw data:', JSON.stringify(response, null, 2));
-
-  const parsed = userRequestResponseSchema.parse(response);
-
-  return isNotFound(parsed.data)
-    ? handleNotFound(parsed.data) // TS sees: { message: string; code: 'NOT_FOUND' }
-    : adaptUser(parsed.data); // TS sees: User
-}
+export const getUser = makeSingularAdapter<User>('user', userRequestResponseSchema, adaptUser);

@@ -10,6 +10,7 @@
  * utilities so consumers can import them from a single entry point.
  */
 
+export * from "./baseSchema";
 export * from "./file";
 export * from "./integration";
 export * from "./job";

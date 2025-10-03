@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // backend workspace tsconfig.json
 {
   // "extends": "../tsconfig.base.json", // TODO:  use this later after verifying that we can override for NetSuite
@@ -7,6 +9,7 @@
     /* Language and Syntax */
     "target": "ESNext",
     "lib": ["ESNext", "dom"],
+    // "lib": ["ESNext"],                // TODO: drop "dom" for backend
     "experimentalDecorators": true,
     "esModuleInterop": true,
 
@@ -16,17 +19,20 @@
     "baseUrl": ".",
     "paths": {
       "N": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N"],
-      "N/*": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N/*"]
+      "N/*": ["../.yarn/unplugged/@hitc-netsuite-types-npm-2024.2.12-ea6370726c/node_modules/@hitc/netsuite-types/N/*"],
+      "SuiteScripts/SuiteTools/idev-suitetools-shared": ["../shared/dist/index.d.ts"] // NetSuite‑safe module path
     },
 
     /* Output Settings */
-    "outDir": "./src/FileCabinet/SuiteScripts/SuiteTools",
+    "outDir": "./src/FileCabinet/SuiteScripts/SuiteTools", // NetSuite's SDF path for deployment
+    "declaration": false,
     "sourceMap": false,
     "newLine": "LF",
 
     /* Linting */
     "noUnusedLocals": true
   },
-  "include": ["."],
-  "exclude": ["node_modules"]
+
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

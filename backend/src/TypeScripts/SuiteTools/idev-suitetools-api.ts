@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API
  *
@@ -24,24 +26,49 @@
  * @NScriptType Restlet
  */
 
-import { EntryPoints } from 'N/types';
+import type { EntryPoints } from 'N/types';
 import * as error from 'N/error';
 import * as log from 'N/log';
 import * as task from 'N/task';
 import { SuiteToolsCommon } from './idev-suitetools-common';
+import { NotFoundError, SuiteError } from 'SuiteScripts/SuiteTools/idev-suitetools-shared';
+import type { ErrorResponse } from 'SuiteScripts/SuiteTools/idev-suitetools-shared';
 
 /**
  * Handles the GET request event.
  *
  * @param requestParams The request parameters.
- * @returns The response.
+ * @returns The serialized JSON response.
  */
 export function get(requestParams: EntryPoints.RESTlet.get): string {
   // log.debug({ title: 'get() initiated', details: requestParams });
   const stApi = new SuiteToolsApi();
-  const response = JSON.stringify(stApi.stApiGet.process(requestParams));
 
-  return response;
+  try {
+    const response = stApi.stApiGet.process(requestParams);
+    return JSON.stringify(response);
+  } catch (err: unknown) {
+    if (err instanceof SuiteError) {
+      // Map SuiteError subclasses into a structured error response
+      const status = err instanceof NotFoundError ? 404 : 400;
+      const errorResponse: ErrorResponse = {
+        status,
+        code: err.code,
+        message: err.message,
+        severity: err.severity,
+        context: err.context,
+      };
+      return JSON.stringify(errorResponse);
+    }
+
+    // Fallback for unexpected errors
+    const errorResponse = {
+      status: 500,
+      code: 'UNEXPECTED',
+      message: 'Internal server error',
+    };
+    return JSON.stringify(errorResponse);
+  }
 }
 
 /**
@@ -162,83 +189,100 @@ export class SuiteToolsApiGet {
   public process(requestParams: unknown): Response {
     log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
     this.assertIsGetRequestParams(requestParams);
-    let response: Response;
-    const endpoint = requestParams.endpoint;
-    switch (endpoint) {
-      case 'file':
-        response = this.getFile(requestParams);
-        break;
-      case 'files':
-        response = this.getFiles(requestParams);
-        break;
-      case 'job':
-        response = this.getJob(requestParams);
-        response.data = this.cleanJobData(response.data);
-        response.data = this.addJobLastRun(response.data);
-        break;
-      case 'jobs':
-        response = this.getJobs(requestParams);
-        response = this.cleanJobsData(response);
-        break;
-      case 'jobRun':
-        response = this.getJobRun(requestParams);
-        break;
-      case 'jobRuns':
-        response = this.getJobRuns(requestParams);
-        break;
-      case 'logins':
-        response = this.getLogins(requestParams);
-        response = this.cleanLoginsData(response);
-        break;
-      case 'optionValues':
-        response = this.stApiGetOptions.process(requestParams);
-        break;
-      case 'role':
-        response = this.getRole(requestParams);
-        response.data = this.cleanRoleData(response.data);
-        break;
-      case 'roles':
-        response = this.getRoles(requestParams);
-        response = this.cleanRolesData(response);
-        break;
-      case 'script':
-        response = this.getScript(requestParams);
-        response.data = this.cleanScriptData(response.data);
-        break;
-      case 'scripts':
-        response = this.getScripts(requestParams);
-        response = this.cleanScriptsData(response);
-        break;
-      case 'scriptLog':
-        response = this.getScriptLog(requestParams);
-        break;
-      case 'scriptLogs':
-        response = this.getScriptLogs(requestParams);
-        break;
-      case 'settings':
-        response = this.getSettings();
-        break;
-      case 'user':
-        response = this.getUser(requestParams);
-        response.data = this.cleanUserData(response.data);
-        response.data = this.addUserLastLogin(response.data);
-        break;
-      case 'users':
-        response = this.getUsers(requestParams);
-        response = this.cleanUsersData(response);
-        response = this.addUsersLastLogins(response);
-        break;
-      default:
-        throw error.create({
-          name: 'SUITE_TOOLS_INVALID_PARAMETER',
-          message: `Invalid parameter: endpoint=${endpoint}`,
-          notifyOff: true,
-        });
+
+    try {
+      let response: Response;
+
+      const endpoint = requestParams.endpoint;
+      switch (endpoint) {
+        case 'file':
+          response = this.getFile(requestParams);
+          break;
+        case 'files':
+          response = this.getFiles(requestParams);
+          break;
+        case 'job':
+          response = this.getJob(requestParams);
+          response.data = this.cleanJobData(response.data);
+          response.data = this.addJobLastRun(response.data);
+          break;
+        case 'jobs':
+          response = this.getJobs(requestParams);
+          response = this.cleanJobsData(response);
+          break;
+        case 'jobRun':
+          response = this.getJobRun(requestParams);
+          break;
+        case 'jobRuns':
+          response = this.getJobRuns(requestParams);
+          break;
+        case 'logins':
+          response = this.getLogins(requestParams);
+          response = this.cleanLoginsData(response);
+          break;
+        case 'optionValues':
+          response = this.stApiGetOptions.process(requestParams);
+          break;
+        case 'role':
+          response = this.getRole(requestParams);
+          response.data = this.cleanRoleData(response.data);
+          break;
+        case 'roles':
+          response = this.getRoles(requestParams);
+          response = this.cleanRolesData(response);
+          break;
+        case 'script':
+          response = this.getScript(requestParams);
+          response.data = this.cleanScriptData(response.data);
+          break;
+        case 'scripts':
+          response = this.getScripts(requestParams);
+          response = this.cleanScriptsData(response);
+          break;
+        case 'scriptLog':
+          response = this.getScriptLog(requestParams);
+          break;
+        case 'scriptLogs':
+          response = this.getScriptLogs(requestParams);
+          break;
+        case 'settings':
+          response = this.getSettings();
+          break;
+        case 'user':
+          response = this.getUser(requestParams);
+          response.data = this.cleanUserData(response.data);
+          response.data = this.addUserLastLogin(response.data);
+          break;
+        case 'users':
+          response = this.getUsers(requestParams);
+          response = this.cleanUsersData(response);
+          response = this.addUsersLastLogins(response);
+          break;
+        default:
+          throw error.create({
+            // TODO: handle with new error handling functionality
+            name: 'SUITE_TOOLS_INVALID_PARAMETER',
+            message: `Invalid parameter: endpoint=${endpoint}`,
+            notifyOff: true,
+          });
+      }
+
+      log.debug({ title: 'get() response', details: response });
+
+      return response;
+    } catch (err) {
+      // Let SuiteError subclasses bubble up
+      if (err instanceof SuiteError) {
+        throw err;
+      }
+
+      // Wrap unexpected errors // TODO: create UnexpectedError subclass
+      throw error.create({
+        name: 'SUITE_TOOLS_UNEXPECTED',
+        message: `Unexpected error in process(): ${String(err)}`,
+        notifyOff: false,
+      });
     }
-
-    log.debug({ title: 'get() response', details: response });
-
-    return response;
   }
 
   private assertIsGetRequestParams(data: unknown): asserts data is RequestParams {
@@ -1631,7 +1675,7 @@ export class SuiteToolsApiModel {
       role.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      response.message = `No role found with id of ${id}`;
+      throw new NotFoundError('Role', id);
     } else {
       response.data = sqlResults[0];
     }

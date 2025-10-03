@@ -1,54 +1,56 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { createHashRouter, RouterProvider, defer } from 'react-router-dom';
-import AppLayout from './components/layout/AppLayout.tsx';
-import ErrorPage from './pages/ErrorPage.tsx';
-import HomePage from './pages/HomePage.tsx';
+import AppLayout from './components/layout/AppLayout';
+import ErrorPage from './pages/ErrorPage';
+import HomePage from './pages/HomePage';
 // concurrency
-import { ConcurrencySummaryPage } from './pages/ConcurrencySummaryPage.tsx';
-import { ConcurrencyDetailPage } from './pages/ConcurrencyDetailPage.tsx';
-import { ConcurrencyRequestPage } from './pages/ConcurrencyRequestPage.tsx';
+import { ConcurrencySummaryPage } from './pages/ConcurrencySummaryPage';
+import { ConcurrencyDetailPage } from './pages/ConcurrencyDetailPage';
+import { ConcurrencyRequestPage } from './pages/ConcurrencyRequestPage';
 // files
-import { getFile } from './components/features/file/getRecord.ts';
-import { FilePage } from './pages/FilePage.tsx';
-import { FilesPage } from './pages/FilesPage.tsx';
+import { getFile } from './components/features/file/getRecord';
+import { FilePage } from './pages/FilePage';
+import { FilesPage } from './pages/FilesPage';
 // integrations
-import { getIntegration } from './components/features/integration/getRecord.ts';
-import { IntegrationPage } from './pages/IntegrationPage.tsx';
-import { IntegrationsPage } from './pages/IntegrationsPage.tsx';
+import { getIntegration } from './components/features/integration/getRecord';
+import { IntegrationPage } from './pages/IntegrationPage';
+import { IntegrationsPage } from './pages/IntegrationsPage';
 // jobs
-import { getJob } from './components/features/job/getRecord.ts';
-import { JobPage } from './pages/JobPage.tsx';
-import { JobsPage } from './pages/JobsPage.tsx';
+import { getJob } from './components/features/job/getRecord';
+import { JobPage } from './pages/JobPage';
+import { JobsPage } from './pages/JobsPage';
 // jobRuns
-import { getJobRun } from './components/features/job/run/getRecord.ts';
-import { JobRunPage } from './pages/JobRunPage.tsx';
-import { JobRunsPage } from './pages/JobRunsPage.tsx';
+import { getJobRun } from './components/features/job/run/getRecord';
+import { JobRunPage } from './pages/JobRunPage';
+import { JobRunsPage } from './pages/JobRunsPage';
 // license
-import License from './pages/License.tsx';
+import License from './pages/License';
 // logins
-import { LoginsPage } from './pages/LoginsPage.tsx';
+import { LoginsPage } from './pages/LoginsPage';
 // roles
-import { getRole } from './components/features/role/getRecord.ts';
-import { RolePage } from './pages/RolePage.tsx';
-import { RolesPage } from './pages/RolesPage.tsx';
+import { roleLoader } from './routes/roleLoader';
+import { RolePage } from './pages/RolePage';
+import { RolesPage } from './pages/RolesPage';
 // scripts
-import { getScript } from './components/features/script/getRecord.ts';
-import { ScriptPage } from './pages/ScriptPage.tsx';
-import { ScriptsPage } from './pages/ScriptsPage.tsx';
+import { getScript } from './components/features/script/getRecord';
+import { ScriptPage } from './pages/ScriptPage';
+import { ScriptsPage } from './pages/ScriptsPage';
 // script logs
-import { getScriptLog } from './components/features/scriptLog/getRecord.ts';
-import { ScriptLogPage } from './pages/ScriptLogPage.tsx';
-import { ScriptLogsPage } from './pages/ScriptLogsPage.tsx';
+import { getScriptLog } from './components/features/scriptLog/getRecord';
+import { ScriptLogPage } from './pages/ScriptLogPage';
+import { ScriptLogsPage } from './pages/ScriptLogsPage';
 // SOAP logs
-import { getSoapLog } from './components/features/soapLog/getRecord.ts';
-import { SoapLogPage } from './pages/SoapLogPage.tsx';
-import { SoapLogsPage } from './pages/SoapLogsPage.tsx';
+import { getSoapLog } from './components/features/soapLog/getRecord';
+import { SoapLogPage } from './pages/SoapLogPage';
+import { SoapLogsPage } from './pages/SoapLogsPage';
 // settings
-import { getSettings } from './components/features/settings/getSettings.ts';
-import { SettingsPage } from './pages/SettingsPage.tsx';
+import { getSettings } from './components/features/settings/getSettings';
+import { SettingsPage } from './pages/SettingsPage';
 // tokens
-import { getToken } from './components/features/token/getRecord.ts';
-import { TokenPage } from './pages/TokenPage.tsx';
-import { TokensPage } from './pages/TokensPage.tsx';
+import { getToken } from './components/features/token/getRecord';
+import { TokenPage } from './pages/TokenPage';
+import { TokensPage } from './pages/TokensPage';
 // users
 import { userLoader } from './routes/userLoader';
 import { UserPage } from './pages/UserPage';
@@ -79,7 +81,7 @@ export const router = createHashRouter([
       {
         path: 'file/:id',
         element: <FilePage />,
-        loader: async ({ params }) => defer({ file: getFile(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> => defer({ file: getFile(Number(params.id)) }),
       },
       {
         path: 'files',
@@ -92,7 +94,8 @@ export const router = createHashRouter([
       {
         path: 'integration/:id',
         element: <IntegrationPage />,
-        loader: async ({ params }) => defer({ integration: getIntegration(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> =>
+          defer({ integration: getIntegration(Number(params.id)) }),
       },
       {
         path: 'integrations',
@@ -101,7 +104,7 @@ export const router = createHashRouter([
       {
         path: 'job/:id',
         element: <JobPage />,
-        loader: async ({ params }) => await getJob(Number(params.id)),
+        loader: async ({ params }): Promise<Awaited<ReturnType<typeof getJob>>> => await getJob(Number(params.id)),
       },
       {
         path: 'jobs',
@@ -110,7 +113,8 @@ export const router = createHashRouter([
       {
         path: 'jobRun/:id',
         element: <JobRunPage />,
-        loader: async ({ params }) => defer({ jobRun: getJobRun(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> =>
+          defer({ jobRun: getJobRun(Number(params.id)) }),
       },
       {
         path: 'jobRuns',
@@ -123,7 +127,7 @@ export const router = createHashRouter([
       {
         path: 'role/:id',
         element: <RolePage />,
-        loader: async ({ params }) => defer({ role: getRole(Number(params.id)) }),
+        loader: roleLoader,
       },
       {
         path: 'roles',
@@ -132,7 +136,8 @@ export const router = createHashRouter([
       {
         path: 'script/:id',
         element: <ScriptPage />,
-        loader: async ({ params }) => defer({ script: getScript(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> =>
+          defer({ script: getScript(Number(params.id)) }),
       },
       {
         path: 'scripts',
@@ -141,7 +146,8 @@ export const router = createHashRouter([
       {
         path: 'scriptLog/:id',
         element: <ScriptLogPage />,
-        loader: async ({ params }) => defer({ scriptLog: getScriptLog(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> =>
+          defer({ scriptLog: getScriptLog(Number(params.id)) }),
       },
       {
         path: 'scriptLogs/:script?',
@@ -154,17 +160,18 @@ export const router = createHashRouter([
       {
         path: 'soapLog/:id',
         element: <SoapLogPage />,
-        loader: async ({ params }) => defer({ soapLog: getSoapLog(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> =>
+          defer({ soapLog: getSoapLog(Number(params.id)) }),
       },
       {
         path: 'settings',
         element: <SettingsPage />,
-        loader: async () => defer({ settings: getSettings() }),
+        loader: async (): Promise<ReturnType<typeof defer>> => defer({ settings: getSettings() }),
       },
       {
         path: 'token/:id',
         element: <TokenPage />,
-        loader: async ({ params }) => defer({ token: getToken(Number(params.id)) }),
+        loader: async ({ params }): Promise<ReturnType<typeof defer>> => defer({ token: getToken(Number(params.id)) }),
       },
       {
         path: 'tokens',
@@ -183,6 +190,10 @@ export const router = createHashRouter([
   },
 ]);
 
-export default function Routes() {
+/**
+ * Provides the application's router.
+ * @returns The router provider component.
+ */
+export default function Routes(): JSX.Element {
   return <RouterProvider router={router} />;
 }
