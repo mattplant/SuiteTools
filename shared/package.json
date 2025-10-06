@@ -16,6 +16,13 @@
         "directory": "shared"
     },
     "license": "GPL-3.0-or-later",
+    "keywords": [
+        "netsuite",
+        "suitescript",
+        "suitecloud",
+        "typescript",
+        "utilities"
+    ],
     "exports": {
         ".": {
             "require": "./dist/index.js",
