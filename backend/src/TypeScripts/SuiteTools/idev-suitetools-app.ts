@@ -238,7 +238,7 @@ export class SuiteToolsAppView {
   private getPageFooterComments(): string {
     log.debug({ title: 'SuiteToolsAppView:getPageFooterComments() initiated', details: null });
     const lines = [];
-    lines.push('<!-- SuiteTools Application' + ' -->');
+    lines.push('<!-- SuiteTools Application -->');
     lines.push('<!-- appUrl: ' + this._stApp.stCommon.appUrl + ' -->');
     lines.push('<!-- apiUrl: ' + this.stApp.apiUrl + ' -->');
     lines.push('<!-- NetSuite -->');

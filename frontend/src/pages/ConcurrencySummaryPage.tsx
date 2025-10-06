@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/concurrency/summary/types.ts';
-import { getConcurrencySummary } from '../components/concurrency/summary/getRecords.ts';
-import { RecordCriteria } from '../components/concurrency/summary/RecordCriteria.tsx';
-import { ConcurrencySummaryData } from '../components/concurrency/summary/types.ts';
-import { ConcurrencySummaryOverview } from '../components/concurrency/summary/Overview.tsx';
-import { ConcurrencySummaryHeatMapWrapper } from '../components/concurrency/summary/heatMap/Wrapper.tsx';
-import { ConcurrencySummaryViolations } from '../components/concurrency/summary/Violations.tsx';
-// import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average.tsx';
-import { useAppSettingsContext } from '../components/AppSettingsContext.tsx';
+import type { CriteriaFields } from '../components/features/concurrency/summary/types';
+import { getConcurrencySummary } from '../components/features/concurrency/summary/getRecords';
+import { RecordCriteria } from '../components/features/concurrency/summary/RecordCriteria';
+import type { ConcurrencySummaryData } from '../components/features/concurrency/summary/types';
+import { ConcurrencySummaryOverview } from '../components/features/concurrency/summary/Overview';
+import { ConcurrencySummaryHeatMapWrapper } from '../components/features/concurrency/summary/heatMap/Wrapper';
+import { ConcurrencySummaryViolations } from '../components/features/concurrency/summary/Violations';
+// import { ConcurrencySummaryAverage } from '../components/concurrency/summary/Average';
+import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
 
 export function ConcurrencySummaryPage() {
   const { settings } = useAppSettingsContext();
   const defaultCriteria: CriteriaFields = {
-    dateRange: '1',
+    startDate: new Date(),
+    endDate: new Date(),
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ConcurrencySummaryData>();

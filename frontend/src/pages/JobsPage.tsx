@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getJob } from '../components/job/getRecord.ts';
-import { getJobs } from '../components/job/getRecords.ts';
-import { Job } from '../components/job/types.ts';
-import { RecordCriteria } from '../components/job/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getJob } from '../components/features/job/getRecord';
+import { getJobs } from '../components/features/job/getRecords';
+import type { Jobs } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/job/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function JobsPage() {
   const defaultCriteria: CriteriaFields = {
     active: 'T',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Job[]>([]);
+  const [results, setResults] = useState<Jobs>([]);
 
   useEffect(() => {
     async function fetchData() {

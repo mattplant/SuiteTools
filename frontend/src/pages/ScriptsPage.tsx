@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getScript } from '../components/script/getRecord.ts';
-import { getScripts } from '../components/script/getRecords.ts';
-import { Script } from '../components/script/types.ts';
-import { RecordCriteria } from '../components/script/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getScript } from '../components/features/script/getRecord';
+import { getScripts } from '../components/features/script/getRecords';
+import type { Scripts } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/script/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function ScriptsPage() {
   const defaultCriteria: CriteriaFields = {
@@ -17,7 +17,7 @@ export function ScriptsPage() {
     versions: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Script[]>([]);
+  const [results, setResults] = useState<Scripts>([]);
 
   useEffect(() => {
     async function fetchData() {

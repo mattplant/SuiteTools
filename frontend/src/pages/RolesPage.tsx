@@ -1,21 +1,27 @@
-import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getRole } from '../components/role/getRecord.ts';
-import { getRoles } from '../components/role/getRecords.ts';
-import { Role } from '../components/role/types.ts';
-import { RecordCriteria } from '../components/role/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+// SPDX-License-Identifier: GPL-3.0-or-later
 
-export function RolesPage() {
+import { useEffect, useState } from 'react';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getRole } from '../adapters/api/role';
+import { getRoles } from '../adapters/api/roles';
+import type { Roles } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/role/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
+
+/**
+ * Renders the Roles page, allowing users to view and filter roles.
+ * @returns The rendered Roles page component.
+ */
+export function RolesPage(): React.ReactElement {
   const defaultCriteria: CriteriaFields = {
     active: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Role[]>([]);
+  const [results, setResults] = useState<Roles>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       try {
         const data = await getRoles(criteria);
         if (!('message' in data)) {
@@ -27,7 +33,7 @@ export function RolesPage() {
     }
     fetchData();
 
-    return () => {};
+    return (): void => {};
   }, [criteria]);
 
   return (

@@ -1,0 +1,8 @@
+# .gitignore for SuiteTools shared workspace
+
+# build outputs
+dist/
+*.tsbuildinfo
+
+# Rollup build cache
+.rollup.cache

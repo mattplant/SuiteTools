@@ -1,0 +1,53 @@
+{
+    "name": "@suiteworks/suitetools-shared",
+    "displayName": "SuiteTools Shared",
+    "description": "Shared utilities for SuiteTools",
+    "version": "0.1.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "private": true,
+    "author": {
+        "name": "Matthew Plant",
+        "url": "https://github.com/mattplant"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mattplant/SuiteTools",
+        "directory": "shared"
+    },
+    "license": "GPL-3.0-or-later",
+    "keywords": [
+        "netsuite",
+        "suitescript",
+        "suitecloud",
+        "typescript",
+        "utilities"
+    ],
+    "exports": {
+        ".": {
+            "require": "./dist/index.js",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "scripts": {
+        "build": "yarn build:types && yarn build:bundle",
+        "build:types": "yarn pnpify tsc -b --verbose",
+        "build:bundle": "rollup -c",
+        "watch": "yarn pnpify tsc -b --watch --verbose --diagnostics --listEmittedFiles",
+        "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+        "clean-local": "rm -rf dist tsconfig.tsbuildinfo",
+        "test": "echo \"No tests specified\" && exit 0"
+    },
+    "dependencies": {
+        "zod": "^4.0.14"
+    },
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^16.0.1",
+        "@rollup/plugin-sucrase": "^5.0.2",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@yarnpkg/pnpify": "^4.1.5",
+        "eslint": "^9.32.0",
+        "rollup": "^4.52.3"
+    }
+}

@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import { useLoaderData, Await } from 'react-router-dom';
-import { assertIsSettings } from '../components/settings/getSettings';
-import { Settings, NewSettings } from '../components/settings/types';
-import { SettingsResult } from '../components/settings/SettingsResult';
-import { saveSettings } from '../components/settings/saveSettings';
-import { NewSettingsForm } from '../components/settings/NewSettingsForm';
+import { assertIsSettings } from '../components/features/settings/getSettings';
+import { Settings, NewSettings } from '../components/features/settings/types';
+import { SettingsResult } from '../components/features/settings/SettingsResult';
+import { saveSettings } from '../components/features/settings/saveSettings';
+import { NewSettingsForm } from '../components/features/settings/NewSettingsForm';
 
 export function SettingsPage() {
   const data = useLoaderData();

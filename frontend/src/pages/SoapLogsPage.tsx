@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getSoapLog } from '../components/soapLog/getRecord.ts';
-import { getSoapLogs } from '../components/soapLog/getRecords.ts';
-import { SoapLog } from '../components/soapLog/types.ts';
-import { RecordCriteria } from '../components/soapLog/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getSoapLog } from '../components/features/soapLog/getRecord';
+import { getSoapLogs } from '../components/features/soapLog/getRecords';
+import type { SoapLogs } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/soapLog/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
 
 export function SoapLogsPage() {
   const defaultCriteria: CriteriaFields = {
     integrations: [''],
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<SoapLog[]>([]);
+  const [results, setResults] = useState<SoapLogs>([]);
 
   useEffect(() => {
     async function fetchData() {

@@ -1,0 +1,30 @@
+# .gitignore for SuiteTools monorepo project
+# Applies to all workspaces unless overridden locally
+
+# system files
+.DS_Store
+
+# logs
+*.log
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# Yarn
+.pnp.*
+!.pnp.cjs
+.yarn/builds/
+.yarn/cache/
+.yarn/install-state.gz
+.yarn/patches/
+.yarn/unplugged/
+node_modules
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Local commit message drafts to be prevented from being committed
+commit-draft.md

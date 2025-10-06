@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getScriptLog } from '../components/scriptLog/getRecord.ts';
-import { getScriptLogs } from '../components/scriptLog/getRecords.ts';
-import { ScriptLog } from '../components/scriptLog/types.ts';
-import { RecordCriteria } from '../components/scriptLog/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getScriptLog } from '../components/features/scriptLog/getRecord';
+import { getScriptLogs } from '../components/features/scriptLog/getRecords';
+import type { ScriptLogs } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
+import { useInlineMessage } from '../hooks/useInlineMessage';
 
 export function ScriptLogsPage() {
   const defaultCriteria: CriteriaFields = {
@@ -16,7 +17,10 @@ export function ScriptLogsPage() {
     scripttypes: [''],
     scriptnames: [''],
     owners: [''],
-    createddate: '15',
+    timemode: 'now',
+    createddate: '15', // default to last 15 minutes
+    customdatetime: undefined, // will be set by SearchCriteriaAdvancedTimePicker
+    customduration: '1', // default to 1 minute
     title: '',
     detail: '',
   };
@@ -27,13 +31,18 @@ export function ScriptLogsPage() {
     defaultCriteria.levels = ['']; // clear the level criteria
   }
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<ScriptLog[]>([]);
+  const [results, setResults] = useState<ScriptLogs>([]);
+  const { setMessage, clearMessage } = useInlineMessage();
 
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await getScriptLogs(criteria);
-        if (!('message' in data)) {
+        if ('message' in data) {
+          console.error('Error fetching script logs:', data.message);
+          setMessage({ text: data.message, type: 'warning' });
+        } else {
+          clearMessage();
           setResults(data);
         }
       } catch (error) {

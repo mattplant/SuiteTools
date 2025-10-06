@@ -1,3 +1,5 @@
+// TODO: remove after verifying refactored netSuiteClient.ts works as expected
+
 import { PostEndpoint, PutEndpoint, RequestBody, RequestResponse, HttpResponse } from './types';
 
 enum HttpMethod {

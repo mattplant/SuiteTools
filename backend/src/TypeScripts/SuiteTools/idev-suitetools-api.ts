@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API
  *
@@ -24,24 +26,49 @@
  * @NScriptType Restlet
  */
 
-import { EntryPoints } from 'N/types';
+import type { EntryPoints } from 'N/types';
 import * as error from 'N/error';
 import * as log from 'N/log';
 import * as task from 'N/task';
 import { SuiteToolsCommon } from './idev-suitetools-common';
+import { NotFoundError, SuiteError } from 'SuiteScripts/SuiteTools/idev-suitetools-shared';
+import type { ErrorResponse } from 'SuiteScripts/SuiteTools/idev-suitetools-shared';
 
 /**
  * Handles the GET request event.
  *
  * @param requestParams The request parameters.
- * @returns The response.
+ * @returns The serialized JSON response.
  */
 export function get(requestParams: EntryPoints.RESTlet.get): string {
   // log.debug({ title: 'get() initiated', details: requestParams });
   const stApi = new SuiteToolsApi();
-  const response = JSON.stringify(stApi.stApiGet.process(requestParams));
 
-  return response;
+  try {
+    const response = stApi.stApiGet.process(requestParams);
+    return JSON.stringify(response);
+  } catch (err: unknown) {
+    if (err instanceof SuiteError) {
+      // Map SuiteError subclasses into a structured error response
+      const status = err instanceof NotFoundError ? 404 : 400;
+      const errorResponse: ErrorResponse = {
+        status,
+        code: err.code,
+        message: err.message,
+        severity: err.severity,
+        context: err.context,
+      };
+      return JSON.stringify(errorResponse);
+    }
+
+    // Fallback for unexpected errors
+    const errorResponse = {
+      status: 500,
+      code: 'UNEXPECTED',
+      message: 'Internal server error',
+    };
+    return JSON.stringify(errorResponse);
+  }
 }
 
 /**
@@ -138,7 +165,7 @@ export class SuiteToolsApi {
 type RequestParams = { [key: string]: string };
 
 export type Response = {
-  status?: number;
+  status: number;
   data: object;
   message?: string;
 };
@@ -162,81 +189,100 @@ export class SuiteToolsApiGet {
   public process(requestParams: unknown): Response {
     log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
     this.assertIsGetRequestParams(requestParams);
-    let response: Response = { data: null };
-    const endpoint = requestParams.endpoint;
-    switch (endpoint) {
-      case 'file':
-        response = this.getFile(requestParams);
-        break;
-      case 'files':
-        response = this.getFiles(requestParams);
-        break;
-      case 'job':
-        response = this.getJob(requestParams);
-        response.data = this.cleanJobData(response.data);
-        response.data = this.addJobLastRun(response.data);
-        break;
-      case 'jobs':
-        response = this.getJobs(requestParams);
-        response = this.cleanJobsData(response);
-        break;
-      case 'jobRun':
-        response = this.getJobRun(requestParams);
-        break;
-      case 'jobRuns':
-        response = this.getJobRuns(requestParams);
-        break;
-      case 'logins':
-        response = this.getLogins(requestParams);
-        response = this.cleanLoginsData(response);
-        break;
-      case 'optionValues':
-        response = this.stApiGetOptions.process(requestParams);
-        break;
-      case 'role':
-        response = this.getRole(requestParams);
-        response.data = this.cleanRoleData(response.data);
-        break;
-      case 'roles':
-        response = this.getRoles(requestParams);
-        response = this.cleanRolesData(response);
-        break;
-      case 'script':
-        response = this.getScript(requestParams);
-        response.data = this.cleanScriptData(response.data);
-        break;
-      case 'scripts':
-        response = this.getScripts(requestParams);
-        response = this.cleanScriptsData(response);
-        break;
-      case 'scriptLog':
-        response = this.getScriptLog(requestParams);
-        break;
-      case 'scriptLogs':
-        response = this.getScriptLogs(requestParams);
-        break;
-      case 'settings':
-        response = this.getSettings();
-        break;
-      case 'user':
-        response = this.getUser(requestParams);
-        response.data = this.cleanUserData(response.data);
-        response.data = this.addUserLastLogin(response.data);
-        break;
-      case 'users':
-        response = this.getUsers(requestParams);
-        response = this.cleanUsersData(response);
-        response = this.addUsersLastLogins(response);
-        break;
-      default:
-        throw error.create({
-          name: 'SUITE_TOOLS_INVALID_PARAMETER',
-          message: `Invalid parameter: endpoint=${endpoint}`,
-          notifyOff: true,
-        });
-    }
 
-    return response;
+    try {
+      let response: Response;
+
+      const endpoint = requestParams.endpoint;
+      switch (endpoint) {
+        case 'file':
+          response = this.getFile(requestParams);
+          break;
+        case 'files':
+          response = this.getFiles(requestParams);
+          break;
+        case 'job':
+          response = this.getJob(requestParams);
+          response.data = this.cleanJobData(response.data);
+          response.data = this.addJobLastRun(response.data);
+          break;
+        case 'jobs':
+          response = this.getJobs(requestParams);
+          response = this.cleanJobsData(response);
+          break;
+        case 'jobRun':
+          response = this.getJobRun(requestParams);
+          break;
+        case 'jobRuns':
+          response = this.getJobRuns(requestParams);
+          break;
+        case 'logins':
+          response = this.getLogins(requestParams);
+          response = this.cleanLoginsData(response);
+          break;
+        case 'optionValues':
+          response = this.stApiGetOptions.process(requestParams);
+          break;
+        case 'role':
+          response = this.getRole(requestParams);
+          response.data = this.cleanRoleData(response.data);
+          break;
+        case 'roles':
+          response = this.getRoles(requestParams);
+          response = this.cleanRolesData(response);
+          break;
+        case 'script':
+          response = this.getScript(requestParams);
+          response.data = this.cleanScriptData(response.data);
+          break;
+        case 'scripts':
+          response = this.getScripts(requestParams);
+          response = this.cleanScriptsData(response);
+          break;
+        case 'scriptLog':
+          response = this.getScriptLog(requestParams);
+          break;
+        case 'scriptLogs':
+          response = this.getScriptLogs(requestParams);
+          break;
+        case 'settings':
+          response = this.getSettings();
+          break;
+        case 'user':
+          response = this.getUser(requestParams);
+          response.data = this.cleanUserData(response.data);
+          response.data = this.addUserLastLogin(response.data);
+          break;
+        case 'users':
+          response = this.getUsers(requestParams);
+          response = this.cleanUsersData(response);
+          response = this.addUsersLastLogins(response);
+          break;
+        default:
+          throw error.create({
+            // TODO: handle with new error handling functionality
+            name: 'SUITE_TOOLS_INVALID_PARAMETER',
+            message: `Invalid parameter: endpoint=${endpoint}`,
+            notifyOff: true,
+          });
+      }
+
+      log.debug({ title: 'get() response', details: response });
+
+      return response;
+    } catch (err) {
+      // Let SuiteError subclasses bubble up
+      if (err instanceof SuiteError) {
+        throw err;
+      }
+
+      // Wrap unexpected errors // TODO: create UnexpectedError subclass
+      throw error.create({
+        name: 'SUITE_TOOLS_UNEXPECTED',
+        message: `Unexpected error in process(): ${String(err)}`,
+        notifyOff: false,
+      });
+    }
   }
 
   private assertIsGetRequestParams(data: unknown): asserts data is RequestParams {
@@ -678,16 +724,69 @@ export class SuiteToolsApiGet {
     const types = this.convertMultiSelectToArray(requestParams['scripttypes']);
     const scripts = this.convertMultiSelectToArray(requestParams['scriptnames']);
     const owners = this.convertMultiSelectToArray(requestParams['owners']);
-    const date = requestParams['createddate'] ? requestParams['createddate'] : '15';
+    const timemode = requestParams['timemode'] ? requestParams['timemode'] : 'now';
+    // if timemode is 'custom', then customdatetime and customduration are required
+    let date = requestParams['createddate'] ? requestParams['createddate'] : '15';
+    let customdatetime = requestParams['customdatetime'];
+    let customduration = requestParams['customduration'];
     const title = requestParams['title'];
     const detail = requestParams['detail'];
+
+    // verify required parameters
+    if (timemode === 'now') {
+      // verity that createddate is set
+      if (!date || date === '') {
+        throw error.create({
+          name: 'SUITE_TOOLS_MISSING_PARAMETER',
+          message: `Missing required parameter for 'now' time mode: createddate`,
+          notifyOff: true,
+        });
+      }
+      // clear customdatetime and customduration if they are set
+      if (customdatetime) {
+        log.debug({
+          title: 'SuiteToolsApiGet:getScriptLogs()',
+          details: `Clearing 'customdatetime' since 'now' time mode`,
+        });
+        customdatetime = null;
+      }
+      if (customduration) {
+        log.debug({
+          title: 'SuiteToolsApiGet:getScriptLogs()',
+          details: `Clearing 'customduration' for 'now' time mode`,
+        });
+        customduration = null;
+      }
+    }
+    // if timemode is 'custom', then customdatetime and customduration are required
+    if (timemode === 'custom') {
+      // verify that customdatetime and customduration are set
+      if (!customdatetime || !customduration) {
+        throw error.create({
+          name: 'SUITE_TOOLS_MISSING_PARAMETER',
+          message: `Both 'customdatetime' and 'customduration' are required for 'custom' time mode`,
+          notifyOff: true,
+        });
+      }
+      // clear date if it is set
+      if (date && date !== '') {
+        log.debug({
+          title: 'SuiteToolsApiGet:getScriptLogs()',
+          details: `Clearing 'date' since 'custom' time mode`,
+        });
+        date = '';
+      }
+    }
     const result = this.stApi.stApiModel.getScriptLogsViaSuiteQL(
       row,
       levels,
       types,
       scripts,
       owners,
+      timemode,
       date,
+      customdatetime,
+      customduration,
       title,
       detail,
     );
@@ -736,7 +835,7 @@ export class SuiteToolsApiGet {
       isAdmin: this.stApi.stCommon.isAdmin, // method based of the runtime object getCurrentUser() method role value
     };
 
-    return { data: result };
+    return { status: 200, data: result };
   }
 
   /**
@@ -840,7 +939,7 @@ export class SuiteToolsApiGetOptions {
       result = optionValues;
     }
 
-    return { data: result };
+    return { status: 200, data: result };
   }
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
@@ -1132,7 +1231,7 @@ export class SuiteToolsApiModel {
   public getFile(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getFile() initiated`, details: { id: id } });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       file.id,
       file.folder,
@@ -1178,7 +1277,7 @@ export class SuiteToolsApiModel {
     //     modifiedDate: modifiedDate,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       file.id,
       file.folder,
@@ -1256,7 +1355,7 @@ export class SuiteToolsApiModel {
    */
   public getJob(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getJob() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
       ${customRecord}.id,
@@ -1293,7 +1392,7 @@ export class SuiteToolsApiModel {
     //     active: active,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job';
     let sql = `SELECT
       ${customRecord}.id,
@@ -1335,7 +1434,7 @@ export class SuiteToolsApiModel {
   public getJobRun(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getJobRun() initiated`, details: { id: id } });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     const sql = `SELECT
       ${customRecord}.id,
@@ -1375,7 +1474,7 @@ export class SuiteToolsApiModel {
     //     completed: completed,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     let sql = `SELECT
       ${customRecord}.id,
@@ -1444,7 +1543,7 @@ export class SuiteToolsApiModel {
       },
     });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       TO_CHAR ( loginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
       loginAudit.status,
@@ -1559,7 +1658,7 @@ export class SuiteToolsApiModel {
    */
   public getRole(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getRole() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       role.id,
       role.scriptId,
@@ -1576,7 +1675,7 @@ export class SuiteToolsApiModel {
       role.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      response.message = `No role found with id of ${id}`;
+      throw new NotFoundError('Role', id);
     } else {
       response.data = sqlResults[0];
     }
@@ -1598,7 +1697,7 @@ export class SuiteToolsApiModel {
     //   },
     // });
 
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       role.id,
       role.scriptId,
@@ -1642,7 +1741,7 @@ export class SuiteToolsApiModel {
    */
   public getScript(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getScript() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       script.id,
       script.apiversion,
@@ -1693,7 +1792,7 @@ export class SuiteToolsApiModel {
     //   title: `SuiteToolsApiModel:getScripts() initiated`,
     //   details: { active: active, versions: versions, types: types, scripts: scripts, owners: owners, files: files },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       script.id,
       script.apiversion,
@@ -1783,7 +1882,7 @@ export class SuiteToolsApiModel {
     //     id: id,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -1991,7 +2090,10 @@ export class SuiteToolsApiModel {
    * @param types - types of script
    * @param scripts - the scripts to return records for
    * @param owners - the script owners to return records for
+   * @param timemode - the time mode (now or custom)
    * @param date - the dates to return records for
+   * @param customdatetime - the custom date and time to return records for
+   * @param customduration - the custom duration to return records for
    * @param title - the title contains this string
    * @param detail - the detail contains this string
    * @returns script logs
@@ -2003,24 +2105,30 @@ export class SuiteToolsApiModel {
     types: string[],
     scripts: string[],
     owners: string[],
+    timemode: string,
     date: string,
+    customdatetime: string,
+    customduration: string,
     title: string,
     detail: string,
   ): Response {
     // log.debug({
     //   title: `SuiteToolsApiModel:getScriptLogsViaSuiteQL() initiated`,
     //   details: {
-    //     rows: row,
+    //     row: row,
     //     levels: levels,
     //     types: types,
     //     scripts: scripts,
     //     owners: owners,
-    //     dates: date,
+    //     timemode: timemode,
+    //     date: date,
+    //     customdatetime: customdatetime,
+    //     customduration: customduration,
     //     title: title,
     //     detail: detail,
     //   },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -2065,7 +2173,18 @@ export class SuiteToolsApiModel {
         where.push(`owner IN (${owners.join(',')})`);
       }
     }
-    this.addDateFilter(where, 'SuiteToolsApiModel:getScriptLogsViaSuiteQL()', 'ScriptNote', 'date', date);
+    if (timemode === 'custom') {
+      this.addCustomDateFilter(
+        where,
+        'SuiteToolsApiModel:getScriptLogsViaSuiteQL()',
+        'ScriptNote',
+        'date',
+        customdatetime,
+        customduration,
+      );
+    } else {
+      this.addDateFilter(where, 'SuiteToolsApiModel:getScriptLogsViaSuiteQL()', 'ScriptNote', 'date', date);
+    }
     if (title) {
       where.push(`ScriptNote.title LIKE '%${title}%'`);
     }
@@ -2075,7 +2194,8 @@ export class SuiteToolsApiModel {
     if (where.length > 0) {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
-    sql += ` ORDER BY ScriptNote.internalId DESC`;
+    // add order by
+    sql += ` ORDER BY ScriptNote.date DESC`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No script log records found`;
@@ -2094,7 +2214,7 @@ export class SuiteToolsApiModel {
    */
   public getUser(id: string): Response {
     // log.debug({ title: `SuiteToolsApiModel:getUser() initiated`, details: { id: id } });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       employee.id,
       employee.isinactive,
@@ -2120,6 +2240,7 @@ export class SuiteToolsApiModel {
       employee.title`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
+      response.status = 404;
       response.message = `No user found with id of ${id}`;
     } else {
       response.data = sqlResults[0];
@@ -2138,7 +2259,7 @@ export class SuiteToolsApiModel {
     //   title: `SuiteToolsApiModel:getUsers() initiated`,
     //   details: { active: active, roles: roles, supervisors: supervisors },
     // });
-    const response: Response = { data: {} };
+    const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       employee.id,
       employee.isinactive,
@@ -2221,7 +2342,7 @@ export class SuiteToolsApiModel {
    */
   private addDateFilter(where: string[], functionName: string, table: string, field: string, dates: string | string[]) {
     // log.debug({
-    //   title: `SuiteToolsApiModel:dateFilter() initiated`,
+    //   title: `SuiteToolsApiModel:addDateFilter() initiated`,
     //   details: { where: where, functionName: functionName, table: table, field: field, dates: dates },
     // });
     if (dates) {
@@ -2272,6 +2393,105 @@ export class SuiteToolsApiModel {
             break;
         }
       }
+    }
+  }
+
+  /**
+   * Adds custom date filter to where clause.
+   *
+   * @param where - the where clause
+   * @param functionName - the function
+   * @param table - the SuiteQL table
+   * @param field - the table date field
+   * @param datestring - date (epoch timestamp) in string format
+   * @param customDuration - the custom duration to filter on
+   */
+  private addCustomDateFilter(
+    where: string[],
+    functionName: string,
+    table: string,
+    field: string,
+    dateString: string,
+    customDuration: string,
+  ) {
+    // log.debug({
+    //   title: `SuiteToolsApiModel:addCustomDateFilter() initiated`,
+    //   details: {
+    //     where: where,
+    //     functionName: functionName,
+    //     table: table,
+    //     field: field,
+    //     dateString: dateString,
+    //     customDuration: customDuration,
+    //   },
+    // });
+    // check if date is valid epoch timestamp
+    const date = Number(dateString);
+    if (typeof date === 'number' && !isNaN(date)) {
+      // if date is in milliseconds, convert to seconds
+      const epoch = date > 9999999999 ? Math.floor(date / 1000) : date;
+      // convert epoch timestamp to UTC date string
+      const utcDate = new Date(epoch * 1000);
+      // adjust for timezone offset (convert to local time)
+      const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
+      const formattedDate = localDate
+        .toISOString()
+        .replace('T', ' ')
+        .replace(/\.000Z$/, '');
+      // add the date filter to the where clause
+      where.push(`${field} <= TO_DATE('${formattedDate}', 'YYYY-MM-DD HH24:MI:SS')`);
+      // calculate the duration based on customDuration if provided
+      let duration = 0;
+      switch (customDuration) {
+        case '0':
+          // no filter
+          break;
+        case '1': // 1 minute
+          duration = 60; // 1 minute in seconds
+          break;
+        case '15': // 15 minutes
+          duration = 15 * 60; // 15 minutes in seconds
+          break;
+        case 'hour':
+          duration = 60 * 60; // 1 hour in seconds
+          break;
+        case 'day':
+          duration = 24 * 60 * 60; // 24 hours in seconds
+          break;
+        case 'week': // 7 days
+          duration = 7 * 24 * 60 * 60; // 7 days in seconds
+          break;
+        case 'month': // 31 days
+          duration = 31 * 24 * 60 * 60; // 31 days in seconds
+          break;
+        default:
+          log.error({
+            title: `${functionName} invalid object customDuration values for ${table}.${field}`,
+            details: customDuration,
+          });
+          break;
+      }
+      if (duration > 0) {
+        // add custom duration to the where clause
+        const durationDate = new Date(localDate.getTime() - duration * 1000);
+        const formattedDurationDate = durationDate
+          .toISOString()
+          .replace('T', ' ')
+          .replace(/\.000Z$/, '');
+        where.push(`${field} >= TO_DATE('${formattedDurationDate}', 'YYYY-MM-DD HH24:MI:SS')`);
+      }
+    } else if (typeof date === 'number' && isNaN(date)) {
+      log.error({
+        title: `${functionName} invalid date number for ${table}.${field}`,
+        details: date,
+      });
+      return;
+    } else {
+      log.error({
+        title: `${functionName} invalid object date values for ${table}.${field}`,
+        details: date,
+      });
+      return;
     }
   }
 }

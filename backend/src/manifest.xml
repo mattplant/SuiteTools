@@ -3,6 +3,10 @@
   <frameworkversion>1.0</frameworkversion>
   <dependencies>
     <features>
+      <feature required="false">CRM</feature>
+      <feature required="true">CUSTOMRECORDS</feature>
+      <feature required="false">EXTREMELIST</feature>
+      <feature required="false">MAILMERGE</feature>
       <feature required="true">SERVERSIDESCRIPTING</feature>
     </features>
   </dependencies>

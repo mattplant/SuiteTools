@@ -1,25 +1,41 @@
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
+// SPDX-License-Identifier: GPL-3.0-or-later
 
-    /* Bundler mode */
+// frontend workspace tsconfig.json
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    /* Language and Syntax Support */
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "useDefineForClassFields": true,
+    "jsx": "react-jsx",
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+
+    /* File Handling & Modules */
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+
+    /* Type System Behavior */
+    "strict": true,
+    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": false, // TODO: enable later after updating types with zod
+    "types": ["vite/client"],
+    "typeRoots": ["./node_modules", "./node_modules/@types"],
 
     /* Linting */
-    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Monorepo Support */
+    "composite": true
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "src/vite-env.d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "../shared" }]
+
+  // TODO: cleanup of settings. remove the redundant settings since extends "../tsconfig.base.json" and also look into if I need the following in the references section: "path": "./tsconfig.node.json"
 }

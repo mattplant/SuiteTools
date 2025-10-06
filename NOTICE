@@ -1,0 +1,42 @@
+# NOTICE
+
+> Part of the SuiteTools governance set.
+> See `/docs/governance` for related policies and resources.
+
+Last updated: September 22, 2025
+
+---
+
+**SuiteTools — the missing NetSuite tools**
+Copyright © 2025 [Matthew Plant](https://github.com/mattplant)
+
+<!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+
+---
+
+## 📜 License Overview
+
+- **Source code** is licensed under [GPL‑3.0‑or‑later](./LICENSE).
+- **Documentation** (onboarding guides, diagrams, taxonomy references) is licensed under [CC BY 4.0](./LICENSE-DOCS.md).
+
+---
+
+## 🏷️ Attribution Formats
+
+Attribution formats and reuse snippets are available in [`docs/ATTRIBUTION.md`](./docs/ATTRIBUTION.md), including Markdown and plaintext templates for downstream documentation reuse.
+
+---
+
+## 📦 Third‑Party Dependencies
+
+- All third‑party dependencies are listed in [`package.json`](./package.json) and governed by their respective licenses.
+- Contributors are responsible for ensuring that all direct and transitive dependencies are compatible with GPL‑3.0‑or‑later.
+
+---
+
+## 🧭 Stewardship Note
+
+This NOTICE file provides attribution and licensing context.
+It does not modify the terms of any license referenced herein.

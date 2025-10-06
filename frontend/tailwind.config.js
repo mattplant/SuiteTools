@@ -1,12 +1,17 @@
-import flowbite from 'flowbite-react/tailwind';
+// tailwind.config.js
+const flowbitePlugin = require('flowbite/plugin');
 
-/** @type {import('tailwindcss').Config} */
-import forms from '@tailwindcss/forms';
-
-export default {
-  content: ['./src/**/*.{js,jsx,ts,tsx}', flowbite.content()],
+module.exports = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './node_modules/flowbite-react/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'suite-gray': '#e5e7eb',
+      },
+      spacing: {
+        'suite-gap': '1.25rem',
+      },
+    },
   },
-  plugins: [forms, flowbite.plugin()],
+  plugins: [flowbitePlugin],
 };

@@ -1,14 +1,13 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { assertIsUser, User } from '../components/user/types';
-import { UserResult } from '../components/user/RecordResult';
-import { UserLogins } from '../components/user/UserLogins';
-import { UserTokens } from '../components/user/UserTokens';
+import { UserBundle } from '@suiteworks/suitetools-shared';
+import { UserResult } from '../components/features/user/RecordResult';
+import { UserLogins } from '../components/features/user/UserLogins';
+import { UserTokens } from '../components/features/user/UserTokens';
+import type { UserLoaderData } from '../routes/userLoader';
 
 export function UserPage() {
-  const data = useLoaderData();
-  assertIsData(data);
-
+  const data = useLoaderData() as UserLoaderData;
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">User</h2>
@@ -16,7 +15,9 @@ export function UserPage() {
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.user}>
           {(record) => {
-            assertIsUser(record);
+            // TODO: is this now redundant?
+            UserBundle.assert(record);
+
             return (
               <>
                 <UserResult data={record} />
@@ -29,20 +30,4 @@ export function UserPage() {
       </Suspense>
     </div>
   );
-}
-
-type Data = {
-  user: User;
-};
-
-function assertIsData(data: unknown): asserts data is Data {
-  if (typeof data !== 'object') {
-    throw new Error('Data is not an object');
-  }
-  if (data === null) {
-    throw new Error('Data is null');
-  }
-  if (!('user' in data)) {
-    throw new Error('Data does not contain user');
-  }
 }

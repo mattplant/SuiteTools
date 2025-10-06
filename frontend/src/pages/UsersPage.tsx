@@ -1,36 +1,53 @@
 import { useEffect, useState } from 'react';
-import { CriteriaFields } from '../components/criteria/types.ts';
-import { getUser } from '../components/user/getRecord.ts';
-import { getUsers } from '../components/user/getRecords.ts';
-import { User } from '../components/user/types.ts';
-import { RecordCriteria } from '../components/user/RecordCriteria.tsx';
-import { Results } from '../components/results/Results.tsx';
-import { ResultsTypes } from '../components/results/types.ts';
+import type { CriteriaFields } from '../components/shared/criteria/types';
+import { getUser } from '../adapters/api/user';
+import { getUsers } from '../adapters/api/users';
+import type { Users } from '@suiteworks/suitetools-shared';
+import { RecordCriteria } from '../components/features/user/RecordCriteria';
+import { Results } from '../components/shared/results/Results';
+import { ResultsTypes } from '../components/shared/results/types';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
-export function UsersPage() {
+/**
+ * UsersPage component displays the users list and criteria filter.
+ * @returns The rendered UsersPage component.
+ */
+export function UsersPage(): React.ReactElement {
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     active: '',
     roles: [''],
     owners: [''],
   };
+
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<User[]>([]);
+  const [results, setResults] = useState<Users>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    let ignore = false;
+
+    async function fetchData(): Promise<void> {
       try {
         const data = await getUsers(criteria);
-        if (!('message' in data)) {
-          setResults(data);
+        const normalized = toArray<Users[number]>(data);
+        if (!ignore) {
+          setResults(normalized);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
+        if (!ignore) {
+          setResults([]); // fail safe: still give empty array
+        }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
-    fetchData();
 
-    return () => {};
-  }, [criteria]);
+    fetchData();
+    return (): void => {
+      ignore = true;
+    };
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">

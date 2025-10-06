@@ -1,6 +1,25 @@
+/* index.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  Tailwind CSS v3 uses `gray.200` as the default border color.
+  This shim preserves that behavior when upgrading to v4, which
+  changes the default to `currentColor`.
+
+  Safe to remove once all border usage is audited and explicitly styled.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: theme('colors.gray.200', currentcolor);
+  }
+}
 
 /* react-data-grid styling */
 
