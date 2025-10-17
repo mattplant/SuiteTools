@@ -4534,6 +4534,8 @@ const RAW_RUNTIME_STATE =
           ["@yarnpkg/pnpify", "npm:4.1.5"],\
           ["eslint", "virtual:95f336220ce4c5815669adf15b91d30070ec89a3f7694b31d1c6b90432ef8d6f62b499699e4fe5670adae306a17f97551aacf905828c103ba152b16f0ce9b719#npm:9.33.0"],\
           ["rollup", "npm:4.52.3"],\
+          ["tslib", "npm:2.8.1"],\
+          ["typescript", "patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"],\
           ["zod", "npm:4.0.17"]\
         ],\
         "linkType": "SOFT"\
