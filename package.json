@@ -1,84 +1,87 @@
 {
-    "name": "suitetools",
-    "displayName": "SuiteTools monorepo",
-    "description": "The monorepo for SuiteTools",
-    "version": "1.0.0-beta.2",
-    "packageManager": "yarn@4.9.2",
-    "author": {
-        "name": "Matthew Plant",
-        "url": "https://github.com/mattplant"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mattplant/SuiteTools"
-    },
-    "bugs": {
-        "url": "https://github.com/mattplant/SuiteTools/issues"
-    },
-    "homepage": "https://github.com/mattplant/SuiteTools#readme",
-    "license": "GPL-3.0-or-later",
-    "keywords": [
-        "netsuite",
-        "suitescript",
-        "suitecloud",
-        "suitetools",
-        "typescript",
-        "monorepo",
-        "react",
-        "vite",
-        "tailwindcss",
-        "developer-onboarding"
-    ],
-    "scripts": {
-        "sdf-account-setup": "cd backend && suitecloud account:setup",
-        "watch:backend": "yarn workspace backend run watch",
-        "lint": "eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
-        "lint:docs": "eslint '**/*.md'",
-        "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
-        "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
-        "yarn:reset": "./scripts/resetYarn.sh",
-        "generate-third-party-licenses": "./scripts/generate-third-party-licenses.sh"
-    },
-    "private": true,
-    "publishConfig": {
-        "access": "restricted"
-    },
-    "workspaces": [
-        "frontend",
-        "backend",
-        "shared"
-    ],
-    "dependencies": {
-        "typescript": "5.7.3"
-    },
-    "dependenciesMeta": {
-        "@hitc/netsuite-types@2024.2.12": {
-            "unplugged": true
-        }
-    },
-    "devDependencies": {
-        "@eslint/compat": "^1.3.1",
-        "@eslint/eslintrc": "^3.3.1",
-        "@eslint/js": "^9.32.0",
-        "@typescript-eslint/eslint-plugin": "^8.38.0",
-        "@typescript-eslint/parser": "^8.38.0",
-        "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.15",
-        "esbuild": "^0.25.11",
-        "eslint": "^9.32.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-jsdoc": "^52.0.2",
-        "eslint-plugin-react": "^7.37.5",
-        "eslint-plugin-react-hooks": "^5.2.0",
-        "eslint-plugin-react-refresh": "^0.4.20",
-        "eslint-plugin-suitescript": "^1.4.1",
-        "globals": "^16.3.0",
-        "prettier": "^3.6.2",
-        "remark": "^15.0.1",
-        "title-case": "^4.3.2"
-    },
-    "resolutions": {
-        "zod": "^4.0.14",
-        "eslint": "^9.33.0"
+  "name": "suitetools",
+  "displayName": "SuiteTools monorepo",
+  "description": "The monorepo for SuiteTools",
+  "version": "1.0.0-beta.2",
+  "packageManager": "yarn@4.9.2",
+  "author": {
+    "name": "Matthew Plant",
+    "url": "https://github.com/mattplant"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mattplant/SuiteTools"
+  },
+  "bugs": {
+    "url": "https://github.com/mattplant/SuiteTools/issues"
+  },
+  "homepage": "https://github.com/mattplant/SuiteTools#readme",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "netsuite",
+    "suitescript",
+    "suitecloud",
+    "suitetools",
+    "typescript",
+    "monorepo",
+    "react",
+    "vite",
+    "tailwindcss",
+    "developer-onboarding"
+  ],
+  "scripts": {
+    "sdf-account-setup": "yarn workspace backend suitecloud account:setup",
+    "watch:backend": "yarn workspace backend run watch",
+    "lint": "eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
+    "lint:docs": "eslint '**/*.md'",
+    "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
+    "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
+    "yarn:reset": "./scripts/resetYarn.sh",
+    "generate-third-party-licenses": "./scripts/generate-third-party-licenses.sh"
+  },
+  "private": true,
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "dependencies": {
+    "typescript": "5.7.3"
+  },
+  "dependenciesMeta": {
+    "@hitc/netsuite-types@2024.2.12": {
+      "unplugged": true
     }
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.3.1",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.32.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.15",
+    "esbuild": "^0.25.11",
+    "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^52.0.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-suitescript": "^1.4.1",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "remark": "^15.0.1",
+    "title-case": "^4.3.2"
+  },
+  "resolutions": {
+    "zod": "^4.0.14",
+    "eslint": "^9.33.0"
+  },
+  "overrides": {
+    "@oracle/suitecloud-cli": "3.1.0"
+  }
 }

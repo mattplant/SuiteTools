@@ -1,6 +1,6 @@
 # 📚 SuiteTools Installation Guide
 
-Last updated: September 22, 2025
+Last updated: October 17, 2025
 
 ---
 
