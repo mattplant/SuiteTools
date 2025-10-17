@@ -38,6 +38,7 @@ yarn install
 ### Build the Monorepo Projects
 
 ```bash
+yarn workspace @suiteworks/suitetools-shared run build
 yarn workspace frontend run build
 yarn workspace backend run build
 ```
