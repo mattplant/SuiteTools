@@ -25,7 +25,7 @@
 import { EntryPoints } from 'N/types';
 import * as log from 'N/log';
 import * as runtime from 'N/runtime';
-import { SuiteToolsApp } from '../idev-suitetools-app';
+import { SuiteToolsApp } from '../app/SuiteToolsApp';
 
 /**
  * getInputData() stage function

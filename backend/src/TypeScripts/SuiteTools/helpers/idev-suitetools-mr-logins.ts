@@ -26,8 +26,8 @@ import { EntryPoints } from 'N/types';
 import * as error from 'N/error';
 import * as log from 'N/log';
 import * as runtime from 'N/runtime';
-import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from '../idev-suitetools-common';
-import { SuiteToolsCommonLibraryNetSuiteRecord } from '../idev-suitetools-common';
+import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from '../common/library/SuiteToolsCommonLibraryNetSuiteSuiteQl';
+import { SuiteToolsCommonLibraryNetSuiteRecord } from '../common/library/SuiteToolsCommonLibraryNetSuiteRecord';
 
 type MapReduceKey = {
   type: string;
