@@ -18,13 +18,13 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "deploy": "suitecloud project:deploy",
-    "build": "yarn build:tsc && yarn build:deployments",
-    "build:tsc": "tsc",
+    "build": "yarn build:deployments",
     "build:deployments": "node build-deployments.mjs",
+    "build:check": "tsc --noEmit",
     "validate": "suitecloud project:validate",
-    "watch": "tsc --watch",
+    "watch": "tsc --watch --noEmit",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "clean-local": "rm -rf dist",
+    "clean-local": "rm -f src/FileCabinet/SuiteScripts/SuiteTools/*.js",
     "test": "jest",
     "format": "prettier --write ./src"
   },

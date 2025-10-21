@@ -27,7 +27,7 @@ const buildConfig = {
     '.ts': 'ts',
   },
   // Output configuration
-  outdir: 'dist/deployments',
+  outdir: 'src/FileCabinet/SuiteScripts/SuiteTools',
   entryNames: '[name]',
   logLevel: 'info',
   // Ensure exports are preserved
@@ -52,7 +52,7 @@ async function convertToAMD() {
   ];
 
   for (const file of files) {
-    const filePath = resolve('dist/deployments', file.name);
+    const filePath = resolve('src/FileCabinet/SuiteScripts/SuiteTools', file.name);
     const sourceFilePath = resolve(file.sourceFile);
 
     try {
@@ -154,6 +154,8 @@ ${content}
   }
 }
 
+
+
 async function buildDeployments() {
   console.log('🚀 Building NetSuite deployment bundles...');
 
@@ -179,9 +181,11 @@ async function buildDeployments() {
     await convertToAMD();
 
     console.log('✅ Deployment bundles created successfully!');
-    console.log('📁 Files created in: dist/deployments/');
-    console.log('   - idev-suitetools-api.js (RESTlet)');
-    console.log('   - idev-suitetools-app.js (Suitelet)');
+    console.log('📁 Files created in SDF structure:');
+    console.log('   src/FileCabinet/SuiteScripts/SuiteTools/');
+    console.log('     - idev-suitetools-api.js (RESTlet)');
+    console.log('     - idev-suitetools-app.js (Suitelet)');
+    console.log('🚀 Ready for deployment: yarn deploy');
   } catch (error) {
     console.error('❌ Build failed:', error);
     process.exit(1);
