@@ -26,8 +26,8 @@
 
 import type { EntryPoints } from 'N/types';
 import { SuiteToolsApi } from './api/SuiteToolsApi';
-import type { ErrorResponse } from '@suiteworks/suitetools-shared';
-import { SuiteError, NotFoundError } from '@suiteworks/suitetools-shared';
+import type { ErrorResponse } from '@suiteworks/suitetools-shared/errors';
+import { SuiteError, NotFoundError } from '@suiteworks/suitetools-shared/errors';
 
 /**
  * Handles the GET request event.

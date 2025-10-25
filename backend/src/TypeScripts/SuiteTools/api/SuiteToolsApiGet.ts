@@ -13,7 +13,7 @@ import type { Response } from './types';
 import { SuiteToolsApiGetOptions } from './SuiteToolsApiGetOptions';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
-import { SuiteError } from '@suiteworks/suitetools-shared';
+import { SuiteError } from '@suiteworks/suitetools-shared/errors';
 
 type RequestParams = { [key: string]: string };
 

@@ -79,7 +79,7 @@ function getBuildConfig(isProduction) {
     sourcemap: envConfig.sourcemap ? 'inline' : false, // Environment-aware sourcemaps
     minify: envConfig.minify, // Environment-aware minification
     keepNames: envConfig.keepNames, // Use config value directly
-    treeShaking: false, // Disable tree shaking to preserve all exports
+    treeShaking: true, // Enable tree shaking to remove unused code from dependencies
     splitting: false, // Disable code splitting for NetSuite single-file deployment
     external: BUILD_CONFIG.netsuite.externalModules, // NetSuite modules should remain as imports
     logLevel: 'warning', // Show warnings and errors
@@ -111,10 +111,30 @@ async function convertToAMD(isProduction) {
 
       // Find N/ modules used in require statements
       const nModules = [];
-      const nModuleMatches = content.matchAll(/__toESM\(require\("(N\/[^"]+)"\)\)/g);
-      for (const match of nModuleMatches) {
+      
+      // Pattern 1: __toESM(require("N/log"))
+      const nModuleMatches1 = content.matchAll(/__toESM\(require\("(N\/[^"]+)"\)\)/g);
+      for (const match of nModuleMatches1) {
         if (!nModules.includes(match[1])) {
           nModules.push(match[1]);
+        }
+      }
+      
+      // Pattern 2: require("N/log")
+      const nModuleMatches2 = content.matchAll(/require\("(N\/[^"]+)"\)/g);
+      for (const match of nModuleMatches2) {
+        if (!nModules.includes(match[1])) {
+          nModules.push(match[1]);
+        }
+      }
+      
+      // Pattern 3: Plain module names like require("log"), require("url"), etc.
+      // These are NetSuite modules that got shortened during processing
+      const plainModuleMatches = content.matchAll(/require\("(log|error|task|email|file|https|record|query|url|redirect|search|runtime|ui\/serverWidget)"\)/g);
+      for (const match of plainModuleMatches) {
+        const fullModuleName = `N/${match[1]}`;
+        if (!nModules.includes(fullModuleName)) {
+          nModules.push(fullModuleName);
         }
       }
 
@@ -137,11 +157,15 @@ async function convertToAMD(isProduction) {
           /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-logins\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
           '',
         )
+        // Remove minified CommonJS exports (e.g., module.exports=ut(ct);)
+        .replace(/module\.exports\s*=\s*\w+\([^)]+\);?/g, '')
         // Remove CommonJS annotation blocks at the end
         .replace(
           /\/\/ Annotate the CommonJS export names for ESM import in node:\s*0 && \(module\.exports = \{[\s\S]*?\}\);?\s*/g,
           '',
         )
+        // Remove trailing CommonJS annotations (e.g., 0&&(module.exports={...}))
+        .replace(/0\s*&&\s*\(module\.exports\s*=\s*\{[^}]*\}\);?/g, '')
         // Convert N/ module requires to simple names for AMD parameters
         .replace(/__toESM\(require\("(N\/[^"]+)"\)\)/g, '$1')
         // Convert all N/module references to parameter names

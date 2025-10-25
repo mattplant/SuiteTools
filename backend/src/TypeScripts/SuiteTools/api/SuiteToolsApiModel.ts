@@ -9,7 +9,7 @@ import * as log from 'N/log';
 import * as task from 'N/task';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { Response } from './types';
-import { NotFoundError } from '@suiteworks/suitetools-shared';
+import { NotFoundError } from '@suiteworks/suitetools-shared/errors';
 
 /**
  * SuiteTools API Model Class
