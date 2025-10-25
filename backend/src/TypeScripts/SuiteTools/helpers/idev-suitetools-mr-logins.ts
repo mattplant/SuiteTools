@@ -22,7 +22,7 @@
  * @NApiVersion 2.1
  */
 
-import { EntryPoints } from 'N/types';
+import type { EntryPoints } from 'N/types';
 import * as error from 'N/error';
 import * as log from 'N/log';
 import * as runtime from 'N/runtime';
@@ -39,11 +39,11 @@ type MapReduceKey = {
  *
  * @param context: EntryPoints.MapReduce.getInputDataContext
  */
-export function getInputData(context: EntryPoints.MapReduce.getInputDataContext) {
+export function getInputData(context: EntryPoints.MapReduce.getInputDataContext): EntryPoints.MapReduce.getInputData {
   log.debug('*START*', '<------------------- START ------------------->');
   log.debug('getInputData() initiated with', JSON.stringify(context));
 
-  let entityRecords = null;
+  let entityRecords: EntryPoints.MapReduce.getInputData;
   try {
     entityRecords = JSON.parse(
       String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_logins_entity' })),
@@ -53,6 +53,7 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
     return entityRecords;
   } catch (e) {
     log.error('getInputData() error', JSON.stringify(e));
+    return null;
   }
 }
 

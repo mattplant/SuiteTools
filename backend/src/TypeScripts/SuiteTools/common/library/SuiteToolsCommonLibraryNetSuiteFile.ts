@@ -67,8 +67,8 @@ export class SuiteToolsCommonLibraryNetSuiteFile {
     // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteFile:getFileContents() initiated', details: { id: id } });
     const fileObj = this.getFileObj(id);
     const sql = `select TO_CHAR(File.LastModifiedDate, 'YYYY-MM-DD HH24:MI:SS') as lastModifiedDate from file where id = ${fileObj.id}`;
-    const result = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    const lastModifiedDate = result[0].lastmodifieddate;
+    const result = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as Array<{ lastmodifieddate: string }>;
+    const lastModifiedDate = result?.[0]?.lastmodifieddate ?? '';
 
     return lastModifiedDate;
   }

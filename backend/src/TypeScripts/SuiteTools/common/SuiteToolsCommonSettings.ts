@@ -14,8 +14,11 @@ declare class SuiteToolsCommon {
   appSettingsRecord: string;
   appJsFile: string;
   appCssFile: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   runtime: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stLib: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stJobs: any;
 }
 
@@ -62,7 +65,6 @@ export class SuiteToolsCommonSettings {
   get notifyEmail(): string {
     return this._notifyEmail;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get lastLogins(): LastLogins {
     return this._lastLogins;
   }

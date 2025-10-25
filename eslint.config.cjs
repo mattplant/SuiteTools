@@ -83,6 +83,18 @@ module.exports = defineConfig([
     },
     rules: {
       ...standardRules,
+      "jsdoc/check-tag-names": [
+        "warn",
+        {
+          definedTags: [
+            "remarks",
+            "note",
+            "NScriptType",
+            "NApiVersion",
+            "NModuleScope",
+          ],
+        },
+      ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": [
         "warn",

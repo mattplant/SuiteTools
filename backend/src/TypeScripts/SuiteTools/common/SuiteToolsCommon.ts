@@ -76,7 +76,7 @@ export class SuiteToolsCommon {
   get appSettingsRecord(): string {
     return this._appSettingsRecord;
   }
-  get runtime() {
+  get runtime(): typeof runtime {
     return runtime;
   }
   get isAdmin(): boolean {

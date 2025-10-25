@@ -11,7 +11,9 @@ import * as log from 'N/log';
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stLib: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stSettings: any;
 }
 
@@ -62,8 +64,12 @@ export class SuiteToolsCommonJobs {
     log.debug({ title: `SuiteToolsCommonJobs::initializeJobs() completed`, details: null });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public getScheduledJobs(): any[] {
+  /**
+   * Get scheduled jobs
+   *
+   * @returns array of scheduled jobs
+   */
+  public getScheduledJobs(): Array<{ id: number; name: string }> {
     log.debug('SuiteToolsCommonJobs:getScheduledJobs() initiated', null);
 
     const customRecord = 'customrecord_idev_suitetools_job';
@@ -77,7 +83,10 @@ export class SuiteToolsCommonJobs {
       AND custrecord_idev_st_mr_job_scheduled = 'T'
     ORDER BY
       ${customRecord}.id ASC`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as Array<{
+      id: number;
+      name: string;
+    }>;
     if (sqlResults.length === 0) {
       log.audit(`getJobs() - No active scheduled job records found`, null);
     } else {
@@ -99,9 +108,11 @@ export class SuiteToolsCommonJobs {
     // TODO should we save job data also?
 
     // save new job run record
-    const jobRunRecordId = this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRunRecord, {
-      custrecord_idev_st_mr_job_run_job_id: id,
-    });
+    const jobRunRecordId = Number(
+      this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRunRecord, {
+        custrecord_idev_st_mr_job_run_job_id: id,
+      }),
+    );
     log.debug({ title: 'SuiteToolsCommonJobs:createJobRunRecord() created job run record', details: jobRunRecordId });
 
     return jobRunRecordId;

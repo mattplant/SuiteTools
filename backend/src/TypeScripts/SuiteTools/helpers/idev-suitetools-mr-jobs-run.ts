@@ -22,7 +22,7 @@
  * @NApiVersion 2.1
  */
 
-import { EntryPoints } from 'N/types';
+import type { EntryPoints } from 'N/types';
 import * as log from 'N/log';
 import * as runtime from 'N/runtime';
 import { SuiteToolsApp } from '../app/SuiteToolsApp';
@@ -32,7 +32,7 @@ import { SuiteToolsApp } from '../app/SuiteToolsApp';
  *
  * @param context: EntryPoints.MapReduce.getInputDataContext
  */
-export function getInputData(context: EntryPoints.MapReduce.getInputDataContext) {
+export function getInputData(context: EntryPoints.MapReduce.getInputDataContext): Array<{ id: number; name?: string }> {
   log.debug('*START*', '<------------------- START ------------------->');
   log.debug('getInputData() initiated with', JSON.stringify(context));
 
@@ -42,12 +42,14 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
         name: 'custscript_idev_st_mr_jobs_id',
       }),
     );
-    const jobData = runtime.getCurrentScript().getParameter({
-      name: 'custscript_idev_st_mr_jobs_data',
-    });
+    const jobData = String(
+      runtime.getCurrentScript().getParameter({
+        name: 'custscript_idev_st_mr_jobs_data',
+      }),
+    );
     if (jobId) {
       // run the specified job
-      const inputData = [{ id: jobId, data: jobData }];
+      const inputData = [{ id: jobId, name: jobData }];
       log.debug('getInputData() running for job #' + jobId, null);
       return inputData;
     } else {
