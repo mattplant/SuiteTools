@@ -9161,6 +9161,7 @@ const RAW_RUNTIME_STATE =
           ["@eslint/compat", "virtual:95f336220ce4c5815669adf15b91d30070ec89a3f7694b31d1c6b90432ef8d6f62b499699e4fe5670adae306a17f97551aacf905828c103ba152b16f0ce9b719#npm:1.3.2"],\
           ["@eslint/eslintrc", "npm:3.3.1"],\
           ["@eslint/js", "npm:9.33.0"],\
+          ["@oracle/suitecloud-cli", "npm:3.1.0"],\
           ["@suiteworks/suitetools-shared", "workspace:shared"],\
           ["@types/d3", "npm:7.4.3"],\
           ["@types/react", "npm:18.3.1"],\

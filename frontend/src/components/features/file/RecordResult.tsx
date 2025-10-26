@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { File } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 
 type Props = {
   data: File;
@@ -8,9 +8,6 @@ type Props = {
 };
 
 export function FileResult({ data, modal }: Props) {
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
-
   return (
     <>
       <p>
@@ -42,10 +39,8 @@ export function FileResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => window.open(data.urlNs, '_blank')}>View File Record</Button>
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View File Details
-          </Button>
+          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View File Record</Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View File Details</Button>
         </ButtonGroup>
       )}
     </>

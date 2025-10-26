@@ -2,6 +2,7 @@ import { Button, ButtonGroup } from 'flowbite-react';
 import type { Token } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
 import { addTokenLastLogin } from './getRecord';
+import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 
 type Props = {
   data: Token;
@@ -10,7 +11,6 @@ type Props = {
 
 export function TokenResult({ data, modal }: Props) {
   const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
   addTokenLastLogin(data, settings);
 
   return (
@@ -41,10 +41,8 @@ export function TokenResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Token Record</Button>
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View Token Details
-          </Button>
+          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Token Record</Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Token Details</Button>
         </ButtonGroup>
       )}
     </>

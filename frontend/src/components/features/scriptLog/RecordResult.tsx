@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { ScriptLog } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 
 type Props = {
   data: ScriptLog;
@@ -8,9 +8,6 @@ type Props = {
 };
 
 export function ScriptLogResult({ data, modal }: Props) {
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
-
   return (
     <>
       <p>
@@ -39,10 +36,8 @@ export function ScriptLogResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Script Log Record</Button>
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View Script Log Details
-          </Button>
+          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Script Log Record</Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Script Log Details</Button>
         </ButtonGroup>
       )}
     </>

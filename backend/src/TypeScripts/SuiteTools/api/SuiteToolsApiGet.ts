@@ -8,12 +8,11 @@
  */
 
 import * as log from 'N/log';
-import * as error from 'N/error';
 import type { Response } from './types';
 import { SuiteToolsApiGetOptions } from './SuiteToolsApiGetOptions';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
-import { SuiteError } from '@suiteworks/suitetools-shared/errors';
+import { SuiteError, InvalidParameterError, UnexpectedError } from '@suiteworks/suitetools-shared/errors';
 
 type RequestParams = { [key: string]: string };
 
@@ -116,12 +115,7 @@ export class SuiteToolsApiGet {
           response = this.addUsersLastLogins(response);
           break;
         default:
-          throw error.create({
-            // TODO: handle with new error handling functionality
-            name: 'SUITE_TOOLS_INVALID_PARAMETER',
-            message: `Invalid parameter: endpoint=${endpoint}`,
-            notifyOff: true,
-          });
+          throw new InvalidParameterError('endpoint', endpoint, 'Endpoint not recognized');
       }
 
       log.debug({ title: 'get() response', details: response });
@@ -133,26 +127,22 @@ export class SuiteToolsApiGet {
         throw err;
       }
 
-      // Wrap unexpected errors // TODO: create UnexpectedError subclass
-      throw error.create({
-        name: 'SUITE_TOOLS_UNEXPECTED',
-        message: `Unexpected error in process(): ${String(err)}`,
-        notifyOff: false,
-      });
+      // Wrap unexpected errors in UnexpectedError
+      throw new UnexpectedError('process()', err, { endpoint: requestParams.endpoint });
     }
   }
 
   private assertIsGetRequestParams(data: unknown): asserts data is RequestParams {
     // check if the data is an object
     if (typeof data !== 'object' || data === null) {
-      throw new Error('Get request params data is not an object');
+      throw new InvalidParameterError('requestParams', data, 'Request params must be an object');
     }
     // endpoint
     if (!('endpoint' in data)) {
-      throw new Error('Get request params data is missing the "endpoint" field');
+      throw new InvalidParameterError('endpoint', undefined, 'Missing required field');
     }
     if (typeof data.endpoint !== 'string') {
-      throw new Error('Get request params data "endpoint" field is not a string');
+      throw new InvalidParameterError('endpoint', data.endpoint, 'Must be a string');
     }
   }
 
@@ -347,11 +337,7 @@ export class SuiteToolsApiGet {
   private getFile(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getFile(id);
 
@@ -383,11 +369,7 @@ export class SuiteToolsApiGet {
   private getJob(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getJob(id);
 
@@ -416,11 +398,7 @@ export class SuiteToolsApiGet {
   private getJobRun(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getJobRun(id);
 
@@ -469,11 +447,7 @@ export class SuiteToolsApiGet {
   private getRole(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getRole(id);
 
@@ -502,11 +476,7 @@ export class SuiteToolsApiGet {
   private getScript(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getScript(id);
 
@@ -540,11 +510,7 @@ export class SuiteToolsApiGet {
   private getScriptLog(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getScriptLog(id);
 
@@ -573,11 +539,7 @@ export class SuiteToolsApiGet {
     // verify required parameters
     if (timemode === 'now') {
       if (!date || date === '') {
-        throw error.create({
-          name: 'SUITE_TOOLS_MISSING_PARAMETER',
-          message: `Missing required parameter for 'now' time mode: createddate`,
-          notifyOff: true,
-        });
+        throw new InvalidParameterError('createddate', date, "Missing required parameter for 'now' time mode");
       }
       if (customdatetime) {
         log.debug({
@@ -596,11 +558,11 @@ export class SuiteToolsApiGet {
     }
     if (timemode === 'custom') {
       if (!customdatetime || !customduration) {
-        throw error.create({
-          name: 'SUITE_TOOLS_MISSING_PARAMETER',
-          message: `Both 'customdatetime' and 'customduration' are required for 'custom' time mode`,
-          notifyOff: true,
-        });
+        throw new InvalidParameterError(
+          'customdatetime/customduration',
+          { customdatetime, customduration },
+          "Both parameters required for 'custom' time mode"
+        );
       }
       if (date && date !== '') {
         log.debug({
@@ -637,8 +599,6 @@ export class SuiteToolsApiGet {
     this.stCommon.stSettings.getSettings();
     // build the settings object from this record and other sources
     const result = {
-      // app settings
-      appUrl: this.stCommon.appUrl,
       // core configurations
       cssUrl: this.stCommon.stSettings.cssUrl,
       jsUrl: this.stCommon.stSettings.jsUrl,
@@ -679,11 +639,7 @@ export class SuiteToolsApiGet {
   private getUser(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw error.create({
-        name: 'SUITE_TOOLS_MISSING_PARAMETER',
-        message: `Missing required parameter: id`,
-        notifyOff: true,
-      });
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getUser(id);
 

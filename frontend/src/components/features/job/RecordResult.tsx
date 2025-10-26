@@ -3,7 +3,7 @@ import type { Job } from '@suiteworks/suitetools-shared';
 import { postData } from '../../../api/api';
 import { PostEndpoint } from '../../../api/types';
 import type { HttpResponse } from '../../../api/types';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { openAppPage, getAppBaseUrl } from '../../../utils/navigation';
 
 type Props = {
   data: Job;
@@ -11,8 +11,6 @@ type Props = {
 };
 
 export function JobResult({ data, modal }: Props) {
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
   const initiateJobClick = async () => {
     console.log('JobResult: initiateJobClick() iniitiated');
     const entityRecords: { type: string; name: string }[] = [];
@@ -24,7 +22,7 @@ export function JobResult({ data, modal }: Props) {
     console.log('JobResult: initiateJobClick() response', responseData);
     if (responseData.status === 200) {
       // redirect to job page
-      const redirectToPage = appScriptUrl + `#/job/${data.id}`;
+      const redirectToPage = getAppBaseUrl() + `#/job/${data.id}`;
       console.log('JobResult: initiateJobClick() redirectToPage', redirectToPage);
       window.location.href = redirectToPage;
     } else {
@@ -64,9 +62,7 @@ export function JobResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View Job Details
-          </Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Job Details</Button>
           <Button onClick={initiateJobClick}>Run Job</Button>
         </ButtonGroup>
       )}

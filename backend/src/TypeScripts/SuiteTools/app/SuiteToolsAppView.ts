@@ -34,6 +34,7 @@ export class SuiteToolsAppView {
   public renderSpa(): void {
     const css = this.stApp.stCommon.stSettings.cssUrl;
     const js = this.stApp.stCommon.stSettings.jsUrl;
+    const appUrl = this.stApp.appUrl;
     let content = `<!doctype html>
 <html lang="en">
   <head>
@@ -44,7 +45,7 @@ export class SuiteToolsAppView {
     <link rel="stylesheet" crossorigin href="${css}" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root" data-app-url="${appUrl}"></div>
   </body>
 </html>`;
     content += this.getPageFooterComments();
@@ -119,7 +120,7 @@ export class SuiteToolsAppView {
     log.debug({ title: 'SuiteToolsAppView:getPageFooterComments() initiated', details: null });
     const lines = [];
     lines.push('<!-- SuiteTools Application -->');
-    lines.push('<!-- appUrl: ' + this._stApp.stCommon.appUrl + ' -->');
+    lines.push('<!-- appUrl: ' + this.stApp.appUrl + ' -->');
     lines.push('<!-- apiUrl: ' + this.stApp.apiUrl + ' -->');
     lines.push('<!-- NetSuite -->');
     return lines.join('\n');

@@ -31,8 +31,6 @@ export class SuiteToolsCommonLibraryGeneral {
   /**
    * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
    *
-   * TODO replace with moment.js
-   *
    * @param {Date} date - the date object to format
    * @returns {string} formattedDate - the formatted date string
    */

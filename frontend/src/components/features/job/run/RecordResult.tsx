@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { JobRun } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../../../hooks/useAppSettingsContext';
+import { openAppPage } from '../../../../utils/navigation';
 
 type Props = {
   data: JobRun;
@@ -8,9 +8,6 @@ type Props = {
 };
 
 export function JobRunResult({ data, modal }: Props) {
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
-
   return (
     <>
       <p>
@@ -29,12 +26,8 @@ export function JobRunResult({ data, modal }: Props) {
         <b>Results</b>: {data.results}
       </p>
       <ButtonGroup>
-        {modal && (
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            Execution Details
-          </Button>
-        )}
-        <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlJob, '_blank')}>Job Details</Button>
+        {modal && <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>Execution Details</Button>}
+        <Button onClick={() => data.urlJob && openAppPage(data.urlJob)}>Job Details</Button>
       </ButtonGroup>
     </>
   );

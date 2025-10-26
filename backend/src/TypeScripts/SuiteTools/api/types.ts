@@ -7,19 +7,19 @@
  * @NApiVersion 2.1
  */
 
-export type RequestBody = {
-  endpoint: string;
-  data: RequestBodyData;
-};
+// Import types from shared workspace (type-only, no runtime code)
+import type { RequestBody as SharedRequestBody, RequestResponse } from '@suiteworks/suitetools-shared';
 
+// Re-export shared types for local convenience
+export type RequestBody = SharedRequestBody;
 export type RequestBodyData = { [key: string]: unknown };
+export type Response = RequestResponse;
 
-export type Response = {
-  status: number;
-  data: object;
-  message?: string;
-};
-
+/**
+ * Runtime assertion that validates data conforms to RequestBody shape.
+ * @param data - Unknown data to validate
+ * @throws {Error} If data is not a valid RequestBody
+ */
 export function assertIsRequestBody(data: unknown): asserts data is RequestBody {
   if (typeof data !== 'object' || data === null) {
     throw new Error('Request body data is not an object');
@@ -40,6 +40,11 @@ export function assertIsRequestBody(data: unknown): asserts data is RequestBody 
   }
 }
 
+/**
+ * Runtime assertion that validates data conforms to RequestBodyData shape.
+ * @param data - Unknown data to validate
+ * @throws {Error} If data is not a valid RequestBodyData
+ */
 export function assertIsRequestBodyData(data: unknown): asserts data is RequestBodyData {
   if (typeof data !== 'object' || data === null) {
     throw new Error('Request body data is not an object');

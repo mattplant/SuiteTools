@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { User } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 import { EntityFields, type EntityField } from '../../shared/ui/EntityFields';
 
 type Props = {
@@ -16,16 +16,15 @@ type Props = {
  * @returns The rendered user result component.
  */
 export function UserResult({ data, modal = false }: Props): JSX.Element {
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
-
   const viewEmployeeRecord: () => void = () => {
-    window.open(data.urlNs, '_blank', 'noopener,noreferrer');
+    if (data.urlNs) {
+      openNetSuitePage(data.urlNs);
+    }
   };
 
   const viewUserDetails: () => void = () => {
-    if (appScriptUrl) {
-      window.open(appScriptUrl + data.urlDetail, '_blank', 'noopener,noreferrer');
+    if (data.urlDetail) {
+      openAppPage(data.urlDetail);
     }
   };
 

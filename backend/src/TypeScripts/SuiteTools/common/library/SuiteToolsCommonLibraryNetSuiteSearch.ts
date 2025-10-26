@@ -51,23 +51,22 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
     stSearch.columns = columns;
     stSearch.filters = filters;
 
-    // TODO: use run().each() instead of run().getRange() for the 4,000 result limit
-    // var searchResultCount = scriptexecutionlogSearchObj.runPaged().count;
-    // log.debug("scriptexecutionlogSearchObj result count",searchResultCount);
-    // scriptexecutionlogSearchObj.run().each(function(result){
-    // // .run().each has a limit of 4,000 results
-    // return true;
-    // });
-
     // default number of required values if not specified
     if (!rows) {
       rows = '1000';
     }
 
-    // run the search
-    const searchResults = stSearch.run().getRange({
-      start: 0,
-      end: parseInt(rows),
+    const maxResults = parseInt(rows);
+    const searchResults: search.Result[] = [];
+
+    // Use run().each() for better performance - handles up to 4000 results
+    // For >4000 results, this will return the first 4000
+    stSearch.run().each((result) => {
+      if (searchResults.length < maxResults) {
+        searchResults.push(result);
+        return true; // continue processing
+      }
+      return false; // stop processing
     });
 
     log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSearch:search() returning', details: searchResults });
@@ -91,19 +90,15 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
     });
 
     const stSearch = search.load({ id: id });
+    const searchResults: search.Result[] = [];
 
-    // TODO: use run().each() instead of run().getRange() for the 4,000 result limit
-    // var searchResultCount = scriptexecutionlogSearchObj.runPaged().count;
-    // log.debug("scriptexecutionlogSearchObj result count",searchResultCount);
-    // scriptexecutionlogSearchObj.run().each(function(result){
-    // // .run().each has a limit of 4,000 results
-    // return true;
-    // });
-
-    // run the search
-    const searchResults = stSearch.run().getRange({
-      start: 0,
-      end: 1000,
+    // Use run().each() for better performance - handles up to 4000 results
+    stSearch.run().each((result) => {
+      if (searchResults.length < 1000) {
+        searchResults.push(result);
+        return true; // continue processing
+      }
+      return false; // stop processing
     });
 
     log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSearch:run() returning', details: searchResults });

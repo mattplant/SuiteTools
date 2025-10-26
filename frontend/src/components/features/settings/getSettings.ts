@@ -1,11 +1,10 @@
 import { getData } from '../../../api/api';
-import { Settings } from './types';
+import type { Settings } from './types';
 
 export async function getSettings(): Promise<Settings> {
   const localTestData = {
     data: {
       devMode: true,
-      appUrl: '/',
       lastLogins: null,
       // system
       accountId: '1234567_SB1',
@@ -44,13 +43,6 @@ export function assertIsSettings(data: unknown): asserts data is Settings {
   }
   if (typeof data.devMode !== 'boolean') {
     throw new Error('Settings data "devMode" field is not a boolean');
-  }
-  // appUrl
-  if (!('appUrl' in data)) {
-    throw new Error('Settings data is missing the "appUrl" field');
-  }
-  if (typeof data.appUrl !== 'string') {
-    throw new Error('Settings data "appUrl" field is not a string');
   }
   // lastLogins
   if ('lastLogins' in data && typeof data.lastLogins !== 'object') {

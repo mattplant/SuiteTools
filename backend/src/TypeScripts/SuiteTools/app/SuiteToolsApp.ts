@@ -9,7 +9,7 @@
 
 import * as log from 'N/log';
 import * as url from 'N/url';
-import { EntryPoints } from 'N/types';
+import type { EntryPoints } from 'N/types';
 import { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import { SuiteToolsAppView } from './SuiteToolsAppView';
 
@@ -19,9 +19,13 @@ import { SuiteToolsAppView } from './SuiteToolsAppView';
  * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApp {
+  private _appUrl: string;
   private _apiUrl: string;
   private _stCommon: SuiteToolsCommon;
 
+  get appUrl(): string {
+    return this._appUrl;
+  }
   get apiUrl(): string {
     return this._apiUrl;
   }
@@ -30,6 +34,11 @@ export class SuiteToolsApp {
   }
 
   constructor(context: EntryPoints.Suitelet.onRequestContext | null = null) {
+    this._appUrl = url.resolveScript({
+      scriptId: 'customscript_idev_suitetools_app',
+      deploymentId: 'customdeploy_idev_suitetools_app',
+      returnExternalUrl: false,
+    });
     this._apiUrl = url.resolveScript({
       scriptId: 'customscript_idev_suitetools_api', // the SuiteTools API script id
       deploymentId: 'customdeploy_idev_suitetools_api', // the SuiteTools API deployment id

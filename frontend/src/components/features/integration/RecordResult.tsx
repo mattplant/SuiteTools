@@ -2,6 +2,7 @@ import { Button, ButtonGroup } from 'flowbite-react';
 import type { Integration } from '@suiteworks/suitetools-shared';
 import { addIntegrationLastLogin } from './getRecord';
 import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 
 type Props = {
   data: Integration;
@@ -10,7 +11,6 @@ type Props = {
 
 export function IntegrationResult({ data, modal }: Props) {
   const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
   addIntegrationLastLogin(data, settings);
 
   return (
@@ -35,10 +35,8 @@ export function IntegrationResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => window.open(data.urlNs, '_blank')}>View Integration Record</Button>
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View Integration Details
-          </Button>
+          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Integration Record</Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Integration Details</Button>
         </ButtonGroup>
       )}
     </>

@@ -24,7 +24,6 @@
  */
 
 import * as runtime from 'N/runtime';
-import * as url from 'N/url';
 import { SuiteToolsCommonJobs } from './SuiteToolsCommonJobs';
 import { SuiteToolsCommonSettings } from './SuiteToolsCommonSettings';
 import { SuiteToolsCommonLibrary } from './library/SuiteToolsCommonLibrary';
@@ -39,10 +38,6 @@ export class SuiteToolsCommon {
   private _stJobs: SuiteToolsCommonJobs;
   private _stSettings: SuiteToolsCommonSettings;
   private _stLib: SuiteToolsCommonLibrary;
-  // application url
-  private _appScriptId = 'customscript_idev_suitetools_app';
-  private _appDeploymentId = 'customdeploy_idev_suitetools_app';
-  private _appUrl: string;
   // the application directory in the /SuiteScripts folder
   private _appDir = 'SuiteTools';
   // application files
@@ -61,9 +56,6 @@ export class SuiteToolsCommon {
     return this._stLib;
   }
 
-  get appUrl(): string {
-    return this._appUrl;
-  }
   get appDir(): string {
     return this._appDir;
   }
@@ -86,16 +78,16 @@ export class SuiteToolsCommon {
     return String(runtime.EnvType[runtime.envType]) === 'PRODUCTION';
   }
 
+  /**
+   * Initializes the SuiteToolsCommon instance.
+   *
+   * Instantiates the common helper objects (jobs, settings, library) used by the instance.
+   * Each helper is constructed with a reference to this SuiteToolsCommon instance so they
+   * can access shared state and methods.
+   */
   constructor() {
     this._stJobs = new SuiteToolsCommonJobs(this);
     this._stSettings = new SuiteToolsCommonSettings(this);
     this._stLib = new SuiteToolsCommonLibrary(this);
-
-    // TODO should this be moved into the bootstrap() method?
-    this._appUrl = url.resolveScript({
-      scriptId: this._appScriptId,
-      deploymentId: this._appDeploymentId,
-      returnExternalUrl: false,
-    });
   }
 }

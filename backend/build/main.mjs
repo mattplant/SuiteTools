@@ -111,7 +111,7 @@ async function convertToAMD(isProduction) {
 
       // Find N/ modules used in require statements
       const nModules = [];
-      
+
       // Pattern 1: __toESM(require("N/log"))
       const nModuleMatches1 = content.matchAll(/__toESM\(require\("(N\/[^"]+)"\)\)/g);
       for (const match of nModuleMatches1) {
@@ -119,7 +119,7 @@ async function convertToAMD(isProduction) {
           nModules.push(match[1]);
         }
       }
-      
+
       // Pattern 2: require("N/log")
       const nModuleMatches2 = content.matchAll(/require\("(N\/[^"]+)"\)/g);
       for (const match of nModuleMatches2) {
@@ -127,10 +127,12 @@ async function convertToAMD(isProduction) {
           nModules.push(match[1]);
         }
       }
-      
+
       // Pattern 3: Plain module names like require("log"), require("url"), etc.
       // These are NetSuite modules that got shortened during processing
-      const plainModuleMatches = content.matchAll(/require\("(log|error|task|email|file|https|record|query|url|redirect|search|runtime|ui\/serverWidget)"\)/g);
+      const plainModuleMatches = content.matchAll(
+        /require\("(log|error|task|email|file|https|record|query|url|redirect|search|runtime|ui\/serverWidget)"\)/g,
+      );
       for (const match of plainModuleMatches) {
         const fullModuleName = `N/${match[1]}`;
         if (!nModules.includes(fullModuleName)) {
@@ -166,35 +168,51 @@ async function convertToAMD(isProduction) {
         )
         // Remove trailing CommonJS annotations (e.g., 0&&(module.exports={...}))
         .replace(/0\s*&&\s*\(module\.exports\s*=\s*\{[^}]*\}\);?/g, '')
-        // Convert N/ module requires to simple names for AMD parameters
-        .replace(/__toESM\(require\("(N\/[^"]+)"\)\)/g, '$1')
-        // Convert all N/module references to parameter names
-        .replace(/N\/log/g, 'log')
-        .replace(/N\/error/g, 'error')
-        .replace(/N\/task/g, 'task')
-        .replace(/N\/email/g, 'email')
-        .replace(/N\/file/g, 'file')
-        .replace(/N\/https/g, 'https')
-        .replace(/N\/record/g, 'record')
-        .replace(/N\/query/g, 'query')
-        .replace(/N\/url/g, 'url')
-        .replace(/N\/redirect/g, 'redirect')
-        .replace(/N\/search/g, 'search')
-        .replace(/N\/runtime/g, 'runtime')
+        // Convert __toESM(require("N/xxx")) to simple module name
+        .replace(/__toESM\(require\("N\/([^"]+)"\)\)/g, '$1')
+        // Convert plain require("N/xxx") to simple module name
+        .replace(/require\("N\/([^"]+)"\)/g, '$1')
+        // Convert wrapped requires like m(require("log")) to just the parameter name
+        .replace(
+          /\w+\(require\("(log|error|task|email|file|https|record|query|url|redirect|search|runtime|ui\/serverWidget)"\)\)/g,
+          '$1',
+        )
         .trim();
 
       // Find the actual function names (they might be renamed by esbuild)
       const actualFunctionNames = [];
+      
+      // First, try to find the exports object pattern that esbuild creates
+      // Pattern like: SomeVar = {}; AnotherFunc(SomeVar, {get:()=>actualGet,post:()=>actualPost});
+      const exportsObjPattern = /\w+\([^,]+,\s*\{([^}]+)\}\)/g;
+      const exportsObjMatches = [...content.matchAll(exportsObjPattern)];
+      let exportMappings = {};
+      
+      for (const match of exportsObjMatches) {
+        const objContent = match[1];
+        // Extract individual export mappings like "get:()=>jt"
+        const mappingPattern = /(\w+):\(\)=>(\w+)/g;
+        const mappings = [...objContent.matchAll(mappingPattern)];
+        for (const mapping of mappings) {
+          exportMappings[mapping[1]] = mapping[2];
+        }
+      }
+      
       for (const exportName of fileConfig.exports) {
-        // Look for function definitions that might be renamed (e.g., get2 instead of get)
-        const funcPattern = new RegExp(`function (\\w*${exportName}\\w*)\\([^)]*\\)`, 'g');
-        const matches = [...content.matchAll(funcPattern)];
-        if (matches.length > 0) {
-          // Use the last match (most likely the actual function we want)
-          actualFunctionNames.push(matches[matches.length - 1][1]);
+        if (exportMappings[exportName]) {
+          // Use the minified function name from the export mapping
+          actualFunctionNames.push(exportMappings[exportName]);
         } else {
-          // Fallback to the original name
-          actualFunctionNames.push(exportName);
+          // Look for function definitions that might be renamed (e.g., get2 instead of get)
+          const funcPattern = new RegExp(`function (\\w*${exportName}\\w*)\\([^)]*\\)`, 'g');
+          const matches = [...content.matchAll(funcPattern)];
+          if (matches.length > 0) {
+            // Use the last match (most likely the actual function we want)
+            actualFunctionNames.push(matches[matches.length - 1][1]);
+          } else {
+            // Fallback to the original name
+            actualFunctionNames.push(exportName);
+          }
         }
       }
 
@@ -208,6 +226,23 @@ async function convertToAMD(isProduction) {
         })
         .join(', ');
 
+      // Filter exports to only include those that actually exist in the code
+      const validExports = fileConfig.exports
+        .map((exportName, index) => ({
+          exportName,
+          actualName: actualFunctionNames[index],
+        }))
+        .filter(({ actualName, exportName }) => {
+          // Check if the function actually exists in the code
+          if (actualName === exportName) {
+            // If we're using the fallback name, verify it exists
+            const funcExists = content.includes(`function ${actualName}(`);
+            return funcExists;
+          }
+          // If we found a minified name, trust it exists
+          return true;
+        });
+
       const amdContent = `${header}
 define([${dependencies}], function (${paramNames}) {
     "use strict";
@@ -216,7 +251,7 @@ ${content}
 
     // Return the exported functions
     return {
-        ${fileConfig.exports.map((exportName, index) => `${exportName}: ${actualFunctionNames[index]}`).join(',\n        ')}
+        ${validExports.map(({ exportName, actualName }) => `${exportName}: ${actualName}`).join(',\n        ')}
     };
 });`;
 

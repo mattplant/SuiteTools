@@ -18,8 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @NScriptType MapReduceScript
  * @NApiVersion 2.1
+ * @NScriptType MapReduceScript
  */
 
 import type { EntryPoints } from 'N/types';

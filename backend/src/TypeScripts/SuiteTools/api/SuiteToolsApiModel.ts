@@ -462,7 +462,6 @@ export class SuiteToolsApiModel {
       INNER JOIN role ON ( role.id = employeerolesforsearch.role )`;
 
     const where = [];
-    // TODO verify that this works with the standard active component
     switch (active) {
       case 'U':
         where.push(`employee.giveaccess = 'T'`);
@@ -524,7 +523,7 @@ export class SuiteToolsApiModel {
       script.scripttype,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
       BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
-      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+      ScriptNote.title, REPLACE( ScriptNote.detail, '"', '""' ) AS detail
     FROM ScriptNote
     INNER JOIN script
       ON ScriptNote.scripttype = script.id
@@ -577,7 +576,7 @@ export class SuiteToolsApiModel {
       script.scripttype,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
       BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
-      ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
+      ScriptNote.title, REPLACE( ScriptNote.detail, '"', '""' ) AS detail
     FROM ScriptNote
     INNER JOIN script
       ON ScriptNote.scripttype = script.id`;
@@ -606,6 +605,24 @@ export class SuiteToolsApiModel {
     }
     if (detail) {
       where.push(`ScriptNote.detail LIKE '%${detail}%'`);
+    }
+
+    // Add date/time filtering
+    if (timemode === 'now' && date) {
+      // Filter by relative time from now (e.g., last 15 minutes)
+      // NetSuite uses fractional days: minutes / 1440 (minutes in a day)
+      const minutes = parseInt(date, 10);
+      if (!isNaN(minutes) && minutes > 0) {
+        where.push(`ScriptNote.date >= (SYSDATE - ${minutes} / 1440)`);
+      }
+    } else if (timemode === 'custom' && customdatetime && customduration) {
+      // Filter by custom datetime and duration
+      // NetSuite uses fractional days: minutes / 1440 (minutes in a day)
+      const duration = parseInt(customduration, 10);
+      if (!isNaN(duration) && duration > 0) {
+        where.push(`ScriptNote.date >= (TO_DATE('${customdatetime}', 'YYYY-MM-DD HH24:MI:SS') - ${duration} / 1440)`);
+        where.push(`ScriptNote.date <= TO_DATE('${customdatetime}', 'YYYY-MM-DD HH24:MI:SS')`);
+      }
     }
 
     if (where.length > 0) {

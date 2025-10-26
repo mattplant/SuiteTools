@@ -105,8 +105,6 @@ export class SuiteToolsCommonJobs {
   public createJobRunRecord(id: string): number {
     log.debug('SuiteToolsCommonJobs:createJobRunRecord() initiated', { id });
 
-    // TODO should we save job data also?
-
     // save new job run record
     const jobRunRecordId = Number(
       this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRunRecord, {
