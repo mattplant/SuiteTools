@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
+import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for a single script log entry.
@@ -18,7 +19,7 @@ import type { ZEntityBundle } from "../zodUtils";
  * - `detail`: detailed message or payload
  * - `urlNs`, `urlDetail` (optional): additional context properties
  */
-export const ScriptLogSchema = z.object({
+export const schema = z.object({
   id: z.number(),
   timestamp: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
     message: "Invalid ISO timestamp",
@@ -29,12 +30,13 @@ export const ScriptLogSchema = z.object({
   scriptname: z.string(),
   title: z.string(),
   detail: z.string().optional().nullable(),
+  // ADDITIONAL PROPERTIES
   urlNs: z.string().optional(),
   urlDetail: z.string().optional(),
 });
 
-const ScriptLogBundle: ZEntityBundle<typeof ScriptLogSchema, "ScriptLog"> =
-  zHelpers.zCreateBundle(ScriptLogSchema, {
+const ScriptLogBundle: ZEntityBundle<typeof schema, "ScriptLog"> =
+  zHelpers.zCreateBundle(schema, {
     meta: { entity: "ScriptLog", plural: "ScriptLogs" },
   });
 
@@ -45,3 +47,13 @@ const ScriptLogBundle: ZEntityBundle<typeof ScriptLogSchema, "ScriptLog"> =
 export { ScriptLogBundle };
 export type ScriptLog = typeof ScriptLogBundle.types.single;
 export type ScriptLogs = typeof ScriptLogBundle.types.array;
+
+// Convenience union for single entity
+export const scriptLogOrNotFoundSchema = orNotFoundSchema(schema);
+export type ScriptLogOrNotFound = OrNotFound<ScriptLog>;
+
+// Convenience union for multiple entities
+export const scriptLogsOrNotFoundSchema = orNotFoundSchema(
+  ScriptLogBundle.schema.array()
+);
+export type ScriptLogsOrNotFound = OrNotFound<ScriptLogs>;

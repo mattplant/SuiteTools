@@ -17,6 +17,8 @@
 export const endpointMap = Object.freeze({
   role: "Fetch a single role by ID",
   roles: "List roles with optional filters",
+  scriptLog: "Fetch a single script log by ID",
+  scriptLogs: "List script logs with optional filters",
   user: "Fetch a single user by ID",
   users: "List users with optional filters",
   optionValues: "List option values",

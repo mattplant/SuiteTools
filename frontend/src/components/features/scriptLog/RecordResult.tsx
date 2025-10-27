@@ -1,39 +1,40 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { ScriptLog } from '@suiteworks/suitetools-shared';
 import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
+import { EntityFields, type EntityField } from '../../shared/ui/EntityFields';
 
 type Props = {
   data: ScriptLog;
   modal?: boolean;
 };
 
-export function ScriptLogResult({ data, modal }: Props) {
+/**
+ * Pure presentation of a ScriptLog entity. Expects fully adapted & validated data.
+ * @param props - Component props.
+ * @param props.data - The script log data to display.
+ * @param [props.modal] - Whether to display modal actions.
+ * @returns The rendered script log result component.
+ */
+export function ScriptLogResult({ data, modal }: Props): JSX.Element {
+  const fields: EntityField[] = [
+    { label: 'ID', value: data.id },
+    { label: 'Timestamp', value: data.timestamp },
+    { label: 'Type', value: data.type },
+    { label: 'Script Type', value: data.scripttype },
+    { label: 'Owner', value: data.owner },
+    { label: 'Name', value: data.scriptname },
+    { label: 'Title', value: data.title },
+    { label: 'Detail', value: data.detail },
+  ];
+
+  // TODO: is this used? If not remove.
+  if (!modal) {
+    return <EntityFields fields={fields} />;
+  }
+
   return (
     <>
-      <p>
-        <b>ID</b>: {data.id}
-      </p>
-      <p>
-        <b>Timestamp</b>: {data.timestamp}
-      </p>
-      <p>
-        <b>Type</b>: {data.type}
-      </p>
-      <p>
-        <b>Script Type</b>: {data.scripttype}
-      </p>
-      <p>
-        <b>Owner</b>: {data.owner}
-      </p>
-      <p>
-        <b>Name</b>: {data.scriptname}
-      </p>
-      <p>
-        <b>Title</b>: {data.title}
-      </p>
-      <p>
-        <b>Detail</b>: {data.detail}
-      </p>
+      <EntityFields fields={fields} />
       {modal && (
         <ButtonGroup>
           <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Script Log Record</Button>

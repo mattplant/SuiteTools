@@ -16,18 +16,6 @@ type Props = {
  * @returns The rendered user result component.
  */
 export function UserResult({ data, modal = false }: Props): JSX.Element {
-  const viewEmployeeRecord: () => void = () => {
-    if (data.urlNs) {
-      openNetSuitePage(data.urlNs);
-    }
-  };
-
-  const viewUserDetails: () => void = () => {
-    if (data.urlDetail) {
-      openAppPage(data.urlDetail);
-    }
-  };
-
   const fields: EntityField[] = [
     { label: 'ID', value: data.id },
     { label: 'Name', value: data.name },
@@ -42,11 +30,10 @@ export function UserResult({ data, modal = false }: Props): JSX.Element {
   return (
     <>
       <EntityFields fields={fields} />
-
       {modal && (
         <ButtonGroup>
-          <Button onClick={viewEmployeeRecord}>View Employee Record</Button>
-          <Button onClick={viewUserDetails}>View User Details</Button>
+          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Employee Record</Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View User Details</Button>
         </ButtonGroup>
       )}
     </>

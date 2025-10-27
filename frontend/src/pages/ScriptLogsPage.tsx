@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getScriptLog } from '../components/features/scriptLog/getRecord';
-import { getScriptLogs } from '../components/features/scriptLog/getRecords';
+import { getScriptLog } from '../adapters/api/scriptLog';
+import { getScriptLogs } from '../adapters/api/scriptLogs';
 import type { ScriptLogs } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
-import { useInlineMessage } from '../hooks/useInlineMessage';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
-export function ScriptLogsPage() {
+/**
+ * ScriptLogsPage component displays the script logs list and criteria filter.
+ * @returns The rendered ScriptLogsPage component.
+ */
+export function ScriptLogsPage(): React.ReactElement {
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     rows: 50,
     levels: ['ERROR', 'EMERGENCY', 'SYSTEM'],
@@ -24,35 +31,40 @@ export function ScriptLogsPage() {
     title: '',
     detail: '',
   };
+
   // if a script param was passed in, set the scriptname criteria
   const { script } = useParams();
   if (script) {
     defaultCriteria.scriptnames = [script]; // set the script to see logs for
     defaultCriteria.levels = ['']; // clear the level criteria
   }
+
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ScriptLogs>([]);
-  const { setMessage, clearMessage } = useInlineMessage();
 
   useEffect(() => {
-    async function fetchData() {
+    let ignore = false;
+
+    async function fetchData(): Promise<void> {
       try {
         const data = await getScriptLogs(criteria);
-        if ('message' in data) {
-          console.error('Error fetching script logs:', data.message);
-          setMessage({ text: data.message, type: 'warning' });
-        } else {
-          clearMessage();
-          setResults(data);
+        const normalized = toArray<ScriptLogs[number]>(data);
+        if (!ignore) {
+          setResults(normalized);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
+        if (!ignore) {
+          setResults([]); // fail safe: still give empty array
+        }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
-    fetchData();
 
-    return () => {};
-  }, [criteria]);
+    fetchData();
+    return (): void => {
+      ignore = true;
+    };
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">
