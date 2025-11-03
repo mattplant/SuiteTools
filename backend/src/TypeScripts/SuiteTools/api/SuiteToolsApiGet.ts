@@ -13,6 +13,7 @@ import { SuiteToolsApiGetOptions } from './SuiteToolsApiGetOptions';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
 import { SuiteError, InvalidParameterError, UnexpectedError } from '@suiteworks/suitetools-shared/errors';
+import { requestResponse } from '@suiteworks/suitetools-shared';
 
 type RequestParams = { [key: string]: string };
 
@@ -119,6 +120,9 @@ export class SuiteToolsApiGet {
       }
 
       log.debug({ title: 'get() response', details: response });
+
+      // TODO: Validate and return using shared schema
+      // const validated: Response = SOMETHING.parse(response);
 
       return response;
     } catch (err) {
@@ -513,8 +517,17 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getScriptLog(id);
+    const payload: Response = { status: 0, data: {} };
+    if (!result || result.length === 0) {
+      payload.status = 404;
+      payload.data = { code: 'NOT_FOUND', message: `No script log found with id of ${id}` };
+      payload.message = `No script log found with id of ${id}`;
+    } else {
+      payload.status = 200;
+      payload.data = result[0];
+    }
 
-    return result;
+    return requestResponse.parse(payload);
   }
 
   /**
@@ -561,7 +574,7 @@ export class SuiteToolsApiGet {
         throw new InvalidParameterError(
           'customdatetime/customduration',
           { customdatetime, customduration },
-          "Both parameters required for 'custom' time mode"
+          "Both parameters required for 'custom' time mode",
         );
       }
       if (date && date !== '') {

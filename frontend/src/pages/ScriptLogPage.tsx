@@ -10,6 +10,8 @@ import type { ScriptLogLoaderData } from '../routes/scriptLogLoader';
 export function ScriptLogPage(): JSX.Element {
   const data = useLoaderData() as ScriptLogLoaderData;
 
+  console.log('ScriptLogLoaderData:', data);
+
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Script Log</h2>

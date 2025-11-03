@@ -7,7 +7,6 @@
  *
  * Curates and re‑exports:
  * - Endpoint definitions
- * - HTTP response schemas
  * - Request body schemas
  * - Request/response wrappers
  *
@@ -15,6 +14,5 @@
  */
 
 export * from "./endpoints";
-export * from "./httpResponse";
 export * from "./requestBody";
 export * from "./requestResponse";

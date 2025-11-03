@@ -9,6 +9,7 @@
 
 import * as log from 'N/log';
 import * as query from 'N/query';
+import type { SuiteQLResults } from '../types';
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {}
@@ -35,18 +36,18 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
    * @param sql - the sql query
    * @returns the query results
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public query(sql: string): any[] {
+  public query(sql: string): SuiteQLResults {
     if (sql) {
       // remove line endings
       sql = sql.toString().replace(/(\r\n|\n|\r)/gm, ' ');
     }
     log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() initiated with ', details: { sql: sql } });
 
-    let results = [];
+    let results: SuiteQLResults = [];
     try {
-      results = query.runSuiteQL({ query: sql }).asMappedResults();
+      results = query.runSuiteQL({ query: sql }).asMappedResults() as SuiteQLResults;
     } catch (error) {
+      // TODO enhance error handling
       log.error({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() error', details: error });
       results = [];
     }

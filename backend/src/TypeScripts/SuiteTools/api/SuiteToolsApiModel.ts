@@ -8,6 +8,8 @@
 import * as log from 'N/log';
 import * as task from 'N/task';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
+import type { SuiteQLResults } from '../common/types';
+
 import type { Response } from './types';
 import { NotFoundError } from '@suiteworks/suitetools-shared/errors';
 
@@ -512,10 +514,9 @@ export class SuiteToolsApiModel {
    * Get Script Log
    *
    * @param id - the record id to return
-   * @returns script log
+   * @returns script log SuiteQLResults
    */
-  public getScriptLog(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+  public getScriptLog(id: string): SuiteQLResults {
     const sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -529,14 +530,9 @@ export class SuiteToolsApiModel {
       ON ScriptNote.scripttype = script.id
     WHERE ScriptNote.internalid = ${id}`;
     log.debug({ title: `SuiteToolsApiModel:getScriptLog() generated this sql`, details: sql });
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No script log found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as SuiteQLResults;
 
-    return response;
+    return sqlResults;
   }
 
   /**

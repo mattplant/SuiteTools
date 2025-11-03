@@ -181,13 +181,13 @@ async function convertToAMD(isProduction) {
 
       // Find the actual function names (they might be renamed by esbuild)
       const actualFunctionNames = [];
-      
+
       // First, try to find the exports object pattern that esbuild creates
       // Pattern like: SomeVar = {}; AnotherFunc(SomeVar, {get:()=>actualGet,post:()=>actualPost});
       const exportsObjPattern = /\w+\([^,]+,\s*\{([^}]+)\}\)/g;
       const exportsObjMatches = [...content.matchAll(exportsObjPattern)];
       let exportMappings = {};
-      
+
       for (const match of exportsObjMatches) {
         const objContent = match[1];
         // Extract individual export mappings like "get:()=>jt"
@@ -197,7 +197,7 @@ async function convertToAMD(isProduction) {
           exportMappings[mapping[1]] = mapping[2];
         }
       }
-      
+
       for (const exportName of fileConfig.exports) {
         if (exportMappings[exportName]) {
           // Use the minified function name from the export mapping
@@ -300,8 +300,8 @@ async function buildSingleDeployment(fileConfig, isProduction) {
       entryPoints: {
         [fileConfig.name]: resolve(fileConfig.sourceFile),
       },
+      legalComments: 'inline',
     });
-
     const buildTime = timer.finish();
 
     // Log successful build with timing

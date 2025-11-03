@@ -9,14 +9,8 @@
  * See the LICENSE file at <https://github.com/mattplant/SuiteTools/blob/main/LICENSE>
  */
 
-import { httpResponse, requestResponse, zRequestBody } from '@suiteworks/suitetools-shared';
-import type {
-  HttpResponse,
-  RequestResponse,
-  RequestBody,
-  PostEndpoint,
-  PutEndpoint,
-} from '@suiteworks/suitetools-shared';
+import { requestResponse, zRequestBody } from '@suiteworks/suitetools-shared';
+import type { RequestResponse, RequestBody, PostEndpoint, PutEndpoint } from '@suiteworks/suitetools-shared';
 import type { EndpointName } from '@suiteworks/suitetools-shared';
 import { makeNetSuiteApiError, makeSchemaValidationError, ZodError } from '@suiteworks/suitetools-shared';
 
@@ -122,7 +116,9 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
         status: payload.status,
       });
   }
-  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" and status "${payload.status} returning`, { payload });
+  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" and status "${payload.status}" returning`, {
+    payload,
+  });
 
   return result;
 }
@@ -133,7 +129,7 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
  * @param data - The data to send in the request body.
  * @returns The response from the API.
  */
-export async function postData(endpoint: PostEndpoint, data: object): Promise<HttpResponse> {
+export async function postData(endpoint: PostEndpoint, data: object): Promise<RequestResponse> {
   return saveData(HttpMethod.POST, endpoint, data);
 }
 
@@ -143,7 +139,7 @@ export async function postData(endpoint: PostEndpoint, data: object): Promise<Ht
  * @param data - The data to send in the request body.
  * @returns The response from the API.
  */
-export async function putData(endpoint: PutEndpoint, data: object): Promise<HttpResponse> {
+export async function putData(endpoint: PutEndpoint, data: object): Promise<RequestResponse> {
   return saveData(HttpMethod.PUT, endpoint, data);
 }
 
@@ -159,10 +155,10 @@ async function saveData(
   httpMethod: HttpMethod,
   endpoint: PostEndpoint | PutEndpoint,
   data: object,
-): Promise<HttpResponse> {
+): Promise<RequestResponse> {
   if (window.location.href.includes('localhost')) {
     // use dummy data for local development
-    return httpResponse.parse({ status: 200 });
+    return requestResponse.parse({ status: 200, data: {}, message: 'Mock response' });
   }
 
   // save data to NetSuite
@@ -173,7 +169,7 @@ async function saveData(
     body: JSON.stringify(zRequestBody.parse(requestBody)),
     headers: { 'Content-Type': 'application/json' },
   });
-  const parsedResponse = httpResponse.parse(await response.json());
+  const parsedResponse = requestResponse.parse(await response.json());
   console.log(`[SuiteTools API] saveData() ${httpMethod} ${endpoint} response`, parsedResponse);
 
   return parsedResponse;
