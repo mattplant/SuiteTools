@@ -10,5 +10,7 @@
  * can import them from a single entry point.
  */
 
+export { InvalidParameterError } from "./invalid-parameter.error";
 export { NotFoundError } from "./not-found.error";
 export { SchemaValidationError } from "./schema-validation.error";
+export { UnexpectedError } from "./unexpected.error";

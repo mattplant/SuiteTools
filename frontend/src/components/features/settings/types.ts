@@ -1,6 +1,4 @@
 export type Settings = {
-  // app settings
-  appUrl: string;
   // core configurations
   cssUrl: string;
   jsUrl: string;

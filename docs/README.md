@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: October 17, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
@@ -38,7 +38,7 @@ For workspace‑specific details, see the [Frontend](../frontend/README.md), [Ba
 
 | Layer            | Purpose                                | Key Docs |
 |------------------|----------------------------------------|----------|
-| **Governance**   | Enforceable standards & policies       | [Governance Index](./governance/README.md), [Attribution](../ATTRIBUTION.md), [Emoji Usage](./governance/emoji.md), [Badge Clusters](./governance/standards/badge-clusters.md) |
+| **Governance**   | Enforceable standards & policies       | [Governance Index](./governance/README.md), [Attribution](../ATTRIBUTION.md), [Emoji Usage](./governance/standards/emoji.md), [Badge Clusters](./governance/standards/badge-clusters.md) |
 | **Architecture** | Philosophy & cross‑cutting rules       | [Documentation as Architecture](./architecture/docs-architecture.md), [Error Handling](./architecture/error-handling-architecture.md), [Validation & Type Safety](./architecture/validation.md), [Monorepo & Workspace Boundaries](./architecture/monorepo-and-workspace-boundaries.md) |
 | **Developer Guides** | Practical, task‑oriented setup & workflows | [Installation](./guides/installation.md), [Customizing](./guides/customizing.md), [Build & Release](./guides/build-release.md), [Linting](./guides/linting.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md) |
 | **Workspaces**   | Implementation details                 | [Frontend](../frontend/README.md), [Backend](../backend/README.md), [Shared](../shared/README.md) |

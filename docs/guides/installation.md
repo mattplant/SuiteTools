@@ -1,6 +1,6 @@
 # 📚 SuiteTools Installation Guide
 
-Last updated: September 22, 2025
+Last updated: October 17, 2025
 
 ---
 
@@ -38,6 +38,7 @@ yarn install
 ### Build the Monorepo Projects
 
 ```bash
+yarn workspace @suiteworks/suitetools-shared run build
 yarn workspace frontend run build
 yarn workspace backend run build
 ```

@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { SoapLog } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { openAppPage } from '../../../utils/navigation';
 
 type Props = {
   data: SoapLog;
@@ -8,9 +8,6 @@ type Props = {
 };
 
 export function SoapLogResult({ data, modal }: Props) {
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
-
   return (
     <>
       <p>
@@ -60,9 +57,7 @@ export function SoapLogResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => appScriptUrl && window.open(appScriptUrl + data.urlDetail, '_blank')}>
-            View SOAP Log Details
-          </Button>
+          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View SOAP Log Details</Button>
         </ButtonGroup>
       )}
     </>

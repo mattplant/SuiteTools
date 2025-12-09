@@ -37,7 +37,7 @@ import { getScript } from './components/features/script/getRecord';
 import { ScriptPage } from './pages/ScriptPage';
 import { ScriptsPage } from './pages/ScriptsPage';
 // script logs
-import { getScriptLog } from './components/features/scriptLog/getRecord';
+import { scriptLogLoader } from './routes/scriptLogLoader';
 import { ScriptLogPage } from './pages/ScriptLogPage';
 import { ScriptLogsPage } from './pages/ScriptLogsPage';
 // SOAP logs
@@ -146,8 +146,7 @@ export const router = createHashRouter([
       {
         path: 'scriptLog/:id',
         element: <ScriptLogPage />,
-        loader: async ({ params }): Promise<ReturnType<typeof defer>> =>
-          defer({ scriptLog: getScriptLog(Number(params.id)) }),
+        loader: scriptLogLoader,
       },
       {
         path: 'scriptLogs/:script?',

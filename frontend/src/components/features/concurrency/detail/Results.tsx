@@ -4,7 +4,7 @@ import 'react-data-grid/lib/styles.css';
 import { Export } from '../../../shared/results/Export';
 import type { ConcurrencyDetailData, ConcurrencyDetailRows } from './types';
 import { formatDate } from '../../../../utils/date';
-import { useAppSettingsContext } from '../../../../hooks/useAppSettingsContext';
+import { getAppBaseUrl } from '../../../../utils/navigation';
 
 type Props = {
   data: ConcurrencyDetailData | undefined;
@@ -19,7 +19,6 @@ const columns = [
 ];
 
 export function ConcurrencyDetailResults({ data }: Props) {
-  const { settings } = useAppSettingsContext();
   const gridRef = useRef<DataGridHandle>(null);
   const formattedResults: ConcurrencyDetailRows[] = [];
   if (data) {
@@ -68,9 +67,7 @@ export function ConcurrencyDetailResults({ data }: Props) {
               // convert date string (e.g. 2025-07-05 08:25:41) to a number
               peakConcurrencyTime = String(new Date(peakConcurrencyTime).getTime());
             }
-            const link =
-              settings?.appUrl +
-              `#/concurrencyRequest/${startDate}/${endDate}/${peakConcurrency}/${peakConcurrencyTime}`;
+            const link = `${getAppBaseUrl()}#/concurrencyRequest/${startDate}/${endDate}/${peakConcurrency}/${peakConcurrencyTime}`;
             window.open(link, '_blank');
           }}
         />

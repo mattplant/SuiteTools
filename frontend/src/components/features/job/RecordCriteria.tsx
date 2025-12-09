@@ -5,7 +5,7 @@ import { PostEndpoint } from '../../../api/types';
 import type { HttpResponse } from '../../../api/types';
 import type { CriteriaFields } from '../../shared/criteria/types';
 import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
+import { getAppBaseUrl } from '../../../utils/navigation';
 
 interface Props {
   defaultCriteria: CriteriaFields;
@@ -14,8 +14,6 @@ interface Props {
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
-  const { settings } = useAppSettingsContext();
-  const appScriptUrl = settings?.appUrl;
   const initiateJobsClick = async () => {
     console.log('Jobs Crieria: initiateJobsClick() iniitiated');
     // make API call
@@ -23,7 +21,7 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
     console.log('Jobs Crieria: initiateJobsClick() response', responseData);
     if (responseData.status === 200) {
       // redirect to job status page
-      const redirectToPage = appScriptUrl + `#/jobRuns`;
+      const redirectToPage = getAppBaseUrl() + `#/jobRuns`;
       console.log('Jobs Crieria: initiateJobsClick() redirectToPage', redirectToPage);
       window.location.href = redirectToPage;
     } else {
