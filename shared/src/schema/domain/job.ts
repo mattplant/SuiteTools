@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
-import type { ZEntityBundle } from "../zodUtils";
+import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for a single Job record.
@@ -17,7 +19,7 @@ import type { ZEntityBundle } from "../zodUtils";
  * - `lastRun`: optional timestamp of the last run
  * - `urlDetail`: optional URL for additional context
  */
-const JobSchema = z.object({
+const schema = z.object({
   id: z.number().positive(),
   name: z.string(),
   isinactive: zNetSuite.booleanFromTF.schema,
@@ -25,20 +27,23 @@ const JobSchema = z.object({
   description: z.string(),
   scheduled: zNetSuite.booleanFromTF.schema,
   notify: zNetSuite.booleanFromTF.schema,
-  lastRun: zNetSuite.dateFromString.schema.optional(),
+  lastRun: z
+    .union([zNetSuite.dateFromString.schema, z.literal(""), z.null()])
+    .optional()
+    .transform((val) => (val instanceof Date ? val : undefined)),
   urlDetail: z.string().optional(),
   json: z.string().optional(),
 });
 
-const NormalizedJobSchema = JobSchema.transform((data) => {
+const NormalizedJobSchema = schema.transform((data) => {
   data.json = JSON.stringify(zHelpers.toJSON(data));
 
   return data;
 });
 
-const JobBundle = zHelpers.zCreateBundle(JobSchema, {
+const JobBundle = zHelpers.zCreateBundle(schema, {
   meta: { entity: "Job", plural: "Jobs", displayName: "Job Record" },
-  normalize: (data: z.output<typeof JobSchema>) =>
+  normalize: (data: z.output<typeof schema>) =>
     NormalizedJobSchema.parse(data),
 });
 
@@ -49,3 +54,11 @@ const JobBundle = zHelpers.zCreateBundle(JobSchema, {
 export { JobBundle };
 export type Job = typeof JobBundle.types.single;
 export type Jobs = typeof JobBundle.types.array;
+
+// Convenience union for single entity
+export const jobOrNotFoundSchema = orNotFoundSchema(schema);
+export type JobOrNotFound = OrNotFound<Job>;
+
+// Convenience union for multiple entities
+export const jobsOrNotFoundSchema = orNotFoundSchema(JobBundle.schema.array());
+export type JobsOrNotFound = OrNotFound<Jobs>;

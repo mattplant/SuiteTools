@@ -34,6 +34,9 @@ export class SuiteToolsAppView {
   public renderSpa(): void {
     const css = this.stApp.stCommon.stSettings.cssUrl;
     const js = this.stApp.stCommon.stSettings.jsUrl;
+    const cacheBust = encodeURIComponent(this.stApp.stCommon.stSettings.appBundle || String(Date.now()));
+    const cssWithBust = this.withCacheBust(css, cacheBust);
+    const jsWithBust = this.withCacheBust(js, cacheBust);
     const appUrl = this.stApp.appUrl;
     let content = `<!doctype html>
 <html lang="en">
@@ -41,8 +44,8 @@ export class SuiteToolsAppView {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SuiteTools</title>
-    <script type="module" crossorigin src="${js}"></script>
-    <link rel="stylesheet" crossorigin href="${css}" />
+    <script type="module" crossorigin src="${jsWithBust}"></script>
+    <link rel="stylesheet" crossorigin href="${cssWithBust}" />
   </head>
   <body>
     <div id="root" data-app-url="${appUrl}"></div>
@@ -50,6 +53,17 @@ export class SuiteToolsAppView {
 </html>`;
     content += this.getPageFooterComments();
     this._context.response.write(content);
+  }
+
+  /**
+   * Append a cache-busting query param so File Cabinet asset updates are picked up immediately.
+   */
+  private withCacheBust(assetUrl: string, version: string): string {
+    if (!assetUrl) {
+      return assetUrl;
+    }
+    const separator = assetUrl.includes('?') ? '&' : '?';
+    return `${assetUrl}${separator}v=${version}`;
   }
 
   /**

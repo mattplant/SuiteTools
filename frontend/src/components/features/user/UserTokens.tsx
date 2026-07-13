@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../../shared/criteria/types';
-import { getToken } from '../token/getRecord';
-import { getTokens } from '../token/getRecords';
+import { getToken } from '../../../adapters/api/token';
+import { getTokens } from '../../../adapters/api/tokens';
 import type { Tokens } from '@suiteworks/suitetools-shared';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';

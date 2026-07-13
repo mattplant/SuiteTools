@@ -22,7 +22,7 @@ export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Button type="submit">Get Tokens</Button>
       <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
+        <SearchCriteriaActive register={register} title="Status" trueLabel="Active" falseLabel="Revoked" />
         <SearchCriteriaIntegrationName register={register} />
         <SearchCriteriaUserName register={register} />
         <SearchCriteriaRoleName register={register} />

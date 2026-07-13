@@ -1,20 +1,28 @@
-import { getConcurrencySummaryData } from '../../../../utils/concurrency';
-import { ConcurrencySummaryData, CriteriaFields } from './types';
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * Gets concurrency summary data.
- *
- * @param fields - number of days to get the summary for
- * @param [accountId] - NetSuite account ID
- * @returns concurrency summary
+ * @file API adapter for concurrency summary (APM scrape).
+ */
+
+import { getConcurrencySummaryData } from '../../utils/concurrency';
+import type {
+  ConcurrencySummaryData,
+  CriteriaFields,
+} from '../../components/features/concurrency/summary/types';
+
+/**
+ * Fetch concurrency summary for a date range.
+ * @param fields - Start/end dates.
+ * @param accountId - NetSuite account id from settings.
  */
 export async function getConcurrencySummary(
   fields: CriteriaFields,
   accountId?: string,
 ): Promise<ConcurrencySummaryData> {
-  let result: ConcurrencySummaryData;
-  if (window.location.href.includes('localhost')) {
-    result = {
+  console.log('[concurrency:getConcurrencySummary] criteria: %o', { fields, accountId });
+
+  if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
+    return {
       concurrency: {
         overview: {
           concurrencyLimit: 20,
@@ -59,14 +67,11 @@ export async function getConcurrencySummary(
         series: { violation: {} },
       },
     };
-  } else {
-    console.log('getConcurrencySummary() loading concurrency from NetSuite page');
-    if (accountId && fields.startDate && fields.endDate) {
-      result = await getConcurrencySummaryData(accountId, fields.startDate, fields.endDate);
-    } else {
-      throw new Error('getConcurrencySummary() missing required fields of accountId and dateRange');
-    }
   }
 
-  return result;
+  if (!accountId || !fields.startDate || !fields.endDate) {
+    throw new Error('getConcurrencySummary() requires accountId, startDate, and endDate');
+  }
+
+  return getConcurrencySummaryData(accountId, fields.startDate, fields.endDate);
 }

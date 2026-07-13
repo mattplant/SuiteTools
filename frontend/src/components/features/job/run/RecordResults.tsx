@@ -3,7 +3,7 @@ import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../../shared/results/Export';
 import type { ResultsProps, SummaryRow } from '../../../shared/results/types';
-import { JobRunBundle } from '@suiteworks/suitetools-shared';
+import { JobRunBundle, type JobRun } from '@suiteworks/suitetools-shared';
 
 const columns = [
   {
@@ -20,13 +20,14 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
-  // {
-  //   key: 'created',
-  //   name: 'Created At',
-  // },
+  {
+    key: 'created',
+    name: 'Created At',
+  },
   {
     key: 'completed',
     name: 'Completed',
+    renderCell: ({ row }: { row: JobRun }) => (row.completed ? 'Yes' : 'No'),
   },
   {
     key: 'results',

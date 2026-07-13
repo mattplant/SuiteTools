@@ -44,19 +44,21 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
     );
   }
 
-  // TODO: Cleanup. This hardened code had issues. Also it is still passing empty strings.
-  // // Construct URL safely skipping nullish params
-  // const url = new URL(apiBaseUrl);
-  // url.searchParams.set('endpoint', endpoint);
-  // Object.entries(params).forEach(([k, v]) => {
-  //   if (v != null) url.searchParams.set(k, String(v));
-  // });
-
-  // Call the NetSuite API
-  const paramString = new URLSearchParams(params as Record<string, string>).toString();
-  const url = `${apiBaseUrl}&endpoint=${endpoint}&${paramString}`;
+  // URLSearchParams stringifies undefined/null as "undefined"/"null", which breaks SuiteQL filters.
+  // Skip nullish and empty-string values; keep 0 / false if ever passed.
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value == null || value === '') {
+      continue;
+    }
+    searchParams.set(key, String(value));
+  }
+  const paramString = searchParams.toString();
+  const url = paramString
+    ? `${apiBaseUrl}&endpoint=${endpoint}&${paramString}`
+    : `${apiBaseUrl}&endpoint=${endpoint}`;
   console.log(`[SuiteTools API] getData() endpoint "${endpoint}" fetching URL: ${url}`);
-  const res = await fetch(url.toString());
+  const res = await fetch(url);
   console.log(`[SuiteTools API] getData() endpoint "${endpoint}" responded`, {
     status: res.status,
     ok: res.ok,

@@ -1,29 +1,49 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { Job } from '@suiteworks/suitetools-shared';
-import { postData } from '../../../api/api';
-import { PostEndpoint } from '../../../api/types';
-import type { HttpResponse } from '../../../api/types';
+import { initiateJob } from '../../../adapters/api/job';
 import { openAppPage, getAppBaseUrl } from '../../../utils/navigation';
+import { getIntegrations } from '../../../adapters/api/integrations';
+import { getTokens } from '../../../adapters/api/tokens';
 
 type Props = {
   data: Job;
   modal?: boolean;
 };
 
+type LastLoginEntity = { type: string; name: string };
+
 export function JobResult({ data, modal }: Props) {
   const initiateJobClick = async () => {
-    console.log('JobResult: initiateJobClick() iniitiated');
-    const entityRecords: { type: string; name: string }[] = [];
-    // make API call
-    const responseData: HttpResponse = await postData(PostEndpoint.INITIATEJOB, {
+    console.log('JobResult: initiateJobClick() initiated', { jobId: data.id });
+    const entityRecords: LastLoginEntity[] = [];
+
+    // Last Logins job needs the entity list (integrations + tokens) as Map/Reduce input.
+    // If scrape fails or returns empty, the backend falls back to LoginAudit distinct names.
+    if (Number(data.id) === 2) {
+      try {
+        const [integrations, tokens] = await Promise.all([
+          getIntegrations({ active: '' }),
+          getTokens({ active: '' }),
+        ]);
+        for (const integration of integrations) {
+          entityRecords.push({ type: 'integration', name: integration.name });
+        }
+        for (const token of tokens) {
+          entityRecords.push({ type: 'token', name: token.name });
+        }
+        console.log('JobResult: Last Logins entities', entityRecords);
+      } catch (err) {
+        console.warn('JobResult: entity scrape failed; backend LoginAudit fallback will be used', err);
+      }
+    }
+
+    const responseData = await initiateJob({
       id: data.id,
       data: entityRecords,
     });
     console.log('JobResult: initiateJobClick() response', responseData);
     if (responseData.status === 200) {
-      // redirect to job page
       const redirectToPage = getAppBaseUrl() + `#/job/${data.id}`;
-      console.log('JobResult: initiateJobClick() redirectToPage', redirectToPage);
       window.location.href = redirectToPage;
     } else {
       console.error('Failed to initiate job');

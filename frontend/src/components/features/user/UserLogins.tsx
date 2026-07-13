@@ -1,36 +1,42 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../../shared/criteria/types';
-import { getLogins } from '../login/getRecords';
+import { getLogins } from '../../../adapters/api/logins';
+import { getLoginFromResults } from '../../../adapters/api/login';
 import type { Login } from '@suiteworks/suitetools-shared';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
-import { getLoginFromResults } from '../login/getRecordFromResults';
 
 type Props = {
   userId: string;
 };
 
 export function UserLogins({ userId }: Props) {
-  console.log('UserLogins userId', userId);
   const [results, setResults] = useState<readonly Login[]>([]);
 
   useEffect(() => {
+    let ignore = false;
     const criteria: CriteriaFields = {
       users: [String(userId)],
     };
+
     async function fetchData() {
       try {
         const data = await getLogins(criteria);
-        if (!('message' in data)) {
+        if (!ignore) {
           setResults(data);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching user logins:', error);
+        if (!ignore) {
+          setResults([]);
+        }
       }
     }
     fetchData();
 
-    return () => {};
+    return () => {
+      ignore = true;
+    };
   }, [userId]);
 
   return (

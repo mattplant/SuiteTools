@@ -1,7 +1,10 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
+import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for a single Script record.
@@ -22,14 +25,14 @@ import type { ZEntityBundle } from "../zodUtils";
  * - `urlScriptLogs`: optional URL for script logs
  */
 const ScriptSchema = z.object({
-  id: z.number().positive(),
-  apiversion: z.string(),
+  id: zNetSuite.numberFromString.schema,
+  apiversion: zNetSuite.stringOrEmpty.schema,
   isinactive: zNetSuite.booleanFromTF.schema,
-  scripttype: z.string(),
-  name: z.string(),
-  scriptid: z.string(),
-  owner: z.string(),
-  scriptfile: z.string(),
+  scripttype: zNetSuite.stringOrEmpty.schema,
+  name: zNetSuite.stringOrEmpty.schema,
+  scriptid: zNetSuite.stringOrEmpty.schema,
+  owner: zNetSuite.stringOrEmpty.schema,
+  scriptfile: zNetSuite.stringOrEmpty.schema,
   notifyemails: zNetSuite.stringOrEmpty.schema,
   description: zNetSuite.stringOrEmpty.schema,
   // additional properties
@@ -40,7 +43,6 @@ const ScriptSchema = z.object({
 
 const ScriptBundle: ZEntityBundle<typeof ScriptSchema, "Script"> =
   zHelpers.zCreateBundle(ScriptSchema, {
-    // normalize: (d) => ({ ...d, id: Number(d.id) }),
     meta: { entity: "Script", plural: "Scripts" },
   });
 
@@ -51,3 +53,13 @@ const ScriptBundle: ZEntityBundle<typeof ScriptSchema, "Script"> =
 export { ScriptBundle };
 export type Script = typeof ScriptBundle.types.single;
 export type Scripts = typeof ScriptBundle.types.array;
+
+// Convenience union for single entity
+export const scriptOrNotFoundSchema = orNotFoundSchema(ScriptSchema);
+export type ScriptOrNotFound = OrNotFound<Script>;
+
+// Convenience union for multiple entities
+export const scriptsOrNotFoundSchema = orNotFoundSchema(
+  ScriptBundle.schema.array()
+);
+export type ScriptsOrNotFound = OrNotFound<Scripts>;

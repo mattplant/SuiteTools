@@ -36,23 +36,37 @@ export interface NetSuiteResponse {
 export async function getDataFromPageContent(url: string): Promise<NetSuiteResponse> {
   console.log('getDataFromPageContent() initiated', { url });
 
-  let data: NetSuiteResponse;
-  const content = await fetch(url)
-    .then((response) => {
-      return response.text();
-    })
-    .catch((error) => {
-      console.error(`getDataFromPageContent() error =\n`, error);
-      throw error;
-    });
+  const response = await fetch(url, { credentials: 'same-origin' }).catch((error) => {
+    console.error(`getDataFromPageContent() error =\n`, error);
+    throw error;
+  });
+
+  const content = await response.text();
   if (!content) {
     throw new Error(`getDataFromPageContent() no content found at ${url}`);
   }
+
+  if (!response.ok) {
+    const snippet = content.replace(/\s+/g, ' ').slice(0, 180);
+    throw new Error(
+      `NetSuite returned HTTP ${response.status} for ${url}. ` +
+        `This usually means the APM scriptlet is missing or failed. Preview: ${snippet}`,
+    );
+  }
+
+  if (/^\s*</.test(content)) {
+    throw new Error(
+      `Expected JSON from ${url} but received HTML. ` +
+        `The APM concurrency SuiteApp may not be installed or the scriptlet crashed.`,
+    );
+  }
+
+  let data: NetSuiteResponse;
   try {
     data = JSON.parse(content);
   } catch (error) {
     console.error('getDataFromPageContent() error parsing JSON data:', error);
-    throw error;
+    throw new Error(`Failed to parse JSON from ${url}: ${error instanceof Error ? error.message : String(error)}`);
   }
 
   if (!data.success && data.message) {
@@ -88,40 +102,49 @@ export async function getDataFromPageTable(
   const noRecords =
     tableArray.length === 1 &&
     Array.isArray(tableArray[0]) &&
-    tableArray[0].length === 2 &&
-    tableArray[0][0] === 'No records to show.';
+    tableArray[0].length >= 1 &&
+    String(tableArray[0][0]).includes('No records to show');
   if (noRecords) {
     console.log('getDataFromPageTable() has no records to show');
     return [];
   }
 
-  console.log('getDataFromPageTable() returning', tableArray);
+  console.log('getDataFromPageTable() returning', {
+    rowCount: tableArray.length,
+    sampleRow: tableArray[0],
+  });
 
   return tableArray;
 }
 
 async function getPageTable(url: string, id: string): Promise<string> {
-  // console.log('getPageTable() initiated', { url, id });
-  const table = await fetch(url)
-    .then((response) => response.text())
-    .then((pageData) => {
-      // console.log('getPageTable() pageData = ' + pageData);
-      const parser = new DOMParser();
-      const domPage = parser.parseFromString(pageData, 'text/html');
-      const element = domPage.getElementById(id);
-      if (!element) {
-        throw new Error(`Element with id ${id} not found`);
-      }
+  const response = await fetch(url);
+  const pageData = await response.text();
+  const parser = new DOMParser();
+  const domPage = parser.parseFromString(pageData, 'text/html');
 
-      return element.outerHTML;
-    })
-    .catch((error) => {
-      console.error(`getPageTable() Error =\n`, error);
-      throw error;
-    });
-  // console.log('getPageTable() returning', table);
+  // Session expiry often returns the login form instead of the list page.
+  const looksLikeLogin =
+    Boolean(domPage.querySelector('form[name="login"], input#userName, input[name="email"]')) &&
+    !domPage.getElementById(id);
+  if (looksLikeLogin) {
+    throw new Error(`NetSuite returned a login page for ${url}. Refresh SuiteTools and try again.`);
+  }
 
-  return table;
+  let element: Element | null = domPage.getElementById(id);
+  if (!element) {
+    // NetSuite list markup varies by version; fall back to common list tables.
+    element =
+      domPage.querySelector(`table#${CSS.escape(id)}`) ||
+      domPage.querySelector('table.listtable') ||
+      domPage.querySelector('table.uir-list-table') ||
+      domPage.querySelector('table[id*="div__body"]');
+  }
+  if (!element) {
+    throw new Error(`List table "${id}" not found on ${url}. NetSuite may have changed the page markup.`);
+  }
+
+  return element.outerHTML;
 }
 
 function convertTableToArray(html: string): string[][] {
@@ -132,10 +155,11 @@ function convertTableToArray(html: string): string[][] {
     const tableRow: string[] = [];
     tableColumns.forEach((column) => {
       if (column.includes('<a')) {
-        const matchResult = column.match(/<a[^>]*>[^<]*<\/a>/);
+        const matchResult = column.match(/<a[^>]*>[\s\S]*?<\/a>/);
         if (matchResult) {
-          column = matchResult[0];
-          tableRow.push(column);
+          tableRow.push(matchResult[0]);
+        } else {
+          tableRow.push(column.replace(/<[^>]*>?/gm, '').trim());
         }
       } else {
         const tableCell = column.replace(/<[^>]*>?/gm, '').trim();

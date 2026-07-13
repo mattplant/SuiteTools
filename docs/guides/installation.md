@@ -1,6 +1,6 @@
 # 📚 SuiteTools Installation Guide
 
-Last updated: October 17, 2025
+Last updated: July 12, 2026
 
 ---
 
@@ -15,7 +15,7 @@ It is intended for **end users and administrators** who want to get SuiteTools u
 
 ### General
 
-- A NetSuite instance
+- A NetSuite **instance**
 - Administrator access to install, deploy and run SuiteTools
 
 ### Requirements From NetSuite-TypeScript-SDF Template
@@ -83,5 +83,6 @@ yarn workspace backend run deploy
 - Verify your deployment by launching the SuiteTools app in NetSuite.
 - Explore the [📚 Customizing Guide](./customizing.md) if you want to extend or adapt SuiteTools for your workflows.
 - Ensure compliance with [🏷️ License Compliance](../governance/license-compliance.md) when adding dependencies or modifying code.
+- To remove SuiteTools from an account later, follow the [📚 Uninstall Guide](./uninstall.md).
 
 By completing these steps, you’ll have SuiteTools installed, running, and ready for customization or contribution.

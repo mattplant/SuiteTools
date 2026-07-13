@@ -1,49 +1,40 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
+import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
- * Zod schema for a single login entry.
- *
- * Fields:
- * - `id`: unique numeric identifier
- * - `date`: ISO timestamp of the login
- * - `status`: status of the login (e.g., success, failure)
- * - `oauthappname`: name of the OAuth application used
- * - `oauthaccesstokenname`: name of the OAuth access token (optional, nullable)
- * - `user`: user ID (optional)
- * - `username`: username (optional)
- * - `role`: role ID (optional)
- * - `rolename`: name of the role (optional)
- * - `emailaddress`: email address (optional)
- * - `ipaddress`: IP address of the login
- * - `requesturi`: URI of the request
- * - `detail`: additional details (optional)
- * - `secchallenge`: security challenge (optional)
- * - `useragent`: user agent string (optional)
- * - `urlNs`: URL for NetSuite (optional)
- * - `urlDetail`: URL for additional context (optional)
+ * Zod schema for a single Login Audit entry.
  */
 export const LoginSchema = z.object({
-  id: z.number(),
-  date: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
-    message: "Invalid ISO timestamp",
-  }),
-  status: z.string(),
+  id: zNetSuite.numberFromString.schema,
+  date: zNetSuite.stringOrEmpty.schema,
+  status: zNetSuite.stringOrEmpty.schema,
   oauthappname: z.string().optional().nullable(),
   oauthaccesstokenname: z.string().optional().nullable(),
-  user: z.number().optional(),
-  username: z.string().optional(),
-  role: z.number().optional().nullable(),
+  user: z
+    .preprocess((val) => {
+      if (val === null || val === undefined || val === "") return null;
+      return typeof val === "string" ? Number(val) : val;
+    }, z.number().nullable())
+    .optional(),
+  username: z.string().optional().nullable(),
+  role: z
+    .preprocess((val) => {
+      if (val === null || val === undefined || val === "") return null;
+      return typeof val === "string" ? Number(val) : val;
+    }, z.number().nullable())
+    .optional(),
   rolename: z.string().optional().nullable(),
-  emailaddress: z.string().optional(),
-  ipaddress: z.string(),
-  requesturi: z.string(),
+  emailaddress: z.string().optional().nullable(),
+  ipaddress: zNetSuite.stringOrEmpty.schema,
+  requesturi: zNetSuite.stringOrEmpty.schema,
   detail: z.string().optional().nullable(),
   secchallenge: z.string().optional().nullable(),
   useragent: z.string().optional().nullable(),
-  // additional properties
   urlNs: z.string().optional(),
   urlDetail: z.string().optional(),
 });
@@ -53,10 +44,14 @@ const LoginBundle: ZEntityBundle<typeof LoginSchema, "Login"> =
     meta: { entity: "Login", plural: "Logins" },
   });
 
-// ───────────────────────────────────────────────────────────
-// Public Exports
-// ───────────────────────────────────────────────────────────
-
 export { LoginBundle };
 export type Login = typeof LoginBundle.types.single;
 export type Logins = typeof LoginBundle.types.array;
+
+export const loginOrNotFoundSchema = orNotFoundSchema(LoginSchema);
+export type LoginOrNotFound = OrNotFound<Login>;
+
+export const loginsOrNotFoundSchema = orNotFoundSchema(
+  LoginBundle.schema.array()
+);
+export type LoginsOrNotFound = OrNotFound<Logins>;

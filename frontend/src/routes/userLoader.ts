@@ -11,19 +11,23 @@
 
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getUser } from '../adapters/api/user';
-import type { UserOrNotFound } from '@suiteworks/suitetools-shared';
+import type { User } from '@suiteworks/suitetools-shared';
+import { isNotFoundError } from '@suiteworks/suitetools-shared';
 
 /**
  * Loader for the `/users/:id` route.
  * @param args - Loader arguments provided by the router.
  * @param args.params - Object containing the route parameters.
  * @param args.params.id - The `id` segment from the route (as a string).
- * @returns An object with a `user` property containing a promise that resolves to a `UserOrNotFound` record.
+ * @returns An object with a `user` property containing a promise that resolves to a `User`.
  */
-export async function userLoader(args: LoaderFunctionArgs): Promise<{ user: Promise<UserOrNotFound> }> {
+export async function userLoader(args: LoaderFunctionArgs): Promise<{ user: Promise<User> }> {
   const { params } = args;
   return {
     user: getUser(Number(params.id)).catch((err) => {
+      if (isNotFoundError(err)) {
+        throw new Response('User not found', { status: 404 });
+      }
       console.error('router:getUser() failed', err);
       throw err;
     }),

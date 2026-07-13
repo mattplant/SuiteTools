@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { Token } from '@suiteworks/suitetools-shared';
 import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
-import { addTokenLastLogin } from './getRecord';
+import { addTokenLastLogin } from '../../../adapters/api/token';
 import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 
 type Props = {

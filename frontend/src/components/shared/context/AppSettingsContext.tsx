@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { getSettings } from '../../features/settings/getSettings';
-import type { Settings } from '../../features/settings/types';
+import { getSettings } from '../../../adapters/api/settings';
+import type { Settings } from '@suiteworks/suitetools-shared';
 
 type AppContextSettingsType = {
   settings: undefined | Settings;

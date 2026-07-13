@@ -1,19 +1,28 @@
-import { getConcurrencyDetailData } from '../../../../utils/concurrency';
-import { ConcurrencyDetailData, CriteriaFields } from './types';
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * Gets concurrency detail data.
- *
- * @param fields - number of days to get the detail for
- * @param [accountId] - NetSuite account ID
- * @returns concurrency detail
+ * @file API adapter for concurrency detail (APM scrape).
  */
-export async function getConcurrencyDetail(fields: CriteriaFields, accountId: string): Promise<ConcurrencyDetailData> {
-  console.log('getConcurrencyDetail() initiated', { fields, accountId });
 
-  let result: ConcurrencyDetailData;
-  if (window.location.href.includes('localhost')) {
-    result = {
+import { getConcurrencyDetailData } from '../../utils/concurrency';
+import type {
+  ConcurrencyDetailData,
+  CriteriaFields,
+} from '../../components/features/concurrency/detail/types';
+
+/**
+ * Fetch concurrency detail for a date range.
+ * @param fields - Start/end dates.
+ * @param accountId - NetSuite account id from settings.
+ */
+export async function getConcurrencyDetail(
+  fields: CriteriaFields,
+  accountId: string,
+): Promise<ConcurrencyDetailData> {
+  console.log('[concurrency:getConcurrencyDetail] criteria: %o', { fields, accountId });
+
+  if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
+    return {
       concurrency: {
         overview: {
           pagingStartDateMS: 1736064000000,
@@ -82,14 +91,11 @@ export async function getConcurrencyDetail(fields: CriteriaFields, accountId: st
         ],
       },
     };
-  } else {
-    console.log('getConcurrencyDetail() loading concurrency from NetSuite page');
-    if (accountId && fields.startDate && fields.endDate) {
-      result = await getConcurrencyDetailData(accountId, fields.startDate, fields.endDate);
-    } else {
-      throw new Error('getConcurrencyDetail() missing required fields of accountId, startDate and endDate');
-    }
   }
 
-  return result;
+  if (!accountId || !fields.startDate || !fields.endDate) {
+    throw new Error('getConcurrencyDetail() requires accountId, startDate, and endDate');
+  }
+
+  return getConcurrencyDetailData(accountId, fields.startDate, fields.endDate);
 }

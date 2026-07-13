@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../../shared/criteria/types';
-import { getSoapLog } from '../soapLog/getRecord';
-import { getSoapLogs } from '../soapLog/getRecords';
-import { SoapLogBundle } from '@suiteworks/suitetools-shared';
+import { getSoapLog } from '../../../adapters/api/soapLog';
+import { getSoapLogs } from '../../../adapters/api/soapLogs';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
 import type { SoapLogs } from '@suiteworks/suitetools-shared';
@@ -15,22 +14,29 @@ export function IntegrationSoapLogs({ integrations }: Props) {
   const [results, setResults] = useState<SoapLogs>([]);
 
   useEffect(() => {
+    let ignore = false;
     const criteria: CriteriaFields = {
-      active: 'T',
-      integrations: integrations,
+      integrations,
     };
+
     async function fetchData() {
       try {
         const data = await getSoapLogs(criteria);
-        SoapLogBundle.assertMany(data);
-        setResults(data);
+        if (!ignore) {
+          setResults(data);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching integration SOAP logs:', error);
+        if (!ignore) {
+          setResults([]);
+        }
       }
     }
     fetchData();
 
-    return () => {};
+    return () => {
+      ignore = true;
+    };
   }, [integrations]);
 
   return (

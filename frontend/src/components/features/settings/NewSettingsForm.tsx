@@ -1,17 +1,20 @@
 import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
-import { NewSettings } from './types';
+import type { NewSettings } from '@suiteworks/suitetools-shared';
 
 type Props = {
-  onSave: (data: NewSettings) => void;
+  defaultValues: NewSettings;
+  onSave: (data: NewSettings) => void | Promise<void>;
 };
 
-export function NewSettingsForm({ onSave }: Props) {
+export function NewSettingsForm({ defaultValues, onSave }: Props) {
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, isSubmitSuccessful },
-  } = useForm<NewSettings>();
+  } = useForm<NewSettings>({
+    defaultValues,
+  });
   const fieldStyle = 'flex flex-col mb-2';
 
   return (

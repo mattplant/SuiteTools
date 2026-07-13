@@ -1,4 +1,4 @@
-import { Settings } from './types';
+import type { Settings } from '@suiteworks/suitetools-shared';
 
 type Props = {
   settings: Settings;

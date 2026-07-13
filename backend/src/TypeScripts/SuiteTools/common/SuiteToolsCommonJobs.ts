@@ -167,7 +167,7 @@ export class SuiteToolsCommonJobs {
    * @param jobData
    * @returns void
    */
-  public async runJob(jobId: string, jobData: object): Promise<void> {
+  public async runJob(jobId: string, jobData?: object): Promise<void> {
     log.debug('SuiteToolsCommonJobs:runJob() initiated', { jobId, jobData });
     let result: object;
     let completed = false;
@@ -187,7 +187,7 @@ export class SuiteToolsCommonJobs {
             completed = true;
             break;
           case '2': // Last Logins
-            result = this.initiateLastLoginsJob(jobData);
+            result = this.initiateLastLoginsJob(jobData ?? []);
             completed = true;
             break;
           default:
@@ -283,31 +283,32 @@ export class SuiteToolsCommonJobs {
   public initiateLastLoginsJob(requestBodyData: object): object {
     log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() initiated', details: requestBodyData });
     let message = '';
-    let entityRecords: object;
+    let entityRecords: { type: string; name: string }[] = [];
 
-    // get the entity records (integration and tokens) from the request body
-    if (Array.isArray(requestBodyData) && requestBodyData.every((item) => typeof item === 'object' && item !== null)) {
-      entityRecords = requestBodyData;
-      log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() set entity records', details: entityRecords });
+    // Prefer entity records supplied by the caller (frontend scrape).
+    if (Array.isArray(requestBodyData) && requestBodyData.length > 0) {
+      entityRecords = requestBodyData.filter(
+        (item) => item && typeof item === 'object' && typeof item.type === 'string' && typeof item.name === 'string',
+      );
+      log.debug({
+        title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() set entity records from request',
+        details: { count: entityRecords.length },
+      });
     }
 
-    // TODO users
-    // const response = this.stApi.stApiModel.getUsers('U');
-    // if (response && Array.isArray(response.data) && response.data.length > 0) {
-    //   for (const user of response.data) {
-    //     entityRecords.push({
-    //       type: 'user',
-    //       name: user['email'],
-    //     });
-    //   }
-    // }
+    // Fallback: discover entities from LoginAudit so the job still works when
+    // the UI scrape returns nothing (or the jobs-run MR drops the payload).
+    if (entityRecords.length === 0) {
+      entityRecords = this.getLastLoginEntitiesFromAudit();
+      log.debug({
+        title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() entity records from LoginAudit',
+        details: { count: entityRecords.length },
+      });
+    }
 
-    log.debug({
-      title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() identity records',
-      details: entityRecords,
-    });
-    if (entityRecords) {
-      // submit the task
+    if (entityRecords.length > 0) {
+      // Ensure settings are loaded so recordId is available for the MR script.
+      this.stCommon.stSettings.getSettings();
       const params = {
         custscript_idev_st_mr_logins_entity: JSON.stringify(entityRecords),
         custscript_idev_st_mr_logins_set_id: this.stCommon.stSettings.recordId,
@@ -326,8 +327,52 @@ export class SuiteToolsCommonJobs {
     log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() returning', details: message });
 
     return {
-      data: {},
+      data: { entityCount: entityRecords.length },
       message: message,
     };
+  }
+
+  /**
+   * Build Last Logins entity list from LoginAudit distinct names.
+   * @returns Entity records for integrations, tokens, and users.
+   */
+  private getLastLoginEntitiesFromAudit(): { type: string; name: string }[] {
+    const entities: { type: string; name: string }[] = [];
+    const queries: { type: string; sql: string; field: string }[] = [
+      {
+        type: 'integration',
+        field: 'oauthappname',
+        sql: `SELECT DISTINCT oAuthAppName AS oauthappname FROM LoginAudit WHERE oAuthAppName IS NOT NULL`,
+      },
+      {
+        type: 'token',
+        field: 'oauthaccesstokenname',
+        sql: `SELECT DISTINCT oAuthAccessTokenName AS oauthaccesstokenname FROM LoginAudit WHERE oAuthAccessTokenName IS NOT NULL`,
+      },
+      {
+        type: 'user',
+        field: 'emailaddress',
+        sql: `SELECT DISTINCT emailAddress AS emailaddress FROM LoginAudit WHERE emailAddress IS NOT NULL`,
+      },
+    ];
+
+    for (const query of queries) {
+      try {
+        const rows = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(query.sql) as Record<string, string>[];
+        for (const row of rows || []) {
+          const name = row[query.field];
+          if (name) {
+            entities.push({ type: query.type, name });
+          }
+        }
+      } catch (e) {
+        log.error({
+          title: 'SuiteToolsCommonJobs:getLastLoginEntitiesFromAudit() query failed',
+          details: { type: query.type, error: e },
+        });
+      }
+    }
+
+    return entities;
   }
 }

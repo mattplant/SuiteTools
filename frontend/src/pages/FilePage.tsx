@@ -1,11 +1,14 @@
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
-import { FileBundle } from '@suiteworks/suitetools-shared';
 import { FileResult } from '../components/features/file/RecordResult';
+import type { FileLoaderData } from '../routes/fileLoader';
 
-export function FilePage() {
-  const data = useLoaderData();
-  assertIsData(data);
+/**
+ * Renders the file page with file details.
+ * @returns The rendered file page component.
+ */
+export function FilePage(): JSX.Element {
+  const data = useLoaderData() as FileLoaderData;
 
   return (
     <div className="mx-auto mt-6">
@@ -13,28 +16,11 @@ export function FilePage() {
       <br />
       <Suspense fallback={<div>Fetching...</div>}>
         <Await resolve={data.file}>
-          {(file) => {
-            FileBundle.assert(file);
-            return <FileResult data={file} />;
+          {(record) => {
+            return <FileResult data={record} />;
           }}
         </Await>
       </Suspense>
     </div>
   );
-}
-
-type Data = {
-  file: File;
-};
-
-function assertIsData(data: unknown): asserts data is Data {
-  if (typeof data !== 'object') {
-    throw new Error('Data is not an object');
-  }
-  if (data === null) {
-    throw new Error('Data is null');
-  }
-  if (!('file' in data)) {
-    throw new Error('Data does not contain file');
-  }
 }
