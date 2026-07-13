@@ -8,11 +8,11 @@
   },
   "author": {
     "name": "Matthew Plant",
-    "url": "https://github.com/mattplant"
+    "url": "https://idev.systems/"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mattplant/SuiteTools",
+    "url": "https://gitlab.com/idev-systems/labs/SuiteTools",
     "directory": "backend"
   },
   "license": "GPL-3.0-or-later",

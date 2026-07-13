@@ -6,16 +6,16 @@
   "packageManager": "yarn@4.9.2",
   "author": {
     "name": "Matthew Plant",
-    "url": "https://github.com/mattplant"
+    "url": "https://idev.systems/"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mattplant/SuiteTools"
+    "url": "https://gitlab.com/idev-systems/labs/SuiteTools"
   },
   "bugs": {
-    "url": "https://github.com/mattplant/SuiteTools/issues"
+    "url": "https://gitlab.com/idev-systems/labs/SuiteTools/-/issues"
   },
-  "homepage": "https://github.com/mattplant/SuiteTools#readme",
+  "homepage": "https://gitlab.com/idev-systems/labs/SuiteTools",
   "license": "GPL-3.0-or-later",
   "keywords": [
     "netsuite",

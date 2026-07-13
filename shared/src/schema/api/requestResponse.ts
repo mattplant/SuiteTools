@@ -18,7 +18,7 @@
  *
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- * See the LICENSE file at <https://github.com/mattplant/SuiteTools/blob/main/LICENSE>
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { z } from "zod";
