@@ -11,7 +11,7 @@
  * - Minimal envelope; no paging/meta yet
  * @copyright Matthew Plant
  * @license GPL-3.0-or-later
- * See the LICENSE file at <https://github.com/mattplant/SuiteTools/blob/main/LICENSE>
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { makeRequestResponseSchema, jobRunsOrNotFoundSchema, isNotFound, toArray } from '@suiteworks/suitetools-shared';

@@ -3,11 +3,11 @@
 > Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: July 12, 2026
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
-[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
 
 ---
 
@@ -17,6 +17,10 @@ SuiteTools materials are dual‑licensed:
 
 - **Source code** — [GPLv3‑or‑later](https://www.gnu.org/licenses/gpl-3.0.html)
 - **Documentation and diagrams** — [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+The canonical project home is
+[gitlab.com/idev-systems/labs/SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools/).
+A public GitHub repository may be kept as a read-oriented mirror for discoverability.
 
 This guide provides ready‑to‑use attribution formats (Markdown and plaintext) for both cases, ensuring reuse remains clear, discoverable, and reproducible.
 
@@ -49,13 +53,13 @@ When reusing or forking SuiteTools code:
 **`Markdown` Example:**
 
 ```markdown
-This project is adapted from [SuiteTools](https://github.com/mattplant/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [GPLv3-or-later](https://www.gnu.org/licenses/gpl-3.0.html).
+This project is adapted from [SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [GPLv3-or-later](https://www.gnu.org/licenses/gpl-3.0.html).
 ```
 
 **`Plain Text` Example**
 
 ```txt
-“This project is adapted from SuiteTools (https://github.com/mattplant/SuiteTools/) by Matthew Plant (https://idev.systems/), licensed under GPLv3-or-later."
+“This project is adapted from SuiteTools (https://gitlab.com/idev-systems/labs/SuiteTools/) by Matthew Plant (https://idev.systems/), licensed under GPLv3-or-later."
 ```
 
 ---
@@ -69,7 +73,7 @@ Use one of the following formats when referencing or adapting SuiteTools documen
 **`Markdown` Example:**
 
 ```markdown
-> Documentation adapted from [SuiteTools](https://github.com/mattplant/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+> Documentation adapted from [SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 ```
 
 **`Plain Text` Example**
@@ -77,7 +81,7 @@ Use one of the following formats when referencing or adapting SuiteTools documen
 For use in plaintext files, code comments, or documentation systems that don’t support Markdown:
 
 ```txt
-“Documentation adapted from SuiteTools (https://github.com/mattplant/SuiteTools/) by Matthew Plant (https://idev.systems/), licensed under CC BY 4.0.”
+“Documentation adapted from SuiteTools (https://gitlab.com/idev-systems/labs/SuiteTools/) by Matthew Plant (https://idev.systems/), licensed under CC BY 4.0.”
 ```
 
 ### 🖼️ Visuals & Diagrams Attributio
@@ -87,13 +91,13 @@ For diagrams or visual assets, include attribution in the caption or adjacent te
 **`Markdown` Example:**
 
 ```markdown
-> Diagram adapted from [SuiteTools](https://github.com/mattplant/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+> Diagram adapted from [SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 ```
 
 **`Plain Text` Example**
 
 ```txt
-“Diagram adapted from SuiteTools (https://github.com/mattplant/SuiteTools/) by Matthew Plant (https://idev.systems/), licensed under CC BY 4.0.”
+“Diagram adapted from SuiteTools (https://gitlab.com/idev-systems/labs/SuiteTools/) by Matthew Plant (https://idev.systems/), licensed under CC BY 4.0.”
 ```
 
 ---

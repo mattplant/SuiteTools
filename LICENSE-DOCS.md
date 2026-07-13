@@ -7,7 +7,7 @@ Last updated: September 22, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
-[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://github.com/mattplant/SuiteTools/)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
 
 ---
 
@@ -72,7 +72,7 @@ This is a human‑readable summary of (and not a substitute for) the full [CC BY
 **Markdown Example:**
 
 ```markdown
-> Documentation adapted from [SuiteTools](https://github.com/mattplant/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+> Documentation adapted from [SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools/) by [Matthew Plant](https://idev.systems/), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 ```
 

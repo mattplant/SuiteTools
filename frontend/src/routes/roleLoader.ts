@@ -7,7 +7,7 @@
  * Fetches a single Role record by ID and returns it to the router.
  * @copyright Matthew Plant
  * @license GPL-3.0-or-later
- * See the LICENSE file at <https://github.com/mattplant/SuiteTools/blob/main/LICENSE>
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import type { LoaderFunctionArgs } from 'react-router-dom';

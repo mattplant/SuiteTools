@@ -30,7 +30,7 @@ You should meet its requirements and be comfortable deploying a simple SDF proje
 ### Clone and Install Dependencies
 
 ```bash
-git clone https://github.com/mattplant/SuiteTools
+git clone https://gitlab.com/idev-systems/labs/SuiteTools.git
 cd SuiteTools
 yarn install
 ```
