@@ -2,8 +2,8 @@
 
 Last updated: July 12, 2026
 
-> **Canonical repository:** [gitlab.com/idev-systems/labs/SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools)  
-> This GitHub copy (when present) is a **read-only mirror** for discoverability. Open issues and merge requests on GitLab.
+> **Canonical home:** [gitlab.com/idev-systems/labs/SuiteTools](https://gitlab.com/idev-systems/labs/SuiteTools) — open issues and merge requests here.  
+> A public GitHub repository may exist as a **read-only mirror** for discoverability only.
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
