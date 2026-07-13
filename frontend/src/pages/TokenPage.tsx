@@ -1,23 +1,19 @@
-import { Suspense } from 'react';
-import { Await, useLoaderData } from 'react-router-dom';
-import { TokenBundle } from '@suiteworks/suitetools-shared';
+import { useLoaderData } from 'react-router-dom';
 import { TokenResult } from '../components/features/token/RecordResult';
+import type { TokenLoaderData } from '../routes/tokenLoader';
 
-export function TokenPage() {
-  const data = useLoaderData();
+/**
+ * Renders the token detail page.
+ * @returns The rendered token page component.
+ */
+export function TokenPage(): JSX.Element {
+  const { token } = useLoaderData() as TokenLoaderData;
 
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Token</h2>
       <br />
-      <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data}>
-          {(record) => {
-            TokenBundle.assert(record);
-            return <TokenResult data={record} />;
-          }}
-        </Await>
-      </Suspense>
+      <TokenResult data={token} />
     </div>
   );
 }

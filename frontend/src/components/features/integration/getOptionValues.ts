@@ -1,4 +1,4 @@
-import { getIntegrations } from './getRecords';
+import { getIntegrations } from '../../../adapters/api/integrations';
 import type { OptionValues } from '../../shared/criteria/types';
 
 export async function getOptionValues(key: boolean): Promise<OptionValues[]> {

@@ -1,13 +1,22 @@
 import { Button, ButtonGroup } from 'flowbite-react';
+import { useNavigate } from 'react-router-dom';
 import type { JobRun } from '@suiteworks/suitetools-shared';
-import { openAppPage } from '../../../../utils/navigation';
 
 type Props = {
   data: JobRun;
   modal?: boolean;
 };
 
-export function JobRunResult({ data, modal }: Props) {
+/**
+ * Renders job execution details and in-app navigation actions.
+ * @param root0 - Component props.
+ * @param root0.data - Job run record to display.
+ * @param root0.modal - When true, show the execution-details action used from result modals.
+ * @returns The rendered job run result.
+ */
+export function JobRunResult({ data, modal }: Props): React.ReactElement {
+  const navigate = useNavigate();
+
   return (
     <>
       <p>
@@ -26,8 +35,22 @@ export function JobRunResult({ data, modal }: Props) {
         <b>Results</b>: {data.results}
       </p>
       <ButtonGroup>
-        {modal && <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>Execution Details</Button>}
-        <Button onClick={() => data.urlJob && openAppPage(data.urlJob)}>Job Details</Button>
+        {modal && (
+          <Button
+            onClick={() => {
+              navigate(`/jobRun/${data.id}`);
+            }}
+          >
+            Execution Details
+          </Button>
+        )}
+        <Button
+          onClick={() => {
+            navigate(`/job/${data.jobid}`);
+          }}
+        >
+          Job Details
+        </Button>
       </ButtonGroup>
     </>
   );

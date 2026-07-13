@@ -106,8 +106,8 @@ async function convertToAMD(isProduction) {
       const headerMatch = sourceContent.match(/^(\/\*\*[\s\S]*?\*\/)/);
       const header = headerMatch ? headerMatch[1] : '';
 
-      // Get content from bundled file
-      let content = originalContent;
+      // Strip inline sourcemaps before regex work
+      let content = originalContent.replace(/\n\/\/# sourceMappingURL=data:application\/json;base64,[^\n]*$/m, '');
 
       // Find N/ modules used in require statements
       const nModules = [];
@@ -140,30 +140,43 @@ async function convertToAMD(isProduction) {
         }
       }
 
-      // Clean up CommonJS artifacts without removing the bundled code
+      // Capture esbuild export remaps BEFORE stripping the CommonJS block.
+      // Prefer `__export(...)` only — a broad `\w+(..., {...})` scan hangs on
+      // large Zod-heavy bundles (tens of thousands of object-literal matches).
+      const exportMappings = {};
+      const exportBlockMatch = content.match(/__export\(\w+,\s*\{([^}]+)\}\)/);
+      if (exportBlockMatch) {
+        const mappingPattern = /(\w+):\s*\(\)\s*=>\s*(\w+)/g;
+        for (const mapping of exportBlockMatch[1].matchAll(mappingPattern)) {
+          exportMappings[mapping[1]] = mapping[2];
+        }
+      }
+
+      // Clean up CommonJS artifacts without removing the bundled code.
+      // Use bounded (non-[\s\S]*?) replacements so large bundles stay fast.
       content = content
         // Remove the CommonJS export mapping block (file-specific patterns for safety)
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
+          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
+          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-jobs-run\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
+          /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-jobs-run\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-logins\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
+          /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-logins\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         // Remove minified CommonJS exports (e.g., module.exports=ut(ct);)
         .replace(/module\.exports\s*=\s*\w+\([^)]+\);?/g, '')
         // Remove CommonJS annotation blocks at the end
         .replace(
-          /\/\/ Annotate the CommonJS export names for ESM import in node:\s*0 && \(module\.exports = \{[\s\S]*?\}\);?\s*/g,
+          /\/\/ Annotate the CommonJS export names for ESM import in node:\s*0 && \(module\.exports = \{[^}]*\}\);?\s*/g,
           '',
         )
         // Remove trailing CommonJS annotations (e.g., 0&&(module.exports={...}))
@@ -179,40 +192,17 @@ async function convertToAMD(isProduction) {
         )
         .trim();
 
-      // Find the actual function names (they might be renamed by esbuild)
+      // Resolve entry-point names (esbuild may rename, e.g. get → get2)
       const actualFunctionNames = [];
-
-      // First, try to find the exports object pattern that esbuild creates
-      // Pattern like: SomeVar = {}; AnotherFunc(SomeVar, {get:()=>actualGet,post:()=>actualPost});
-      const exportsObjPattern = /\w+\([^,]+,\s*\{([^}]+)\}\)/g;
-      const exportsObjMatches = [...content.matchAll(exportsObjPattern)];
-      let exportMappings = {};
-
-      for (const match of exportsObjMatches) {
-        const objContent = match[1];
-        // Extract individual export mappings like "get:()=>jt"
-        const mappingPattern = /(\w+):\(\)=>(\w+)/g;
-        const mappings = [...objContent.matchAll(mappingPattern)];
-        for (const mapping of mappings) {
-          exportMappings[mapping[1]] = mapping[2];
-        }
-      }
 
       for (const exportName of fileConfig.exports) {
         if (exportMappings[exportName]) {
-          // Use the minified function name from the export mapping
           actualFunctionNames.push(exportMappings[exportName]);
         } else {
-          // Look for function definitions that might be renamed (e.g., get2 instead of get)
-          const funcPattern = new RegExp(`function (\\w*${exportName}\\w*)\\([^)]*\\)`, 'g');
-          const matches = [...content.matchAll(funcPattern)];
-          if (matches.length > 0) {
-            // Use the last match (most likely the actual function we want)
-            actualFunctionNames.push(matches[matches.length - 1][1]);
-          } else {
-            // Fallback to the original name
-            actualFunctionNames.push(exportName);
-          }
+          // Prefer an exact `function <name>(` match; avoid scanning for
+          // `\w*name\w*` across the whole Zod-heavy bundle.
+          const exact = content.match(new RegExp(`function (${exportName}\\d*)\\(`));
+          actualFunctionNames.push(exact ? exact[1] : exportName);
         }
       }
 

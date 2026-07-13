@@ -18,6 +18,7 @@ import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
+import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for a single NetSuite `File` record.
@@ -68,3 +69,11 @@ const FileBundle: ZEntityBundle<typeof FileSchema, "File"> =
 export { FileBundle };
 export type File = typeof FileBundle.types.single;
 export type Files = typeof FileBundle.types.array;
+
+// Convenience union for single entity
+export const fileOrNotFoundSchema = orNotFoundSchema(FileSchema);
+export type FileOrNotFound = OrNotFound<File>;
+
+// Convenience union for multiple entities
+export const filesOrNotFoundSchema = orNotFoundSchema(FileBundle.schema.array());
+export type FilesOrNotFound = OrNotFound<Files>;

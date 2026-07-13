@@ -18,7 +18,7 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Get Server Script Logs</Button>
+      <Button type="submit">Get Concurrency Summary</Button>
       <div className="flex gap-4 p-2.5">
         <RecordCriteriaFieldDateRange register={register} setValue={setValue} defaultValues={defaultCriteria} />
       </div>

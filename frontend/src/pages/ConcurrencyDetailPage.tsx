@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { CriteriaFields } from '../components/features/concurrency/detail/types';
-import { getConcurrencyDetail } from '../components/features/concurrency/detail/getRecords';
+import { getConcurrencyDetail } from '../adapters/api/concurrencyDetail';
 import type { ConcurrencyDetailData } from '../components/features/concurrency/detail/types';
 import { ConcurrencyDetailOverview } from '../components/features/concurrency/detail/Overview';
 import { ConcurrencyDetailBarGraphWrapper } from '../components/features/concurrency/detail/barGraph/Wrapper';

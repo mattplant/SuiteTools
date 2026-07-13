@@ -28,15 +28,26 @@ import { zHelpers } from "./zodUtils";
 
 /**
  * Converts NetSuite "T"/"F" string flags to booleans.
- * - "T" → true
- * - "F", "", undefined, or anything else → false
+ * Also accepts already-normalized booleans and legacy "Yes"/"No" cleaners.
+ * - "T" / "Yes" / true → true
+ * - "F" / "No" / false / "" / undefined / anything else → false
  */
-const zBooleanFromTF = z.preprocess((val) => val === "T", z.boolean());
+const zBooleanFromTF = z.preprocess((val) => {
+  if (typeof val === "boolean") {
+    return val;
+  }
+  return val === "T" || val === "Yes";
+}, z.boolean());
 
 /**
- * Converts ISO date string or Date to Date object
+ * Converts ISO date string or Date to Date object.
+ * Empty/nullish strings are treated as missing (`undefined`) so callers can
+ * mark the field `.optional()` (e.g. job `lastRun` before first execution).
  */
 const zDateFromString = z.preprocess((val) => {
+  if (val === "" || val === null || val === undefined) {
+    return undefined;
+  }
   if (typeof val === "string") {
     const date = new Date(val);
     return isNaN(date.getTime()) ? undefined : date;

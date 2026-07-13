@@ -1,6 +1,7 @@
 import { Button, ButtonGroup } from 'flowbite-react';
+import { useNavigate } from 'react-router-dom';
 import type { Script } from '@suiteworks/suitetools-shared';
-import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
+import { openNetSuitePage } from '../../../utils/navigation';
 
 type Props = {
   data: Script;
@@ -8,13 +9,15 @@ type Props = {
 };
 
 export function ScriptResult({ data, modal }: Props) {
+  const navigate = useNavigate();
+
   return (
     <>
       <p>
         <b>API Version:</b> {data.apiversion}
       </p>
       <p>
-        <b>{data.isinactive}</b>
+        <b>Active:</b> {data.isinactive ? 'No' : 'Yes'}
       </p>
       <p>
         <b>Script Type:</b> {data.scripttype}
@@ -37,13 +40,11 @@ export function ScriptResult({ data, modal }: Props) {
       <p>
         <b>Description:</b> {data.description}
       </p>
-      {modal && (
-        <ButtonGroup>
-          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Script Record</Button>
-          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Script Details</Button>
-          <Button onClick={() => data.urlScriptLogs && openAppPage(data.urlScriptLogs)}>View Script Logs</Button>
-        </ButtonGroup>
-      )}
+      <ButtonGroup>
+        <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Script Record</Button>
+        {modal && <Button onClick={() => navigate(`/script/${data.id}`)}>View Script Details</Button>}
+        <Button onClick={() => navigate(`/scriptLogs/${data.id}`)}>View Script Logs</Button>
+      </ButtonGroup>
     </>
   );
 }

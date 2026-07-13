@@ -1,4 +1,4 @@
-import { getTokens } from './getRecords';
+import { getTokens } from '../../../adapters/api/tokens';
 import { OptionValues } from '../../shared/criteria/types';
 
 export async function getOptionValues(key: boolean): Promise<OptionValues[]> {

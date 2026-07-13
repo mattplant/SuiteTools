@@ -3,7 +3,14 @@ import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../shared/results/Export';
 import { ResultsProps, SummaryRow } from '../../shared/results/types';
-import { FileBundle } from '@suiteworks/suitetools-shared';
+import { FileBundle, type File } from '@suiteworks/suitetools-shared';
+
+function formatFileDate(value: Date | string | undefined): string {
+  if (value instanceof Date) {
+    return value.toLocaleString();
+  }
+  return value ? String(value) : '';
+}
 
 const columns = [
   {
@@ -20,8 +27,20 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
-  { key: 'createddate', name: 'Created Date' },
-  { key: 'lastmodifieddate', name: 'Last Modified Date' },
+  {
+    key: 'createddate',
+    name: 'Created Date',
+    renderCell({ row }: { row: File }) {
+      return formatFileDate(row.createddate);
+    },
+  },
+  {
+    key: 'lastmodifieddate',
+    name: 'Last Modified Date',
+    renderCell({ row }: { row: File }) {
+      return formatFileDate(row.lastmodifieddate);
+    },
+  },
   { key: 'filetypename', name: 'Type' },
   { key: 'name', name: 'Name' },
   { key: 'filesize', name: 'File Size' },

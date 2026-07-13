@@ -73,6 +73,12 @@ export class SuiteToolsApiGet {
         case 'jobRuns':
           response = this.getJobRuns(requestParams);
           break;
+        case 'integration':
+          response = this.getIntegration(requestParams);
+          break;
+        case 'integrations':
+          response = this.getIntegrations(requestParams);
+          break;
         case 'logins':
           response = this.getLogins(requestParams);
           response = this.cleanLoginsData(response);
@@ -90,7 +96,10 @@ export class SuiteToolsApiGet {
           break;
         case 'script':
           response = this.getScript(requestParams);
-          response.data = this.cleanScriptData(response.data);
+          // Only clean successful payloads; leave NotFound / empty shapes alone.
+          if (response.status === 200) {
+            response.data = this.cleanScriptData(response.data);
+          }
           break;
         case 'scripts':
           response = this.getScripts(requestParams);
@@ -104,6 +113,12 @@ export class SuiteToolsApiGet {
           break;
         case 'settings':
           response = this.getSettings();
+          break;
+        case 'token':
+          response = this.getToken(requestParams);
+          break;
+        case 'tokens':
+          response = this.getTokens(requestParams);
           break;
         case 'user':
           response = this.getUser(requestParams);
@@ -160,11 +175,13 @@ export class SuiteToolsApiGet {
       // get last logins data for users
       this.stCommon.stSettings.getSettings();
       const lastLoginsObj = this.stCommon.stSettings.lastLogins;
-      const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === 'user');
-      // add the last login data to the user record
-      const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === data.email);
-      if (lastlogin) {
-        data.lastLogin = lastlogin.lastLogin;
+      if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
+        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === 'user');
+        // add the last login data to the user record
+        const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === data.email);
+        if (lastlogin) {
+          data.lastLogin = lastlogin.lastLogin;
+        }
       }
     }
 
@@ -176,14 +193,16 @@ export class SuiteToolsApiGet {
       // get last logins data for users
       this.stCommon.stSettings.getSettings();
       const lastLoginsObj = this.stCommon.stSettings.lastLogins;
-      const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === 'user');
-      (response.data as any[]).forEach((record) => {
-        // add the last login data to the user record
-        const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === record.email);
-        if (lastlogin) {
-          record.lastLogin = lastlogin.lastLogin;
-        }
-      });
+      if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
+        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === 'user');
+        (response.data as any[]).forEach((record) => {
+          // add the last login data to the user record
+          const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === record.email);
+          if (lastlogin) {
+            record.lastLogin = lastlogin.lastLogin;
+          }
+        });
+      }
     }
 
     return response;
@@ -191,6 +210,11 @@ export class SuiteToolsApiGet {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanJobData(data: any): object {
+    // Skip empty payloads (e.g. not-found responses still shaped as {}).
+    if (!data || typeof data !== 'object' || !('isinactive' in data)) {
+      return data;
+    }
+
     // switch isinactive values to active values
     if (data.isinactive === 'F') {
       data.isinactive = false;
@@ -215,9 +239,12 @@ export class SuiteToolsApiGet {
   private addJobLastRun(data: any): object {
     log.debug({ title: 'SuiteToolsApiGet:addJobLastRun() initiated', details: { data } });
 
-    // check if data exists and that data is an object
+    // Only attach lastRun when a run exists.
     if (typeof data === 'object' && data !== null && data.id) {
-      data.lastRun = this.stCommon.stJobs.getJobLastRun(data.id);
+      const lastRun = this.stCommon.stJobs.getJobLastRun(data.id);
+      if (lastRun) {
+        data.lastRun = lastRun;
+      }
     }
 
     return data;
@@ -226,8 +253,18 @@ export class SuiteToolsApiGet {
   private cleanLoginsData(response: Response): Response {
     if (response && Array.isArray(response.data) && response.data.length > 0) {
       (response.data as any[]).forEach((record, index) => {
-        // auto-number the id field
+        // LoginAudit has no stable internal id in this query; synthesize for the UI modal.
         record.id = index + 1;
+        // Normalize SuiteQL key casing to the shared Login schema.
+        record.oauthappname = record.oauthappname ?? record.oAuthAppName ?? null;
+        record.oauthaccesstokenname = record.oauthaccesstokenname ?? record.oAuthAccessTokenName ?? null;
+        record.username = record.username ?? record.userName ?? null;
+        record.rolename = record.rolename ?? record.roleName ?? null;
+        record.emailaddress = record.emailaddress ?? record.emailAddress ?? null;
+        record.ipaddress = record.ipaddress ?? record.ipAddress ?? '';
+        record.requesturi = record.requesturi ?? record.requestUri ?? '';
+        record.secchallenge = record.secchallenge ?? record.secChallenge ?? null;
+        record.useragent = record.useragent ?? record.userAgent ?? null;
       });
     }
 
@@ -274,11 +311,16 @@ export class SuiteToolsApiGet {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanScriptData(data: any): object {
-    // switch isinactive values to active values
+    // Skip empty payloads (e.g. not-found responses still shaped as {}).
+    if (!data || typeof data !== 'object' || !('isinactive' in data)) {
+      return data;
+    }
+
+    // Normalize NetSuite T/F to boolean for shared schema validation.
     if (data.isinactive === 'F') {
-      data.isinactive = 'Yes';
-    } else {
-      data.isinactive = 'No';
+      data.isinactive = false;
+    } else if (data.isinactive === 'T') {
+      data.isinactive = true;
     }
 
     return data;
@@ -361,6 +403,11 @@ export class SuiteToolsApiGet {
     const modifiedDate = requestParams['lastmodifieddate'];
     const result = this.stApiModel.getFiles(row, types, createdDate, modifiedDate);
 
+    // List endpoints must return an array (legacy code used `{}` for empty).
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
+
     return result;
   }
 
@@ -394,6 +441,49 @@ export class SuiteToolsApiGet {
   }
 
   /**
+   * Get Integration
+   *
+   * @param requestParams
+   * @returns integration
+   */
+  private getIntegration(requestParams: RequestParams): Response {
+    const id = requestParams.id;
+    if (!id) {
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+    }
+    const result = this.stApiModel.getIntegration(id);
+    const payload: Response = { status: 0, data: {} };
+
+    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
+      payload.status = 404;
+      payload.data = { code: 'NOT_FOUND', message: result.message || `No integration found with id of ${id}` };
+      payload.message = result.message || `No integration found with id of ${id}`;
+    } else {
+      payload.status = 200;
+      payload.data = result.data;
+    }
+
+    return requestResponse.parse(payload);
+  }
+
+  /**
+   * Get Integrations
+   *
+   * @param requestParams
+   * @returns integrations
+   */
+  private getIntegrations(requestParams: RequestParams): Response {
+    const active = requestParams['active'];
+    const result = this.stApiModel.getIntegrations(active);
+
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
+
+    return result;
+  }
+
+  /**
    * Get Run Job
    *
    * @param requestParams
@@ -405,8 +495,19 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getJobRun(id);
+    const payload: Response = { status: 0, data: {} };
 
-    return result;
+    // Model still uses legacy empty-object + message for misses; normalize to NotFound.
+    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
+      payload.status = 404;
+      payload.data = { code: 'NOT_FOUND', message: result.message || `No job execution found with id of ${id}` };
+      payload.message = result.message || `No job execution found with id of ${id}`;
+    } else {
+      payload.status = 200;
+      payload.data = result.data;
+    }
+
+    return requestResponse.parse(payload);
   }
 
   /**
@@ -419,6 +520,11 @@ export class SuiteToolsApiGet {
     const job = requestParams['job'];
     const completed = requestParams['completed'];
     const result = this.stApiModel.getJobRuns(job, completed);
+
+    // Legacy model uses `{}` for empty lists; adapters expect an array or NotFound.
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
 
     return result;
   }
@@ -438,6 +544,11 @@ export class SuiteToolsApiGet {
     const roles = this.convertMultiSelectToArray(requestParams['roles']);
     const dates = requestParams['dates'];
     const result = this.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dates);
+
+    // List endpoints must return an array (legacy model used `{}` for empty).
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
 
     return result;
   }
@@ -483,8 +594,19 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getScript(id);
+    const payload: Response = { status: 0, data: {} };
 
-    return result;
+    // Model still uses legacy empty-object + message for misses; normalize to NotFound.
+    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
+      payload.status = 404;
+      payload.data = { code: 'NOT_FOUND', message: result.message || `No script found with id of ${id}` };
+      payload.message = result.message || `No script found with id of ${id}`;
+    } else {
+      payload.status = 200;
+      payload.data = result.data;
+    }
+
+    return requestResponse.parse(payload);
   }
 
   /**
@@ -501,6 +623,11 @@ export class SuiteToolsApiGet {
     const owners = this.convertMultiSelectToArray(requestParams['owners']);
     const files = this.convertMultiSelectToArray(requestParams['files']);
     const result = this.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
+
+    // List endpoints must return an array
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
 
     return result;
   }
@@ -599,6 +726,51 @@ export class SuiteToolsApiGet {
       detail,
     );
 
+    // List endpoints must return an array (legacy model used `{}` for empty).
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
+
+    return result;
+  }
+
+  /**
+   * Get a single TBA access token.
+   * @param requestParams - Must include id.
+   */
+  private getToken(requestParams: RequestParams): Response {
+    const id = requestParams.id;
+    if (!id) {
+      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+    }
+    const result = this.stApiModel.getToken(id);
+    const payload: Response = { status: 0, data: {} };
+
+    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
+      payload.status = 404;
+      payload.data = { code: 'NOT_FOUND', message: result.message || `No token found with id of ${id}` };
+      payload.message = result.message || `No token found with id of ${id}`;
+    } else {
+      payload.status = 200;
+      payload.data = result.data;
+    }
+
+    return requestResponse.parse(payload);
+  }
+
+  /**
+   * Get TBA access tokens with optional filters.
+   * @param requestParams - Optional active, integrationName, userName, roleName.
+   */
+  private getTokens(requestParams: RequestParams): Response {
+    const active = requestParams.active ?? '';
+    const integrationName = requestParams.integrationName ?? '';
+    const userName = requestParams.userName ?? '';
+    const roleName = requestParams.roleName ?? '';
+    const result = this.stApiModel.getTokens(active, integrationName, userName, roleName);
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
     return result;
   }
 

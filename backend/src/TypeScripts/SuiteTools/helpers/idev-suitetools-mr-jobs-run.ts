@@ -32,7 +32,9 @@ import { SuiteToolsApp } from '../app/SuiteToolsApp';
  *
  * @param context: EntryPoints.MapReduce.getInputDataContext
  */
-export function getInputData(context: EntryPoints.MapReduce.getInputDataContext): Array<{ id: number; name?: string }> {
+export function getInputData(
+  context: EntryPoints.MapReduce.getInputDataContext,
+): Array<{ id: number; data?: string; name?: string }> {
   log.debug('*START*', '<------------------- START ------------------->');
   log.debug('getInputData() initiated with', JSON.stringify(context));
 
@@ -42,21 +44,25 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
         name: 'custscript_idev_st_mr_jobs_id',
       }),
     );
-    const jobData = String(
-      runtime.getCurrentScript().getParameter({
-        name: 'custscript_idev_st_mr_jobs_data',
-      }),
-    );
+    const jobDataParam = runtime.getCurrentScript().getParameter({
+      name: 'custscript_idev_st_mr_jobs_data',
+    });
+    // Keep as string for the reduce stage; empty/null means no payload.
+    const jobData =
+      jobDataParam == null || jobDataParam === '' || jobDataParam === 'null'
+        ? undefined
+        : String(jobDataParam);
+
     if (jobId) {
-      // run the specified job
-      const inputData = [{ id: jobId, name: jobData }];
-      log.debug('getInputData() running for job #' + jobId, null);
+      // Property must be `data` — reduce reads values.data (was incorrectly `name`).
+      const inputData = [{ id: jobId, data: jobData }];
+      log.debug('getInputData() running for job #' + jobId, { hasData: Boolean(jobData) });
       return inputData;
-    } else {
-      // run all active jobs
-      const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
-      return stApp.stCommon.stJobs.getScheduledJobs();
     }
+
+    // run all active jobs
+    const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
+    return stApp.stCommon.stJobs.getScheduledJobs();
   } catch (e) {
     log.error('getInputData() error', JSON.stringify(e));
   }
@@ -71,13 +77,15 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
 export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
   log.debug('reduce() initiated', JSON.stringify(context));
   let jobId = null;
-  let jobData: object;
+  let jobData: object | undefined;
   const values = JSON.parse(context.values[0]);
   jobId = values.id;
-  // if we are supplied job data verify that it is valid
-  if (values.data) {
+
+  // Payload was historically stored on `name`; prefer `data`, fall back for older runs.
+  const rawJobData = values.data ?? values.name;
+  if (rawJobData != null && rawJobData !== '' && rawJobData !== 'null') {
     try {
-      jobData = JSON.parse(values.data);
+      jobData = typeof rawJobData === 'string' ? JSON.parse(rawJobData) : rawJobData;
     } catch (e) {
       log.error('reduce() jobData data was not a valid object', JSON.stringify(e));
     }
@@ -115,7 +123,6 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
     } else {
       log.debug('summarize()', 'Script completed without errors.');
     }
-    // log.debug('STATS - Map Time Total (seconds)', context.mapSummary.seconds);
     log.debug('STATS - Reduce Time Total (seconds)', context.reduceSummary.seconds);
     log.debug('STATS - Max Reduce Concurrency Utilized', context.reduceSummary.concurrency);
     log.debug('STATS - Overall Usage Units Consumed', context.usage);

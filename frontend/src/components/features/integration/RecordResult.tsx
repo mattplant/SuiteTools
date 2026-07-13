@@ -1,6 +1,7 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { Integration } from '@suiteworks/suitetools-shared';
-import { addIntegrationLastLogin } from './getRecord';
+import { stashIntegrationDetail } from '../../../adapters/api/integration';
+import { addIntegrationLastLogin } from '../../../adapters/api/integrations';
 import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
 import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
 
@@ -22,7 +23,7 @@ export function IntegrationResult({ data, modal }: Props) {
         <b>Name</b>: {data.name}
       </p>
       <p>
-        <b>Application ID</b>: {data.applicationId}
+        <b>Application ID</b>: {data.applicationId || 'Not visible in this account'}
       </p>
       <p>
         <b>State</b>: {data.state}
@@ -35,8 +36,20 @@ export function IntegrationResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Integration Record</Button>
-          <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Integration Details</Button>
+          {data.urlNs ? (
+            <Button onClick={() => openNetSuitePage(data.urlNs!)}>View Integration Record</Button>
+          ) : null}
+          <Button
+            onClick={() => {
+              if (!data.urlDetail) {
+                return;
+              }
+              stashIntegrationDetail(data);
+              openAppPage(data.urlDetail);
+            }}
+          >
+            View Integration Details
+          </Button>
         </ButtonGroup>
       )}
     </>

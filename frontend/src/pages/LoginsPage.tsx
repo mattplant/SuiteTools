@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
-
-// TODO: switch from getLoginFromResults to getLogin
-// import { getLogin } from '../components/features/login/getRecord';
-import { getLoginFromResults } from '../components/features/login/getRecordFromResults';
-
-import { getLogins } from '../components/features/login/getRecords';
+import { getLoginFromResults } from '../adapters/api/login';
+import { getLogins } from '../adapters/api/logins';
 import type { Logins } from '@suiteworks/suitetools-shared';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/login/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
 
 export function LoginsPage() {
+  const triggerError = useErrorBoundaryTrigger();
   const defaultCriteria: CriteriaFields = {
     rows: 250,
     active: '',
@@ -24,20 +23,31 @@ export function LoginsPage() {
   const [results, setResults] = useState<Logins>([]);
 
   useEffect(() => {
+    let ignore = false;
+
     async function fetchData() {
       try {
         const data = await getLogins(criteria);
-        if (!('message' in data)) {
-          setResults(data);
+        if (!ignore) {
+          setResults(toArray(data));
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        if (!ignore) {
+          setResults([]);
+        }
+        try {
+          handleError(error, { reactTrigger: triggerError });
+        } catch {
+          // handleError always throws after logging/triggering
+        }
       }
     }
     fetchData();
 
-    return () => {};
-  }, [criteria]);
+    return () => {
+      ignore = true;
+    };
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">

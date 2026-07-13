@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Modal } from 'flowbite-react';
+import { useLocation } from 'react-router-dom';
 import { DynamicResultsRenderer } from './DynamicResultsRenderer';
-import type { NotFound } from '../../../api/types';
+import type { NotFound } from '@suiteworks/suitetools-shared';
 import { ResultsTypes } from './types';
 import type { ModalResult } from './types';
 import { ResultsModal } from './ResultsModal';
@@ -23,6 +24,7 @@ type Props = {
  * @returns The rendered Results component.
  */
 export function Results({ type, lines, getModalData }: Props): JSX.Element {
+  const location = useLocation();
   const [openModal, setOpenModal] = useState(false);
   const [id, setId] = useState<number | null>(null);
   const [data, setData] = useState<ModalResult>();
@@ -50,6 +52,13 @@ export function Results({ type, lines, getModalData }: Props): JSX.Element {
 
     return (): void => {};
   }, [id, lines, getModalData]);
+
+  // Close the modal when in-app navigation leaves the current list route.
+  useEffect(() => {
+    setOpenModal(false);
+    setId(null);
+    setData(undefined);
+  }, [location.pathname]);
 
   // determine modal title based on modal type
   const modalTitles: Record<ResultsTypes, string> = {

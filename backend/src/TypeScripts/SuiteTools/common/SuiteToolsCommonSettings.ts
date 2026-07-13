@@ -39,7 +39,7 @@ export class SuiteToolsCommonSettings {
   private _devMode: boolean;
   private _notifyAuthor: number;
   private _notifyEmail: string;
-  private _lastLogins: LastLogins;
+  private _lastLogins: LastLogins | null;
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
@@ -65,7 +65,7 @@ export class SuiteToolsCommonSettings {
   get notifyEmail(): string {
     return this._notifyEmail;
   }
-  get lastLogins(): LastLogins {
+  get lastLogins(): LastLogins | null {
     return this._lastLogins;
   }
 
@@ -105,12 +105,28 @@ export class SuiteToolsCommonSettings {
       this._devMode = sqlResults[0].devmode === 'T' ? true : false;
       this._notifyAuthor = sqlResults[0].notifyauthor;
       this._notifyEmail = sqlResults[0].notifyemail;
-      this._lastLogins = JSON.parse(sqlResults[0].lastlogins);
+      this._lastLogins = this.parseLastLogins(sqlResults[0].lastlogins);
       this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
       settingsFound = true;
     }
 
     return settingsFound;
+  }
+
+  private parseLastLogins(raw: unknown): LastLogins | null {
+    if (raw == null || raw === '') {
+      return null;
+    }
+    try {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (!parsed || typeof parsed !== 'object') {
+        return null;
+      }
+      return parsed as LastLogins;
+    } catch (e) {
+      log.error({ title: 'SuiteToolsCommonSettings:parseLastLogins() failed', details: e });
+      return null;
+    }
   }
 
   public initializeApp(): void {

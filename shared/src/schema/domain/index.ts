@@ -20,6 +20,7 @@ export * from "./optionValues";
 export * from "./role";
 export * from "./script";
 export * from "./scriptLog";
+export * from "./settings";
 export * from "./soapLog";
 export * from "./token";
 export * from "./user";

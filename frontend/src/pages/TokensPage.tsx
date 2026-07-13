@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getToken } from '../components/features/token/getRecord';
-import { getTokens, addTokenLastLogins } from '../components/features/token/getRecords';
+import { getToken } from '../adapters/api/token';
+import { getTokens, addTokenLastLogins } from '../adapters/api/tokens';
 import type { Tokens } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/token/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
@@ -13,26 +13,34 @@ export function TokensPage() {
   const defaultCriteria: CriteriaFields = {
     active: 'T',
     integrationName: '',
-    tokenName: '',
-    // users: '',
-    // roles: '',
+    userName: '',
+    roleName: '',
   };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<Tokens>([]);
 
   useEffect(() => {
+    let ignore = false;
+
     async function fetchData() {
       try {
         const data = await getTokens(criteria);
         addTokenLastLogins(data, settings);
-        setResults(data);
+        if (!ignore) {
+          setResults(data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
+        if (!ignore) {
+          setResults([]);
+        }
       }
     }
     fetchData();
 
-    return () => {};
+    return () => {
+      ignore = true;
+    };
   }, [criteria, settings]);
 
   return (

@@ -1,23 +1,19 @@
-import { Suspense } from 'react';
-import { Await, useLoaderData } from 'react-router-dom';
-import { ScriptBundle } from '@suiteworks/suitetools-shared';
+import { useLoaderData } from 'react-router-dom';
 import { ScriptResult } from '../components/features/script/RecordResult';
+import type { ScriptLoaderData } from '../routes/scriptLoader';
 
-export function ScriptPage() {
-  const data = useLoaderData();
+/**
+ * Renders the script page with script details.
+ * @returns The rendered script page component.
+ */
+export function ScriptPage(): JSX.Element {
+  const { script } = useLoaderData() as ScriptLoaderData;
 
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Script</h2>
       <br />
-      <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data}>
-          {(record) => {
-            ScriptBundle.assert(record);
-            return <ScriptResult data={record} />;
-          }}
-        </Await>
-      </Suspense>
+      <ScriptResult data={script} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # Yarn Foundations Guide
 
-Last updated: September 22, 2025
+Last updated: July 12, 2026
 
 ---
 
@@ -156,9 +156,11 @@ The `yarn.lock` file is a critical artifact for reproducibility. SuiteTools trea
 | Setting                     | Purpose                                                                 |
 |----------------------------|-------------------------------------------------------------------------|
 | `nodeLinker: pnp`          | Enables Plug’n’Play for strict dependency resolution (no `node_modules`) |
-| `enableGlobalCache: false` | Ensures all cache is local to the repo for reproducibility              |
+| `enableGlobalCache: false` | Keeps the package cache in `.yarn/cache` inside the clone so `.pnp.cjs` paths stay portable at any directory depth |
 | `nmMode: hardlinks-local`  | (Optional) Enables hybrid mode for tooling compatibility                |
 | `plugins:`                 | Lists Yarn plugins used (e.g. `workspace-tools`, `patch`, `interactive-tools`) |
+
+With `enableGlobalCache: false`, `.pnp.cjs` resolves packages via `./.yarn/cache/...` (relative to the repo root). The cache directory itself stays gitignored; only `.pnp.cjs` and `.yarnrc.yml` are committed for install layout.
 
 ### Custom Scripts
 

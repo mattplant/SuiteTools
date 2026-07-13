@@ -11,17 +11,14 @@
 
 /**
  * Gets the base URL of the current SuiteTools app instance.
- * Reads the app URL from the data-app-url attribute on the root element,
- * which is set by the backend using url.resolveScript with script identifiers.
+ * Reads the app URL from the data attribute set by the backend using url.resolveScript.
  * @returns Base URL with script and deploy parameters
  */
 export function getAppBaseUrl(): string {
-  // Get the app URL from the data attribute set by the backend
   const rootElement = document.getElementById('root');
   const appUrl = rootElement?.getAttribute('data-app-url');
 
   if (appUrl) {
-    // If it's a relative URL, convert to absolute using current origin
     if (appUrl.startsWith('/')) {
       const { origin } = window.location;
       return `${origin}${appUrl}`;
@@ -29,18 +26,56 @@ export function getAppBaseUrl(): string {
     return appUrl;
   }
 
-  // If data-app-url is not found, return empty string
   return '';
 }
 
 /**
- * Opens a SuiteTools app page in a new tab.
+ * Normalize an in-app path to a hash path that always starts with `#/`.
+ * @param path - Hash or path such as "#/user/123" or "/user/123"
+ * @returns Hash path such as `#/user/123`
+ */
+function toHashPath(path: string): string {
+  if (path.startsWith('#/')) {
+    return path;
+  }
+  if (path.startsWith('#')) {
+    return `#/${path.slice(1).replace(/^\/+/, '')}`;
+  }
+  if (path.startsWith('/')) {
+    return `#${path}`;
+  }
+  return `#/${path}`;
+}
+
+/**
+ * Opens a SuiteTools app page.
+ * Uses same-tab hash navigation when already inside the SuiteTools suitelet so the
+ * current JS bundle is reused (new tabs can load a stale File Cabinet asset).
  * @param path - The hash path to navigate to (e.g., "#/user/123" or "/user/123")
  */
 export function openAppPage(path: string): void {
+  const hashPath = toHashPath(path);
   const baseUrl = getAppBaseUrl();
-  const hashPath = path.startsWith('#') ? path : `#${path}`;
-  window.open(`${baseUrl}${hashPath}`, '_blank', 'noopener,noreferrer');
+  const suiteletBase = baseUrl.split('#')[0];
+
+  if (suiteletBase) {
+    try {
+      const current = new URL(window.location.href);
+      const target = new URL(suiteletBase, window.location.origin);
+      if (current.pathname === target.pathname) {
+        // Assign fragment without the leading '#'; never concatenate `#` + `#/...`.
+        window.location.hash = hashPath.slice(1);
+        return;
+      }
+    } catch {
+      // Fall through to new-tab navigation.
+    }
+
+    window.open(`${suiteletBase}${hashPath}`, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  window.location.hash = hashPath.slice(1);
 }
 
 /**

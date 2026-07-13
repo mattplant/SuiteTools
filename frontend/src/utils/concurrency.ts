@@ -53,20 +53,22 @@ export async function getConcurrencySummaryData(
 ): Promise<ConcurrencySummaryData> {
   console.log('getConcurrencySummaryData() initiated', { accountId, startDate, endDate });
 
-  // set start date to start of day (today at 12:00 AM)
-  startDate.setHours(0, 0, 0, 0);
-  // set end date to end of day (tomorrow at 12:00 AM)
-  endDate.setDate(endDate.getDate() + 1);
-  endDate.setHours(0, 0, 0, 0);
+  // Clone before mutating — callers often pass React state Date instances.
+  const rangeStart = new Date(startDate);
+  const rangeEnd = new Date(endDate);
+  rangeStart.setHours(0, 0, 0, 0);
+  // APM end is exclusive (start of the day after the selected end date).
+  rangeEnd.setDate(rangeEnd.getDate() + 1);
+  rangeEnd.setHours(0, 0, 0, 0);
 
   // get concurrency summary from NetSuite's APM service
-  const concurrencyUrl = getConcurrencySummaryUrl(accountId, startDate, endDate);
+  const concurrencyUrl = getConcurrencySummaryUrl(accountId, rangeStart, rangeEnd);
   const currencyResponse = await getDataFromPageContent(concurrencyUrl);
   let concurrency = currencyResponse.data as ConcurrencySummaryDataConcurrency;
   concurrency = addConcurrencySummaryAverage(concurrency);
 
   // get violations data from NetSuite's APM service
-  const violationsUrl = getConcurrencySummaryViolationsUrl(accountId, startDate, endDate);
+  const violationsUrl = getConcurrencySummaryViolationsUrl(accountId, rangeStart, rangeEnd);
   const violationsResponse = await getDataFromPageContent(violationsUrl);
   const violations = violationsResponse.data as ConcurrencySummaryDataViolations;
 

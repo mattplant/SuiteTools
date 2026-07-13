@@ -1,34 +1,51 @@
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getJob } from '../components/features/job/getRecord';
-import { getJobs } from '../components/features/job/getRecords';
+import { getJob } from '../adapters/api/job';
+import { getJobs } from '../adapters/api/jobs';
 import type { Jobs } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/job/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
-export function JobsPage() {
+/**
+ * JobsPage component displays the jobs list and criteria filter.
+ * @returns The rendered JobsPage component.
+ */
+export function JobsPage(): React.ReactElement {
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     active: 'T',
   };
+
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<Jobs>([]);
 
   useEffect(() => {
-    async function fetchData() {
+    let ignore = false;
+
+    async function fetchData(): Promise<void> {
       try {
         const data = await getJobs(criteria);
-        if (!('message' in data)) {
-          setResults(data);
+        const normalized = toArray<Jobs[number]>(data);
+        if (!ignore) {
+          setResults(normalized);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
+        if (!ignore) {
+          setResults([]);
+        }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
-    fetchData();
 
-    return () => {};
-  }, [criteria]);
+    fetchData();
+    return (): void => {
+      ignore = true;
+    };
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">
