@@ -59,127 +59,133 @@ import { UsersPage } from './pages/UsersPage';
 export const router = createHashRouter([
   {
     path: '/',
+    // Layout stays mounted on child route errors so header/footer remain visible
+    // under the floating DevSuiteErrorOverlay (see ErrorPage).
     element: <AppLayout />,
-    errorElement: <ErrorPage />,
     children: [
       {
-        index: true,
-        element: <HomePage />,
-      },
-      {
-        path: 'concurrency',
-        element: <ConcurrencySummaryPage />,
-      },
-      {
-        path: 'concurrencyDetail/:startDate/:endDate',
-        element: <ConcurrencyDetailPage />,
-      },
-      {
-        path: 'concurrencyRequest/:startDate/:endDate/:peakConcurrency?/:peakConcurrencyTime?',
-        element: <ConcurrencyRequestPage />,
-      },
-      {
-        path: 'file/:id',
-        element: <FilePage />,
-        loader: fileLoader,
-      },
-      {
-        path: 'files',
-        element: <FilesPage />,
-      },
-      {
-        path: 'licenses',
-        element: <License />,
-      },
-      {
-        path: 'integration/:id',
-        element: <IntegrationPage />,
-        loader: integrationLoader,
-      },
-      {
-        path: 'integrations',
-        element: <IntegrationsPage />,
-      },
-      {
-        path: 'job/:id',
-        element: <JobPage />,
-        loader: jobLoader,
-      },
-      {
-        path: 'jobs',
-        element: <JobsPage />,
-      },
-      {
-        path: 'jobRun/:id',
-        element: <JobRunPage />,
-        loader: jobRunLoader,
-      },
-      {
-        path: 'jobRuns',
-        element: <JobRunsPage />,
-      },
-      {
-        path: 'logins',
-        element: <LoginsPage />,
-      },
-      {
-        path: 'role/:id',
-        element: <RolePage />,
-        loader: roleLoader,
-      },
-      {
-        path: 'roles',
-        element: <RolesPage />,
-      },
-      {
-        path: 'script/:id',
-        element: <ScriptPage />,
-        loader: scriptLoader,
-      },
-      {
-        path: 'scripts',
-        element: <ScriptsPage />,
-      },
-      {
-        path: 'scriptLog/:id',
-        element: <ScriptLogPage />,
-        loader: scriptLogLoader,
-      },
-      {
-        path: 'scriptLogs/:script?',
-        element: <ScriptLogsPage />,
-      },
-      {
-        path: 'soapLogs',
-        element: <SoapLogsPage />,
-      },
-      {
-        path: 'soapLog/:id',
-        element: <SoapLogPage />,
-        loader: soapLogLoader,
-      },
-      {
-        path: 'settings',
-        element: <SettingsPage />,
-        loader: settingsLoader,
-      },
-      {
-        path: 'token/:id',
-        element: <TokenPage />,
-        loader: tokenLoader,
-      },
-      {
-        path: 'tokens',
-        element: <TokensPage />,
-      },
-      {
-        path: 'user/:id',
-        element: <UserPage />,
-        loader: userLoader,
-      },
-      {
-        path: 'users',
-        element: <UsersPage />,
+        errorElement: <ErrorPage />,
+        children: [
+          {
+            index: true,
+            element: <HomePage />,
+          },
+          {
+            path: 'concurrency',
+            element: <ConcurrencySummaryPage />,
+          },
+          {
+            path: 'concurrencyDetail/:startDate/:endDate',
+            element: <ConcurrencyDetailPage />,
+          },
+          {
+            path: 'concurrencyRequest/:startDate/:endDate/:peakConcurrency?/:peakConcurrencyTime?',
+            element: <ConcurrencyRequestPage />,
+          },
+          {
+            path: 'file/:id',
+            element: <FilePage />,
+            loader: fileLoader,
+          },
+          {
+            path: 'files',
+            element: <FilesPage />,
+          },
+          {
+            path: 'licenses',
+            element: <License />,
+          },
+          {
+            path: 'integration/:id',
+            element: <IntegrationPage />,
+            loader: integrationLoader,
+          },
+          {
+            path: 'integrations',
+            element: <IntegrationsPage />,
+          },
+          {
+            path: 'job/:id',
+            element: <JobPage />,
+            loader: jobLoader,
+          },
+          {
+            path: 'jobs',
+            element: <JobsPage />,
+          },
+          {
+            path: 'jobRun/:id',
+            element: <JobRunPage />,
+            loader: jobRunLoader,
+          },
+          {
+            path: 'jobRuns',
+            element: <JobRunsPage />,
+          },
+          {
+            path: 'logins',
+            element: <LoginsPage />,
+          },
+          {
+            path: 'role/:id',
+            element: <RolePage />,
+            loader: roleLoader,
+          },
+          {
+            path: 'roles',
+            element: <RolesPage />,
+          },
+          {
+            path: 'script/:id',
+            element: <ScriptPage />,
+            loader: scriptLoader,
+          },
+          {
+            path: 'scripts',
+            element: <ScriptsPage />,
+          },
+          {
+            path: 'scriptLog/:id',
+            element: <ScriptLogPage />,
+            loader: scriptLogLoader,
+          },
+          {
+            path: 'scriptLogs/:script?',
+            element: <ScriptLogsPage />,
+          },
+          {
+            path: 'soapLogs',
+            element: <SoapLogsPage />,
+          },
+          {
+            path: 'soapLog/:id',
+            element: <SoapLogPage />,
+            loader: soapLogLoader,
+          },
+          {
+            path: 'settings',
+            element: <SettingsPage />,
+            loader: settingsLoader,
+          },
+          {
+            path: 'token/:id',
+            element: <TokenPage />,
+            loader: tokenLoader,
+          },
+          {
+            path: 'tokens',
+            element: <TokensPage />,
+          },
+          {
+            path: 'user/:id',
+            element: <UserPage />,
+            loader: userLoader,
+          },
+          {
+            path: 'users',
+            element: <UsersPage />,
+          },
+        ],
       },
     ],
   },
