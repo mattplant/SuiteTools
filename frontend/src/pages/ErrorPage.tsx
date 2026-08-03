@@ -1,13 +1,10 @@
-import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
-import Header from '../components/layout/Header';
-import {
-  isErrorDevMode,
-  isNotFoundError,
-  SuiteError,
-} from '@suiteworks/suitetools-shared';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import { useNavigate, useRouteError, isRouteErrorResponse } from 'react-router-dom';
+import { isNotFoundError, SuiteError } from '@suiteworks/suitetools-shared';
 import { DevSuiteErrorOverlay } from '../components/shared/errors/DevSuiteErrorOverlay';
 import { DefaultFallback } from '../components/shared/errors/DefaultFallback';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
+import { useShowDevErrorOverlay } from '../hooks/useShowDevErrorOverlay';
 
 /**
  * Normalize loader / Await failures that surface as HTTP-style responses.
@@ -56,42 +53,44 @@ function getHttpError(error: unknown): { status: number; statusText: string; det
 }
 
 /**
- * ErrorPage component displays error information based on the error type.
- * @returns The rendered error page component.
+ * Route-level error UI rendered inside {@link AppLayout} (header/footer stay mounted).
+ * In error-dev mode, SuiteErrors use a floating {@link DevSuiteErrorOverlay} portal.
  */
 export default function ErrorPage(): JSX.Element {
   const error = useRouteError();
-  const { settings, loading: settingsLoading } = useAppSettingsContext();
+  const navigate = useNavigate();
+  const showDevOverlay = useShowDevErrorOverlay();
   console.error(error);
 
-  // Prefer React state from settings so overlay appears after settings resolve
-  // (module flag alone can race the first navigation).
-  const showDevOverlay = Boolean(import.meta.env.DEV || settings?.devMode || isErrorDevMode());
+  const dismissOverlay = (): void => {
+    // Prefer back to the previous screen (e.g. jobs list); fall back to home.
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   if (error instanceof SuiteError) {
-    if (settingsLoading && !showDevOverlay) {
+    if (showDevOverlay) {
       return (
         <>
-          <Header />
-          <div className="text-center p-4 text-slate-600">Loading…</div>
+          <div className="mx-auto mt-6 max-w-xl text-center text-slate-600">
+            <p className="text-lg font-medium text-slate-800">Developer error</p>
+            <p className="mt-2">Details are in the overlay. Close it to go back.</p>
+          </div>
+          <DevSuiteErrorOverlay error={error} onDismiss={dismissOverlay} />
         </>
       );
     }
 
-    if (showDevOverlay) {
-      return <DevSuiteErrorOverlay error={error} />;
-    }
-
     if (isNotFoundError(error)) {
       return (
-        <>
-          <Header />
-          <div className="text-center p-4">
-            <h2 className="text-xl font-bold">Oops! HTTP Error</h2>
-            <p>404 Not Found</p>
-            <p className="mt-2 text-slate-700">{error.message}</p>
-          </div>
-        </>
+        <div className="text-center p-4">
+          <h2 className="text-xl font-bold">Oops! HTTP Error</h2>
+          <p>404 Not Found</p>
+          <p className="mt-2 text-slate-700">{error.message}</p>
+        </div>
       );
     }
   }
@@ -99,35 +98,27 @@ export default function ErrorPage(): JSX.Element {
   const httpError = getHttpError(error);
   if (httpError) {
     return (
-      <>
-        <Header />
-        <div className="text-center p-4">
-          <h2 className="text-xl font-bold">Oops! HTTP Error</h2>
-          <p>
-            {httpError.status} {httpError.statusText}
-          </p>
-          {httpError.detail ? <p className="mt-2 text-slate-700">{httpError.detail}</p> : null}
-        </div>
-      </>
+      <div className="text-center p-4">
+        <h2 className="text-xl font-bold">Oops! HTTP Error</h2>
+        <p>
+          {httpError.status} {httpError.statusText}
+        </p>
+        {httpError.detail ? <p className="mt-2 text-slate-700">{httpError.detail}</p> : null}
+      </div>
     );
   }
 
-  // Generic Error
   if (error instanceof Error) {
     return (
-      <>
-        <Header />
-        <div id="error-page" className="text-center p-4">
-          <h2 className="text-xl text-slate-900">Oops! Unexpected Error</h2>
-          <p>Something went wrong.</p>
-          <p>
-            <i>{error.message}</i>
-          </p>
-        </div>
-      </>
+      <div id="error-page" className="text-center p-4">
+        <h2 className="text-xl text-slate-900">Oops! Unexpected Error</h2>
+        <p>Something went wrong.</p>
+        <p>
+          <i>{error.message}</i>
+        </p>
+      </div>
     );
   }
 
-  // Unknown fallback
   return <DefaultFallback />;
 }
