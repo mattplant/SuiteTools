@@ -12,7 +12,13 @@
 import { requestResponse, zRequestBody } from '@suiteworks/suitetools-shared';
 import type { RequestResponse, RequestBody, PostEndpoint, PutEndpoint } from '@suiteworks/suitetools-shared';
 import type { EndpointName } from '@suiteworks/suitetools-shared';
-import { makeNetSuiteApiError, makeSchemaValidationError, ZodError } from '@suiteworks/suitetools-shared';
+import {
+  errorFromResponse,
+  makeNetSuiteApiError,
+  makeSchemaValidationError,
+  parseErrorResponse,
+  ZodError,
+} from '@suiteworks/suitetools-shared';
 
 enum HttpMethod {
   PUT = 'PUT',
@@ -87,7 +93,14 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
     throw makeNetSuiteApiError(endpoint, `Invalid JSON payload: ${raw}`, { status: res.status });
   }
 
-  // Second: validate against the schema
+  // Typed SuiteError payloads use ErrorResponse (no `data`) — rehydrate before
+  // the success envelope schema would reject them as SchemaValidationError.
+  const errorResponse = parseErrorResponse(parsed);
+  if (errorResponse) {
+    throw errorFromResponse(errorResponse);
+  }
+
+  // Second: validate against the success / soft-404 envelope schema
   let payload: RequestResponse;
   try {
     payload = requestResponse.parse(parsed);

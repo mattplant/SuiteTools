@@ -12,6 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getJob } from '../adapters/api/job';
 import type { Job } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/job/:id` route.
@@ -23,10 +24,7 @@ import type { Job } from '@suiteworks/suitetools-shared';
 export async function jobLoader(args: LoaderFunctionArgs): Promise<{ job: Promise<Job> }> {
   const { params } = args;
   return {
-    job: getJob(Number(params.id)).catch((err) => {
-      console.error('router:getJob() failed', err);
-      throw err;
-    }),
+    job: getJob(Number(params.id)).catch((err) => mapLoaderError(err, 'Job')),
   };
 }
 

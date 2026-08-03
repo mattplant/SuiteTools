@@ -27,7 +27,32 @@
 import type { EntryPoints } from 'N/types';
 import { SuiteToolsApi } from './api/SuiteToolsApi';
 import type { ErrorResponse } from '@suiteworks/suitetools-shared/errors';
-import { SuiteError, NotFoundError } from '@suiteworks/suitetools-shared/errors';
+import {
+  SuiteError,
+  NotFoundError,
+  InvalidParameterError,
+  UnexpectedError,
+} from '@suiteworks/suitetools-shared/errors';
+
+/**
+ * Map a SuiteError to an HTTP-style business status for ErrorResponse.
+ */
+function statusForSuiteError(err: SuiteError): number {
+  if (err instanceof NotFoundError) {
+    return 404;
+  }
+  if (err instanceof UnexpectedError) {
+    return 500;
+  }
+  if (err instanceof InvalidParameterError) {
+    return 400;
+  }
+  // Remaining SuiteErrors: treat fatal/error severity as server faults.
+  if (err.severity === 'error' || err.severity === 'fatal') {
+    return 500;
+  }
+  return 400;
+}
 
 /**
  * Handles the GET request event.
@@ -44,23 +69,24 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
     return JSON.stringify(response);
   } catch (err: unknown) {
     if (err instanceof SuiteError) {
-      // Map SuiteError subclasses into a structured error response
-      const status = err instanceof NotFoundError ? 404 : 400;
       const errorResponse: ErrorResponse = {
-        status,
+        status: statusForSuiteError(err),
         code: err.code,
         message: err.message,
         severity: err.severity,
-        context: err.context,
       };
+      if (err.context) {
+        errorResponse.context = err.context;
+      }
       return JSON.stringify(errorResponse);
     }
 
     // Fallback for unexpected errors
-    const errorResponse = {
+    const errorResponse: ErrorResponse = {
       status: 500,
-      code: 'UNEXPECTED',
+      code: 'UNEXPECTED_ERROR',
       message: 'Internal server error',
+      severity: 'error',
     };
     return JSON.stringify(errorResponse);
   }

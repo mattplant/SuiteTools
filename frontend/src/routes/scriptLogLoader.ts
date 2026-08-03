@@ -12,7 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getScriptLog } from '../adapters/api/scriptLog';
 import type { ScriptLog } from '@suiteworks/suitetools-shared';
-import { isNotFoundError } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/scriptLog/:id` route.
@@ -24,13 +24,7 @@ import { isNotFoundError } from '@suiteworks/suitetools-shared';
 export async function scriptLogLoader(args: LoaderFunctionArgs): Promise<{ scriptLog: Promise<ScriptLog> }> {
   const { params } = args;
   return {
-    scriptLog: getScriptLog(Number(params.id)).catch((err) => {
-      if (isNotFoundError(err)) {
-        throw new Response('Script log not found', { status: 404 });
-      }
-      console.error('router:getScriptLog() failed', err);
-      throw err;
-    }),
+    scriptLog: getScriptLog(Number(params.id)).catch((err) => mapLoaderError(err, 'Script log')),
   };
 }
 

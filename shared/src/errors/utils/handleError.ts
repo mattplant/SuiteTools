@@ -23,6 +23,7 @@
  */
 
 import { SuiteError } from "../base/SuiteError";
+import { isErrorDevMode } from "./errorDevMode";
 
 /**
  * Represents an Error that has been normalized by {@link handleError}.
@@ -51,8 +52,6 @@ type HandleErrorOpts = {
  * @returns never
  */
 export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
-  const isDev = true; // TODO: adapt for NetSuite env (config getter)
-
   // --- Normalize ---
   let normalized: SuiteError | NormalizedError;
   if (err instanceof SuiteError) {
@@ -80,7 +79,7 @@ export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
   });
 
   // --- Surface (Dev only) ---
-  if (isDev && opts.reactTrigger) {
+  if (isErrorDevMode() && opts.reactTrigger) {
     opts.reactTrigger(normalized);
   }
 

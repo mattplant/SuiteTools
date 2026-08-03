@@ -8,7 +8,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getSoapLog } from '../adapters/api/soapLog';
 import type { SoapLog } from '@suiteworks/suitetools-shared';
-import { isNotFoundError } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/soapLog/:id` route.
@@ -21,11 +21,7 @@ export async function soapLogLoader(args: LoaderFunctionArgs): Promise<{ soapLog
     const soapLog = await getSoapLog(id);
     return { soapLog };
   } catch (err) {
-    if (isNotFoundError(err)) {
-      throw new Response('SOAP log not found', { status: 404 });
-    }
-    console.error('router:getSoapLog() failed', err);
-    throw err;
+    mapLoaderError(err, 'SOAP log');
   }
 }
 

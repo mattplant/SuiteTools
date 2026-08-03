@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { getSettings } from '../../../adapters/api/settings';
-import type { Settings } from '@suiteworks/suitetools-shared';
+import { setErrorDevMode, type Settings } from '@suiteworks/suitetools-shared';
 
 type AppContextSettingsType = {
   settings: undefined | Settings;
@@ -34,6 +34,8 @@ export function AppSettingsProvider({ children }: Props): JSX.Element {
       try {
         const data = await getSettings();
         setSettings(data);
+        // Account-level toggle OR local Vite dev — either enables error overlays.
+        setErrorDevMode(Boolean(import.meta.env.DEV || data.devMode));
       } catch (error) {
         console.error('Failed to load settings:', error);
       } finally {
