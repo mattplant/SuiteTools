@@ -13,7 +13,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getRole } from '../adapters/api/role';
 import type { RoleOrNotFound } from '@suiteworks/suitetools-shared';
-import { isNotFoundError } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/roles/:id` route.
@@ -27,14 +27,7 @@ export async function roleLoader(args: LoaderFunctionArgs): Promise<{ role: Prom
   const id = Number(params.id);
 
   return {
-    role: getRole(id).catch((err) => {
-      if (isNotFoundError(err)) {
-        // Let the router know this is a 404‑style case
-        throw new Response('Role not found', { status: 404 });
-      }
-      console.error('router:getRole() failed', err);
-      throw err;
-    }),
+    role: getRole(id).catch((err) => mapLoaderError(err, 'Role')),
   };
 }
 

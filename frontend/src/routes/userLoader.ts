@@ -12,7 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getUser } from '../adapters/api/user';
 import type { User } from '@suiteworks/suitetools-shared';
-import { isNotFoundError } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/users/:id` route.
@@ -24,13 +24,7 @@ import { isNotFoundError } from '@suiteworks/suitetools-shared';
 export async function userLoader(args: LoaderFunctionArgs): Promise<{ user: Promise<User> }> {
   const { params } = args;
   return {
-    user: getUser(Number(params.id)).catch((err) => {
-      if (isNotFoundError(err)) {
-        throw new Response('User not found', { status: 404 });
-      }
-      console.error('router:getUser() failed', err);
-      throw err;
-    }),
+    user: getUser(Number(params.id)).catch((err) => mapLoaderError(err, 'User')),
   };
 }
 

@@ -12,3 +12,5 @@
 export * from "./factories";
 export * from "./guards";
 export * from "./handleError";
+export * from "./errorFromResponse";
+export * from "./errorDevMode";

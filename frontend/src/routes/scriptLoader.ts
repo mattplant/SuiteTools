@@ -12,6 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getScript } from '../adapters/api/script';
 import type { Script } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/script/:id` route.
@@ -25,8 +26,7 @@ export async function scriptLoader(args: LoaderFunctionArgs): Promise<{ script: 
     const script = await getScript(id);
     return { script };
   } catch (err) {
-    console.error('router:getScript() failed', err);
-    throw err;
+    mapLoaderError(err, 'Script');
   }
 }
 

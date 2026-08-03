@@ -12,6 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getIntegrationEnriched, readStashedIntegrationDetail } from '../adapters/api/integration';
 import type { Integration } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/integration/:id` route.
@@ -19,7 +20,7 @@ import type { Integration } from '@suiteworks/suitetools-shared';
  * @param args - Loader arguments provided by the router.
  * @returns An object with a resolved `integration` record.
  */
-export async function integrationLoader(args: LoaderFunctionArgs): Promise<{ integration: Integration | null }> {
+export async function integrationLoader(args: LoaderFunctionArgs): Promise<{ integration: Integration }> {
   const id = Number(args.params.id);
 
   const stashed = readStashedIntegrationDetail(id);
@@ -31,8 +32,7 @@ export async function integrationLoader(args: LoaderFunctionArgs): Promise<{ int
     const integration = await getIntegrationEnriched(id);
     return { integration };
   } catch (err) {
-    console.error('router:getIntegration() failed', err);
-    return { integration: null };
+    mapLoaderError(err, 'Integration');
   }
 }
 

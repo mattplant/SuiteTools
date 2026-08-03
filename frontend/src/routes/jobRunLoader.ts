@@ -12,6 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getJobRun } from '../adapters/api/jobRun';
 import type { JobRun } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/jobRun/:id` route.
@@ -26,8 +27,7 @@ export async function jobRunLoader(args: LoaderFunctionArgs): Promise<{ jobRun: 
     const jobRun = await getJobRun(id);
     return { jobRun };
   } catch (err) {
-    console.error('router:getJobRun() failed', err);
-    throw err;
+    mapLoaderError(err, 'Job run');
   }
 }
 

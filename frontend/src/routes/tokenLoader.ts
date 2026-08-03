@@ -8,6 +8,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getToken } from '../adapters/api/token';
 import type { Token } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/token/:id` route.
@@ -15,8 +16,12 @@ import type { Token } from '@suiteworks/suitetools-shared';
  */
 export async function tokenLoader(args: LoaderFunctionArgs): Promise<{ token: Token }> {
   const id = Number(args.params.id);
-  const token = await getToken(id);
-  return { token };
+  try {
+    const token = await getToken(id);
+    return { token };
+  } catch (err) {
+    mapLoaderError(err, 'Token');
+  }
 }
 
 export type TokenLoaderData = Awaited<ReturnType<typeof tokenLoader>>;

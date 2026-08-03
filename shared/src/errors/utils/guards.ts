@@ -13,6 +13,8 @@ import { SuiteError } from "../base";
 import { NetSuiteApiError } from "../integration/netsuite-api.error";
 import { NotFoundError } from "../domain/not-found.error";
 import { SchemaValidationError } from "../domain/schema-validation.error";
+import { InvalidParameterError } from "../domain/invalid-parameter.error";
+import { UnexpectedError } from "../domain/unexpected.error";
 
 /**
  * Generic factory for creating runtime type guards for error subclasses.
@@ -43,3 +45,9 @@ export const isNotFoundError = makeErrorGuard(NotFoundError);
 
 /** Runtime check for SchemaValidationError. */
 export const isSchemaValidationError = makeErrorGuard(SchemaValidationError);
+
+/** Runtime check for InvalidParameterError. */
+export const isInvalidParameterError = makeErrorGuard(InvalidParameterError);
+
+/** Runtime check for UnexpectedError. */
+export const isUnexpectedError = makeErrorGuard(UnexpectedError);

@@ -12,6 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getFile } from '../adapters/api/file';
 import type { File } from '@suiteworks/suitetools-shared';
+import { mapLoaderError } from './loaderUtils';
 
 /**
  * Loader for the `/file/:id` route.
@@ -23,10 +24,7 @@ import type { File } from '@suiteworks/suitetools-shared';
 export async function fileLoader(args: LoaderFunctionArgs): Promise<{ file: Promise<File> }> {
   const { params } = args;
   return {
-    file: getFile(Number(params.id)).catch((err) => {
-      console.error('router:getFile() failed', err);
-      throw err;
-    }),
+    file: getFile(Number(params.id)).catch((err) => mapLoaderError(err, 'File')),
   };
 }
 

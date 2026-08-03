@@ -11,15 +11,6 @@ import type { IntegrationLoaderData } from '../routes/integrationLoader';
 export function IntegrationPage(): JSX.Element {
   const { integration } = useLoaderData() as IntegrationLoaderData;
 
-  if (!integration) {
-    return (
-      <div className="mx-auto mt-6">
-        <h2 className="text-xl font-bold text-slate-900">Integration</h2>
-        <p className="mt-4 text-slate-700">Integration not found.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Integration</h2>
