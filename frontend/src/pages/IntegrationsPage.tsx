@@ -40,13 +40,9 @@ export function IntegrationsPage() {
       } catch (error) {
         if (!ignore) {
           setResults([]);
-          setStatusMessage(error instanceof Error ? error.message : String(error));
+          setStatusMessage(null);
         }
-        try {
-          handleError(error, { reactTrigger: triggerError });
-        } catch {
-          // handleError always throws after logging/triggering
-        }
+        handleError(error, { reactTrigger: triggerError });
       }
     }
     fetchData();
