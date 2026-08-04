@@ -11,6 +11,10 @@ import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
 import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
 import { handleError } from '@suiteworks/suitetools-shared';
 import { formatDate, formatMinuteSecond } from '../utils/date';
+import {
+  APM_UNAVAILABLE_MESSAGE,
+  isApmUnavailableError,
+} from '../lib/netsuite/ApmUnavailableError';
 
 type Params = {
   startDate: string;
@@ -44,6 +48,7 @@ export function ConcurrencyRequestPage(): React.ReactElement {
   const [criteria, setCriteria] = useState<CriteriaFields>(selectedCriteria);
   const [results, setResults] = useState<ConcurrencyRequestData>();
   const [loading, setLoading] = useState(true);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -52,6 +57,7 @@ export function ConcurrencyRequestPage(): React.ReactElement {
       try {
         if (settings?.accountId) {
           setLoading(true);
+          setStatusMessage(null);
           setCriteria(criteria);
           const data = await getConcurrencyRequest(criteria, settings.accountId);
           if (!ignore) {
@@ -59,8 +65,17 @@ export function ConcurrencyRequestPage(): React.ReactElement {
           }
         }
       } catch (err) {
+        if (isApmUnavailableError(err)) {
+          if (!ignore) {
+            setResults(undefined);
+            setStatusMessage(APM_UNAVAILABLE_MESSAGE);
+            console.warn(`[SuiteTools] ${err.message}`);
+          }
+          return;
+        }
         if (!ignore) {
           setResults(undefined);
+          setStatusMessage(null);
         }
         handleError(err, { reactTrigger: triggerError });
       } finally {
@@ -79,6 +94,7 @@ export function ConcurrencyRequestPage(): React.ReactElement {
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Concurrency Requests</h2>
+      {statusMessage ? <p className="mb-2 text-sm text-amber-700">{statusMessage}</p> : null}
       {results && (
         <>
           <p className="text-sm text-gray-500">
@@ -102,7 +118,7 @@ export function ConcurrencyRequestPage(): React.ReactElement {
       )}
       {loading ? (
         <p>Loading...</p>
-      ) : (
+      ) : statusMessage ? null : (
         <>
           <ConcurrencyRequestBarGraphWrapper data={results} />
           <br />

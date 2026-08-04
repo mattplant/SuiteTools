@@ -11,6 +11,10 @@ import { ConcurrencySummaryViolations } from '../components/features/concurrency
 import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
 import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
 import { handleError } from '@suiteworks/suitetools-shared';
+import {
+  APM_UNAVAILABLE_MESSAGE,
+  isApmUnavailableError,
+} from '../lib/netsuite/ApmUnavailableError';
 
 /**
  * Concurrency Summary page — APM concurrency overview for a date range.
@@ -27,6 +31,7 @@ export function ConcurrencySummaryPage(): React.ReactElement {
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ConcurrencySummaryData>();
   const [loading, setLoading] = useState(true);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -39,13 +44,23 @@ export function ConcurrencySummaryPage(): React.ReactElement {
 
       try {
         setLoading(true);
+        setStatusMessage(null);
         const data = await getConcurrencySummary(criteria, settings.accountId);
         if (!ignore) {
           setResults(data);
         }
       } catch (err) {
+        if (isApmUnavailableError(err)) {
+          if (!ignore) {
+            setResults(undefined);
+            setStatusMessage(APM_UNAVAILABLE_MESSAGE);
+            console.warn(`[SuiteTools] ${err.message}`);
+          }
+          return;
+        }
         if (!ignore) {
           setResults(undefined);
+          setStatusMessage(null);
         }
         handleError(err, { reactTrigger: triggerError });
       } finally {
@@ -65,6 +80,7 @@ export function ConcurrencySummaryPage(): React.ReactElement {
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Concurrency Summary</h2>
       <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
+      {statusMessage ? <p className="mb-2 text-sm text-amber-700">{statusMessage}</p> : null}
       {loading ? (
         <p>Loading...</p>
       ) : results ? (
