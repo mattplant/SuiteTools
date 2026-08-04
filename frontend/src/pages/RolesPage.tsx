@@ -8,12 +8,16 @@ import type { Roles } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/role/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
 /**
  * Renders the Roles page, allowing users to view and filter roles.
  * @returns The rendered Roles page component.
  */
 export function RolesPage(): React.ReactElement {
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     active: '',
   };
@@ -21,20 +25,28 @@ export function RolesPage(): React.ReactElement {
   const [results, setResults] = useState<Roles>([]);
 
   useEffect(() => {
+    let ignore = false;
+
     async function fetchData(): Promise<void> {
       try {
         const data = await getRoles(criteria);
-        if (!('message' in data)) {
-          setResults(data);
+        const normalized = toArray<Roles[number]>(data);
+        if (!ignore) {
+          setResults(normalized);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
+        if (!ignore) {
+          setResults([]);
+        }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
-    fetchData();
 
-    return (): void => {};
-  }, [criteria]);
+    fetchData();
+    return (): void => {
+      ignore = true;
+    };
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">

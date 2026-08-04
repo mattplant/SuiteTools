@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getSoapLog } from '../adapters/api/soapLog';
@@ -6,8 +8,16 @@ import type { SoapLogs } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/soapLog/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
-export function SoapLogsPage() {
+/**
+ * SOAP Logs page — list SOAP web services process status rows.
+ * @returns The rendered SOAP Logs page.
+ */
+export function SoapLogsPage(): React.ReactElement {
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     integrations: [''],
   };
@@ -18,32 +28,33 @@ export function SoapLogsPage() {
   useEffect(() => {
     let ignore = false;
 
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       try {
         setStatusMessage(null);
         const data = await getSoapLogs(criteria);
+        const normalized = toArray<SoapLogs[number]>(data);
         if (!ignore) {
-          setResults(data);
-          if (data.length === 0) {
+          setResults(normalized);
+          if (normalized.length === 0) {
             setStatusMessage(
               'No SOAP web services jobs found for the last 90 days. Confirm jobs exist under Setup > Integration > SOAP Web Services Process Status.',
             );
           }
         }
-      } catch (error) {
-        console.error('Error fetching SOAP logs:', error);
+      } catch (err) {
         if (!ignore) {
           setResults([]);
-          setStatusMessage(error instanceof Error ? error.message : String(error));
+          setStatusMessage(null);
         }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
-    fetchData();
 
-    return () => {
+    fetchData();
+    return (): void => {
       ignore = true;
     };
-  }, [criteria]);
+  }, [criteria, triggerError]);
 
   return (
     <div className="mt-4">
