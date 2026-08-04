@@ -35,11 +35,7 @@ export function LoginsPage() {
         if (!ignore) {
           setResults([]);
         }
-        try {
-          handleError(error, { reactTrigger: triggerError });
-        } catch {
-          // handleError always throws after logging/triggering
-        }
+        handleError(error, { reactTrigger: triggerError });
       }
     }
     fetchData();

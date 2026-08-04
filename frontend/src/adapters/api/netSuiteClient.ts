@@ -14,6 +14,7 @@ import type { RequestResponse, RequestBody, PostEndpoint, PutEndpoint } from '@s
 import type { EndpointName } from '@suiteworks/suitetools-shared';
 import {
   errorFromResponse,
+  InvalidParameterError,
   makeNetSuiteApiError,
   makeSchemaValidationError,
   parseErrorResponse,
@@ -34,6 +35,7 @@ const apiBaseUrl = `/app/site/hosting/restlet.nl?script=${script}&deploy=${deplo
  * @param endpoint - Logical API endpoint that the backend SuiteTools RESTlet handler maps to a specific function.
  * @param [params] - Query parameters to append to the request URL. Keys `script`, `deploy`, `compid`, and `endpoint` are reserved. The first three are NetSuite parameters and the last one is used SuiteTools.
  * @returns Parsed and schema‑validated API response.
+ * @throws {InvalidParameterError} When `params` includes reserved keys (`script`, `deploy`, `compid`, `endpoint`).
  * @throws {NetSuiteApiError} When the HTTP response status is not OK (non‑2xx).
  */
 export async function getData(endpoint: EndpointName, params: Record<string, unknown> = {}): Promise<RequestResponse> {
@@ -44,9 +46,12 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
   const reservedParamKeys = ['script', 'deploy', 'compid', 'endpoint'];
   const conflicts = reservedParamKeys.filter((param) => param in params);
   if (conflicts.length > 0) {
-    // TODO: use a SuteTools error class with factory method
-    throw new Error(
-      `getData() ${endpoint} params contain reserved keys: ${conflicts.map((k) => `${k}=${params[k]}`).join(', ')}`,
+    const parameterName = conflicts[0];
+    throw new InvalidParameterError(
+      parameterName,
+      params[parameterName],
+      `Reserved NetSuite/SuiteTools query keys cannot be passed in getData params` +
+        (conflicts.length > 1 ? ` (also: ${conflicts.slice(1).join(', ')})` : ''),
     );
   }
 
