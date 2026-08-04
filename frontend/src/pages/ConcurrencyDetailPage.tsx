@@ -11,6 +11,10 @@ import { ConcurrencyDetailResults } from '../components/features/concurrency/det
 import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
 import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
 import { handleError } from '@suiteworks/suitetools-shared';
+import {
+  APM_UNAVAILABLE_MESSAGE,
+  isApmUnavailableError,
+} from '../lib/netsuite/ApmUnavailableError';
 
 type Params = {
   startDate: string;
@@ -40,6 +44,7 @@ export function ConcurrencyDetailPage(): React.ReactElement {
   const [criteria, setCriteria] = useState<CriteriaFields>(selectedCriteria);
   const [results, setResults] = useState<ConcurrencyDetailData>();
   const [loading, setLoading] = useState(true);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -48,6 +53,7 @@ export function ConcurrencyDetailPage(): React.ReactElement {
       try {
         if (settings?.accountId) {
           setLoading(true);
+          setStatusMessage(null);
           setCriteria(criteria);
           const data = await getConcurrencyDetail(criteria, settings.accountId);
           if (!ignore) {
@@ -55,8 +61,17 @@ export function ConcurrencyDetailPage(): React.ReactElement {
           }
         }
       } catch (err) {
+        if (isApmUnavailableError(err)) {
+          if (!ignore) {
+            setResults(undefined);
+            setStatusMessage(APM_UNAVAILABLE_MESSAGE);
+            console.warn(`[SuiteTools] ${err.message}`);
+          }
+          return;
+        }
         if (!ignore) {
           setResults(undefined);
+          setStatusMessage(null);
         }
         handleError(err, { reactTrigger: triggerError });
       } finally {
@@ -78,9 +93,10 @@ export function ConcurrencyDetailPage(): React.ReactElement {
       <p className="text-sm text-gray-500">Below are the concurrency peaks for the selected hour.</p>
       <p className="text-sm text-gray-500">Drill in to see the incoming requests.</p>
       <br />
+      {statusMessage ? <p className="mb-2 text-sm text-amber-700">{statusMessage}</p> : null}
       {loading ? (
         <p>Loading...</p>
-      ) : (
+      ) : statusMessage ? null : (
         <>
           <ConcurrencyDetailOverview data={results} />
           <br />

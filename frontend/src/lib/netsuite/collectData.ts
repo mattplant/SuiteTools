@@ -21,6 +21,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ApmUnavailableError } from './ApmUnavailableError';
+
 export interface NetSuiteResponse {
   success: boolean;
   message: string;
@@ -46,18 +48,21 @@ export async function getDataFromPageContent(url: string): Promise<NetSuiteRespo
     throw new Error(`getDataFromPageContent() no content found at ${url}`);
   }
 
+  // Missing APM / failed scriptlet typically returns HTTP 500 + HTML Notice, or HTML with 200.
   if (!response.ok) {
     const snippet = content.replace(/\s+/g, ' ').slice(0, 180);
-    throw new Error(
+    throw new ApmUnavailableError(
       `NetSuite returned HTTP ${response.status} for ${url}. ` +
         `This usually means the APM scriptlet is missing or failed. Preview: ${snippet}`,
+      { url, status: response.status },
     );
   }
 
   if (/^\s*</.test(content)) {
-    throw new Error(
+    throw new ApmUnavailableError(
       `Expected JSON from ${url} but received HTML. ` +
         `The APM concurrency SuiteApp may not be installed or the scriptlet crashed.`,
+      { url, status: response.status },
     );
   }
 
