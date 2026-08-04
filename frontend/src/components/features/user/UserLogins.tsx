@@ -3,14 +3,17 @@ import type { CriteriaFields } from '../../shared/criteria/types';
 import { getLogins } from '../../../adapters/api/logins';
 import { getLoginFromResults } from '../../../adapters/api/login';
 import type { Login } from '@suiteworks/suitetools-shared';
+import { handleError } from '@suiteworks/suitetools-shared';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
+import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
 
 type Props = {
   userId: string;
 };
 
 export function UserLogins({ userId }: Props) {
+  const triggerError = useErrorBoundaryTrigger();
   const [results, setResults] = useState<readonly Login[]>([]);
 
   useEffect(() => {
@@ -26,10 +29,10 @@ export function UserLogins({ userId }: Props) {
           setResults(data);
         }
       } catch (error) {
-        console.error('Error fetching user logins:', error);
         if (!ignore) {
           setResults([]);
         }
+        handleError(error, { reactTrigger: triggerError });
       }
     }
     fetchData();
@@ -37,7 +40,7 @@ export function UserLogins({ userId }: Props) {
     return () => {
       ignore = true;
     };
-  }, [userId]);
+  }, [userId, triggerError]);
 
   return (
     <>

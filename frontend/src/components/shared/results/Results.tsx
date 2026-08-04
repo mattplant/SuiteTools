@@ -5,9 +5,11 @@ import { Modal } from 'flowbite-react';
 import { useLocation } from 'react-router-dom';
 import { DynamicResultsRenderer } from './DynamicResultsRenderer';
 import type { NotFound } from '@suiteworks/suitetools-shared';
+import { handleError, isNotFound, NotFoundError } from '@suiteworks/suitetools-shared';
 import { ResultsTypes } from './types';
 import type { ModalResult } from './types';
 import { ResultsModal } from './ResultsModal';
+import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
 
 type Props = {
   type: ResultsTypes;
@@ -25,40 +27,11 @@ type Props = {
  */
 export function Results({ type, lines, getModalData }: Props): JSX.Element {
   const location = useLocation();
+  const triggerError = useErrorBoundaryTrigger();
   const [openModal, setOpenModal] = useState(false);
   const [id, setId] = useState<number | null>(null);
   const [data, setData] = useState<ModalResult>();
-  // const [data, setData] = useState<ModalResult | null>(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (id === null) return; // skip since no record selected
-
-    setLoading(true);
-    const selectedId = id;
-
-    async function fetchData(): Promise<void> {
-      try {
-        const data = await getModalData(selectedId, lines);
-        if ('id' in data) setData(data);
-      } catch (error) {
-        // TODO: handle error state properly
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-
-    return (): void => {};
-  }, [id, lines, getModalData]);
-
-  // Close the modal when in-app navigation leaves the current list route.
-  useEffect(() => {
-    setOpenModal(false);
-    setId(null);
-    setData(undefined);
-  }, [location.pathname]);
 
   // determine modal title based on modal type
   const modalTitles: Record<ResultsTypes, string> = {
@@ -76,6 +49,47 @@ export function Results({ type, lines, getModalData }: Props): JSX.Element {
   };
 
   const modalTitle = modalTitles[type] ?? 'Unknown';
+
+  useEffect(() => {
+    if (id === null) return; // skip since no record selected
+
+    let ignore = false;
+    setLoading(true);
+    const selectedId = id;
+
+    async function fetchData(): Promise<void> {
+      try {
+        const result = await getModalData(selectedId, lines);
+        if (isNotFound(result)) {
+          throw new NotFoundError(modalTitle, selectedId);
+        }
+        if (!ignore && 'id' in result) {
+          setData(result);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setData(undefined);
+        }
+        handleError(error, { reactTrigger: triggerError });
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    fetchData();
+
+    return (): void => {
+      ignore = true;
+    };
+  }, [id, lines, getModalData, modalTitle, triggerError]);
+
+  // Close the modal when in-app navigation leaves the current list route.
+  useEffect(() => {
+    setOpenModal(false);
+    setId(null);
+    setData(undefined);
+  }, [location.pathname]);
 
   return (
     <div>

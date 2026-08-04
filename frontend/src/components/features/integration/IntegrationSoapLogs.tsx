@@ -5,12 +5,15 @@ import { getSoapLogs } from '../../../adapters/api/soapLogs';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
 import type { SoapLogs } from '@suiteworks/suitetools-shared';
+import { handleError } from '@suiteworks/suitetools-shared';
+import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
 
 type Props = {
   integrations: string[];
 };
 
 export function IntegrationSoapLogs({ integrations }: Props) {
+  const triggerError = useErrorBoundaryTrigger();
   const [results, setResults] = useState<SoapLogs>([]);
 
   useEffect(() => {
@@ -26,10 +29,10 @@ export function IntegrationSoapLogs({ integrations }: Props) {
           setResults(data);
         }
       } catch (error) {
-        console.error('Error fetching integration SOAP logs:', error);
         if (!ignore) {
           setResults([]);
         }
+        handleError(error, { reactTrigger: triggerError });
       }
     }
     fetchData();
@@ -37,7 +40,7 @@ export function IntegrationSoapLogs({ integrations }: Props) {
     return () => {
       ignore = true;
     };
-  }, [integrations]);
+  }, [integrations, triggerError]);
 
   return (
     <>
