@@ -1,6 +1,6 @@
 # 🧑‍💻 Error Handling Guide
 
-Last updated: September 22, 2025
+Last updated: 2026-08-04
 
 ---
 
@@ -18,16 +18,12 @@ This guide shows how to apply SuiteTools’ error handling standards in day‑to
 Choose the most specific error type that communicates intent and supports targeted handling.
 
 - **Start from `SuiteError`:** All errors extend `SuiteError` and include code, message, context, and severity.
-- **Pick domain‑specific subclasses:** Use types like `SchemaValidationError`, `NetSuiteApiError`, `ConfigError`, `UnexpectedError`.
+- **Pick domain‑specific subclasses:** Use types like `NotFoundError`, `InvalidParameterError`, `SchemaValidationError`, `NetSuiteApiError`, `UnexpectedError`.
 - **Add structured context:** Include fields that make triage fast (ids, endpoints, field paths, expected vs received).
 - **Create a new subclass when needed:** If you need consistent handling, distinct metadata, or repeated occurrence, define it once and reuse.
 
 ```ts
-throw new SchemaValidationError('Invalid user payload', {
-  code: 'VAL_USER_PAYLOAD',
-  severity: 'error',
-  context: { issues, source: 'UserForm', operation: 'create' }
-});
+throw new SchemaValidationError('user', issues); // schema name + ZodIssue[]
 ```
 
 ---
@@ -37,19 +33,6 @@ throw new SchemaValidationError('Invalid user payload', {
 Throwing errors in a **consistent, predictable way** makes them easier to catch, display, and report.
 Every thrown error in SuiteTools should be **typed**, **contextual**, and **routed** so that downstream handlers — whether in a React boundary, async flow, or global listener — can respond appropriately.
 
-SuiteTools uses a hierarchy of `SuiteError` subclasses to ensure that every thrown error:
-
-- **Carries clear intent** — The class name signals the domain and failure type.
-- **Preserves context** — Original stack traces and metadata are never lost.
-- **Supports targeted handling** — Downstream code can branch on error type without brittle string matching.
-
-By following these practices, we:
-
-- Keep error types explicit and discoverable.
-- Preserve valuable debugging context.
-- Prevent silent failures and hard‑to‑trace bugs.
-- Stop invalid data early before it causes cascading issues.
-
 ### 🔑 Guidelines
 
 - **Validate at boundaries** — Reject bad data before core logic runs.
@@ -58,58 +41,88 @@ By following these practices, we:
 - **Avoid ambiguous messages** — Prefer “what failed + why + where” over generic messages.
 
 ```ts
-// Validation boundary (Zod → SuiteError)
+import { makeSchemaValidationError } from '@suiteworks/suitetools-shared';
+
 const parsed = schema.safeParse(input);
 if (!parsed.success) {
-  throw new SchemaValidationError('Invalid request payload', {
-    code: 'VAL_REQUEST',
-    severity: 'error',
-    context: { issues: parsed.error.issues }
-  });
+  throw makeSchemaValidationError('requestPayload', parsed.error.issues);
 }
 ```
+
+---
+
+## 🔌 RESTlet → SPA transport
+
+Backend GET/POST/PUT handlers serialize failures as a shared **`ErrorResponse`** JSON shape (`status`, `code`, `message`, `severity`, optional `context`) — not the success envelope `{ status, data }`.
+
+Frontend `getData` / `postData` / `putData` in `netSuiteClient`:
+
+1. Parse JSON.
+2. **Discriminate `ErrorResponse`** via `parseErrorResponse` and **rehydrate** with `errorFromResponse` into the matching `SuiteError` subclass.
+3. Only then validate the success / soft‑404 `{ status, data }` envelope with Zod.
+
+Do not treat typed API errors as schema‑validation failures. Soft empty reads may still use `{ status: 404, data: { code: 'NOT_FOUND', … } }` inside the success envelope; singular adapters turn those into `NotFoundError` via `handleNotFound`.
 
 ---
 
 ## 🛠️ Catching & Handling
 
-Centralize normalization and logging with `handleError()`. Escalate intentionally.
+Centralize normalization and logging with `handleError()`. It **always rethrows** (`never`) after logging and optional Dev Mode surfacing.
 
-- **Use the outermost catch:** Call `handleError(err)` at flow boundaries (route handlers, job runners, top‑level async ops).
-- **Let it bubble after handling:** Avoid double‑handling; rethrow or return a clear failure signal.
-- **Differentiate recoverable vs blocking:** Recover locally when safe; otherwise escalate to a boundary.
+### Soft vs escalate (SPA pages)
+
+| Kind of failure | What to do |
+|-----------------|------------|
+| **Expected / environmental** (empty filter, partial scrape, APM tools unavailable) | In‑page amber (or equivalent) + `return`. **Do not** call `handleError`. Optional `console.warn`. |
+| **Unexpected** | `handleError(err, { reactTrigger })` once. **Do not** wrap it in an inner `try/catch` that swallows the rethrow. **Do not** also set amber from raw `error.message` for the same failure. |
 
 ```ts
-// Async flow with handleError
-import { handleError } from '@suitetools/errors';
+import { handleError } from '@suiteworks/suitetools-shared';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
 
-export async function saveUser(input: unknown) {
-  try {
-    const user = validateUser(input); // may throw SchemaValidationError
-    return await api.createUser(user); // may throw NetSuiteApiError
-  } catch (err) {
-    handleError(err); // normalize + log (+ dev overlay)
-    throw err;        // propagate for caller or boundary
-  }
+const triggerError = useErrorBoundaryTrigger();
+
+try {
+  const data = await getRoles(criteria);
+  setResults(toArray(data));
+} catch (err) {
+  setResults([]);
+  handleError(err, { reactTrigger: triggerError }); // logs, optional overlay, then rethrows
 }
+```
 
-// Escalating to a React error boundary
-const trigger = useErrorBoundaryTrigger();
+Soft example (classified expected case):
 
-async function onSubmit(form: FormData) {
-  try {
-    await saveUser(form);
-  } catch (err) {
-    trigger(err); // escalate to nearest boundary for a safe fallback UI
+```ts
+} catch (err) {
+  if (isApmUnavailableError(err)) {
+    setStatusMessage(APM_UNAVAILABLE_MESSAGE);
+    console.warn(`[SuiteTools] ${err.message}`);
+    return; // soft — no handleError
   }
+  setStatusMessage(null);
+  handleError(err, { reactTrigger: triggerError });
+}
+```
+
+### Anti‑pattern
+
+```ts
+// ❌ Do not swallow handleError's rethrow
+try {
+  handleError(err, { reactTrigger: triggerError });
+} catch {
+  /* swallow */
 }
 ```
 
 ---
 
-## 📌 Guidelines
+## 📌 Dev Mode & overlay
 
-- **Dev vs. prod behavior** – In development, expect overlays; in production, prefer logging and rethrow without UI noise.
+- Gate surfacing with `setErrorDevMode` / `isErrorDevMode` (wired from `import.meta.env.DEV` and Settings **Dev Mode**).
+- In Dev Mode, `handleError(..., { reactTrigger })` opens the floating **`DevSuiteErrorOverlay`** over app chrome (does not require a hard refresh after toggling Dev Mode in Settings).
+- Outside Dev Mode, `handleError` still logs with a `[SuiteTools]` prefix and rethrows; production should not dump stack traces into the main UI.
 
 > For global hooks and advanced interception strategies, see [🖼️ Error Boundaries & Catching](./error-handling-advanced.md#️-error-boundaries--catching).
 
@@ -141,30 +154,29 @@ Wire them directly to `handleError()` to ensure normalization, consistent loggin
 
 ## 💻 Displaying Errors
 
-Once an error is caught, **how it’s displayed depends on the environment**:
+Once an error is caught, **how it’s displayed depends on the environment and whether the failure is expected**:
 
-- **Development** — Expose as much context as possible to speed up debugging.
-- **Production** — Protect users from technical details while still providing a clear, trustworthy experience.
+- **Dev Mode** — `DevSuiteErrorOverlay` (via `reactTrigger`) for unexpected failures that go through `handleError`.
+- **Expected soft cases** — In‑page status (amber) without overlay; keep app chrome usable.
+- **Production / Dev Mode off** — Log via `handleError`; avoid raw stack traces in the main UI. Route loaders may still map `NotFoundError` to an HTTP 404 → `ErrorPage`.
 
-> For planned display utilities and advanced fallback strategies, see [📡 Telemetry & Integrations](./error-handling-advanced.md#-telemetry--integrations-planned).
+> Telemetry/`reportError` is planned; today logging is console‑centered via `handleError`. See [📡 Telemetry & Integrations](./error-handling-advanced.md#-telemetry--integrations-planned).
 
 ---
 
 ## 📊 Logging & Reporting
 
-Make logs grep‑friendly locally; keep metadata consistent for telemetry.
+Make logs grep‑friendly locally; keep metadata consistent for future telemetry.
 
-- **Centralize reporting:** Route through `reportError()` with normalized shape.
-- **Use stable codes:** Filter and dashboard by `code`, not message strings.
-- **Avoid duplication:** Log once at the boundary; don’t spam nested layers.
+- **Centralize logging:** Call `handleError()` at the outermost unexpected‑failure catch (it logs with `[SuiteTools]`).
+- **Use stable codes:** Filter by `code` on `SuiteError` subclasses, not message strings.
+- **Avoid duplication:** Log once at the boundary; don’t call `handleError` in nested layers and again at the top for the same failure.
 
 ```ts
 try {
   await doWork();
 } catch (err) {
-  const normalized = handleError(err); // normalize + enrich with metadata
-  await reportError(normalized);       // local console in dev; telemetry in prod
-  throw normalized;                     // propagate for caller or boundary
+  handleError(err, { reactTrigger: triggerError }); // normalize → log → optional surface → rethrow
 }
 ```
 
@@ -172,44 +184,34 @@ try {
 
 ## 🧪 Examples
 
-These examples show how to apply SuiteTools’ error‑handling patterns in real code.
-They’re intentionally minimal so developers can see the **core usage** without unrelated boilerplate.
-
 ### Throwing a Schema Validation Error
 
-Use a domain‑specific error class to make the failure type explicit and ensure it’s caught and reported with the right metadata.
-
 ```ts
-if (!schema.safeParse(data).success) {
-  throw new SchemaValidationError('Invalid user payload', { data });
+import { SchemaValidationError } from '@suiteworks/suitetools-shared';
+
+const parsed = schema.safeParse(data);
+if (!parsed.success) {
+  throw new SchemaValidationError('userPayload', parsed.error.issues);
 }
 ```
 
-**Why this works:**
-
-- Fails fast during validation.
-- Uses a typeded error (`SchemaValidationError`) for targeted handling
-- Preserves the invalid payload for debugging and reporting.
-
-### Escalating an Async Error to a Boundary
-
-When an async operation fails inside a component or hook, escalate it to the nearest React error boundary so it’s handled consistently with render‑time errors.
+### Escalating an Async List Fetch
 
 ```ts
-const triggerErrorBoundary = useErrorBoundaryTrigger();
+const triggerError = useErrorBoundaryTrigger();
 
 try {
   await fetchData();
 } catch (err) {
-  triggerErrorBoundary(err);
+  handleError(err, { reactTrigger: triggerError });
 }
 ```
 
 **Why this works:**
 
-- Keeps async and render‑time error handling consistent.
-- Avoids "invisible" async failures that never surface in the UI.
-- Ensures the error flows through `handleError()` --> display --> report.
+- Keeps async failures visible in Dev Mode via the floating overlay.
+- Avoids silent `console.error`‑only nested fetches.
+- Relies on `handleError`’s rethrow — no second manual `throw`.
 
 ---
 
@@ -217,18 +219,16 @@ try {
 
 ### Validation Failure Handling
 
-- Throw `SchemaValidationError` with an `issues` array at transport/domain edges.
-- Map field paths to UI hints for inline error states.
+- Throw `SchemaValidationError` with schema name + Zod `issues` at transport/domain edges.
 
 ### Integration Error Mapping
 
-- Wrap network/library errors into `NetSuiteApiError` with `cause`.
-- Include endpoint, method, and correlation id in context.
+- Wrap network/library errors into `NetSuiteApiError` with endpoint/status context.
 
-### Graceful Degradation
+### Soft environmental failures
 
-- Catch non‑critical failures (e.g., analytics, logging) with `handleError()` and continue.
-- Reserve escalation for user‑blocking failures.
+- Classify with a typed error or discriminant (e.g. `ApmUnavailableError`).
+- Show in‑page copy; skip `handleError` for that case only.
 
 ---
 

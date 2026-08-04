@@ -2,7 +2,7 @@
 
 A Unified Lifecycle for Predictable, Discoverable, and Safe Error Management
 
-Last updated: September 29, 2025
+Last updated: 2026-08-04
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
@@ -95,15 +95,15 @@ Every error — regardless of origin — passes through this gateway to ensure c
 
 ## 🖼️ Development vs Production Behavior
 
-Error handling behaves differently depending on environment:
+Error handling behaves differently depending on environment / Dev Mode:
 
-| Environment     | Behavior                                                                                                     |
-|-----------------|--------------------------------------------------------------------------------------------------------------|
-| **Development** | **Origin → Intercept → Normalize → Log → Surface (Dev) → Propagate** – Full lifecycle with overlays/UI noise |
-| **Production**  | **Origin → Intercept → Normalize → Log → Propagate** – Full lifecycle without UI noise                       |
+| Environment / mode | Behavior |
+|--------------------|----------|
+| **Error‑dev mode on** (Vite DEV and/or Settings Dev Mode via `setErrorDevMode`) | Unexpected errors: normalize → log → surface floating `DevSuiteErrorOverlay` via `reactTrigger` → rethrow |
+| **Error‑dev mode off** | Unexpected errors: normalize → log → rethrow (no overlay) |
+| **Soft expected failures** | In‑page status (no `handleError`); keep app chrome usable |
 
-> In development, errors are surfaced loudly for fast debugging.
-> In production, they’re logged and rethrown silently to protect user experience.
+> RESTlet typed failures travel as `ErrorResponse` JSON and are rehydrated in the SPA client before success‑envelope Zod parsing.
 
 ---
 

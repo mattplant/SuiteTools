@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-04
 
 ---
 
@@ -79,16 +79,19 @@ Error handling behavior differs by environment. These rules are **binding** and 
 
 ### 📏 Enforcement Rules
 
-- All errors **must** pass through `handleError()` at the highest catch point.
-- In **development**, `handleError()` **must** trigger developer overlays or equivalent surfacing.
-- In **production**, `handleError()` **must** log and rethrow errors without exposing sensitive details.
+- Unexpected errors **must** pass through `handleError()` at the highest catch point.
+- When error‑dev mode is on (`setErrorDevMode` / Settings Dev Mode and/or local Vite DEV), `handleError()` **must** be able to surface via `reactTrigger` (floating `DevSuiteErrorOverlay`).
+- When error‑dev mode is off, `handleError()` **must** log and rethrow without dumping raw stack traces into the main product UI.
 - Fallback UIs in production **must** be neutral and user‑safe.
+- **Soft expected failures** (empty filter results, classified environmental gaps such as unavailable APM tools) **may** be handled in‑page without calling `handleError()`, but **must not** be silent: show a clear status message and/or `console.warn`.
+- Callers **must not** swallow `handleError()`’s rethrow (no inner `try/catch` that discards it).
 
 ### 📏 Core Principle (Enforceable)
 
-- All errors **must** pass through `handleError()` at the highest catch point.
+- Unexpected errors **must** pass through `handleError()` at the highest catch point.
 - This ensures normalization, consistent logging, and predictable dev/prod behavior.
-- `handleError()` is the authoritative gateway for error handling in SuiteTools — no alternative pathways are permitted.
+- `handleError()` is the authoritative gateway for **unexpected** error handling in SuiteTools.
+- RESTlet failures that are typed API errors **must** use the shared `ErrorResponse` contract so the SPA can rehydrate `SuiteError` subclasses (not collapse them into schema‑validation failures).
 
 ---
 
@@ -170,8 +173,9 @@ Create a new subclass when:
 - Errors **MUST NOT** be thrown from deep inside core logic — only at boundaries.
 - Errors **MUST** be normalized into a `SuiteError` before crossing workspace boundaries.
 - Errors **MUST** include required metadata.
-- Errors **MUST NOT** be silently swallowed — they must be logged or surfaced.
-- Errors **MUST** propagate predictably unless explicitly handled.
+- Errors **MUST NOT** be silently swallowed — they must be logged, soft‑surfaced in‑page, or escalated via `handleError()`.
+- Unexpected errors **MUST** propagate predictably via `handleError()`’s rethrow unless a classified soft path applies.
+- SPA callers **MUST NOT** combine an amber `error.message` banner with `handleError()` for the same unexpected failure.
 
 ---
 

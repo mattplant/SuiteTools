@@ -1,7 +1,7 @@
 
 # 🧑‍💻 Error Handling Advanced Guide
 
-Last updated: September 22, 2025
+Last updated: 2026-08-04
 
 ---
 
@@ -78,16 +78,18 @@ For complex async flows:
 
 ```text
 [ Workspace A ]
-   throw SuiteError
+   throw SuiteError / ErrorResponse
         │
         ▼
-normalizeError() ──→ cross boundary ──→ [ Workspace B ]
+rehydrate / normalize ──→ cross boundary ──→ [ Workspace B ]
                                              │
                                              ▼
                                       handleError()
                                              │
-                                             ├─ Display (Dev/Prod)
-                                             └─ reportError()
+                                             ├─ log ([SuiteTools])
+                                             ├─ Dev Mode → DevSuiteErrorOverlay
+                                             └─ rethrow
+                                             (reportError planned — see Telemetry)
 ```
 
 ---
@@ -131,21 +133,22 @@ By applying these patterns, we:
 ```text
 Component / Hook
    │
-   ├─ try/catch → handleError()
+   ├─ expected soft case → in-page message → return
    │
-   └─ (optional) reactTrigger(error)
+   └─ unexpected → handleError(err, { reactTrigger })
            │
-           ▼
-     AppErrorBoundary → Display → Report
+           ├─ log ([SuiteTools])
+           ├─ Dev Mode → DevSuiteErrorOverlay (via reactTrigger)
+           └─ rethrow (never returns)
 ```
 
 > 💡 **Developer Tip:**
-> When adding new components or hooks that perform async work, always decide:
+> When adding new components or hooks that perform async work, decide:
 >
-> 1. **Handle locally** with `handleError()` if the component can gracefully recover or you just need to log/report.
-> 2. **Escalate to a boundary** via `reactTrigger(error)` if the failure should trigger a full UI fallback.
+> 1. **Soft** — classified expected/environmental failure → in‑page message, no `handleError`.
+> 2. **Escalate** — unexpected → `handleError(err, { reactTrigger })` once (do not swallow the rethrow).
 >
-> Making this decision early keeps error handling predictable, avoids “hidden” async failures, and ensures developers know exactly where to look when debugging.
+> Pass `reactTrigger` from `useErrorBoundaryTrigger` into `handleError`; do not call the trigger as a substitute for `handleError`.
 
 ---
 
@@ -175,7 +178,7 @@ By standardizing where and how errors are caught, we:
 
 ### Development
 
-- **DevSuiteErrorOverlay** — Rich overlay with stack traces, schema details, and metadata for debugging.
+- **DevSuiteErrorOverlay** — Floating overlay over app chrome with stack traces and metadata (gated by error‑dev mode / Settings Dev Mode).
 
 ### Production
 
