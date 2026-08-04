@@ -1,9 +1,11 @@
 import { Button, ButtonGroup } from 'flowbite-react';
 import type { Job } from '@suiteworks/suitetools-shared';
+import { handleError, UnexpectedError } from '@suiteworks/suitetools-shared';
 import { initiateJob } from '../../../adapters/api/job';
 import { openAppPage, getAppBaseUrl } from '../../../utils/navigation';
 import { getIntegrations } from '../../../adapters/api/integrations';
 import { getTokens } from '../../../adapters/api/tokens';
+import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
 
 type Props = {
   data: Job;
@@ -13,6 +15,8 @@ type Props = {
 type LastLoginEntity = { type: string; name: string };
 
 export function JobResult({ data, modal }: Props) {
+  const triggerError = useErrorBoundaryTrigger();
+
   const initiateJobClick = async () => {
     console.log('JobResult: initiateJobClick() initiated', { jobId: data.id });
     const entityRecords: LastLoginEntity[] = [];
@@ -33,20 +37,25 @@ export function JobResult({ data, modal }: Props) {
         }
         console.log('JobResult: Last Logins entities', entityRecords);
       } catch (err) {
+        // Expected environmental soft case — backend LoginAudit fallback will be used.
         console.warn('JobResult: entity scrape failed; backend LoginAudit fallback will be used', err);
       }
     }
 
-    const responseData = await initiateJob({
-      id: data.id,
-      data: entityRecords,
-    });
-    console.log('JobResult: initiateJobClick() response', responseData);
-    if (responseData.status === 200) {
-      const redirectToPage = getAppBaseUrl() + `#/job/${data.id}`;
-      window.location.href = redirectToPage;
-    } else {
-      console.error('Failed to initiate job');
+    try {
+      const responseData = await initiateJob({
+        id: data.id,
+        data: entityRecords,
+      });
+      console.log('JobResult: initiateJobClick() response', responseData);
+      if (responseData.status === 200) {
+        const redirectToPage = getAppBaseUrl() + `#/job/${data.id}`;
+        window.location.href = redirectToPage;
+        return;
+      }
+      throw new UnexpectedError('initiateJob()', `status ${responseData.status}`, { jobId: data.id });
+    } catch (err) {
+      handleError(err, { reactTrigger: triggerError });
     }
   };
 

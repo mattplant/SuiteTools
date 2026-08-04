@@ -4,8 +4,10 @@ import { getToken } from '../../../adapters/api/token';
 import { getTokens } from '../../../adapters/api/tokens';
 import { integrationLookupKey } from '../../../adapters/api/integrationsScrape';
 import type { Token, Tokens } from '@suiteworks/suitetools-shared';
+import { handleError } from '@suiteworks/suitetools-shared';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
+import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
 
 type Props = {
   integrationName: string;
@@ -33,6 +35,7 @@ function tokensForIntegration(tokens: Tokens, integrationName: string): Tokens {
 }
 
 export function IntegrationTokens({ integrationName }: Props) {
+  const triggerError = useErrorBoundaryTrigger();
   const [results, setResults] = useState<Tokens>([]);
 
   useEffect(() => {
@@ -57,10 +60,10 @@ export function IntegrationTokens({ integrationName }: Props) {
           setResults(scoped);
         }
       } catch (error) {
-        console.error('Error fetching integration tokens:', error);
         if (!ignore) {
           setResults([]);
         }
+        handleError(error, { reactTrigger: triggerError });
       }
     }
     fetchData();
@@ -68,7 +71,7 @@ export function IntegrationTokens({ integrationName }: Props) {
     return () => {
       ignore = true;
     };
-  }, [integrationName]);
+  }, [integrationName, triggerError]);
 
   return (
     <>
