@@ -1,6 +1,6 @@
 # 📘 Error Handling Cheat Sheet
 
-Last updated: September 22, 2025
+Last updated: 2026-08-04
 
 ---
 
@@ -16,96 +16,84 @@ It summarizes the taxonomy, common patterns, pitfalls, and commands for fast loo
 
 ## 🗂️ Taxonomy Matrix
 
-| Error Type            | When to Use                                    | Example Snippet |
-|-----------------------|-----------------------------------------------|-----------------|
-| `SchemaValidationError` | Input fails schema or type validation          | `throw new SchemaValidationError('Invalid payload', { code: 'VAL_USER' })` |
-| `NetSuiteApiError`      | NetSuite API call fails or returns non‑OK      | `throw new NetSuiteApiError('API call failed', { code: 'NS_API_FAIL' })` |
-<!-- | `ConfigError`           | Misconfigured environment or missing setting   | `throw new ConfigError('Missing API key', { code: 'CFG_API_KEY' })` | -->
-<!-- | `UnexpectedError`       | Catch‑all for unclassified or unknown failures | `throw new UnexpectedError('Unexpected failure', { code: 'UNEXPECTED' })` | -->
+| Error Type              | When to Use                                         | Example |
+|-------------------------|-----------------------------------------------------|---------|
+| `NotFoundError`         | Singular resource missing                           | `new NotFoundError('Role', id)` |
+| `InvalidParameterError` | Bad/reserved query or request params                | `new InvalidParameterError('endpoint', value, reason)` |
+| `SchemaValidationError` | Zod/schema validation failed                        | `new SchemaValidationError('user', issues)` |
+| `NetSuiteApiError`      | NetSuite HTTP/API failure                           | `makeNetSuiteApiError(endpoint, message, { status })` |
+| `UnexpectedError`       | Catch‑all for unclassified failures                 | `new UnexpectedError('initiateJob()', cause)` |
+
+## Soft vs escalate
+
+| Failure kind | Pattern | UI |
+|--------------|---------|----|
+| Expected / environmental (empty list, APM unavailable, intentional scrape fallback) | In‑page message + `return` — **no** `handleError` | Amber / quiet empty |
+| Unexpected (API/throw/bug) | `handleError(err, { reactTrigger })` once — **no swallow** | Dev overlay when Dev Mode on |
 
 ## Escalation Matrix
 
-| Context                   | Use This Pattern                          | Typical Error Types                  | Escalates To               | Display Surface       |
-|---------------------------|-------------------------------------------|--------------------------------------|----------------------------|-----------------------|
-| Component async logic     | `handleError` + optional `reactTrigger`   | `SchemaValidationError`, `NetSuiteApiError` | Nearest error boundary     | Inline or fallback UI |
-| Hook logic                | `handleError` + `useErrorBoundaryTrigger` | `SchemaValidationError`, `UnexpectedError`  | React error boundary       | Boundary fallback     |
-| Route loader/action       | Throw error → handled by router           | `SchemaValidationError`, `ConfigError`      | React Router boundary      | `ErrorPage`           |
-| Background task / utility | `handleError` only                        | `NetSuiteApiError`, `UnexpectedError`       | Logging + optional rethrow | No direct display     |
+| Context                   | Use This Pattern                          | Escalates To                         | Display Surface              |
+|---------------------------|-------------------------------------------|--------------------------------------|------------------------------|
+| List / nested / modal async | `handleError` + `reactTrigger`          | `useErrorBoundaryTrigger`            | `DevSuiteErrorOverlay` (Dev Mode) |
+| Soft expected case        | Classify → status message → `return`      | Nowhere                              | In‑page amber                |
+| Route loader              | `mapLoaderError` / throw `Response`       | React Router                         | `ErrorPage` (e.g. 404)       |
+| RESTlet handler           | Map `SuiteError` → `ErrorResponse` JSON   | SPA `getData`/`postData`/`putData`   | Rehydrated `SuiteError`      |
 
-> ℹ️ Background tasks (analytics, cache refresh, silent sync) should log via `handleError()` but usually don’t escalate to UI. Rethrow only if failure affects user flow.
+> Background tasks that are intentionally non‑blocking may `console.warn` and continue (e.g. Last Logins entity scrape with backend fallback). Do not call `handleError` if the user flow continues successfully.
 
 ---
 
 ## ⚠️ Common Pitfalls
 
-Avoid these anti‑patterns to keep error handling predictable and contributor‑friendly:
-
 - **Error creation**
-  - ❌ Throwing raw `Error` objects → ✅ Always wrap in a `SuiteError` subclass.
-  - ❌ Missing metadata (`code`, `context`) → ✅ Include stable codes and structured context.
+  - ❌ Throwing raw `Error` at API boundaries → ✅ Prefer a `SuiteError` subclass.
+  - ❌ Missing structured context → ✅ Include ids, endpoints, reasons.
+
+- **Transport**
+  - ❌ Parsing all RESTlet JSON only as `{ status, data }` → ✅ Discriminate `ErrorResponse` first, then the success envelope.
+  - ❌ Treating typed API errors as Zod `SchemaValidationError` → ✅ Use `parseErrorResponse` / `errorFromResponse`.
 
 - **Catching & logging**
-  - ❌ Swallowing errors silently (`catch` without `handleError`) → ✅ Always log or report before suppressing.
-  - ❌ Using `console.error` instead of centralized logging → ✅ Route through `handleError()` and `reportError()`.
+  - ❌ Bare `console.error` on nested/modal fetches → ✅ `handleError` + `reactTrigger` for unexpected failures.
+  - ❌ Calling `handleError` then swallowing the rethrow → ✅ Let it rethrow (or soft‑return *before* calling it).
+  - ❌ Amber banner from `error.message` **and** Dev overlay for the same failure → ✅ Soft **or** escalate, not both.
 
-- **Escalation**
-  - ❌ Forgetting to pass `reactTrigger` for async escalation → ✅ Escalate async errors into the nearest boundary.
-  - ❌ Escalating background task errors unnecessarily → ✅ Log background tasks, rethrow only if user‑blocking.
-
-- **Architecture**
-  - ❌ Mixing display logic with error‑catching logic → ✅ Keep UI fallback components separate.
-  - ❌ Cross‑workspace leakage → ✅ Normalize before crossing boundaries.
+- **Dev Mode**
+  - ❌ Expecting a hard refresh after toggling Settings Dev Mode → ✅ Same‑tab sync via `setErrorDevMode`.
 
 ---
 
 ## ✅ Contributor Checklist
 
-- Selected the correct `SuiteError` subclass.
-- Included stable `code`, meaningful `message`, `severity`, and structured `context`.
-- Wrapped unknowns and preserved `cause`.
-- Called `handleError()` at the outermost catch.
-- Kept UI rendering separate from error creation.
-- Used `reportError()` where appropriate.
-- Normalized before crossing workspace boundaries.
+- Selected the correct `SuiteError` subclass (or a small frontend discriminant for soft cases).
+- Unexpected failures call `handleError()` once at the outermost catch.
+- Soft expected cases never call `handleError`.
+- Passed `reactTrigger` from `useErrorBoundaryTrigger` for user‑facing async SPA work.
+- RESTlet errors use `ErrorResponse`; client rehydrates before Zod success parsing.
 
 ---
 
 ## 💡 Contributor Tips
 
-- **Normalize early** — Use `handleError` to apply consistent formatting, metadata, and logging.
-- **Escalate intentionally** — Async errors should behave like render‑time failures when user‑facing.
-- **Display separately** — Keep UI fallback logic out of error‑catching layers for clarity and reuse.
-- **Use boundaries wisely** — Don’t over‑escalate; only escalate when the error affects user experience.
-- **Document edge cases** — If your logic handles unusual failure modes, leave a comment or link to the lifecycle guide.
+- **Normalize via `handleError`** — logging + optional Dev overlay + rethrow.
+- **Classify soft cases** — typed error / discriminant beats string matching alone.
+- **Keep UI separate** — overlay and amber copy live outside business/adapters where possible.
 
 ---
 
-- ## 🛠️ Quick Commands
+## 🛠️ Quick Commands
 
-- **Run constraints check** (validate repo rules)
+```bash
+# Frontend typecheck
+yarn workspace frontend tsc --noEmit
+```
 
-  ```bash
-  yarn constraints
-  ```
-
-- **Check for duplicate versions** (ensure dependency hygiene)
-
-  ```bash
-  yarn dedupe --check
-  ```
-
-- **Simulate error in dev overlay** (test error boundaries)
-
-  ```ts
-  throw new UnexpectedError('Simulated failure', { code: 'SIM_TEST' });
-  ```
-
-- **Report error manually** (send normalized error to telemetry)
-
-  ```ts
-  import { reportError } from '@suitetools';
-  reportError(new ConfigError('Missing config', { code: 'CFG_MISSING' }));
-  ```
+```ts
+// Simulate unexpected failure in Dev Mode
+import { UnexpectedError, handleError } from '@suiteworks/suitetools-shared';
+handleError(new UnexpectedError('demo()', 'simulated'), { reactTrigger: triggerError });
+```
 
 ---
 
@@ -118,11 +106,8 @@ Avoid these anti‑patterns to keep error handling predictable and contributor�
 
 ---
 
-## Next Steps
+## 🗒️ Stewardship Notes
 
-- Use this cheat sheet as a **day‑to‑day quick reference**.
-- For binding rules, always check the [📜 Error Handling Standards](../governance/standards/error-handling-standards.md).
-- For deeper context and advanced strategies, see the [📐 Architecture Guide](../architecture/error-handling-architecture.md) and [🧑‍💻 Advanced Guide](../guides/error-handling-advanced.md).
-- When in doubt, normalize with `handleError()` and escalate intentionally.
-
-By following these patterns, contributors keep error handling **predictable, consistent, and discoverable** across SuiteTools.
+- Keep this cheat sheet aligned with the guide and standards.
+- Prefer short, copy‑pasteable snippets over narrative.
+- Update the soft‑vs‑escalate table when new environmental cases ship.
