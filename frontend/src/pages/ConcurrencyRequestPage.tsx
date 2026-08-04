@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { CriteriaFields } from '../components/features/concurrency/request/types';
@@ -6,6 +8,8 @@ import type { ConcurrencyRequestData } from '../components/features/concurrency/
 import { ConcurrencyRequestResults } from '../components/features/concurrency/request/Results';
 import { ConcurrencyRequestBarGraphWrapper } from '../components/features/concurrency/request/barGraph/Wrapper';
 import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError } from '@suiteworks/suitetools-shared';
 import { formatDate, formatMinuteSecond } from '../utils/date';
 
 type Params = {
@@ -15,7 +19,11 @@ type Params = {
   peakConcurrencyTime: string;
 };
 
-export function ConcurrencyRequestPage() {
+/**
+ * Concurrency Request page — requests in a selected timeframe.
+ * @returns The rendered Concurrency Request page.
+ */
+export function ConcurrencyRequestPage(): React.ReactElement {
   const params = useParams<Params>();
   const startDate = params.startDate;
   const endDate = params.endDate;
@@ -27,6 +35,8 @@ export function ConcurrencyRequestPage() {
   }
 
   const { settings } = useAppSettingsContext();
+  const triggerError = useErrorBoundaryTrigger();
+
   const selectedCriteria: CriteriaFields = {
     startDate: startDate,
     endDate: endDate,
@@ -36,23 +46,35 @@ export function ConcurrencyRequestPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
+    let ignore = false;
+
+    async function fetchData(): Promise<void> {
       try {
         if (settings?.accountId) {
           setLoading(true);
           setCriteria(criteria);
           const data = await getConcurrencyRequest(criteria, settings.accountId);
-          setResults(data);
+          if (!ignore) {
+            setResults(data);
+          }
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
+        if (!ignore) {
+          setResults(undefined);
+        }
+        handleError(err, { reactTrigger: triggerError });
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
     }
-    fetchData();
 
-    return () => {};
-  }, [criteria, settings?.accountId]);
+    fetchData();
+    return (): void => {
+      ignore = true;
+    };
+  }, [criteria, settings?.accountId, triggerError]);
 
   return (
     <div className="mx-auto mt-6">

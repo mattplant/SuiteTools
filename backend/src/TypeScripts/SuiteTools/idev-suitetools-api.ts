@@ -55,6 +55,33 @@ function statusForSuiteError(err: SuiteError): number {
 }
 
 /**
+ * Serialize any thrown value into the shared ErrorResponse JSON contract.
+ * Used by GET / POST / PUT so method entrypoints cannot drift.
+ */
+function errorResponseJson(err: unknown): string {
+  if (err instanceof SuiteError) {
+    const errorResponse: ErrorResponse = {
+      status: statusForSuiteError(err),
+      code: err.code,
+      message: err.message,
+      severity: err.severity,
+    };
+    if (err.context) {
+      errorResponse.context = err.context;
+    }
+    return JSON.stringify(errorResponse);
+  }
+
+  const errorResponse: ErrorResponse = {
+    status: 500,
+    code: 'UNEXPECTED_ERROR',
+    message: 'Internal server error',
+    severity: 'error',
+  };
+  return JSON.stringify(errorResponse);
+}
+
+/**
  * Handles the GET request event.
  *
  * @param requestParams The request parameters.
@@ -68,54 +95,42 @@ export function get(requestParams: EntryPoints.RESTlet.get): string {
     const response = stApi.stApiGet.process(requestParams);
     return JSON.stringify(response);
   } catch (err: unknown) {
-    if (err instanceof SuiteError) {
-      const errorResponse: ErrorResponse = {
-        status: statusForSuiteError(err),
-        code: err.code,
-        message: err.message,
-        severity: err.severity,
-      };
-      if (err.context) {
-        errorResponse.context = err.context;
-      }
-      return JSON.stringify(errorResponse);
-    }
-
-    // Fallback for unexpected errors
-    const errorResponse: ErrorResponse = {
-      status: 500,
-      code: 'UNEXPECTED_ERROR',
-      message: 'Internal server error',
-      severity: 'error',
-    };
-    return JSON.stringify(errorResponse);
+    return errorResponseJson(err);
   }
 }
 
 /**
  * Handles the POST request event.
  *
- * @param requestParams The request parameters.
- * @returns The response.
+ * @param requestBody The request body.
+ * @returns The serialized JSON response.
  */
-export function post(requestBody: EntryPoints.RESTlet.put): string {
+export function post(requestBody: EntryPoints.RESTlet.post): string {
   // log.debug({ title: 'post() initiated', details: requestBody });
   const stApi = new SuiteToolsApi();
-  const response = JSON.stringify(stApi.stApiPost.process(requestBody));
 
-  return response;
+  try {
+    const response = stApi.stApiPost.process(requestBody);
+    return JSON.stringify(response);
+  } catch (err: unknown) {
+    return errorResponseJson(err);
+  }
 }
 
 /**
  * Handles the PUT request event.
  *
- * @param requestParams The request parameters.
- * @returns The response.
+ * @param requestBody The request body.
+ * @returns The serialized JSON response.
  */
 export function put(requestBody: EntryPoints.RESTlet.put): string {
   // log.debug({ title: 'put() initiated', details: requestBody });
   const stApi = new SuiteToolsApi();
-  const response = JSON.stringify(stApi.stApiPut.process(requestBody));
 
-  return response;
+  try {
+    const response = stApi.stApiPut.process(requestBody);
+    return JSON.stringify(response);
+  } catch (err: unknown) {
+    return errorResponseJson(err);
+  }
 }

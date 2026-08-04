@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/features/concurrency/summary/types';
 import { getConcurrencySummary } from '../adapters/api/concurrencySummary';
@@ -7,9 +9,17 @@ import { ConcurrencySummaryOverview } from '../components/features/concurrency/s
 import { ConcurrencySummaryHeatMapWrapper } from '../components/features/concurrency/summary/heatMap/Wrapper';
 import { ConcurrencySummaryViolations } from '../components/features/concurrency/summary/Violations';
 import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError } from '@suiteworks/suitetools-shared';
 
-export function ConcurrencySummaryPage() {
+/**
+ * Concurrency Summary page — APM concurrency overview for a date range.
+ * @returns The rendered Concurrency Summary page.
+ */
+export function ConcurrencySummaryPage(): React.ReactElement {
   const { settings } = useAppSettingsContext();
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     startDate: new Date(),
     endDate: new Date(),
@@ -17,12 +27,11 @@ export function ConcurrencySummaryPage() {
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ConcurrencySummaryData>();
   const [loading, setLoading] = useState(true);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
 
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       if (!settings?.accountId) {
         setLoading(false);
         return;
@@ -30,39 +39,32 @@ export function ConcurrencySummaryPage() {
 
       try {
         setLoading(true);
-        setStatusMessage(null);
         const data = await getConcurrencySummary(criteria, settings.accountId);
         if (!ignore) {
           setResults(data);
         }
-      } catch (error) {
-        console.error('Error fetching concurrency summary:', error);
+      } catch (err) {
         if (!ignore) {
           setResults(undefined);
-          setStatusMessage(
-            error instanceof Error
-              ? error.message
-              : 'Failed to load concurrency summary from NetSuite APM.',
-          );
         }
+        handleError(err, { reactTrigger: triggerError });
       } finally {
         if (!ignore) {
           setLoading(false);
         }
       }
     }
-    fetchData();
 
-    return () => {
+    fetchData();
+    return (): void => {
       ignore = true;
     };
-  }, [criteria, settings?.accountId]);
+  }, [criteria, settings?.accountId, triggerError]);
 
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">Concurrency Summary</h2>
       <RecordCriteria defaultCriteria={defaultCriteria} setCriteria={setCriteria} />
-      {statusMessage ? <p className="mb-2 text-sm text-amber-700">{statusMessage}</p> : null}
       {loading ? (
         <p>Loading...</p>
       ) : results ? (

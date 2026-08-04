@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getToken } from '../adapters/api/token';
@@ -7,9 +9,17 @@ import { RecordCriteria } from '../components/features/token/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
 import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
+import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { handleError, toArray } from '@suiteworks/suitetools-shared';
 
-export function TokensPage() {
+/**
+ * Tokens page — list TBA tokens with criteria filters.
+ * @returns The rendered Tokens page.
+ */
+export function TokensPage(): React.ReactElement {
   const { settings } = useAppSettingsContext();
+  const triggerError = useErrorBoundaryTrigger();
+
   const defaultCriteria: CriteriaFields = {
     active: 'T',
     integrationName: '',
@@ -22,26 +32,27 @@ export function TokensPage() {
   useEffect(() => {
     let ignore = false;
 
-    async function fetchData() {
+    async function fetchData(): Promise<void> {
       try {
         const data = await getTokens(criteria);
-        addTokenLastLogins(data, settings);
+        const normalized = toArray<Tokens[number]>(data);
+        addTokenLastLogins(normalized, settings);
         if (!ignore) {
-          setResults(data);
+          setResults(normalized);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
         if (!ignore) {
           setResults([]);
         }
+        handleError(err, { reactTrigger: triggerError });
       }
     }
-    fetchData();
 
-    return () => {
+    fetchData();
+    return (): void => {
       ignore = true;
     };
-  }, [criteria, settings]);
+  }, [criteria, settings, triggerError]);
 
   return (
     <div className="mt-4">
