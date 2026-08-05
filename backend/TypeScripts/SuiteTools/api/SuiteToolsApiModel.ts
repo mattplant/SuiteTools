@@ -193,6 +193,8 @@ export class SuiteToolsApiModel {
       ${customRecord}.isinactive,
       ${customRecord}.custrecord_idev_st_mr_job_config as config,
       ${customRecord}.custrecord_idev_st_mr_job_desc as description,
+      ${customRecord}.custrecord_idev_st_mr_job_scheduled as scheduled,
+      ${customRecord}.custrecord_idev_st_mr_job_notify as notify,
     FROM
       ${customRecord}`;
 

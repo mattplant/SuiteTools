@@ -40,6 +40,8 @@ export class NetSuiteApiError extends SuiteError {
       status?: number;
       nsErrorCode?: string;
       cause?: unknown;
+      /** Extra wire context merged into the error context (e.g. Zod issues). */
+      context?: Record<string, unknown>;
     }
   ) {
     super(message, {
@@ -49,6 +51,7 @@ export class NetSuiteApiError extends SuiteError {
         endpoint: opts.endpoint,
         status: opts.status,
         nsErrorCode: opts.nsErrorCode,
+        ...opts.context,
       },
     });
 

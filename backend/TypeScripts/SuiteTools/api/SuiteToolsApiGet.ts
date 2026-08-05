@@ -13,7 +13,7 @@ import { SuiteToolsApiGetOptions } from './SuiteToolsApiGetOptions';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
 import { SuiteError, InvalidParameterError, UnexpectedError } from '@suiteworks/suitetools-shared/errors';
-import { requestResponse } from '@suiteworks/suitetools-shared';
+import { validateGetResponse } from './SuiteToolsApiGetValidate';
 
 type RequestParams = { [key: string]: string };
 
@@ -136,10 +136,7 @@ export class SuiteToolsApiGet {
 
       log.debug({ title: 'get() response', details: response });
 
-      // TODO: Validate and return using shared schema
-      // const validated: Response = SOMETHING.parse(response);
-
-      return response;
+      return validateGetResponse(endpoint, response);
     } catch (err) {
       // Let SuiteError subclasses bubble up
       if (err instanceof SuiteError) {
@@ -273,6 +270,28 @@ export class SuiteToolsApiGet {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanRoleData(data: any): object {
+    // Soft-miss / empty payloads can be null or non-objects — bail before field access.
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    // SuiteQL may return camelCase column names; shared Role schema uses lowercase.
+    if (data.centertype == null && data.centerType != null) {
+      data.centertype = data.centerType;
+    }
+    if (data.isinactive == null && data.isInactive != null) {
+      data.isinactive = data.isInactive;
+    }
+    if (data.issalesrole == null && data.isSalesRole != null) {
+      data.issalesrole = data.isSalesRole;
+    }
+    if (data.issupportrole == null && data.isSupportRole != null) {
+      data.issupportrole = data.isSupportRole;
+    }
+    if (data.iswebserviceonlyrole == null && data.isWebServiceOnlyRole != null) {
+      data.iswebserviceonlyrole = data.isWebServiceOnlyRole;
+    }
+
     // switch isinactive values to active values
     if (data.isinactive === 'F') {
       data.isinactive = 'Yes';
@@ -437,6 +456,11 @@ export class SuiteToolsApiGet {
     const active = requestParams['active'];
     const result = this.stApiModel.getJobs(active);
 
+    // List endpoints must return an array (legacy model used `{}` for empty).
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
+
     return result;
   }
 
@@ -463,7 +487,7 @@ export class SuiteToolsApiGet {
       payload.data = result.data;
     }
 
-    return requestResponse.parse(payload);
+    return payload;
   }
 
   /**
@@ -507,7 +531,7 @@ export class SuiteToolsApiGet {
       payload.data = result.data;
     }
 
-    return requestResponse.parse(payload);
+    return payload;
   }
 
   /**
@@ -579,6 +603,11 @@ export class SuiteToolsApiGet {
     const active = requestParams['active'];
     const result = this.stApiModel.getRoles(active);
 
+    // List endpoints must return an array (legacy model used `{}` for empty).
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
+
     return result;
   }
 
@@ -606,7 +635,7 @@ export class SuiteToolsApiGet {
       payload.data = result.data;
     }
 
-    return requestResponse.parse(payload);
+    return payload;
   }
 
   /**
@@ -654,7 +683,7 @@ export class SuiteToolsApiGet {
       payload.data = result[0];
     }
 
-    return requestResponse.parse(payload);
+    return payload;
   }
 
   /**
@@ -755,7 +784,7 @@ export class SuiteToolsApiGet {
       payload.data = result.data;
     }
 
-    return requestResponse.parse(payload);
+    return payload;
   }
 
   /**
@@ -842,6 +871,11 @@ export class SuiteToolsApiGet {
     const roles = this.convertMultiSelectToArray(requestParams['roles']);
     const supervisors = this.convertMultiSelectToArray(requestParams['owners']);
     const result = this.stApiModel.getUsers(active, roles, supervisors);
+
+    // List endpoints must return an array (legacy model used `{}` for empty).
+    if (!Array.isArray(result.data)) {
+      result.data = [];
+    }
 
     return result;
   }
