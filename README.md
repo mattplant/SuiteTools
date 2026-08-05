@@ -74,7 +74,7 @@ SuiteTools monorepo
 #### ⚙️ `backend/`
 
 - Leverages my [NetSuite-TypeScript-SDF template](https://github.com/mattplant/NetSuite-TypeScript-SDF)
-- Contains all backend logic, SuiteScript modules, and deployment scripts for NetSuite
+- Author SuiteScript TypeScript under `backend/TypeScripts/`; SDF deployable tree stays under `backend/src/`
 - For additional information, see the [backend README](./backend/README.md)
 
 #### 💻 `frontend/`

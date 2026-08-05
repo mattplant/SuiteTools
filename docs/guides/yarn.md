@@ -26,6 +26,7 @@ It does **not** cover:
 
 > **Contributor Quick Facts**
 >
+> - Use this project’s Yarn 4 (`packageManager` / `.yarn/releases`).
 > - PnP means no `node_modules` — undeclared dependencies will fail immediately.
 > - Workspaces are isolated — declare cross‑workspace dependencies explicitly.
 <!-- TODO: > - Lockfile is immutable in CI — run `yarn install` locally before pushing to avoid merge conflicts. -->

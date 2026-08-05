@@ -42,12 +42,12 @@ async function convertToAMD() {
     {
       name: 'idev-suitetools-api.js',
       exports: ['get', 'post', 'put'],
-      sourceFile: 'src/TypeScripts/SuiteTools/idev-suitetools-api.ts',
+      sourceFile: 'TypeScripts/SuiteTools/idev-suitetools-api.ts',
     },
     {
       name: 'idev-suitetools-app.js',
       exports: ['onRequest'],
-      sourceFile: 'src/TypeScripts/SuiteTools/idev-suitetools-app.ts',
+      sourceFile: 'TypeScripts/SuiteTools/idev-suitetools-app.ts',
     },
   ];
 
@@ -79,11 +79,11 @@ async function convertToAMD() {
       content = content
         // Remove the CommonJS export mapping block (causes NetSuite arrow function errors)
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
+          /\/\/ TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
+          /\/\/ TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\s*var \w+_exports = {};\s*__export\(\w+_exports,\s*\{[\s\S]*?\}\);\s*module\.exports = __toCommonJS\(\w+_exports\);\s*(?=\/\/ src)/g,
           '',
         )
         // Remove CommonJS annotation blocks at the end
@@ -164,7 +164,7 @@ async function buildDeployments() {
     await build({
       ...buildConfig,
       entryPoints: {
-        'idev-suitetools-api': resolve('src/TypeScripts/SuiteTools/idev-suitetools-api.ts'),
+        'idev-suitetools-api': resolve('TypeScripts/SuiteTools/idev-suitetools-api.ts'),
       },
     });
 
@@ -172,7 +172,7 @@ async function buildDeployments() {
     await build({
       ...buildConfig,
       entryPoints: {
-        'idev-suitetools-app': resolve('src/TypeScripts/SuiteTools/idev-suitetools-app.ts'),
+        'idev-suitetools-app': resolve('TypeScripts/SuiteTools/idev-suitetools-app.ts'),
       },
     });
 

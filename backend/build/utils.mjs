@@ -82,7 +82,7 @@ export function validateBuildEnvironment() {
   };
 
   // Validate workspace structure
-  const requiredDirs = ['src/TypeScripts/SuiteTools', 'src/FileCabinet/SuiteScripts/SuiteTools'];
+  const requiredDirs = ['TypeScripts/SuiteTools', 'src/FileCabinet/SuiteScripts/SuiteTools'];
 
   for (const dir of requiredDirs) {
     if (!existsSync(dir)) {

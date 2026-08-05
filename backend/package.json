@@ -19,6 +19,7 @@
   "scripts": {
     "deploy": "suitecloud project:deploy",
     "validate": "suitecloud project:validate",
+    "prebuild": "yarn workspace @suiteworks/suitetools-shared build",
     "build": "yarn build:dev",
     "build:dev": "node build/main.mjs --dev",
     "build:prod": "node build/main.mjs --prod",
@@ -27,7 +28,7 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "clean-local": "rm -rf src/FileCabinet/SuiteScripts/SuiteTools/",
     "test": "jest",
-    "format": "prettier --write ./src"
+    "format": "prettier --write ./TypeScripts"
   },
   "dependencies": {
     "@suiteworks/suitetools-shared": "workspace:*"
