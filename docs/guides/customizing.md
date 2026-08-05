@@ -1,6 +1,6 @@
 # 📚 SuiteTools Customizing Guide
 
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
 ---
 
@@ -16,7 +16,7 @@ It covers development setup, editor recommendations, deployment steps, and licen
 Each workspace can be developed independently, and all are built with TypeScript:
 
 - **Frontend** — React + Flowbite for UI components (`frontend/src/`).
-- **Backend** — NetSuite SDF project. Edit SuiteScript TypeScript under `backend/TypeScripts/` (not generated JS under `backend/src/FileCabinet/`).
+- **Backend** — NetSuite SDF project. Edit SuiteScript TypeScript under `backend/TypeScripts/` (not generated JS under `backend/src/FileCabinet/`). Unit-test those sources with `yarn workspace backend run test` (Jest + `N/*` stubs); do not assert on FileCabinet bundles.
 - **Shared** — Types, schemas, and helpers used by both frontend and backend (`shared/src/`).
 
 SuiteTools provides a developer‑friendly environment designed to be easy to extend and customize, drawing on years of NetSuite development experience.

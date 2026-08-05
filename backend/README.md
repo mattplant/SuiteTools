@@ -1,6 +1,6 @@
 # SuiteTools — Backend Workspace
 
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
@@ -52,6 +52,13 @@ backend/
 ```
 
 Build compiles `TypeScripts/SuiteTools/` → `src/FileCabinet/SuiteScripts/SuiteTools/` (see [NetSuite-TypeScript-SDF](https://github.com/mattplant/NetSuite-TypeScript-SDF)).
+
+### Unit tests (Jest + SuiteCloud stubs)
+
+- Edit and assert against **`TypeScripts/`** only — do not treat generated FileCabinet JS as the system under test.
+- Run: `yarn workspace backend run test` (builds shared first via `pretest`, then Jest).
+- `N/*` modules are mocked via `@oracle/suitecloud-unit-testing` stubs; no live NetSuite account is required.
+- Suite lives under `backend/__tests__/`. Jest is configured for Yarn PnP (Oracle’s default `node_modules/…` paths are rewritten).
 
 ---
 
