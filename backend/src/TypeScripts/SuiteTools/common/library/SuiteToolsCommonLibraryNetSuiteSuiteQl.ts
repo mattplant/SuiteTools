@@ -9,6 +9,7 @@
 
 import * as log from 'N/log';
 import * as query from 'N/query';
+import { UnexpectedError } from '@suiteworks/suitetools-shared/errors';
 import type { SuiteQLResults } from '../types';
 
 // Forward declaration to avoid circular dependency
@@ -33,6 +34,10 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
   /**
    * Runs the SuiteQL query.
    *
+   * Successful empty result sets return `[]`. Runtime SuiteQL failures throw
+   * {@link UnexpectedError} so callers/API transport can escalate — they must
+   * not be mistaken for “no rows”.
+   *
    * @param sql - the sql query
    * @returns the query results
    */
@@ -43,17 +48,15 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
     }
     log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() initiated with ', details: { sql: sql } });
 
-    let results: SuiteQLResults = [];
     try {
-      results = query.runSuiteQL({ query: sql }).asMappedResults() as SuiteQLResults;
+      return query.runSuiteQL({ query: sql }).asMappedResults() as SuiteQLResults;
     } catch (error) {
-      // TODO enhance error handling
       log.error({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() error', details: error });
-      results = [];
+      const sqlSnippet = String(sql || '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 240);
+      throw new UnexpectedError('SuiteQL.query()', error, { sqlSnippet });
     }
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() returning', details: results });
-
-    return results;
   }
 
   /**
