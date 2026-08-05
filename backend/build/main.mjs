@@ -41,28 +41,28 @@ const DEPLOYMENT_FILES = [
     type: 'RESTlet',
     exports: ['get', 'post', 'put'], // TypeScript function names
     netsuiteExports: ['doGet', 'doPost', 'doPut'], // NetSuite entry point names
-    sourceFile: 'src/TypeScripts/SuiteTools/idev-suitetools-api.ts',
+    sourceFile: 'TypeScripts/SuiteTools/idev-suitetools-api.ts',
     outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools',
   },
   {
     name: 'idev-suitetools-app',
     type: 'Suitelet',
     exports: ['onRequest'],
-    sourceFile: 'src/TypeScripts/SuiteTools/idev-suitetools-app.ts',
+    sourceFile: 'TypeScripts/SuiteTools/idev-suitetools-app.ts',
     outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools',
   },
   {
     name: 'idev-suitetools-mr-jobs-run',
     type: 'Map/Reduce - Jobs',
     exports: ['getInputData', 'map', 'reduce', 'summarize'],
-    sourceFile: 'src/TypeScripts/SuiteTools/helpers/idev-suitetools-mr-jobs-run.ts',
+    sourceFile: 'TypeScripts/SuiteTools/helpers/idev-suitetools-mr-jobs-run.ts',
     outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools/helpers',
   },
   {
     name: 'idev-suitetools-mr-logins',
     type: 'Map/Reduce - Logins',
     exports: ['getInputData', 'map', 'reduce', 'summarize'],
-    sourceFile: 'src/TypeScripts/SuiteTools/helpers/idev-suitetools-mr-logins.ts',
+    sourceFile: 'TypeScripts/SuiteTools/helpers/idev-suitetools-mr-logins.ts',
     outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools/helpers',
   },
 ];
@@ -157,19 +157,19 @@ async function convertToAMD(isProduction) {
       content = content
         // Remove the CommonJS export mapping block (file-specific patterns for safety)
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
+          /\/\/ TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
+          /\/\/ TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-jobs-run\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
+          /\/\/ TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-jobs-run\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         .replace(
-          /\/\/ src\/TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-logins\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
+          /\/\/ TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-logins\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
           '',
         )
         // Remove minified CommonJS exports (e.g., module.exports=ut(ct);)
@@ -355,7 +355,7 @@ async function watchMode(isProduction) {
   // Setup enhanced file watcher with all source files and dependencies
   const watchPaths = [
     ...DEPLOYMENT_FILES.map((file) => file.sourceFile),
-    'src/TypeScripts/SuiteTools/**/*.ts', // Watch all TypeScript files in the project
+    'TypeScripts/SuiteTools/**/*.ts', // Watch all TypeScript files in the project
     'build/config.mjs', // Watch build configuration changes
     'tsconfig.json', // Watch TypeScript configuration changes
   ];

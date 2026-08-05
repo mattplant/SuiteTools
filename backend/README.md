@@ -1,6 +1,6 @@
 # SuiteTools — Backend Workspace
 
-Last updated: September 22, 2025
+Last updated: 2026-08-04
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
@@ -21,35 +21,37 @@ See the parent directory [README](../README.md) for more information about the S
 ## 🧱 Design Principles
 
 - **Type Safety First** — All modules are written in TypeScript.
-- **Backend-Only Logic** — Avoid importing frontend or shared modules.
+- **Backend-Only Logic** — Avoid importing frontend modules; consume **shared** via the workspace package.
 - **DX Matters** — All code should be easy to read, test, and onboard into.
 
 ---
 
 ## 📐 Structure
 
-SuiteTools uses the standard NetSuite SuiteCloud Development Framework (SDF) structure*, with SuiteTools installed in its own folder under `FileCabinet/SuiteScripts/SuiteTools/`.
+SuiteTools uses the standard NetSuite SuiteCloud Development Framework (SDF) layout under `src/`, with SuiteTools installed in its own folder under `FileCabinet/SuiteScripts/SuiteTools/`.
+
+**Author TypeScript outside `src/`** so SDF stays FileCabinet/objects-only. Edit only under `TypeScripts/` — never hand-edit generated JavaScript under `src/FileCabinet/SuiteScripts/`.
 
 ```plaintext
 backend/
-├── src/     # Backend source code
-│   ├── FileCabinet/  # 📦 SDF standard
+├── TypeScripts/              # 🛠 SuiteTools TypeScript source (edit here)
+│   └── SuiteTools/
+├── src/                      # 📦 SDF project root
+│   ├── FileCabinet/
 │   │   └── SuiteScripts/
-│   │       └── SuiteTools/  # 🛠 SuiteTools-specific JavaScript
-│   ├── Objects/        # 📦 SDF standard — NetSuite object definitions
-│   ├── TypeScript/
-│   │   └── SuiteTools/   # 🛠 SuiteTools-specific TypeScript source
-│   ├── deploy.xml        # 📦 SDF standard — deployment config
-│   └── manifest.xml      # 📦 SDF standard — manifest file
-├── .gitignore            # Git ignore file for frontend
-├── LICENSE               # GPL-3.0-or-later
-├── package.json          # Yarn workspace definition & backend scripts
-├── project.json          # SDF project definition
-├── suitecloud.config.js  # SDF CLI configuration
-└── README.md             # This README file
+│   │       └── SuiteTools/   # Generated JS + frontend dist/ (build products)
+│   ├── Objects/              # NetSuite object definitions
+│   ├── deploy.xml
+│   └── manifest.xml
+├── build/                    # TypeScript → SuiteScript bundle scripts
+├── package.json
+├── project.json              # SDF project definition
+├── suitecloud.config.js
+├── tsconfig.json
+└── README.md
 ```
 
-*The main change to the standard NetSuite SDF Structure is the addition of the `/src/TypeScript/` folder.  By leveraging my [NetSuite-TypeScript-SDF template](https://github.com/mattplant/NetSuite-TypeScript-SDF), the TypeScript files are automatically compiled to JavaScript and deployed to the `/src/FileCabinet/SuiteScripts/SuiteTools/` folder.
+Build compiles `TypeScripts/SuiteTools/` → `src/FileCabinet/SuiteScripts/SuiteTools/` (see [NetSuite-TypeScript-SDF](https://github.com/mattplant/NetSuite-TypeScript-SDF)).
 
 ---
 
@@ -58,8 +60,9 @@ backend/
 This workspace requires the following tools and libraries:
 
 - **NetSuite Account** — with SDF enabled
-- **NetSuite SDF CLI** — v3.0.0 (for `suitecloud project:deploy` and `suitecloud project:validate`)
-- **Yarn (Berry)** — v4.9.2 (workspace and package manager)
+- **Java JDK** — 17+ (21 recommended) for SuiteCloud CLI
+- **NetSuite SDF CLI** — via `@oracle/suitecloud-cli` (for `suitecloud project:deploy` and `suitecloud project:validate`)
+- **Yarn (Berry)** — v4.9.2 (via this repo’s `packageManager` / `.yarn/releases`)
 
 ### Development Dependencies
 

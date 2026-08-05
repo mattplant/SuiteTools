@@ -1,6 +1,6 @@
 # 📘 SuiteTools Build & Release Checklist
 
-Last updated: September 22, 2025
+Last updated: 2026-08-04
 
 ---
 
@@ -11,34 +11,40 @@ It summarizes the most common **deploy commands** (for day‑to‑day developmen
 
 For full context, see:
 
+- [📚 Installation Guide](./installation.md) — first-time setup, prereqs (Node, Yarn 4, Java), monorepo build order
 - [📚 Customizing Guide](./customizing.md) — contributor‑level development and deployment
-- [🛠️ Build & Release Guide](./build-release-guide.md) — maintainer‑level build and release process
+- [🛠️ Build & Release Guide](./build-release.md) — maintainer‑level build and release process
 
 ---
 
 ## 🚀 Deploy Commands (Users and Contributors)
 
-### Backend
+Prereqs: NetSuite auth configured (`yarn run sdf-account-setup`), **JDK** available for SuiteCloud CLI, and Yarn 4 from this repo (`packageManager` / `.yarn/releases`).
 
-Run from the root of the monorepo:
+### Frontend (SPA only)
 
-```bash
-yarn workspace backend run deploy
-```
-
-- ✅ Ensure your NetSuite auth and SDF configuration are up to date before deploying.
-
-### Frontend
-
-Build and deploy from the root of the monorepo:
+From the monorepo root:
 
 ```bash
 yarn workspace frontend run build-and-deploy
 ```
 
-- ✅ Ensure your NetSuite auth and SDF configuration are up to date before deploying.
-- ✅ Always run a build before deploying frontend changes.
-- ❌ Don’t forget to clear your browser cache — stale assets may mask your changes.
+- ✅ Builds **shared** (`prebuild`), builds the SPA into `backend/.../SuiteTools/dist/`, then `suitecloud file:upload` for those assets.
+- ✅ Always use `build-and-deploy` — bare `deploy` uploads without rebuilding.
+- ❌ Don’t forget to reload the Suitelet — stale browser assets may mask changes.
+
+### Backend (SuiteScript / SDF objects)
+
+```bash
+yarn workspace backend run build
+yarn workspace backend run deploy
+```
+
+- ✅ `prebuild` builds **shared** automatically.
+- ✅ `deploy` is full SDF `project:deploy` (scripts, objects, FileCabinet).
+- ✅ For a **first-time** account install, build **frontend** as well before `backend` deploy so SPA `dist/` is present — see [Installation](./installation.md).
+
+---
 
 ## 📦 Release Steps (Maintainers)
 
@@ -57,10 +63,13 @@ yarn workspace frontend run build-and-deploy
 - ❌ Publishing without typecheck/tests → ✅ Run full validation before tagging
 - ❌ Cross‑workspace imports → ✅ Use `shared/` outputs only
 - ❌ Missing migration notes → ✅ Every breaking change must include guidance
+- ❌ Backend deploy without a prior frontend build on a fresh account → ✅ Build FE then BE for first install
+- ❌ Using a different Yarn than this repo pins → ✅ Use Yarn 4 from `packageManager` / `.yarn/releases`
 
 ---
 
 ## 🔗 Related Docs
 
+- [📚 Installation Guide](./installation.md)
 - [📚 Customizing Guide](./customizing.md)
-- [🛠️ Build & Release Guide](./build-release-guide.md)
+- [🛠️ Build & Release Guide](./build-release.md)
