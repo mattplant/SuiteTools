@@ -84,11 +84,9 @@ export function DevSuiteErrorOverlay({ error, onDismiss }: DevSuiteErrorOverlayP
         <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', opacity: 0.85 }}>
           {error.code} · {error.severity}
         </p>
-        <pre style={{ whiteSpace: 'pre-wrap', marginTop: '1rem' }}>
-          {error.name}: {error.message}
-        </pre>
+        <pre style={{ whiteSpace: 'pre-wrap', marginTop: '1rem' }}>{error.message}</pre>
         {error.context ? (
-          <details style={{ marginTop: '1rem' }}>
+          <details style={{ marginTop: '1rem' }} open>
             <summary>Context</summary>
             <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(error.context, null, 2)}</pre>
           </details>
@@ -96,7 +94,10 @@ export function DevSuiteErrorOverlay({ error, onDismiss }: DevSuiteErrorOverlayP
         {error.stack ? (
           <details style={{ marginTop: '1rem' }}>
             <summary>Stack trace</summary>
-            <pre style={{ whiteSpace: 'pre-wrap' }}>{error.stack}</pre>
+            <pre style={{ whiteSpace: 'pre-wrap' }}>
+              {/* Production bundles minify class names (`Ja:`); prefer stable taxonomy code. */}
+              {error.stack.replace(/^[^\n:]+:/, `${error.code}:`)}
+            </pre>
           </details>
         ) : null}
       </div>

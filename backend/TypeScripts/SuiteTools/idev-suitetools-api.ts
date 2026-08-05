@@ -32,6 +32,7 @@ import {
   NotFoundError,
   InvalidParameterError,
   UnexpectedError,
+  SchemaValidationError,
 } from '@suiteworks/suitetools-shared/errors';
 
 /**
@@ -42,6 +43,10 @@ function statusForSuiteError(err: SuiteError): number {
     return 404;
   }
   if (err instanceof UnexpectedError) {
+    return 500;
+  }
+  if (err instanceof SchemaValidationError) {
+    // Response failed our own shared schema — treat as server fault.
     return 500;
   }
   if (err instanceof InvalidParameterError) {

@@ -1,6 +1,6 @@
 # 🧑‍💻 Error Handling Guide
 
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
 ---
 
@@ -55,10 +55,19 @@ if (!parsed.success) {
 
 Backend GET/POST/PUT handlers serialize failures as a shared **`ErrorResponse`** JSON shape (`status`, `code`, `message`, `severity`, optional `context`) — not the success envelope `{ status, data }`.
 
+### GET response schema validation (#27)
+
+Before a successful GET returns JSON, `SuiteToolsApiGet` validates through `validateGetResponse`:
+
+1. **All GET endpoints** — shared `requestResponse` envelope (`status`, `data`, optional `message`).
+2. **Selected endpoints** (also validate `data` with domain schemas): `settings`, `user`, `users`, `role`, `roles`, `job`, `jobs`.
+
+Failures throw `SchemaValidationError` → `ErrorResponse` with `SCHEMA_VALIDATION_ERROR` (HTTP-style status 500), including Zod `issues` in `context`. Legacy soft-miss empty `{}` payloads skip entity validation so they are not turned into schema noise; list getters normalize empty `{}` to `[]` (including users/roles/jobs).
+
 Frontend `getData` / `postData` / `putData` in `netSuiteClient`:
 
 1. Parse JSON.
-2. **Discriminate `ErrorResponse`** via `parseErrorResponse` and **rehydrate** with `errorFromResponse` into the matching `SuiteError` subclass.
+2. **Discriminate `ErrorResponse`** via `parseErrorResponse` and **rehydrate** with `errorFromResponse` into the matching `SuiteError` subclass (including `SCHEMA_VALIDATION_ERROR` → `SchemaValidationError`).
 3. Only then validate the success / soft‑404 `{ status, data }` envelope with Zod.
 
 Do not treat typed API errors as schema‑validation failures. Soft empty reads may still use `{ status: 404, data: { code: 'NOT_FOUND', … } }` inside the success envelope; singular adapters turn those into `NotFoundError` via `handleNotFound`.

@@ -6,10 +6,12 @@
  * Rehydrate a serialized {@link ErrorResponse} into a concrete {@link SuiteError}.
  */
 
+import type { ZodIssue } from "zod";
 import type { ErrorResponse } from "../contracts/ErrorResponse";
 import type { SuiteError } from "../base/SuiteError";
 import { InvalidParameterError } from "../domain/invalid-parameter.error";
 import { NotFoundError } from "../domain/not-found.error";
+import { SchemaValidationError } from "../domain/schema-validation.error";
 import { UnexpectedError } from "../domain/unexpected.error";
 import { NetSuiteApiError } from "../integration/netsuite-api.error";
 
@@ -45,9 +47,20 @@ export function errorFromResponse(res: ErrorResponse): SuiteError {
       return new InvalidParameterError(parameterName, ctx.value, reason);
     }
 
+    case "SCHEMA_VALIDATION_ERROR": {
+      const schema = typeof ctx.schema === "string" ? ctx.schema : "unknown";
+      const issues = Array.isArray(ctx.issues) ? (ctx.issues as ZodIssue[]) : [];
+      return new SchemaValidationError(schema, issues);
+    }
+
     case "UNEXPECTED_ERROR": {
       const operation = typeof ctx.operation === "string" ? ctx.operation : "api";
-      return new UnexpectedError(operation, new Error(res.message), {
+      // Wire `message` already includes the UnexpectedError prefix — use it as the
+      // cause text only when it does not already start with that prefix pattern.
+      const causeText = res.message.startsWith("Unexpected error in ")
+        ? res.message.replace(/^Unexpected error in [^:]+:\s*/, "")
+        : res.message;
+      return new UnexpectedError(operation, new Error(causeText), {
         ...ctx,
         status: res.status,
         rehydrated: true,
@@ -59,6 +72,8 @@ export function errorFromResponse(res: ErrorResponse): SuiteError {
         endpoint: "api",
         status: res.status,
         nsErrorCode: res.code,
+        // Preserve wire context (e.g. Zod issues) when code is not yet mapped.
+        ...(Object.keys(ctx).length > 0 ? { context: ctx } : {}),
       });
   }
 }

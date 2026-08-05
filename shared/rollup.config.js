@@ -5,24 +5,35 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const sucrase = require("@rollup/plugin-sucrase");
 const terser = require("@rollup/plugin-terser");
 
-// Shared plugin configuration
-const plugins = [
-  nodeResolve(), // resolves deps from node_modules
+const basePlugins = [
+  nodeResolve(),
   sucrase({
     exclude: ["node_modules/**"],
-    transforms: ["typescript"], // transpile TS to JS
+    transforms: ["typescript"],
   }),
-  terser(), // minify the bundle
 ];
 
-// Export multiple build configurations
+// Minify library outputs (backend esbuild inlines shared dist). Use a single
+// terser worker — parallel terser was exiting early and leaving stale dist/.
+const minifyPlugins = [
+  ...basePlugins,
+  terser({ maxWorkers: 1 }),
+];
+
 module.exports = [
-  // Main entry point (full library)
+  // Main entry — minify cjs/mjs (consumed by backend bundle); skip minify on
+  // legacy AMD FileCabinet artifact (optional; not required for RESTlet path).
   {
     input: "src/index.ts",
     output: [
       { file: "dist/index.cjs", format: "cjs", sourcemap: true },
       { file: "dist/index.mjs", format: "esm", sourcemap: true },
+    ],
+    plugins: minifyPlugins,
+  },
+  {
+    input: "src/index.ts",
+    output: [
       {
         file: "../backend/src/FileCabinet/SuiteScripts/SuiteTools/idev-suitetools-shared.js",
         format: "amd",
@@ -32,7 +43,7 @@ module.exports = [
         sourcemap: false,
       },
     ],
-    plugins,
+    plugins: basePlugins,
   },
   // Errors-only entry point (lightweight, no Zod runtime)
   {
@@ -41,7 +52,7 @@ module.exports = [
       { file: "dist/errors/index.cjs", format: "cjs", sourcemap: true },
       { file: "dist/errors/index.mjs", format: "esm", sourcemap: true },
     ],
-    plugins,
+    plugins: minifyPlugins,
   },
   // Contracts-only entry point (types only)
   {
@@ -50,6 +61,6 @@ module.exports = [
       { file: "dist/contracts/index.cjs", format: "cjs", sourcemap: true },
       { file: "dist/contracts/index.mjs", format: "esm", sourcemap: true },
     ],
-    plugins,
+    plugins: basePlugins,
   },
 ];
