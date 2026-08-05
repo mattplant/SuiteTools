@@ -80,7 +80,8 @@
   },
   "resolutions": {
     "zod": "^4.0.14",
-    "eslint": "^9.33.0"
+    "eslint": "^9.33.0",
+    "@babel/core": "^7.28.0"
   },
   "overrides": {
     "@oracle/suitecloud-cli": "3.1.0"

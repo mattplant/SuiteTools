@@ -81,8 +81,9 @@ function shouldSkipPayloadValidation(data: unknown): boolean {
   if (isNotFound(data)) {
     return false;
   }
-  // Empty `{}` (or message-only leftovers without an entity id)
-  return !('id' in data);
+  // Legacy soft-miss is an empty object only. Do not treat id-less payloads
+  // (e.g. settings) as skips — those still need schema validation.
+  return Object.keys(data as object).length === 0;
 }
 
 /**
