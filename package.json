@@ -34,6 +34,7 @@
     "watch:backend": "yarn workspace backend run watch",
     "lint": "eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
     "lint:docs": "eslint '**/*.md'",
+    "test": "yarn workspaces foreach -Apt --verbose run test",
     "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
     "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
     "yarn:reset": "./scripts/resetYarn.sh",

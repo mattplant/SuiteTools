@@ -1,6 +1,6 @@
 # 🛠️ Yarn Workflows
 
-Last updated: September 22, 2025
+Last updated: 2026-08-05
 
 ---
 
@@ -118,9 +118,11 @@ These steps are designed to save you time by catching issues early which is fast
 3. **Run tests and linting**
 
    ```bash
-   yarn workspaces foreach run lint
-   yarn workspaces foreach run test
+   yarn lint
+   yarn test
    ```
+
+   `yarn test` runs each workspace’s `test` script (`yarn workspaces foreach -Apt --verbose run test`). Shared uses Vitest (`shared/src/**/*.test.ts`). Frontend still stubs until [#32](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/32); backend Jest coverage expands in [#31](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/31).
 
 4. **Before you commit** — self‑check:
    - ✅ All dependency changes follow [`yarn-dependencies.md`](../governance/standards/yarn-dependencies.md)
@@ -129,6 +131,7 @@ These steps are designed to save you time by catching issues early which is fast
    - ✅ `yarn dedupe --check` passes locally
    - ✅ No unexpected `yarn.lock` drift
    - ✅ All linting passes locally
+   - ✅ `yarn test` passes locally
 
 5. **Commit lockfile changes** if dependencies were added or removed.
    - Keep lockfile updates in the same commit as the dependency change for traceability.
