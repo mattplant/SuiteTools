@@ -316,14 +316,12 @@ export class SuiteToolsApiModel {
     WHERE
       integration.id = ${id}`;
 
-    try {
-      const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-      if (sqlResults.length > 0) {
-        response.data = this.normalizeIntegrationRow(sqlResults[0]);
-        return response;
-      }
-    } catch (e) {
-      log.error({ title: 'SuiteToolsApiModel:getIntegration() SuiteQL failed', details: e });
+    // Empty SuiteQL success may still resolve via LoginAudit synthetic rows.
+    // SuiteQL runtime failures throw and must escalate (not look like "not found").
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length > 0) {
+      response.data = this.normalizeIntegrationRow(sqlResults[0]);
+      return response;
     }
 
     const fromSynthetic = this.getIntegrationFromSyntheticId(id);
@@ -407,13 +405,8 @@ export class SuiteToolsApiModel {
     ORDER BY
       integration.name ASC`;
 
-    try {
-      const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-      return (sqlResults || []).map((row) => this.normalizeIntegrationRow(row));
-    } catch (e) {
-      log.error({ title: 'SuiteToolsApiModel:queryIntegrationRowsSuiteQl() failed', details: e });
-      return [];
-    }
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    return (sqlResults || []).map((row) => this.normalizeIntegrationRow(row));
   }
 
   /**
@@ -474,29 +467,24 @@ export class SuiteToolsApiModel {
     ORDER BY
       oAuthAppName ASC`;
 
-    try {
-      const auditRows = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-      const names: string[] = [];
-      const seen = new Set<string>();
+    const auditRows = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    const names: string[] = [];
+    const seen = new Set<string>();
 
-      for (const auditRow of auditRows || []) {
-        const raw = auditRow.oauthappname ?? auditRow.name ?? auditRow.OAUTHAPPNAME ?? '';
-        let name = String(raw).trim();
-        if (!name || seen.has(name.toLowerCase())) {
-          continue;
-        }
-        seen.add(name.toLowerCase());
-        if (name === 'SuiteCloud IDE & CLI') {
-          name = 'SuiteCloud Development Integration';
-        }
-        names.push(name);
+    for (const auditRow of auditRows || []) {
+      const raw = auditRow.oauthappname ?? auditRow.name ?? auditRow.OAUTHAPPNAME ?? '';
+      let name = String(raw).trim();
+      if (!name || seen.has(name.toLowerCase())) {
+        continue;
       }
-
-      return names;
-    } catch (e) {
-      log.error({ title: 'SuiteToolsApiModel:integrationNamesFromLoginAudit() failed', details: e });
-      return [];
+      seen.add(name.toLowerCase());
+      if (name === 'SuiteCloud IDE & CLI') {
+        name = 'SuiteCloud Development Integration';
+      }
+      names.push(name);
     }
+
+    return names;
   }
 
   /**
@@ -626,13 +614,9 @@ export class SuiteToolsApiModel {
       WHERE
         integration.name = '${escaped}'`;
 
-      try {
-        const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-        if (sqlResults.length > 0) {
-          return this.normalizeIntegrationRow(sqlResults[0]);
-        }
-      } catch (e) {
-        log.debug({ title: 'SuiteToolsApiModel:resolveIntegrationByName() SuiteQL miss', details: { name: candidate, e } });
+      const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+      if (sqlResults.length > 0) {
+        return this.normalizeIntegrationRow(sqlResults[0]);
       }
     }
 
@@ -1187,14 +1171,10 @@ export class SuiteToolsApiModel {
     WHERE
       OAuthToken.id = ${id}`;
 
-    try {
-      const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-      if (sqlResults.length > 0) {
-        response.data = this.normalizeTokenRow(sqlResults[0]);
-        return response;
-      }
-    } catch (e) {
-      log.error({ title: 'SuiteToolsApiModel:getToken() SuiteQL failed', details: e });
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length > 0) {
+      response.data = this.normalizeTokenRow(sqlResults[0]);
+      return response;
     }
 
     response.message = `No token found with id of ${id}`;
@@ -1240,18 +1220,12 @@ export class SuiteToolsApiModel {
 
     sql += ` WHERE ${where.join(' AND ')} ORDER BY OAuthToken.TBA_Token_Name`;
 
-    try {
-      const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-      if (sqlResults.length === 0) {
-        response.message = `No token records found`;
-        response.data = [];
-      } else {
-        response.data = sqlResults.map((row) => this.normalizeTokenRow(row));
-      }
-    } catch (e) {
-      log.error({ title: 'SuiteToolsApiModel:getTokens() SuiteQL failed', details: e });
-      response.message = `Token SuiteQL query failed`;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
+    if (sqlResults.length === 0) {
+      response.message = `No token records found`;
       response.data = [];
+    } else {
+      response.data = sqlResults.map((row) => this.normalizeTokenRow(row));
     }
 
     return response;

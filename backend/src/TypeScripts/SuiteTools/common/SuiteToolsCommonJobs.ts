@@ -356,6 +356,8 @@ export class SuiteToolsCommonJobs {
       },
     ];
 
+    // Soft per-query: Last Logins entity discovery is a fallback path. One
+    // LoginAudit SuiteQL failure should not abort the whole entity list.
     for (const query of queries) {
       try {
         const rows = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(query.sql) as Record<string, string>[];
