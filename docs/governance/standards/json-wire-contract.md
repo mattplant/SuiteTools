@@ -112,7 +112,7 @@ Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ da
 
 ### Suggested follow-on order
 
-None active for the wire/validation track. **Skipped:** FE Integrations scrape → RESTlet cutover (keep scrape; SuiteQL/LoginAudit synthetic ids are a product concern, not a contract gap).
+None active for the wire/validation track. **Skipped:** FE Integrations scrape → RESTlet cutover; SoapLog remains scrape-only (`syncstatus.nl`, no SuiteQL). Optional later: domain schemas for POST/PUT ack/`data` once mutation payloads grow beyond stubs (#50 envelope validation is in place).
 
 ---
 

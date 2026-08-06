@@ -78,7 +78,11 @@ Do not treat typed API errors as schema‑validation failures.
 |------|--------|---------|
 | Soft NotFound (preferred) | Success envelope `{ status: 404, data: { code: 'NOT_FOUND', message } }` | All singular GETs (`ensureEntityOrSoftNotFound` / `softNotFoundResponse`), including Role (#49) |
 
-Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`. Model list getters init `data: []`; singular getters may still init `data: {}` until normalized at the Get layer.
+Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`. Model list getters init `data: []`; singular getters init `data: null` until a row is found (Get-layer soft NotFound).
+
+### POST/PUT response validation (#50)
+
+Mutation handlers validate the success envelope with shared `requestResponse` before return (`validateMutationResponse`). Domain payload allowlists are deferred while `initiateJob` / `putSettings` return ack stubs (`data: {}` + `message`).
 
 ---
 
