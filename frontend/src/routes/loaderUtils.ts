@@ -13,7 +13,6 @@ import { isNotFoundError } from '@suiteworks/suitetools-shared';
  * NotFound is rethrown as {@link NotFoundError} so ErrorPage can choose
  * DevSuiteErrorOverlay (devMode) vs a friendly HTTP 404 UI. Converting to
  * `Response` here raced settings load and always hid the overlay in Sandbox.
- *
  * @param err - The error thrown by an adapter.
  * @param resourceLabel - Human-readable resource name for messages/logs (e.g. "User").
  */

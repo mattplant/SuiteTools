@@ -1,9 +1,9 @@
 import { useMemo, useRef } from 'react';
 import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import { Export } from '../../../shared/results/Export.tsx';
-import { SummaryRow } from '../../../shared/results/types.ts';
-import { ConcurrencySummaryData } from './types.ts';
+import { Export } from '../../../shared/results/Export';
+import type { SummaryRow } from '../../../shared/results/types';
+import type { ConcurrencySummaryData } from './types';
 
 type Props = {
   data: ConcurrencySummaryData | undefined;

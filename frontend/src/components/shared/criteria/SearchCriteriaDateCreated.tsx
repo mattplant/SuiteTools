@@ -1,5 +1,5 @@
-import { UseFormRegister } from 'react-hook-form';
-import { CriteriaFields } from './types';
+import type { UseFormRegister } from 'react-hook-form';
+import type { CriteriaFields } from './types';
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;

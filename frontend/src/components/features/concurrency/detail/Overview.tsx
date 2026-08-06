@@ -1,4 +1,4 @@
-import { ConcurrencyDetailData } from './types';
+import type { ConcurrencyDetailData } from './types';
 import { formatDate } from '../../../../utils/date';
 
 type Props = {

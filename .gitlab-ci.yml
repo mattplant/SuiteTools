@@ -46,11 +46,8 @@ typecheck:
   script:
     - yarn typecheck
 
-# Advisory until pre-existing ESLint debt is cleared (frontend-heavy).
-# Typecheck + test are the merge-blocking gates for now.
 lint:
   extends: .validate
-  allow_failure: true
   script:
     - yarn lint
 

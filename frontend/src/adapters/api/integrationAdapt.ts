@@ -9,6 +9,12 @@ import type { Integration } from '@suiteworks/suitetools-shared';
 /** LoginAudit-only RESTlet ids — not valid integrapp.nl record ids. */
 export const SYNTHETIC_INTEGRATION_ID_MIN = 900_000_000;
 
+/**
+ * True when `id` is a LoginAudit-only synthetic id (≥ {@link SYNTHETIC_INTEGRATION_ID_MIN}),
+ * not a real NetSuite integrapp.nl record id.
+ * @param id - Candidate integration id.
+ * @returns Whether the id is synthetic.
+ */
 export function isSyntheticIntegrationId(id: number): boolean {
   return Number.isFinite(id) && id >= SYNTHETIC_INTEGRATION_ID_MIN;
 }

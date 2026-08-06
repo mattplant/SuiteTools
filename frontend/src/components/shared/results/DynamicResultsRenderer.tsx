@@ -1,5 +1,5 @@
-import resultsMap from './resultsMap.ts';
-import { ResultsProps } from './types.ts';
+import resultsMap from './resultsMap';
+import type { ResultsProps } from './types';
 
 const ErrorMessage: React.FC = () => {
   return <div>Unsupported recordType in DynamicResultsRenderer</div>;

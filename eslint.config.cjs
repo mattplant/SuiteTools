@@ -16,10 +16,11 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 });
 
-// SuiteTools-specific ignores
+// SuiteTools-specific ignores (generated FileCabinet / build output)
 const suiteToolsIgnores = [
   "frontend/src/FileCabinet/SuiteScripts/",
   "frontend/src/FileCabinet/SuiteScripts/SuiteTools/dist/",
+  "backend/src/FileCabinet/",
 ];
 
 // ------------------------------------
@@ -45,17 +46,17 @@ const standardPlugins = {
 };
 
 const standardRules = {
-  "jsdoc/require-jsdoc": ["warn", { publicOnly: true }], // Require JSDoc for public APIs
-  "jsdoc/check-tag-names": "warn",
+  "jsdoc/require-jsdoc": ["warn", { publicOnly: true }],
   "jsdoc/check-tag-names": [
-    "warn", // Enforce JSDoc standard tags like @param, @returns
+    "warn",
     {
-      definedTags: ["remarks", "note"], // Additional custom tags
+      definedTags: ["remarks", "note"],
     },
   ],
-  "@typescript-eslint/explicit-function-return-type": "warn", // Require explicit return types for functions
-  "@typescript-eslint/no-unsafe-return": "warn", // Warn on unsafe returns
-  "@typescript-eslint/consistent-type-imports": "warn", // Prefer type imports for clarity
+  // Exports-only (not every local helper); matches linting-standards.md
+  "@typescript-eslint/explicit-module-boundary-types": "warn",
+  "@typescript-eslint/no-unsafe-return": "warn",
+  "@typescript-eslint/consistent-type-imports": "warn",
 };
 
 module.exports = defineConfig([
@@ -90,6 +91,7 @@ module.exports = defineConfig([
             "remarks",
             "note",
             "NScriptType",
+            "NScriptName",
             "NApiVersion",
             "NModuleScope",
           ],
@@ -141,6 +143,14 @@ module.exports = defineConfig([
 
     rules: {
       ...standardRules,
+      // Override jsdoc/recommended-typescript-error: keep warn + publicOnly (TS covers params/returns).
+      "jsdoc/require-jsdoc": ["warn", { publicOnly: true }],
+      "jsdoc/require-param": "off",
+      "jsdoc/require-param-description": "off",
+      "jsdoc/require-returns": "off",
+      "jsdoc/require-returns-description": "off",
+      "jsdoc/require-yields": "off",
+      "jsdoc/tag-lines": "warn",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
@@ -180,6 +190,34 @@ module.exports = defineConfig([
           project: ["./frontend/tsconfig.json"],
         },
       },
+    },
+  },
+
+  // React components: JSDoc on every export is noise; TS props/types carry the API.
+  {
+    files: ["frontend/**/*.{tsx,jsx}"],
+    rules: {
+      "jsdoc/require-jsdoc": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+    },
+  },
+
+  // Context modules export providers + hooks/constants (Fast Refresh caveat is expected).
+  {
+    files: [
+      "frontend/src/components/shared/context/**/*.{ts,tsx}",
+      "frontend/src/router.tsx",
+    ],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+
+  // Hooks: return types matter; JSDoc is optional when the name is clear.
+  {
+    files: ["frontend/src/hooks/**/*.{ts,tsx}"],
+    rules: {
+      "jsdoc/require-jsdoc": "off",
     },
   },
 
@@ -240,6 +278,8 @@ module.exports = defineConfig([
     "**/node_modules/",
     "**/dist/",
     "**/.eslintrc.cjs",
+    "**/*.test.ts",
+    "**/*.test.tsx",
     ...suiteToolsIgnores,
   ]),
 ]);

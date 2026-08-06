@@ -1,8 +1,10 @@
-import { Controller, Control } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { Datepicker } from 'flowbite-react';
 import TimePicker from '../ui/TimePicker';
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RHF Control is form-generic across criteria pages
   control: Control<any>;
   title: string;
   dateName: string;

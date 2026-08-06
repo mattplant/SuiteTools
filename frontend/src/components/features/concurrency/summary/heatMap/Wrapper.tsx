@@ -1,5 +1,5 @@
-import { ConcurrencySummaryHeatMapContent } from './Content.tsx';
-import { ConcurrencySummaryData } from '../types.ts';
+import { ConcurrencySummaryHeatMapContent } from './Content';
+import type { ConcurrencySummaryData } from '../types';
 
 type Props = {
   data: ConcurrencySummaryData | undefined;

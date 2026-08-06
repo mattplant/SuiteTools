@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { UseFormRegister } from 'react-hook-form';
+import type { UseFormRegister } from 'react-hook-form';
 import { getOptionValues } from '../../features/integration/getOptionValues';
-import { OptionValues } from './types';
-import { CriteriaFields } from './types';
+import type { OptionValues } from './types';
+import type { CriteriaFields } from './types';
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;

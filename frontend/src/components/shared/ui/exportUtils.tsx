@@ -2,9 +2,8 @@
  * React Data Grid's export utilities
  *
  * From React Data Grid website "exportUtils.tsx" file located at
- *   https://github.dev/adazzle/react-data-grid/tree/main/website/exportUtlis.tsx
- *   from verison 7.0.0-beta.47
- *
+ * https://github.dev/adazzle/react-data-grid/tree/main/website/exportUtlis.tsx
+ * from verison 7.0.0-beta.47
  * @license MIT
  *
  * Original work Copyright (c) 2014 Prometheus Research

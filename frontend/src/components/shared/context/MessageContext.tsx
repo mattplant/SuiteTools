@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 type MessageType = 'success' | 'error' | 'info' | 'warning';
 
@@ -7,7 +8,7 @@ type InlineMessage = {
   type?: MessageType;
 };
 
-type InlineMessageContextType = {
+export type InlineMessageContextType = {
   message: InlineMessage | null;
   setMessage: (msg: InlineMessage | null) => void;
   clearMessage: () => void;
