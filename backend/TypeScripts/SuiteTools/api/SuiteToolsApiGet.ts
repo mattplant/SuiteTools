@@ -275,44 +275,27 @@ export class SuiteToolsApiGet {
       return data;
     }
 
-    // SuiteQL may return camelCase column names; shared Role schema uses lowercase.
-    if (data.centertype == null && data.centerType != null) {
-      data.centertype = data.centerType;
-    }
-    if (data.isinactive == null && data.isInactive != null) {
-      data.isinactive = data.isInactive;
-    }
-    if (data.issalesrole == null && data.isSalesRole != null) {
-      data.issalesrole = data.isSalesRole;
-    }
-    if (data.issupportrole == null && data.isSupportRole != null) {
-      data.issupportrole = data.isSupportRole;
-    }
-    if (data.iswebserviceonlyrole == null && data.isWebServiceOnlyRole != null) {
-      data.iswebserviceonlyrole = data.isWebServiceOnlyRole;
-    }
-
-    // switch isinactive values to active values
-    if (data.isinactive === 'F') {
-      data.isinactive = 'Yes';
+    // SuiteQL returns camelCase column names that match the shared Role wire contract.
+    // Map T/F flags to Yes/No strings for zNetSuite.booleanFromTF.
+    if (data.isInactive === 'F') {
+      data.isInactive = 'Yes';
     } else {
-      data.isinactive = 'No';
+      data.isInactive = 'No';
     }
-    // clean other fields
-    if (data.issalesrole === 'F') {
-      data.issalesrole = 'No';
+    if (data.isSalesRole === 'F') {
+      data.isSalesRole = 'No';
     } else {
-      data.issalesrole = 'Yes';
+      data.isSalesRole = 'Yes';
     }
-    if (data.issupportrole === 'F') {
-      data.issupportrole = 'No';
+    if (data.isSupportRole === 'F') {
+      data.isSupportRole = 'No';
     } else {
-      data.issupportrole = 'Yes';
+      data.isSupportRole = 'Yes';
     }
-    if (data.iswebserviceonlyrole === 'F') {
-      data.iswebserviceonlyrole = 'No';
+    if (data.isWebServiceOnlyRole === 'F') {
+      data.isWebServiceOnlyRole = 'No';
     } else {
-      data.iswebserviceonlyrole = 'Yes';
+      data.isWebServiceOnlyRole = 'Yes';
     }
 
     return data;

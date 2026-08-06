@@ -18,30 +18,30 @@ const columns: Column<Role, SummaryRow>[] = [
     },
   },
   {
-    key: 'isinactive',
+    key: 'isInactive',
     name: 'Active (ID)',
-    renderCell: ({ row }) => (!row.isinactive ? 'Yes' : 'No'),
+    renderCell: ({ row }) => (!row.isInactive ? 'Yes' : 'No'),
     renderSummaryCell: ({ row }: { row: { totalCount: number } }) => `${row.totalCount} records`,
   },
   { key: 'name', name: 'Name TEST' },
   {
-    key: 'centertype',
+    key: 'centerType',
     name: 'Center Type',
   },
   {
-    key: 'issalesrole',
+    key: 'isSalesRole',
     name: 'Sales Role',
-    renderCell: ({ row }) => (row.issalesrole ? 'Yes' : 'No'),
+    renderCell: ({ row }) => (row.isSalesRole ? 'Yes' : 'No'),
   },
   {
-    key: 'issupportrole',
+    key: 'isSupportRole',
     name: 'Support Role',
-    renderCell: ({ row }) => (row.issupportrole ? 'Yes' : 'No'),
+    renderCell: ({ row }) => (row.isSupportRole ? 'Yes' : 'No'),
   },
   {
-    key: 'iswebserviceonlyrole',
+    key: 'isWebServiceOnlyRole',
     name: 'Web Service Only Role',
-    renderCell: ({ row }) => (row.iswebserviceonlyrole ? 'Yes' : 'No'),
+    renderCell: ({ row }) => (row.isWebServiceOnlyRole ? 'Yes' : 'No'),
   },
 ];
 

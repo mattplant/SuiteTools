@@ -19,19 +19,19 @@ export function RoleResult({ data, modal }: Props) {
         <b>Name</b>: {data.name}
       </p>
       <p>
-        <b>Active</b>: {data.isinactive ? 'No' : 'Yes'}
+        <b>Active</b>: {data.isInactive ? 'No' : 'Yes'}
       </p>
       <p>
-        <b>Center Type</b>: {data.centertype}
+        <b>Center Type</b>: {data.centerType}
       </p>
       <p>
-        <b>Sales Role</b>: {data.issalesrole ? 'Yes' : 'No'}
+        <b>Sales Role</b>: {data.isSalesRole ? 'Yes' : 'No'}
       </p>
       <p>
-        <b>Support Role</b>: {data.issupportrole ? 'Yes' : 'No'}
+        <b>Support Role</b>: {data.isSupportRole ? 'Yes' : 'No'}
       </p>
       <p>
-        <b>Web Service Only</b>: {data.iswebserviceonlyrole ? 'Yes' : 'No'}
+        <b>Web Service Only</b>: {data.isWebServiceOnlyRole ? 'Yes' : 'No'}
       </p>
       {modal && (
         <ButtonGroup>

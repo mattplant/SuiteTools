@@ -11,23 +11,23 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  *
  * Fields:
  * - `id`: unique numeric identifier
- * - `isinactive`: boolean indicating if the role is inactive
+ * - `isInactive`: boolean indicating if the role is inactive
  * - `name`: name of the role
- * - `centertype`: type of center associated with the role
- * - `issalesrole`: boolean indicating if the role is a sales role
- * - `issupportrole`: boolean indicating if the role is a support role
- * - `iswebserviceonlyrole`: boolean indicating if the role is web service only
+ * - `centerType`: type of center associated with the role
+ * - `isSalesRole`: boolean indicating if the role is a sales role
+ * - `isSupportRole`: boolean indicating if the role is a support role
+ * - `isWebServiceOnlyRole`: boolean indicating if the role is web service only
  * - `urlNs`: optional URL for NetSuite context
  * - `urlDetail`: optional URL for additional context
  */
 const schema = z.object({
   id: z.number().positive(),
-  isinactive: zNetSuite.booleanFromTF.schema,
+  isInactive: zNetSuite.booleanFromTF.schema,
   name: z.string(),
-  centertype: z.string(),
-  issalesrole: zNetSuite.booleanFromTF.schema,
-  issupportrole: zNetSuite.booleanFromTF.schema,
-  iswebserviceonlyrole: zNetSuite.booleanFromTF.schema,
+  centerType: z.string(),
+  isSalesRole: zNetSuite.booleanFromTF.schema,
+  isSupportRole: zNetSuite.booleanFromTF.schema,
+  isWebServiceOnlyRole: zNetSuite.booleanFromTF.schema,
   // additional properties
   urlNs: z.string().optional(),
   urlDetail: z.string().optional(),

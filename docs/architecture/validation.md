@@ -54,6 +54,7 @@ Schemas are organized into three layers:
 
 - Keep transforms named and local to their layer, e.g., `toDomainCustomer`, `toTransportCustomer`
 - Do not let transport‑specific nullability leak into domain models
+- Transport / shared wire **property keys** follow [JSON Wire Contract](../governance/standards/json-wire-contract.md) (camelCase multi-word fields); see also [STYLE — JSON / API Wire Fields](../governance/STYLE.md)
 
 ---
 
