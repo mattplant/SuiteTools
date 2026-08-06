@@ -101,9 +101,14 @@ List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #
 
 `optionValues` `type` values: `fileType`, `scriptType` (was `filetype`, `scripttype`). SuiteQL WHERE column names stay NetSuite flat.
 
+### GET payload validation allowlist
+
+`GET_PAYLOAD_VALIDATED_ENDPOINTS` (RESTlet domain Zod, in addition to the envelope) currently includes: `settings`, `user`/`users`, `role`/`roles`, `job`/`jobs`, `file`/`files`, `script`/`scripts`, `scriptLog`/`scriptLogs`, `jobRun`/`jobRuns`, `logins`, `token`/`tokens` (#44).
+
 ### Suggested follow-on order
 
-1. Optional: expand `GET_PAYLOAD_VALIDATED_ENDPOINTS`
+1. Add `optionValues` to `GET_PAYLOAD_VALIDATED_ENDPOINTS` (align empty `{}` vs array if needed)
+2. Add `integration` / `integrations` once scrape vs RESTlet paths share one contract
 
 ---
 
