@@ -46,21 +46,37 @@ yarn workspace backend run deploy
 
 ---
 
+## ✅ CI Gates (Merge Requests)
+
+GitLab CI (`.gitlab-ci.yml`) on MRs and the default branch:
+
+```bash
+yarn typecheck   # merge-blocking — shared types + FE/BE tsc
+yarn test        # merge-blocking
+yarn lint        # advisory (allow_failure) until ESLint debt is cleared
+```
+
+- ✅ Red **typecheck** / **test** should block merge when **Pipelines must succeed** is enabled in project settings.
+- ❌ SuiteCloud deploy is not run in MR CI.
+
+---
+
 ## 📦 Release Steps (Maintainers)
 
 1. **Version bump** — update suite‑wide version according to [SemVer](https://semver.org/).
 2. **Changelog** — update `CHANGELOG.md` with features, fixes, and migration notes.
 3. **Breaking changes** — document impact + migration path clearly.
-4. **Tag & push** — create a Git tag for the release version.
-5. **Publish** — run release script (CI/CD pipeline or `yarn release`).
-6. **Notify** — share release notes with consumers.
+4. **Validate** — confirm CI green (or run `yarn typecheck && yarn lint && yarn test` locally).
+5. **Tag & push** — create a Git tag for the release version.
+6. **Publish** — run release script when available (`yarn release` or release automation).
+7. **Notify** — share release notes with consumers.
 
 ---
 
 ## ⚠️ Common Pitfalls
 
 - ❌ Skipping `CHANGELOG.md` → ✅ Always document changes
-- ❌ Publishing without typecheck/tests → ✅ Run full validation before tagging
+- ❌ Publishing without typecheck/tests → ✅ Rely on CI gates / run full validation before tagging
 - ❌ Cross‑workspace imports → ✅ Use `shared/` outputs only
 - ❌ Missing migration notes → ✅ Every breaking change must include guidance
 - ❌ Backend deploy without a prior frontend build on a fresh account → ✅ Build FE then BE for first install

@@ -45,6 +45,7 @@
     "build": "yarn build:types && yarn build:bundle",
     "build:types": "yarn pnpify tsc -b --verbose",
     "build:bundle": "rollup -c",
+    "typecheck": "yarn build:types",
     "watch": "yarn pnpify tsc -b --watch --verbose --diagnostics --listEmittedFiles",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "clean-local": "rm -rf dist tsconfig.tsbuildinfo",

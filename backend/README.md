@@ -56,7 +56,7 @@ Build compiles `TypeScripts/SuiteTools/` → `src/FileCabinet/SuiteScripts/Suite
 ### Unit tests (Jest + SuiteCloud stubs)
 
 - Edit and assert against **`TypeScripts/`** only — do not treat generated FileCabinet JS as the system under test.
-- Run: `yarn workspace backend run test` (builds shared first via `pretest`, then Jest).
+- Run: `yarn test` from the monorepo root (builds `shared/` first, then all workspaces), or `yarn workspace backend run test` when `shared/dist` is already built.
 - `N/*` modules are mocked via `@oracle/suitecloud-unit-testing` stubs; no live NetSuite account is required.
 - Suite lives under `backend/__tests__/`. Jest is configured for Yarn PnP (Oracle’s default `node_modules/…` paths are rewritten).
 

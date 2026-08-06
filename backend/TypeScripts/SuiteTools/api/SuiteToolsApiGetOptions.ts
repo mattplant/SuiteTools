@@ -136,6 +136,11 @@ export class SuiteToolsApiGetOptions {
    * @param [activeOnly]
    * @returns employees
    */
+  private queryOptionValues(sql: string): OptionValuesResponse[] {
+    // SuiteQL rows are loosely typed; runtime assert + convert happens in process().
+    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as unknown as OptionValuesResponse[];
+  }
+
   private getEmployeeList(activeOnly?: boolean): OptionValuesResponse[] {
     let sql = `SELECT
       employee.id,
@@ -149,7 +154,7 @@ export class SuiteToolsApiGetOptions {
     }
     sql += ` ORDER BY name ASC`;
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 
   private getFileList(activeOnly?: boolean): OptionValuesResponse[] {
@@ -167,7 +172,7 @@ export class SuiteToolsApiGetOptions {
     }
     sql += ` ORDER BY file.name ASC`;
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 
   private getFileTypeList(): OptionValuesResponse[] {
@@ -177,7 +182,7 @@ export class SuiteToolsApiGetOptions {
     FROM file
     ORDER BY filetype`;
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 
   private getJobList(activeOnly?: boolean): OptionValuesResponse[] {
@@ -192,7 +197,7 @@ export class SuiteToolsApiGetOptions {
     }
     sql += ` ORDER BY name ASC`;
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 
   private getRoleList(activeOnly = false): OptionValuesResponse[] {
@@ -206,7 +211,7 @@ export class SuiteToolsApiGetOptions {
     }
     sql += ` ORDER BY role.name ASC`;
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 
   private getScriptList(activeOnly?: boolean): OptionValuesResponse[] {
@@ -220,12 +225,12 @@ export class SuiteToolsApiGetOptions {
     }
     sql += ` ORDER BY name ASC`;
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 
   private getScriptTypeList(): OptionValuesResponse[] {
     const sql = 'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name';
 
-    return this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as OptionValuesResponse[];
+    return this.queryOptionValues(sql);
   }
 }
