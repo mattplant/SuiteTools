@@ -24,10 +24,10 @@
     "build:dev": "node build/main.mjs --dev",
     "build:prod": "node build/main.mjs --prod",
     "build:check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "watch": "tsc --watch --noEmit",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "clean-local": "rm -rf src/FileCabinet/SuiteScripts/SuiteTools/",
-    "pretest": "yarn workspace @suiteworks/suitetools-shared build",
     "test": "jest",
     "format": "prettier --write ./TypeScripts"
   },

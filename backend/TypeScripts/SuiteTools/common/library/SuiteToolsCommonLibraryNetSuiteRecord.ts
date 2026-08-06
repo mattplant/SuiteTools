@@ -180,7 +180,11 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
       details: resultSet,
     });
     if (resultSet.length > 0) {
-      result = resultSet[0].internalid;
+      const internalId = resultSet[0].internalid;
+      result = typeof internalId === 'number' ? internalId : Number(internalId);
+      if (!Number.isFinite(result)) {
+        result = 0;
+      }
     }
     log.debug({
       title: 'SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecordInternalId() returning',

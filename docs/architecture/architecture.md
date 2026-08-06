@@ -157,7 +157,7 @@ For full patterns, utilities, and error taxonomy, see the [Error Handling and Ta
 SuiteTools follows a **suite‑wide build and release strategy** to ensure reproducible outputs, predictable delivery, and clear communication of changes.
 
 - **Build** — per‑workspace builds, with `shared/` consumed by both frontend and backend.
-- **CI gates** — typecheck, lint, test, build, and optional boundary checks.
+- **CI gates** — GitLab CI runs typecheck + test (merge-blocking) and lint (advisory); optional boundary checks later. See the build & release guide.
 - **Release** — consistent versioning, changelogs, and migration notes for breaking changes.
 
 For full principles, environment handling, build steps, and release process, see the

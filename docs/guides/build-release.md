@@ -1,6 +1,6 @@
 # 🛠️ SuiteTools Build & Release Guide
 
-Last updated: September 22, 2025
+Last updated: 2026-08-05
 
 ---
 
@@ -24,11 +24,11 @@ For quick commands, see the [📘 Build & Release Checklist](./build-release-che
 ## 🧱 Principles
 
 - **Build** — Per‑workspace builds; `shared/` is consumed by both frontend and backend.
-<!-- - **CI gates** — Typecheck, lint, test, build; optionally boundary checks. -->
+- **CI gates** — GitLab CI runs typecheck, lint, and test on merge requests and the default branch (see below). SuiteCloud deploy is **not** part of MR CI.
 - **Release** — Consistent versioning; document breaking changes and migration notes.
 - **Reproducibility** — Deterministic builds; the same commit always produces the same outputs.
 - **Isolation** — Workspaces build independently; no hidden cross‑dependencies.
-- **Automation** — Build and release steps are fully scriptable. <!-- and CI‑ready.-->
+- **Automation** — Build and release steps are scriptable and CI‑ready for validation gates.
 
 ---
 
@@ -47,6 +47,34 @@ For quick commands, see the [📘 Build & Release Checklist](./build-release-che
 - `shared/` outputs are consumed by both frontend and backend — ensure schema and helper compatibility.
 - Use TypeScript path maps to enforce workspace boundaries and avoid accidental cross‑references.
 - Downstream consumers (e.g., frontend) must **never** mutate `shared/` types or helpers.
+
+---
+
+## ✅ CI Pipeline (GitLab)
+
+Defined in [`.gitlab-ci.yml`](../../.gitlab-ci.yml). Runs on **merge request** events and pushes to the **default branch**.
+
+| Job | Command | Merge-blocking? | Notes |
+| --- | --- | --- | --- |
+| `typecheck` | `yarn typecheck` | Yes | Shared types emit, then frontend + backend `tsc --noEmit` |
+| `test` | `yarn test` | Yes | Workspace Vitest (shared/frontend) + SuiteCloud Jest (backend) |
+| `lint` | `yarn lint` | No (`allow_failure`) | ESLint across workspaces; advisory until pre-existing debt is cleared |
+
+- **Image / toolchain** — `node:24-bookworm` (matches [`.node-version`](../../.node-version)); Yarn **4.9.2** via Corepack / `packageManager` and the checked-in `.yarn/releases` binary; Yarn PnP with `.yarn/cache` cached on `yarn.lock`.
+- **SuiteCloud SDK license** — CI sets `npm_config_acceptsuitecloudsdklicense=true` so `@oracle/suitecloud-cli` postinstall can download the SDK JAR non-interactively (Oracle Free Use Terms and Conditions). Deploy credentials are still out of scope.
+- **Merge policy** — Enable **Pipelines must succeed** under GitLab → Settings → Merge requests so red **required** jobs block merge.
+- **Out of scope** — SuiteCloud `project:deploy` / file upload; keep account credentials out of MR pipelines.
+
+Local equivalent before opening an MR:
+
+```bash
+yarn install
+yarn typecheck
+yarn lint
+yarn test
+```
+
+Note: Yarn 4 does **not** run npm-style `pretest` hooks. Root `yarn test` builds `shared/` first so backend Jest can resolve `@suiteworks/suitetools-shared/*` from `shared/dist` on a clean checkout.
 
 ---
 

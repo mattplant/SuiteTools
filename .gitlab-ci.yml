@@ -1,0 +1,60 @@
+# SuiteTools CI — install → typecheck → lint → test
+# SuiteCloud deploy is intentionally out of scope for MR/default-branch CI.
+# Node matches .node-version; Yarn matches packageManager / .yarn/releases.
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+default:
+  image: node:24-bookworm
+  interruptible: true
+
+variables:
+  # Keep the Yarn cache under the project dir (matches .yarnrc.yml / local PnP portability).
+  YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn/cache"
+  YARN_ENABLE_GLOBAL_CACHE: "false"
+  # Required for @oracle/suitecloud-cli postinstall (reads npm_config_*).
+  # Setting this accepts Oracle Free Use Terms and Conditions for the SuiteCloud SDK JAR download.
+  # See: https://www.oracle.com/downloads/licenses/oracle-free-license.html
+  npm_config_acceptsuitecloudsdklicense: "true"
+
+cache:
+  key:
+    files:
+      - yarn.lock
+  paths:
+    - .yarn/cache
+
+stages:
+  - validate
+
+.validate:
+  stage: validate
+  before_script:
+    - node --version
+    - corepack enable
+    - corepack prepare yarn@4.9.2 --activate
+    - yarn --version
+    - yarn install --immutable
+  # Enable "Pipelines must succeed" in GitLab → Settings → Merge requests
+  # so required jobs block merge when red.
+
+typecheck:
+  extends: .validate
+  script:
+    - yarn typecheck
+
+# Advisory until pre-existing ESLint debt is cleared (frontend-heavy).
+# Typecheck + test are the merge-blocking gates for now.
+lint:
+  extends: .validate
+  allow_failure: true
+  script:
+    - yarn lint
+
+test:
+  extends: .validate
+  script:
+    - yarn test

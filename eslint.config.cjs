@@ -183,9 +183,9 @@ module.exports = defineConfig([
     },
   },
 
-  // Vite config override
+  // Vite / Vitest config — use tsconfig.node.json so typed rules have a project
   {
-    files: ["frontend/vite.config.ts"],
+    files: ["frontend/vite.config.ts", "frontend/vitest.config.ts"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
@@ -194,7 +194,8 @@ module.exports = defineConfig([
       },
       parser: tsParser,
       parserOptions: {
-        project: false,
+        project: ["./frontend/tsconfig.node.json"],
+        tsconfigRootDir: __dirname,
       },
     },
   },
@@ -202,6 +203,7 @@ module.exports = defineConfig([
   // Shared workspace
   {
     files: ["shared/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.ts", "**/*.test.tsx", "**/vitest.config.ts"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",

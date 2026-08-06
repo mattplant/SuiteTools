@@ -28,7 +28,7 @@ See the parent directory [README](../README.md) for more information about the S
 
 ### Unit tests (Vitest)
 
-- Run: `yarn workspace frontend run test` (builds shared via `pretest`, then Vitest).
+- Run: `yarn test` from the monorepo root (builds `shared/` first, then all workspaces), or `yarn workspace frontend run test` when `shared/dist` is already built.
 - Colocate tests as `src/**/*.test.ts` / `*.test.tsx` (node env by default; hook tests may set `@vitest-environment jsdom`).
 - Cover utils/adapters/hooks first — no NetSuite account or Playwright required for a green suite.
 - Root `yarn test` includes this workspace.
