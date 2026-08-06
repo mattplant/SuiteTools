@@ -76,7 +76,7 @@ Use Role as the template. One entity (or small cluster) per MR:
 
 - **Role** (#34) — `isinactive` → `isInactive`, `centertype` → `centerType`, `issalesrole` → `isSalesRole`, `issupportrole` → `isSupportRole`, `iswebserviceonlyrole` → `isWebServiceOnlyRole`
 - **Script** (#37) — `apiversion` → `apiVersion`, `isinactive` → `isInactive`, `scripttype` → `scriptType`, `scriptid` → `scriptId`, `scriptfile` → `scriptFile`, `notifyemails` → `notifyEmails`
-- **ScriptLog** (#37) — `scripttype` → `scriptType`, `scriptname` → `scriptName`
+- **ScriptLog** (#37 schema, #41 cleaner) — `scripttype` → `scriptType`, `scriptname` → `scriptName` (SuiteQL lowercase remap in `cleanScriptLogData`)
 - **File** (#38) — `createddate` → `dateCreated`, `lastmodifieddate` → `lastModifiedDate`, `filetypename` → `fileTypeName`, `filesize` → `fileSize`
 - **User** (#38) — `isinactive` → `isInactive`, `role_names` → `roleNames`
 - **Login** (#39) — `oauthappname` → `oauthAppName`, `oauthaccesstokenname` → `oauthAccessTokenName`, `username` → `userName`, `rolename` → `roleName`, `emailaddress` → `emailAddress`, `ipaddress` → `ipAddress`, `requesturi` → `requestUri`, `secchallenge` → `secChallenge`, `useragent` → `userAgent`
@@ -85,7 +85,8 @@ Use Role as the template. One entity (or small cluster) per MR:
 
 ### Suggested follow-on order
 
-1. _(none — domain multi-word wire keys migrated)_
+1. Request criteria camelCase (`createddate` → `dateCreated`, etc.) — separate track
+2. Optional: expand `GET_PAYLOAD_VALIDATED_ENDPOINTS`; drop JobRun legacy flat preprocess
 
 ---
 
