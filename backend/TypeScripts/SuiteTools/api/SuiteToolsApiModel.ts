@@ -37,7 +37,7 @@ export class SuiteToolsApiModel {
   public getFile(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getFile() initiated`, details: { id: id } });
 
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       file.id,
       file.folder,
@@ -153,7 +153,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJob(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
       ${customRecord}.id,
@@ -227,7 +227,7 @@ export class SuiteToolsApiModel {
    * @returns Role
    */
   public getRole(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       role.id,
       role.scriptId,
@@ -303,7 +303,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getIntegration(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     // Integration Applications are not a searchable N/search record type (INVALID_RCRD_TYPE).
     // Resolve via SuiteQL when available, else LoginAudit synthetic rows.
     const sql = `SELECT
@@ -330,7 +330,7 @@ export class SuiteToolsApiModel {
       response.data = fromSynthetic;
     } else {
       response.message = `No integration found with id of ${id}`;
-      response.data = {};
+      response.data = null;
     }
 
     return response;
@@ -631,7 +631,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getScript(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       script.id,
       script.apiversion AS apiVersion,
@@ -652,7 +652,7 @@ export class SuiteToolsApiModel {
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
       response.message = `No script found with id of ${id}`;
-      response.data = {};
+      response.data = null;
     } else {
       response.data = sqlResults[0];
     }
@@ -747,7 +747,7 @@ export class SuiteToolsApiModel {
    * @returns user
    */
   public getUser(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     let sql = `SELECT
       employee.id,
       employee.isinactive AS isInactive,
@@ -1043,7 +1043,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRun(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     const sql = `SELECT
       ${customRecord}.id,
@@ -1157,7 +1157,7 @@ export class SuiteToolsApiModel {
    * @returns Token response.
    */
   public getToken(id: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       OAuthToken.id,
       OAuthToken.TBA_Token_Name AS name,
@@ -1179,7 +1179,7 @@ export class SuiteToolsApiModel {
     }
 
     response.message = `No token found with id of ${id}`;
-    response.data = {};
+    response.data = null;
     return response;
   }
 

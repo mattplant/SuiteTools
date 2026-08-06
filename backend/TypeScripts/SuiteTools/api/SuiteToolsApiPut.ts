@@ -11,6 +11,7 @@ import type { Response } from './types';
 import { assertIsRequestBody, assertIsRequestBodyData } from './types';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
+import { validateMutationResponse } from './SuiteToolsApiMutationValidate';
 
 /**
  * SuiteTools API PUT Class
@@ -51,7 +52,7 @@ export class SuiteToolsApiPut {
         });
     }
 
-    return response;
+    return validateMutationResponse('put', endpoint, response);
   }
 
   public putSettings(requestBodyData: object): Response {

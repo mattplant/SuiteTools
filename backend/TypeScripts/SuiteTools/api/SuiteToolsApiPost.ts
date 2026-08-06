@@ -11,6 +11,7 @@ import type { Response } from './types';
 import { assertIsRequestBody } from './types';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
+import { validateMutationResponse } from './SuiteToolsApiMutationValidate';
 
 type RequestParams = { [key: string]: string };
 
@@ -53,7 +54,7 @@ export class SuiteToolsApiPost {
     }
     log.debug({ title: 'SuiteToolsApiPost:process() returning', details: response });
 
-    return response;
+    return validateMutationResponse('post', endpoint, response);
   }
 
   /**
