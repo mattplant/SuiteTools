@@ -2,6 +2,7 @@
 
 Last updated: 2026-08-05
 
+
 ---
 
 ## 🎯 Purpose & Scope
@@ -122,7 +123,7 @@ These steps are designed to save you time by catching issues early which is fast
    yarn test
    ```
 
-   `yarn test` runs each workspace’s `test` script (`yarn workspaces foreach -Apt --verbose run test`). Shared uses Vitest (`shared/src/**/*.test.ts`). Backend uses SuiteCloud Jest against `TypeScripts/` (`backend/__tests__/`). Frontend still stubs until [#32](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/32).
+   `yarn test` runs each workspace’s `test` script (`yarn workspaces foreach -Apt --verbose run test`). Shared uses Vitest (`shared/src/**/*.test.ts`). Backend uses SuiteCloud Jest against `TypeScripts/` (`backend/__tests__/`). Frontend uses Vitest (+ Testing Library for hooks) under `frontend/src/**/*.test.ts(x)`.
 
 4. **Before you commit** — self‑check:
    - ✅ All dependency changes follow [`yarn-dependencies.md`](../governance/standards/yarn-dependencies.md)

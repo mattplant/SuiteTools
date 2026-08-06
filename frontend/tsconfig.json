@@ -35,6 +35,7 @@
     "composite": true
   },
   "include": ["src", "src/vite-env.d.ts"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "../shared" }]
 
   // TODO: cleanup of settings. remove the redundant settings since extends "../tsconfig.base.json" and also look into if I need the following in the references section: "path": "./tsconfig.node.json"
