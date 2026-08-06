@@ -18,6 +18,7 @@ import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
 import { SuiteError, InvalidParameterError, UnexpectedError } from '@suiteworks/suitetools-shared/errors';
 import { validateGetResponse } from './SuiteToolsApiGetValidate';
+import { ensureEntityOrSoftNotFound, softNotFoundResponse } from './SuiteToolsApiGetNotFound';
 
 type RequestParams = { [key: string]: string };
 
@@ -544,8 +545,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getFile(id);
-
-    return result;
+    return ensureEntityOrSoftNotFound(result, `No file found with id of ${id}`);
   }
 
   /**
@@ -581,8 +581,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getJob(id);
-
-    return result;
+    return ensureEntityOrSoftNotFound(result, `No job found with id of ${id}`);
   }
 
   /**
@@ -615,18 +614,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getIntegration(id);
-    const payload: Response = { status: 0, data: {} };
-
-    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
-      payload.status = 404;
-      payload.data = { code: 'NOT_FOUND', message: result.message || `No integration found with id of ${id}` };
-      payload.message = result.message || `No integration found with id of ${id}`;
-    } else {
-      payload.status = 200;
-      payload.data = result.data;
-    }
-
-    return payload;
+    return ensureEntityOrSoftNotFound(result, `No integration found with id of ${id}`);
   }
 
   /**
@@ -658,19 +646,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getJobRun(id);
-    const payload: Response = { status: 0, data: {} };
-
-    // Model still uses legacy empty-object + message for misses; normalize to NotFound.
-    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
-      payload.status = 404;
-      payload.data = { code: 'NOT_FOUND', message: result.message || `No job execution found with id of ${id}` };
-      payload.message = result.message || `No job execution found with id of ${id}`;
-    } else {
-      payload.status = 200;
-      payload.data = result.data;
-    }
-
-    return payload;
+    return ensureEntityOrSoftNotFound(result, `No job execution found with id of ${id}`);
   }
 
   /**
@@ -762,19 +738,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getScript(id);
-    const payload: Response = { status: 0, data: {} };
-
-    // Model still uses legacy empty-object + message for misses; normalize to NotFound.
-    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
-      payload.status = 404;
-      payload.data = { code: 'NOT_FOUND', message: result.message || `No script found with id of ${id}` };
-      payload.message = result.message || `No script found with id of ${id}`;
-    } else {
-      payload.status = 200;
-      payload.data = result.data;
-    }
-
-    return payload;
+    return ensureEntityOrSoftNotFound(result, `No script found with id of ${id}`);
   }
 
   /**
@@ -812,17 +776,10 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getScriptLog(id);
-    const payload: Response = { status: 0, data: {} };
     if (!result || result.length === 0) {
-      payload.status = 404;
-      payload.data = { code: 'NOT_FOUND', message: `No script log found with id of ${id}` };
-      payload.message = `No script log found with id of ${id}`;
-    } else {
-      payload.status = 200;
-      payload.data = result[0];
+      return softNotFoundResponse(`No script log found with id of ${id}`);
     }
-
-    return payload;
+    return { status: 200, data: result[0] };
   }
 
   /**
@@ -912,18 +869,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getToken(id);
-    const payload: Response = { status: 0, data: {} };
-
-    if (!result?.data || (typeof result.data === 'object' && !Array.isArray(result.data) && !('id' in result.data))) {
-      payload.status = 404;
-      payload.data = { code: 'NOT_FOUND', message: result.message || `No token found with id of ${id}` };
-      payload.message = result.message || `No token found with id of ${id}`;
-    } else {
-      payload.status = 200;
-      payload.data = result.data;
-    }
-
-    return payload;
+    return ensureEntityOrSoftNotFound(result, `No token found with id of ${id}`);
   }
 
   /**
@@ -995,8 +941,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getUser(id);
-
-    return result;
+    return ensureEntityOrSoftNotFound(result, `No user found with id of ${id}`);
   }
 
   /**

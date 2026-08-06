@@ -60,9 +60,9 @@ Backend GET/POST/PUT handlers serialize failures as a shared **`ErrorResponse`**
 Before a successful GET returns JSON, `SuiteToolsApiGet` validates through `validateGetResponse`:
 
 1. **All GET endpoints** — shared `requestResponse` envelope (`status`, `data`, optional `message`).
-2. **Selected endpoints** (also validate `data` with domain schemas): `settings`, `user`, `users`, `role`, `roles`, `job`, `jobs`.
+2. **Selected endpoints** — see `GET_PAYLOAD_VALIDATED_ENDPOINTS` in `SuiteToolsApiGetValidate.ts` (expanded in #44).
 
-Failures throw `SchemaValidationError` → `ErrorResponse` with `SCHEMA_VALIDATION_ERROR` (HTTP-style status 500), including Zod `issues` in `context`. Legacy soft-miss empty `{}` payloads skip entity validation so they are not turned into schema noise; list getters normalize empty `{}` to `[]` (including users/roles/jobs).
+Failures throw `SchemaValidationError` → `ErrorResponse` with `SCHEMA_VALIDATION_ERROR` (HTTP-style status 500), including Zod `issues` in `context`. List getters normalize empty `{}` to `[]`. Legacy empty-object soft-misses still skip entity validation when they appear; singular GET handlers should emit canonical soft NotFound instead (see below).
 
 Frontend `getData` / `postData` / `putData` in `netSuiteClient`:
 
@@ -70,7 +70,17 @@ Frontend `getData` / `postData` / `putData` in `netSuiteClient`:
 2. **Discriminate `ErrorResponse`** via `parseErrorResponse` and **rehydrate** with `errorFromResponse` into the matching `SuiteError` subclass (including `SCHEMA_VALIDATION_ERROR` → `SchemaValidationError`).
 3. Only then validate the success / soft‑404 `{ status, data }` envelope with Zod.
 
-Do not treat typed API errors as schema‑validation failures. Soft empty reads may still use `{ status: 404, data: { code: 'NOT_FOUND', … } }` inside the success envelope; singular adapters turn those into `NotFoundError` via `handleNotFound`.
+Do not treat typed API errors as schema‑validation failures.
+
+**Singular miss contracts**
+
+| Kind | Shape | Used by |
+|------|--------|---------|
+| Soft NotFound (preferred) | Success envelope `{ status: 404, data: { code: 'NOT_FOUND', message } }` | file, job, user, script, jobRun, token, integration, scriptLog (`ensureEntityOrSoftNotFound` / `softNotFoundResponse`) |
+| Hard NotFound | Thrown `NotFoundError` → `ErrorResponse` | Role (today) |
+| Legacy empty `{}` | `{ status: 200\|404, data: {} }` | Being removed from singular GETs; FE `adapterUtils` still shims |
+
+Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`.
 
 ---
 
