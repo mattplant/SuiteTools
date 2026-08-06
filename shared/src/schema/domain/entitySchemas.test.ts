@@ -295,13 +295,13 @@ describe("RoleBundle / JobBundle schemas", () => {
     });
   });
 
-  it("coerces null JobRun jobName and accepts legacy flat keys", () => {
+  it("coerces null JobRun jobName on camelCase wire keys", () => {
     expect(
       jobRunOrNotFoundSchema.parse({
         id: 10,
         created: "2026-08-05T12:00:00.000Z",
-        jobid: "4",
-        jobname: null,
+        jobId: "4",
+        jobName: null,
         completed: "F",
         results: null,
       }),
@@ -311,6 +311,19 @@ describe("RoleBundle / JobBundle schemas", () => {
       jobName: "",
       completed: false,
     });
+  });
+
+  it("rejects legacy flat JobRun keys", () => {
+    expect(() =>
+      jobRunOrNotFoundSchema.parse({
+        id: 10,
+        created: "2026-08-05T12:00:00.000Z",
+        jobid: "4",
+        jobname: "Cleanup",
+        completed: "F",
+        results: null,
+      }),
+    ).toThrow();
   });
 });
 

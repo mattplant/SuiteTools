@@ -80,7 +80,7 @@ Use Role as the template. One entity (or small cluster) per MR:
 - **File** (#38) — `createddate` → `dateCreated`, `lastmodifieddate` → `lastModifiedDate`, `filetypename` → `fileTypeName`, `filesize` → `fileSize`
 - **User** (#38) — `isinactive` → `isInactive`, `role_names` → `roleNames`
 - **Login** (#39) — `oauthappname` → `oauthAppName`, `oauthaccesstokenname` → `oauthAccessTokenName`, `username` → `userName`, `rolename` → `roleName`, `emailaddress` → `emailAddress`, `ipaddress` → `ipAddress`, `requesturi` → `requestUri`, `secchallenge` → `secChallenge`, `useragent` → `userAgent`
-- **JobRun** (#39) — `jobid` → `jobId`, `jobname` → `jobName`
+- **JobRun** (#39 schema + cleaner, #43 drop dual preprocess) — `jobid` → `jobId`, `jobname` → `jobName`
 - **Job** (#40) — `isinactive` → `isInactive`
 - **Request criteria** (#42) — list-filter query params + `optionValues` type tokens (see below)
 
@@ -103,7 +103,7 @@ List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #
 
 ### Suggested follow-on order
 
-1. Optional: expand `GET_PAYLOAD_VALIDATED_ENDPOINTS`; drop JobRun legacy flat preprocess
+1. Optional: expand `GET_PAYLOAD_VALIDATED_ENDPOINTS`
 
 ---
 

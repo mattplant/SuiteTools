@@ -7,23 +7,10 @@ import type { ZEntityBundle } from "../zodUtils";
 import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 
 /**
- * Accept legacy flat SuiteQL keys (`jobid` / `jobname`) and map them to camelCase.
- */
-function normalizeJobRunInput(value: unknown): unknown {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return value;
-  }
-
-  const record = value as Record<string, unknown>;
-  return {
-    ...record,
-    jobId: record.jobId ?? record.jobid,
-    jobName: record.jobName ?? record.jobname,
-  };
-}
-
-/**
  * Zod schema for a single JobRun record.
+ *
+ * Multi-word SuiteQL fields use camelCase wire keys (`jobId`, `jobName`).
+ * The RESTlet cleaner remaps SuiteQL lowercase aliases before validation.
  *
  * Fields:
  * - `id`: unique numeric identifier
@@ -35,7 +22,7 @@ function normalizeJobRunInput(value: unknown): unknown {
  * - `urlDetail`: optional URL for additional context
  * - `urlJob`: optional URL for the job details
  */
-const JobRunSchemaInner = z.object({
+export const JobRunSchema = z.object({
   id: zNetSuite.numberFromString.schema,
   created: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
     message: "Invalid ISO timestamp",
@@ -49,13 +36,8 @@ const JobRunSchemaInner = z.object({
   urlJob: z.string().optional(),
 });
 
-export const JobRunSchema = z.preprocess(
-  normalizeJobRunInput,
-  JobRunSchemaInner
-);
-
-const JobRunBundle: ZEntityBundle<typeof JobRunSchemaInner, "JobRun"> =
-  zHelpers.zCreateBundle(JobRunSchemaInner, {
+const JobRunBundle: ZEntityBundle<typeof JobRunSchema, "JobRun"> =
+  zHelpers.zCreateBundle(JobRunSchema, {
     meta: { entity: "JobRun", plural: "JobRuns" },
   });
 
