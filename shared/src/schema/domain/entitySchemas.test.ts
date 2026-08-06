@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import { requestResponse } from "../api/requestResponse";
 import { FileBundle } from "./file";
 import { JobBundle } from "./job";
+import { JobRunBundle, jobRunOrNotFoundSchema } from "./jobRun";
+import { LoginBundle } from "./login";
 import { RoleBundle } from "./role";
 import { ScriptBundle } from "./script";
 import { ScriptLogBundle } from "./scriptLog";
@@ -194,6 +196,100 @@ describe("RoleBundle / JobBundle schemas", () => {
       scriptName: "",
       title: "",
       detail: null,
+    });
+  });
+
+  it("parses a valid login", () => {
+    expect(
+      LoginBundle.schema.parse({
+        id: 1,
+        date: "2026-08-05 12:00:00",
+        status: "Success",
+        oauthAppName: "SuiteCloud IDE & CLI",
+        oauthAccessTokenName: "token-1",
+        user: 7,
+        userName: "Ada Lovelace",
+        role: 3,
+        roleName: "Administrator",
+        emailAddress: "a@example.com",
+        ipAddress: "1.2.3.4",
+        requestUri: "/app/center/card.nl",
+        detail: null,
+        secChallenge: "",
+        userAgent: "Mozilla",
+      }),
+    ).toMatchObject({
+      id: 1,
+      oauthAppName: "SuiteCloud IDE & CLI",
+      userName: "Ada Lovelace",
+      roleName: "Administrator",
+      emailAddress: "a@example.com",
+    });
+  });
+
+  it("coerces null Login SuiteQL string fields to empty string", () => {
+    expect(
+      LoginBundle.schema.parse({
+        id: 2,
+        date: "2026-08-05 12:00:00",
+        status: "Failure",
+        oauthAppName: null,
+        oauthAccessTokenName: null,
+        userName: null,
+        roleName: null,
+        emailAddress: null,
+        ipAddress: null,
+        requestUri: null,
+        secChallenge: null,
+        userAgent: null,
+      }),
+    ).toMatchObject({
+      id: 2,
+      oauthAppName: "",
+      oauthAccessTokenName: "",
+      userName: "",
+      roleName: "",
+      emailAddress: "",
+      ipAddress: "",
+      requestUri: "",
+      secChallenge: "",
+      userAgent: "",
+    });
+  });
+
+  it("parses a valid job run", () => {
+    expect(
+      JobRunBundle.schema.parse({
+        id: 9,
+        created: "2026-08-05T12:00:00.000Z",
+        jobId: 3,
+        jobName: "Cleanup",
+        completed: "T",
+        results: "ok",
+      }),
+    ).toMatchObject({
+      id: 9,
+      jobId: 3,
+      jobName: "Cleanup",
+      completed: true,
+    });
+  });
+
+  it("coerces null JobRun jobName and accepts legacy flat keys", () => {
+    expect(
+      jobRunOrNotFoundSchema.parse({
+        id: 10,
+        created: "2026-08-05T12:00:00.000Z",
+        jobid: "4",
+        jobname: null,
+        completed: "F",
+        results: null,
+      }),
+    ).toMatchObject({
+      id: 10,
+      jobId: 4,
+      jobName: "",
+      completed: false,
     });
   });
 });

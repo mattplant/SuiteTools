@@ -12,6 +12,7 @@
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getJob } from '../adapters/api/job';
 import type { Job } from '@suiteworks/suitetools-shared';
+import { NotFoundError } from '@suiteworks/suitetools-shared';
 import { mapLoaderError } from './loaderUtils';
 
 /**
@@ -23,8 +24,13 @@ import { mapLoaderError } from './loaderUtils';
  */
 export async function jobLoader(args: LoaderFunctionArgs): Promise<{ job: Promise<Job> }> {
   const { params } = args;
+  const id = Number(params.id);
+  if (!Number.isFinite(id) || id <= 0) {
+    // e.g. `/job/undefined` when JobRun.jobId was missing (stale wire keys).
+    throw new NotFoundError('Job', params.id ?? '');
+  }
   return {
-    job: getJob(Number(params.id)).catch((err) => mapLoaderError(err, 'Job')),
+    job: getJob(id).catch((err) => mapLoaderError(err, 'Job')),
   };
 }
 

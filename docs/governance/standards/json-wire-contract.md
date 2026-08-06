@@ -53,8 +53,8 @@ Classification of keys under `shared/src/schema/domain/` (excluding tests/helper
 | Integration | camelCase | — | Reference |
 | SoapLog | mostly camelCase | — | Reference; single-token keys OK |
 | Job | mixed | `isinactive` | Has `lastRun` already |
-| Login | flat-heavy | `oauthappname`, `oauthaccesstokenname`, `username`, `rolename`, `emailaddress`, `ipaddress`, `requesturi`, `secchallenge`, `useragent` | |
-| JobRun | mixed | `jobid`, `jobname` | Cleaner currently maps camel → flat |
+| Login | **camelCase** | — | Migrated in #39 |
+| JobRun | **camelCase** | — | Migrated in #39 |
 | OptionValues | simple tokens | — | `value` / `text` only |
 
 ---
@@ -79,10 +79,12 @@ Use Role as the template. One entity (or small cluster) per MR:
 - **ScriptLog** (#37) — `scripttype` → `scriptType`, `scriptname` → `scriptName`
 - **File** (#38) — `createddate` → `dateCreated`, `lastmodifieddate` → `lastModifiedDate`, `filetypename` → `fileTypeName`, `filesize` → `fileSize`
 - **User** (#38) — `isinactive` → `isInactive`, `role_names` → `roleNames`
+- **Login** (#39) — `oauthappname` → `oauthAppName`, `oauthaccesstokenname` → `oauthAccessTokenName`, `username` → `userName`, `rolename` → `roleName`, `emailaddress` → `emailAddress`, `ipaddress` → `ipAddress`, `requesturi` → `requestUri`, `secchallenge` → `secChallenge`, `useragent` → `userAgent`
+- **JobRun** (#39) — `jobid` → `jobId`, `jobname` → `jobName`
 
 ### Suggested follow-on order
 
-1. Login / JobRun as needed
+1. Job (`isinactive` → `isInactive`) as needed
 
 ---
 

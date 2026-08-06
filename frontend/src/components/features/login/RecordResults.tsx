@@ -20,10 +20,10 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
-  { key: 'oauthappname', name: 'OAuth Application' },
-  { key: 'oauthaccesstokenname', name: 'OAuth Access Token' },
-  { key: 'username', name: 'User' },
-  { key: 'rolename', name: 'Role' },
+  { key: 'oauthAppName', name: 'OAuth Application' },
+  { key: 'oauthAccessTokenName', name: 'OAuth Access Token' },
+  { key: 'userName', name: 'User' },
+  { key: 'roleName', name: 'Role' },
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {

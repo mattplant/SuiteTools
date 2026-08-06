@@ -26,7 +26,7 @@ export function JobRunResult({ data, modal }: Props): React.ReactElement {
         <b>Created At</b>: {data.created}
       </p>
       <p>
-        <b>Job Name</b>: {data.jobname}
+        <b>Job Name</b>: {data.jobName}
       </p>
       <p>
         <b>Completed</b>: {data.completed ? 'Yes' : 'No'}
@@ -46,7 +46,11 @@ export function JobRunResult({ data, modal }: Props): React.ReactElement {
         )}
         <Button
           onClick={() => {
-            navigate(`/job/${data.jobid}`);
+            if (!Number.isFinite(data.jobId) || data.jobId <= 0) {
+              console.error('[JobRunResult] missing jobId on record', data);
+              return;
+            }
+            navigate(`/job/${data.jobId}`);
           }}
         >
           Job Details

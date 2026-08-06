@@ -14,8 +14,8 @@ const columns = [
     },
   },
   {
-    key: 'jobname',
-    name: 'JobName',
+    key: 'jobName',
+    name: 'Job Name',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
