@@ -52,7 +52,7 @@ export class SuiteToolsApiGetOptions {
       case 'file':
         data = this.getFileList(true);
         break;
-      case 'filetype':
+      case 'fileType':
         data = this.getFileTypeList();
         break;
       case 'job':
@@ -67,7 +67,7 @@ export class SuiteToolsApiGetOptions {
       case 'script':
         data = this.getScriptList();
         break;
-      case 'scripttype':
+      case 'scriptType':
         data = this.getScriptTypeList();
         break;
       case 'user':

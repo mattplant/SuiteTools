@@ -40,15 +40,15 @@ export async function getScriptLogs(fields: CriteriaFields): Promise<ScriptLogs>
   const urlParams = {
     rows: fields.rows,
     levels: fields.levels,
-    scripttypes: fields.scripttypes,
-    scriptnames: fields.scriptnames,
+    scriptTypes: fields.scriptTypes,
+    scriptNames: fields.scriptNames,
     owners: fields.owners,
-    createddate: fields.createddate,
+    dateCreated: fields.dateCreated,
     title: fields.title,
     detail: fields.detail,
-    timemode: fields.timemode,
-    customdatetime: fields.customdatetime ? fields.customdatetime : undefined,
-    customduration: fields.customduration ? fields.customduration : undefined,
+    timeMode: fields.timeMode,
+    customDateTime: fields.customDateTime ? fields.customDateTime : undefined,
+    customDuration: fields.customDuration ? fields.customDuration : undefined,
   };
 
   const response = await getData('scriptLogs', urlParams);

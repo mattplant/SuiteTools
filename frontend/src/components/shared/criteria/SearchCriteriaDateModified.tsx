@@ -9,12 +9,12 @@ interface Props {
 export function SearchCriteriaDateModified({ register, title }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
-      <label htmlFor="lastmodifieddate">{title}</label>
+      <label htmlFor="lastModifiedDate">{title}</label>
       <select
         size={6}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="lastmodifieddate"
-        {...register('lastmodifieddate')}
+        id="lastModifiedDate"
+        {...register('lastModifiedDate')}
       >
         <option value="0">All</option>
         <option value="15">Last 15 minutes</option>
