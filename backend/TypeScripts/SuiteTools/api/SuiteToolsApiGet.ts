@@ -115,9 +115,13 @@ export class SuiteToolsApiGet {
           break;
         case 'scriptLog':
           response = this.getScriptLog(requestParams);
+          if (response.status === 200) {
+            response.data = this.cleanScriptLogData(response.data);
+          }
           break;
         case 'scriptLogs':
           response = this.getScriptLogs(requestParams);
+          response = this.cleanScriptLogsData(response);
           break;
         case 'settings':
           response = this.getSettings();
@@ -421,6 +425,36 @@ export class SuiteToolsApiGet {
     if (response && Array.isArray(response.data) && response.data.length > 0) {
       (response.data as any[]).forEach((record) => {
         this.cleanScriptData(record);
+      });
+    }
+
+    return response;
+  }
+
+  /**
+   * SuiteQL lowercases `AS scriptType` / `AS scriptName`. Remap to the shared
+   * ScriptLog camelCase wire contract before SPA Zod parse.
+   */
+  private cleanScriptLogData(data: any): object {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    data.scriptType = data.scriptType ?? data.scripttype ?? '';
+    data.scriptName = data.scriptName ?? data.scriptname ?? '';
+    data.owner = data.owner ?? '';
+    data.type = data.type ?? '';
+    data.title = data.title ?? '';
+    delete data.scripttype;
+    delete data.scriptname;
+
+    return data;
+  }
+
+  private cleanScriptLogsData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      (response.data as any[]).forEach((record) => {
+        this.cleanScriptLogData(record);
       });
     }
 
