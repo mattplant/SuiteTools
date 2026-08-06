@@ -1,6 +1,6 @@
 # SuiteTools — Frontend Workspace
 
-Last updated: September 22, 2025
+Last updated: 2026-08-05
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
@@ -25,6 +25,13 @@ See the parent directory [README](../README.md) for more information about the S
 - **Frontend-Only Logic** — Avoid importing backend or shared modules that assume Node.js or server context.
 - **Composable Views** — Pages should be composed from reusable components and hooks, not monolithic logic.
 - **DX Matters** — All code should be easy to read, test, and onboard into.
+
+### Unit tests (Vitest)
+
+- Run: `yarn workspace frontend run test` (builds shared via `pretest`, then Vitest).
+- Colocate tests as `src/**/*.test.ts` / `*.test.tsx` (node env by default; hook tests may set `@vitest-environment jsdom`).
+- Cover utils/adapters/hooks first — no NetSuite account or Playwright required for a green suite.
+- Root `yarn test` includes this workspace.
 
 ---
 
