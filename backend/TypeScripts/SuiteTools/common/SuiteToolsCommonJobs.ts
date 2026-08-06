@@ -237,9 +237,9 @@ export class SuiteToolsCommonJobs {
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
       ScriptNote.type,
-      script.scripttype,
+      script.scripttype AS scriptType,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptName,
       ScriptNote.title, REPLACE( detail, '"', '""' ) AS detail
     FROM ScriptNote
     INNER JOIN script

@@ -14,19 +14,19 @@ const columns = [
     },
   },
   {
-    key: 'isinactive',
+    key: 'isInactive',
     name: 'Active',
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },
   },
-  { key: 'apiversion', name: 'API' },
-  { key: 'scripttype', name: 'Script Type' },
+  { key: 'apiVersion', name: 'API' },
+  { key: 'scriptType', name: 'Script Type' },
   { key: 'name', name: 'Script' },
-  { key: 'scriptid', name: 'id' },
+  { key: 'scriptId', name: 'id' },
   { key: 'owner', name: 'Owner' },
-  { key: 'scriptfile', name: 'File' },
-  { key: 'notifyemails', name: 'Notify Emails' },
+  { key: 'scriptFile', name: 'File' },
+  { key: 'notifyEmails', name: 'Notify Emails' },
   { key: 'description', name: 'Description' },
 ];
 

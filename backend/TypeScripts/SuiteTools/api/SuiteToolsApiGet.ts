@@ -313,15 +313,15 @@ export class SuiteToolsApiGet {
 
   private cleanScriptData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== 'object' || !('isinactive' in data)) {
+    if (!data || typeof data !== 'object' || !('isInactive' in data)) {
       return data;
     }
 
     // Normalize NetSuite T/F to boolean for shared schema validation.
-    if (data.isinactive === 'F') {
-      data.isinactive = false;
-    } else if (data.isinactive === 'T') {
-      data.isinactive = true;
+    if (data.isInactive === 'F') {
+      data.isInactive = false;
+    } else if (data.isInactive === 'T') {
+      data.isInactive = true;
     }
 
     return data;

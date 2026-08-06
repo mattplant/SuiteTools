@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-05
+Last updated: 2026-08-06
 
 ---
 
@@ -35,13 +35,15 @@ Normative naming summary also lives in [STYLE.md — JSON / API Wire Fields](../
 
 ---
 
-## Domain schema inventory (2026-08-05)
+## Domain schema inventory (2026-08-06)
 
 Classification of keys under `shared/src/schema/domain/` (excluding tests/helpers). **Flat-lowercase** = glued multi-word keys that should migrate. Optional SPA-only URL fields (`urlNs`, `urlDetail`, …) are camelCase already.
 
 | Entity | Style | Flat-lowercase / non-camel multi-word keys (migrate later) | Notes |
 |--------|-------|------------------------------------------------------------|-------|
 | Role | **camelCase** (template) | — | Migrated in #34 |
+| Script | **camelCase** | — | Migrated in #37 |
+| ScriptLog | **camelCase** | — | Migrated in #37 |
 | Settings | camelCase | — | Reference |
 | Token | camelCase | — | Reference |
 | Integration | camelCase | — | Reference |
@@ -49,8 +51,6 @@ Classification of keys under `shared/src/schema/domain/` (excluding tests/helper
 | Job | mixed | `isinactive` | Has `lastRun` already |
 | User | mixed | `isinactive`, `role_names` | `role_names` is snake_case |
 | File | mixed | `createddate`, `lastmodifieddate`, `filetypename`, `filesize` | |
-| Script | mixed | `apiversion`, `isinactive`, `scripttype`, `scriptid`, `scriptfile`, `notifyemails` | Next slice candidate |
-| ScriptLog | mixed | `scripttype`, `scriptname` | Next slice candidate |
 | Login | flat-heavy | `oauthappname`, `oauthaccesstokenname`, `username`, `rolename`, `emailaddress`, `ipaddress`, `requesturi`, `secchallenge`, `useragent` | |
 | JobRun | mixed | `jobid`, `jobname` | Cleaner currently maps camel → flat |
 | OptionValues | simple tokens | — | `value` / `text` only |
@@ -70,15 +70,16 @@ Use Role as the template. One entity (or small cluster) per MR:
 7. **Rebuild shared** — `yarn workspace @suiteworks/suitetools-shared run build:types` (or `yarn typecheck` / `yarn lint`) so consumers see new `.d.ts`.
 8. **Smoke** — list + detail happy path for that entity.
 
-### Completed template
+### Completed slices
 
-- **Role** (`isinactive` → `isInactive`, `centertype` → `centerType`, `issalesrole` → `isSalesRole`, `issupportrole` → `isSupportRole`, `iswebserviceonlyrole` → `isWebServiceOnlyRole`)
+- **Role** (#34) — `isinactive` → `isInactive`, `centertype` → `centerType`, `issalesrole` → `isSalesRole`, `issupportrole` → `isSupportRole`, `iswebserviceonlyrole` → `isWebServiceOnlyRole`
+- **Script** (#37) — `apiversion` → `apiVersion`, `isinactive` → `isInactive`, `scripttype` → `scriptType`, `scriptid` → `scriptId`, `scriptfile` → `scriptFile`, `notifyemails` → `notifyEmails`
+- **ScriptLog** (#37) — `scripttype` → `scriptType`, `scriptname` → `scriptName`
 
 ### Suggested follow-on order
 
-1. Script / ScriptLog
-2. File / User leftovers
-3. Login / JobRun as needed
+1. File / User leftovers
+2. Login / JobRun as needed
 
 ---
 

@@ -22,8 +22,8 @@ const columns = [
       return `${row.totalCount} records`;
     },
   },
-  // { key: 'scripttype', name: 'Script Type', width: 120 },
-  { key: 'scriptname', name: 'Script', width: 160 },
+  // { key: 'scriptType', name: 'Script Type', width: 120 },
+  { key: 'scriptName', name: 'Script', width: 160 },
   // { key: 'owner', name: 'Owner', width: 100 },
   { key: 'title', name: 'Title' },
   { key: 'detail', name: 'Detail' },
