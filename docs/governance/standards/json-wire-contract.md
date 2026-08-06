@@ -82,11 +82,28 @@ Use Role as the template. One entity (or small cluster) per MR:
 - **Login** (#39) — `oauthappname` → `oauthAppName`, `oauthaccesstokenname` → `oauthAccessTokenName`, `username` → `userName`, `rolename` → `roleName`, `emailaddress` → `emailAddress`, `ipaddress` → `ipAddress`, `requesturi` → `requestUri`, `secchallenge` → `secChallenge`, `useragent` → `userAgent`
 - **JobRun** (#39) — `jobid` → `jobId`, `jobname` → `jobName`
 - **Job** (#40) — `isinactive` → `isInactive`
+- **Request criteria** (#42) — list-filter query params + `optionValues` type tokens (see below)
+
+### Request criteria (query / form params)
+
+List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #42):
+
+| Prefer | Avoid |
+|--------|-------|
+| `dateCreated` | `createddate` |
+| `lastModifiedDate` | `lastmodifieddate` |
+| `fileTypes` | `filetypes` |
+| `scriptTypes` | `scripttypes` |
+| `scriptNames` | `scriptnames` |
+| `timeMode` | `timemode` |
+| `customDateTime` | `customdatetime` |
+| `customDuration` | `customduration` |
+
+`optionValues` `type` values: `fileType`, `scriptType` (was `filetype`, `scripttype`). SuiteQL WHERE column names stay NetSuite flat.
 
 ### Suggested follow-on order
 
-1. Request criteria camelCase (`createddate` → `dateCreated`, etc.) — separate track
-2. Optional: expand `GET_PAYLOAD_VALIDATED_ENDPOINTS`; drop JobRun legacy flat preprocess
+1. Optional: expand `GET_PAYLOAD_VALIDATED_ENDPOINTS`; drop JobRun legacy flat preprocess
 
 ---
 

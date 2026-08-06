@@ -24,7 +24,7 @@ const filesRequestResponseSchema = makeRequestResponseSchema(filesOrNotFoundSche
 /**
  * Fetch and validate a list of `File` records using optional criteria.
  * Always returns a `Files` array, empty if none found.
- * @param fields - Criteria to filter the files list (rows, filetypes, dates, etc.).
+ * @param fields - Criteria to filter the files list (rows, fileTypes, dates, etc.).
  * @returns A Promise resolving to a `Files` array (empty if none found).
  * @throws {ZodError} When the response fails schema validation.
  * @throws {Error} When the underlying request fails (network, auth, etc.).
@@ -34,9 +34,9 @@ export async function getFiles(fields: CriteriaFields): Promise<Files> {
 
   const urlParams = {
     rows: fields.rows,
-    filetypes: fields.filetypes,
-    createddate: fields.createddate,
-    lastmodifieddate: fields.lastmodifieddate,
+    fileTypes: fields.fileTypes,
+    dateCreated: fields.dateCreated,
+    lastModifiedDate: fields.lastModifiedDate,
   };
 
   const response = await getData('files', urlParams);

@@ -556,9 +556,9 @@ export class SuiteToolsApiGet {
    */
   private getFiles(requestParams: RequestParams): Response {
     const row = requestParams['rows'];
-    const types = this.convertMultiSelectToArray(requestParams['filetypes']);
-    const createdDate = requestParams['createddate'];
-    const modifiedDate = requestParams['lastmodifieddate'];
+    const types = this.convertMultiSelectToArray(requestParams['fileTypes']);
+    const createdDate = requestParams['dateCreated'];
+    const modifiedDate = requestParams['lastModifiedDate'];
     const result = this.stApiModel.getFiles(row, types, createdDate, modifiedDate);
 
     // List endpoints must return an array (legacy code used `{}` for empty).
@@ -786,8 +786,8 @@ export class SuiteToolsApiGet {
   private getScripts(requestParams: RequestParams): Response {
     const active = requestParams['active'];
     const versions = this.convertMultiSelectToArray(requestParams['versions']);
-    const scripttypes = this.convertMultiSelectToArray(requestParams['scripttypes']);
-    const scripts = this.convertMultiSelectToArray(requestParams['scriptnames']);
+    const scripttypes = this.convertMultiSelectToArray(requestParams['scriptTypes']);
+    const scripts = this.convertMultiSelectToArray(requestParams['scriptNames']);
     const owners = this.convertMultiSelectToArray(requestParams['owners']);
     const files = this.convertMultiSelectToArray(requestParams['files']);
     const result = this.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
@@ -834,32 +834,32 @@ export class SuiteToolsApiGet {
   private getScriptLogs(requestParams: RequestParams): Response {
     const row = requestParams['rows'] ? requestParams['rows'] : '50';
     const levels = this.convertMultiSelectToArray(requestParams['levels']);
-    const types = this.convertMultiSelectToArray(requestParams['scripttypes']);
-    const scripts = this.convertMultiSelectToArray(requestParams['scriptnames']);
+    const types = this.convertMultiSelectToArray(requestParams['scriptTypes']);
+    const scripts = this.convertMultiSelectToArray(requestParams['scriptNames']);
     const owners = this.convertMultiSelectToArray(requestParams['owners']);
-    const timemode = requestParams['timemode'] ? requestParams['timemode'] : 'now';
-    let date = requestParams['createddate'] ? requestParams['createddate'] : '15';
-    let customdatetime = requestParams['customdatetime'];
-    let customduration = requestParams['customduration'];
+    const timemode = requestParams['timeMode'] ? requestParams['timeMode'] : 'now';
+    let date = requestParams['dateCreated'] ? requestParams['dateCreated'] : '15';
+    let customdatetime = requestParams['customDateTime'];
+    let customduration = requestParams['customDuration'];
     const title = requestParams['title'];
     const detail = requestParams['detail'];
 
     // verify required parameters
     if (timemode === 'now') {
       if (!date || date === '') {
-        throw new InvalidParameterError('createddate', date, "Missing required parameter for 'now' time mode");
+        throw new InvalidParameterError('dateCreated', date, "Missing required parameter for 'now' time mode");
       }
       if (customdatetime) {
         log.debug({
           title: 'SuiteToolsApiGet:getScriptLogs()',
-          details: `Clearing 'customdatetime' since 'now' time mode`,
+          details: `Clearing 'customDateTime' since 'now' time mode`,
         });
         customdatetime = null;
       }
       if (customduration) {
         log.debug({
           title: 'SuiteToolsApiGet:getScriptLogs()',
-          details: `Clearing 'customduration' for 'now' time mode`,
+          details: `Clearing 'customDuration' for 'now' time mode`,
         });
         customduration = null;
       }
@@ -867,7 +867,7 @@ export class SuiteToolsApiGet {
     if (timemode === 'custom') {
       if (!customdatetime || !customduration) {
         throw new InvalidParameterError(
-          'customdatetime/customduration',
+          'customDateTime/customDuration',
           { customdatetime, customduration },
           "Both parameters required for 'custom' time mode",
         );
@@ -875,7 +875,7 @@ export class SuiteToolsApiGet {
       if (date && date !== '') {
         log.debug({
           title: 'SuiteToolsApiGet:getScriptLogs()',
-          details: `Clearing 'date' since 'custom' time mode`,
+          details: `Clearing 'dateCreated' since 'custom' time mode`,
         });
         date = '';
       }

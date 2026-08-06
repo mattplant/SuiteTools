@@ -20,8 +20,8 @@ export function ScriptsPage(): React.ReactElement {
     active: '',
     files: [''],
     owners: [''],
-    scripttypes: [''],
-    scriptnames: [''],
+    scriptTypes: [''],
+    scriptNames: [''],
     versions: [''],
   };
 

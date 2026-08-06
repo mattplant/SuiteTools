@@ -18,9 +18,9 @@ export function FilesPage(): React.ReactElement {
 
   const defaultCriteria: CriteriaFields = {
     rows: 50,
-    filetypes: [''],
-    createddate: '0',
-    lastmodifieddate: 'today',
+    fileTypes: [''],
+    dateCreated: '0',
+    lastModifiedDate: 'today',
   };
 
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);

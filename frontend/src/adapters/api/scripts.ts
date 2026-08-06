@@ -36,8 +36,8 @@ export async function getScripts(fields: CriteriaFields): Promise<Scripts> {
   const urlParams = {
     active: fields.active,
     versions: fields.versions,
-    scripttypes: fields.scripttypes,
-    scriptnames: fields.scriptnames,
+    scriptTypes: fields.scriptTypes,
+    scriptNames: fields.scriptNames,
     owners: fields.owners,
     files: fields.files,
   };

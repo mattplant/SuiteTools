@@ -21,13 +21,13 @@ export function ScriptLogsPage(): React.ReactElement {
     rows: 50,
     levels: ['ERROR', 'EMERGENCY', 'SYSTEM'],
     // user: [''],
-    scripttypes: [''],
-    scriptnames: [''],
+    scriptTypes: [''],
+    scriptNames: [''],
     owners: [''],
-    timemode: 'now',
-    createddate: '15', // default to last 15 minutes
-    customdatetime: undefined, // will be set by SearchCriteriaAdvancedTimePicker
-    customduration: '1', // default to 1 minute
+    timeMode: 'now',
+    dateCreated: '15', // default to last 15 minutes
+    customDateTime: undefined, // will be set by SearchCriteriaAdvancedTimePicker
+    customDuration: '1', // default to 1 minute
     title: '',
     detail: '',
   };
@@ -35,7 +35,7 @@ export function ScriptLogsPage(): React.ReactElement {
   // if a script param was passed in, set the scriptname criteria
   const { script } = useParams();
   if (script) {
-    defaultCriteria.scriptnames = [script]; // set the script to see logs for
+    defaultCriteria.scriptNames = [script]; // set the script to see logs for
     defaultCriteria.levels = ['']; // clear the level criteria
   }
 
