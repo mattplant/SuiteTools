@@ -214,16 +214,23 @@ export class SuiteToolsApiGet {
 
   private cleanJobData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== 'object' || !('isinactive' in data)) {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+    if (!('isInactive' in data) && !('isinactive' in data)) {
       return data;
     }
 
-    // switch isinactive values to active values
-    if (data.isinactive === 'F') {
-      data.isinactive = false;
+    // SuiteQL may return `isinactive`; emit shared camelCase wire key.
+    const inactive = data.isInactive ?? data.isinactive;
+    if (inactive === 'F' || inactive === false) {
+      data.isInactive = false;
+    } else if (inactive === 'T' || inactive === true) {
+      data.isInactive = true;
     } else {
-      data.isinactive = true;
+      data.isInactive = Boolean(inactive);
     }
+    delete data.isinactive;
 
     return data;
   }
