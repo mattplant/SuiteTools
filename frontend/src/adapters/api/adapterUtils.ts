@@ -52,8 +52,8 @@ export function makeSingularAdapter<TEntity>(
   adapt: (record: TEntity) => TEntity,
 ) {
   return async (id: number): Promise<TEntity> => {
-    if (id === 0) {
-      // invalid ID
+    // Reject 0 / NaN / non-finite so SuiteQL never sees `id = NaN`.
+    if (!Number.isFinite(id) || id <= 0) {
       return handleNotFound(entity, id);
     }
     const response = await getData(entity, { id });

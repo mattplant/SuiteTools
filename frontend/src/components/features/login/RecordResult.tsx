@@ -14,34 +14,34 @@ export function LoginResult({ data }: Props) {
         <b>Status</b>: {data.status}
       </p>
       <p>
-        <b>OAuth Application</b>: {data.oauthappname}
+        <b>OAuth Application</b>: {data.oauthAppName}
       </p>
       <p>
-        <b>OAuth Access Token</b>: {data.oauthaccesstokenname}
+        <b>OAuth Access Token</b>: {data.oauthAccessTokenName}
       </p>
       <p>
-        <b>User</b>: {data.username}
+        <b>User</b>: {data.userName}
       </p>
       <p>
-        <b>Role</b>: {data.rolename}
+        <b>Role</b>: {data.roleName}
       </p>
       <p>
-        <b>Email Address</b>: {data.emailaddress}
+        <b>Email Address</b>: {data.emailAddress}
       </p>
       <p>
-        <b>IP Address</b>: {data.ipaddress}
+        <b>IP Address</b>: {data.ipAddress}
       </p>
       <p>
-        <b>Request URI</b>: {data.requesturi}
+        <b>Request URI</b>: {data.requestUri}
       </p>
       <p>
         <b>Detail</b>: {data.detail}
       </p>
       <p>
-        <b>Security Challenge</b>: {data.secchallenge}
+        <b>Security Challenge</b>: {data.secChallenge}
       </p>
       <p>
-        <b>User Agent</b>: {data.useragent}
+        <b>User Agent</b>: {data.userAgent}
       </p>
     </>
   );

@@ -1049,8 +1049,8 @@ export class SuiteToolsApiModel {
     const sql = `SELECT
       ${customRecord}.id,
       TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS created,
-      ${customRecord}.custrecord_idev_st_mr_job_run_job_id AS jobid,
-      customrecord_idev_suitetools_job.name AS jobname,
+      ${customRecord}.custrecord_idev_st_mr_job_run_job_id AS jobId,
+      customrecord_idev_suitetools_job.name AS jobName,
       ${customRecord}.custrecord_idev_st_mr_job_run_completed AS completed,
       ${customRecord}.custrecord_idev_st_mr_job_run_results AS results
     FROM
@@ -1082,8 +1082,8 @@ export class SuiteToolsApiModel {
     let sql = `SELECT
       ${customRecord}.id,
       TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS created,
-      ${customRecord}.custrecord_idev_st_mr_job_run_job_id AS jobid,
-      customrecord_idev_suitetools_job.name AS jobname,
+      ${customRecord}.custrecord_idev_st_mr_job_run_job_id AS jobId,
+      customrecord_idev_suitetools_job.name AS jobName,
       ${customRecord}.custrecord_idev_st_mr_job_run_completed AS completed,
       ${customRecord}.custrecord_idev_st_mr_job_run_results AS results
     FROM

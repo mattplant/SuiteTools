@@ -25,7 +25,7 @@ function adaptJobRun(jobRun: JobRun): JobRun {
   return {
     ...jobRun,
     urlDetail: `#/jobRun/${jobRun.id}`,
-    urlJob: `#/job/${jobRun.jobid}`,
+    urlJob: `#/job/${jobRun.jobId}`,
   };
 }
 

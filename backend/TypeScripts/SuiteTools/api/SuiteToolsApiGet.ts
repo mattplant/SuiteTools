@@ -75,9 +75,11 @@ export class SuiteToolsApiGet {
           break;
         case 'jobRun':
           response = this.getJobRun(requestParams);
+          response.data = this.cleanJobRunData(response.data);
           break;
         case 'jobRuns':
           response = this.getJobRuns(requestParams);
+          response = this.cleanJobRunsData(response);
           break;
         case 'integration':
           response = this.getIntegration(requestParams);
@@ -250,21 +252,72 @@ export class SuiteToolsApiGet {
     return data;
   }
 
+  /**
+   * SuiteQL `asMappedResults()` lowercases multi-word keys. Emit the shared
+   * Login camelCase wire contract and drop flat leftovers.
+   */
+  private cleanLoginData(data: any): object {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    data.oauthAppName = data.oauthAppName ?? data.oauthappname ?? data.oAuthAppName ?? '';
+    data.oauthAccessTokenName =
+      data.oauthAccessTokenName ?? data.oauthaccesstokenname ?? data.oAuthAccessTokenName ?? '';
+    data.userName = data.userName ?? data.username ?? '';
+    data.roleName = data.roleName ?? data.rolename ?? '';
+    data.emailAddress = data.emailAddress ?? data.emailaddress ?? '';
+    data.ipAddress = data.ipAddress ?? data.ipaddress ?? '';
+    data.requestUri = data.requestUri ?? data.requesturi ?? '';
+    data.secChallenge = data.secChallenge ?? data.secchallenge ?? '';
+    data.userAgent = data.userAgent ?? data.useragent ?? '';
+    delete data.oauthappname;
+    delete data.oauthaccesstokenname;
+    delete data.username;
+    delete data.rolename;
+    delete data.emailaddress;
+    delete data.ipaddress;
+    delete data.requesturi;
+    delete data.secchallenge;
+    delete data.useragent;
+    delete data.oAuthAppName;
+    delete data.oAuthAccessTokenName;
+
+    return data;
+  }
+
   private cleanLoginsData(response: Response): Response {
     if (response && Array.isArray(response.data) && response.data.length > 0) {
       (response.data as any[]).forEach((record, index) => {
         // LoginAudit has no stable internal id in this query; synthesize for the UI modal.
         record.id = index + 1;
-        // Normalize SuiteQL key casing to the shared Login schema.
-        record.oauthappname = record.oauthappname ?? record.oAuthAppName ?? null;
-        record.oauthaccesstokenname = record.oauthaccesstokenname ?? record.oAuthAccessTokenName ?? null;
-        record.username = record.username ?? record.userName ?? null;
-        record.rolename = record.rolename ?? record.roleName ?? null;
-        record.emailaddress = record.emailaddress ?? record.emailAddress ?? null;
-        record.ipaddress = record.ipaddress ?? record.ipAddress ?? '';
-        record.requesturi = record.requesturi ?? record.requestUri ?? '';
-        record.secchallenge = record.secchallenge ?? record.secChallenge ?? null;
-        record.useragent = record.useragent ?? record.userAgent ?? null;
+        this.cleanLoginData(record);
+      });
+    }
+
+    return response;
+  }
+
+  /**
+   * Remap SuiteQL-lowercased JobRun aliases to the shared camelCase wire contract.
+   */
+  private cleanJobRunData(data: any): object {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    data.jobId = data.jobId ?? data.jobid;
+    data.jobName = data.jobName ?? data.jobname ?? '';
+    delete data.jobid;
+    delete data.jobname;
+
+    return data;
+  }
+
+  private cleanJobRunsData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      (response.data as any[]).forEach((record) => {
+        this.cleanJobRunData(record);
       });
     }
 
