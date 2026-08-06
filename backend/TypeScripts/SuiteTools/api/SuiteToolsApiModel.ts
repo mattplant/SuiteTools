@@ -11,7 +11,6 @@ import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteQLResults } from '../common/types';
 
 import type { Response } from './types';
-import { NotFoundError } from '@suiteworks/suitetools-shared/errors';
 
 /**
  * SuiteTools API Model Class
@@ -75,7 +74,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       file.id,
       file.folder,
@@ -185,7 +184,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobs(active: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     const customRecord = 'customrecord_idev_suitetools_job';
     let sql = `SELECT
       ${customRecord}.id,
@@ -245,7 +244,7 @@ export class SuiteToolsApiModel {
       role.id = ${id}`;
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     if (sqlResults.length === 0) {
-      throw new NotFoundError('Role', id);
+      response.message = `No role found with id of ${id}`;
     } else {
       response.data = sqlResults[0];
     }
@@ -260,7 +259,7 @@ export class SuiteToolsApiModel {
    * @returns roles
    */
   public getRoles(active: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       role.id,
       role.scriptId,
@@ -680,7 +679,7 @@ export class SuiteToolsApiModel {
     owners: string[],
     files: string[],
   ): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       script.id,
       script.apiversion AS apiVersion,
@@ -785,7 +784,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getUsers(active: string, roles?: string[], supervisors?: string[]): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       employee.id,
       employee.isinactive AS isInactive,
@@ -898,7 +897,7 @@ export class SuiteToolsApiModel {
     title: string,
     detail: string,
   ): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -1077,7 +1076,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRuns(job: string, completed: string): Response {
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     let sql = `SELECT
       ${customRecord}.id,
@@ -1267,7 +1266,7 @@ export class SuiteToolsApiModel {
       },
     });
 
-    const response: Response = { status: 200, data: {} };
+    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       TO_CHAR ( loginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
       loginAudit.status,

@@ -76,10 +76,9 @@ Do not treat typed API errors as schema‑validation failures.
 
 | Kind | Shape | Used by |
 |------|--------|---------|
-| Soft NotFound (preferred) | Success envelope `{ status: 404, data: { code: 'NOT_FOUND', message } }` | file, job, user, script, jobRun, token, integration, scriptLog (`ensureEntityOrSoftNotFound` / `softNotFoundResponse`) |
-| Hard NotFound | Thrown `NotFoundError` → `ErrorResponse` | Role (today) |
+| Soft NotFound (preferred) | Success envelope `{ status: 404, data: { code: 'NOT_FOUND', message } }` | All singular GETs (`ensureEntityOrSoftNotFound` / `softNotFoundResponse`), including Role (#49) |
 
-Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`. Model may still init with `data: {}` internally; Get-layer helpers normalize before validation.
+Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`. Model list getters init `data: []`; singular getters may still init `data: {}` until normalized at the Get layer.
 
 ---
 

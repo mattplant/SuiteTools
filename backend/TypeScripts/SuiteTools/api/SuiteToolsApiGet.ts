@@ -704,8 +704,7 @@ export class SuiteToolsApiGet {
       throw new InvalidParameterError('id', undefined, 'Missing required parameter');
     }
     const result = this.stApiModel.getRole(id);
-
-    return result;
+    return ensureEntityOrSoftNotFound(result, `No role found with id of ${id}`);
   }
 
   /**
