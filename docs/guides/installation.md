@@ -1,6 +1,6 @@
 # 📚 SuiteTools Installation Guide
 
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
 ---
 
@@ -26,14 +26,55 @@ SuiteTools is a Yarn workspaces monorepo:
 - A NetSuite **instance** with SDF enabled
 - Administrator (or equivalent) access to install, deploy, and run SuiteTools
 
-### Local toolchain
+### Local Toolchain
 
 | Tool | Notes |
 |------|--------|
-| **Node.js** | Matches repo `.node-version` (currently Node 24) |
+| **Node.js** | **24.x** (Active LTS). Pinned by `.node-version` / `.nvmrc`, declared in root `engines.node`, enforced on `yarn install` via `scripts/check-node.mjs`. CI uses `node:24-bookworm` (see [Build & Release](./build-release.md)). |
 | **Yarn Berry** | Yarn **4.9.2** via this project’s `packageManager` / `.yarn/releases`. |
 | **Java JDK** | **17+** (21 recommended) for the SuiteCloud CLI (`suitecloud` account setup, validate, deploy, file upload) |
 | **SuiteCloud CLI** | Provided as a workspace dependency (`@oracle/suitecloud-cli`); invoked via Yarn scripts |
+
+### Node.js 24 (Not Homebrew Current)
+
+As of 2026-08-05, Homebrew’s default `node` formula tracks **Current** (Node **26**). SuiteTools stays on **Node 24 LTS** until 26 becomes LTS (~2026-10-28). Odd-major / Current Node has caused native postinstall pain under Yarn PnP (notably esbuild).
+
+Confirm before installing:
+
+```bash
+node -v   # expect v24.x.x
+```
+
+**Homebrew (recommended on macOS):**
+
+```bash
+brew install node@24
+brew unlink node          # if bare `node` (26) is linked
+brew link node@24 --force --overwrite
+hash -r
+node -v                   # v24.x.x
+```
+
+If `brew link` still leaves 26 on your `PATH`, put `node@24` first:
+
+```bash
+echo 'export PATH="$(brew --prefix node@24)/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Version managers (read the pin files):**
+
+```bash
+# fnm — reads .node-version
+fnm install
+fnm use
+
+# nvm — reads .nvmrc
+nvm install
+nvm use
+```
+
+Yarn 4 does **not** enforce `engines` by itself. Root `postinstall` runs `scripts/check-node.mjs` and **fails** if the major version is not 24.
 
 ### Requirements From NetSuite-TypeScript-SDF Template
 
@@ -42,13 +83,14 @@ You should be comfortable deploying a simple SDF project before working with Sui
 
 ---
 
-## ⚙️ Initial Setup (first-time install)
+## ⚙️ Initial Setup (First-Time Install)
 
 ### Clone and Install Dependencies
 
 ```bash
 git clone https://gitlab.com/idev-systems/labs/SuiteTools.git
 cd SuiteTools
+node -v          # must be v24.x
 yarn install
 ```
 
@@ -123,6 +165,29 @@ yarn workspace backend run deploy
 `https://<account_id>.app.netsuite.com/app/site/hosting/scriptlet.nl?script=customscript_idev_suitetools_app&deploy=customdeploy_idev_suitetools_app`
 
 - ✅ Replace `<account_id>` with your actual NetSuite account ID.
+
+---
+
+## 🧯 Troubleshooting Yarn Install
+
+### Wrong Node Major (Check-Node Failure)
+
+If `yarn install` prints that SuiteTools requires Node 24, your shell is on another major (often Homebrew Current 26). Switch with the Homebrew / fnm / nvm steps above, then re-run `yarn install`.
+
+### Hung Install or `esbuild Must Be Built`
+
+A bad local `.yarn/unplugged` esbuild binary (for example a self-recursive Node wrapper instead of the real Mach-O/ELF) can hang or fork-bomb during postinstall.
+
+Recovery:
+
+```bash
+# From the monorepo root
+rm -rf .yarn/unplugged/esbuild-* .yarn/unplugged/@esbuild-*
+yarn install --mode=skip-build   # if a normal install hangs on esbuild
+yarn install                     # once Node 24 is confirmed
+```
+
+If esbuild is still wrong after a clean install on Node 24, delete the matching entries under `.yarn/unplugged/` again and reinstall. Prefer Node 24 before retrying — Current Node increases risk for native optional deps under PnP.
 
 ---
 

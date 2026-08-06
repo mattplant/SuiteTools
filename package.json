@@ -4,6 +4,9 @@
   "description": "The monorepo for SuiteTools",
   "version": "1.0.0-beta.2",
   "packageManager": "yarn@4.9.2",
+  "engines": {
+    "node": "^24.0.0"
+  },
   "author": {
     "name": "Matthew Plant",
     "url": "https://idev.systems/"
@@ -36,7 +39,7 @@
     "lint:docs": "eslint '**/*.md'",
     "typecheck": "yarn workspace @suiteworks/suitetools-shared run typecheck && yarn workspace frontend run typecheck && yarn workspace backend run typecheck",
     "test": "yarn workspace @suiteworks/suitetools-shared run build && yarn workspaces foreach -Apt --verbose run test",
-    "postinstall": "echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
+    "postinstall": "node ./scripts/check-node.mjs && echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
     "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
     "yarn:reset": "./scripts/resetYarn.sh",
     "generate-third-party-licenses": "./scripts/generate-third-party-licenses.sh"
