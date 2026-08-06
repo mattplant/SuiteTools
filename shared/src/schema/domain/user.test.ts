@@ -6,7 +6,7 @@ import { UserBundle } from "./user";
 describe("UserBundle schema", () => {
   const validUser = {
     id: 1,
-    isinactive: false,
+    isInactive: false,
     email: "a@example.com",
     name: "Ada Lovelace",
     title: "Engineer",
@@ -18,10 +18,21 @@ describe("UserBundle schema", () => {
 
   it("coerces NetSuite T/F flags and rejects bad ids", () => {
     expect(
-      UserBundle.schema.parse({ ...validUser, isinactive: "T" }),
-    ).toMatchObject({ isinactive: true });
+      UserBundle.schema.parse({ ...validUser, isInactive: "T" }),
+    ).toMatchObject({ isInactive: true });
     expect(() =>
       UserBundle.schema.parse({ ...validUser, id: -1 }),
     ).toThrow();
+  });
+
+  it("coerces null SuiteQL string fields to empty string", () => {
+    expect(
+      UserBundle.schema.parse({
+        ...validUser,
+        email: null,
+        name: null,
+        title: null,
+      }),
+    ).toMatchObject({ email: "", name: "", title: "" });
   });
 });

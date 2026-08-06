@@ -15,7 +15,7 @@ const columns = [
     },
   },
   {
-    key: 'isinactive',
+    key: 'isInactive',
     name: 'Active',
     width: 90,
     renderSummaryCell({ row }: { row: SummaryRow }) {
@@ -30,7 +30,7 @@ const columns = [
   { key: 'supervisor', name: 'Supervisor' },
   { key: 'title', name: 'Title' },
   { key: 'lastLogin', name: 'Last Login' },
-  { key: 'role_names', name: 'Role(s)' },
+  { key: 'roleNames', name: 'Role(s)' },
 ];
 
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {

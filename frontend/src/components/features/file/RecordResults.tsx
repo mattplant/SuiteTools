@@ -28,22 +28,22 @@ const columns = [
     },
   },
   {
-    key: 'createddate',
+    key: 'dateCreated',
     name: 'Created Date',
     renderCell({ row }: { row: File }) {
-      return formatFileDate(row.createddate);
+      return formatFileDate(row.dateCreated);
     },
   },
   {
-    key: 'lastmodifieddate',
+    key: 'lastModifiedDate',
     name: 'Last Modified Date',
     renderCell({ row }: { row: File }) {
-      return formatFileDate(row.lastmodifieddate);
+      return formatFileDate(row.lastModifiedDate);
     },
   },
-  { key: 'filetypename', name: 'Type' },
+  { key: 'fileTypeName', name: 'Type' },
   { key: 'name', name: 'Name' },
-  { key: 'filesize', name: 'File Size' },
+  { key: 'fileSize', name: 'File Size' },
   { key: 'description', name: 'Description' },
   { key: 'url', name: 'URL' },
 ];

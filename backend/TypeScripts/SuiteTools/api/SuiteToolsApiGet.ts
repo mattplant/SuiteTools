@@ -58,9 +58,11 @@ export class SuiteToolsApiGet {
       switch (endpoint) {
         case 'file':
           response = this.getFile(requestParams);
+          response.data = this.cleanFileData(response.data);
           break;
         case 'files':
           response = this.getFiles(requestParams);
+          response = this.cleanFilesData(response);
           break;
         case 'job':
           response = this.getJob(requestParams);
@@ -275,7 +277,18 @@ export class SuiteToolsApiGet {
       return data;
     }
 
-    // SuiteQL returns camelCase column names that match the shared Role wire contract.
+    // SuiteQL may lowercase multi-word keys; normalize to the shared Role wire contract.
+    data.centerType = data.centerType ?? data.centertype ?? '';
+    data.isInactive = data.isInactive ?? data.isinactive;
+    data.isSalesRole = data.isSalesRole ?? data.issalesrole;
+    data.isSupportRole = data.isSupportRole ?? data.issupportrole;
+    data.isWebServiceOnlyRole = data.isWebServiceOnlyRole ?? data.iswebserviceonlyrole;
+    delete data.centertype;
+    delete data.isinactive;
+    delete data.issalesrole;
+    delete data.issupportrole;
+    delete data.iswebserviceonlyrole;
+
     // Map T/F flags to Yes/No strings for zNetSuite.booleanFromTF.
     if (data.isInactive === 'F') {
       data.isInactive = 'Yes';
@@ -313,9 +326,26 @@ export class SuiteToolsApiGet {
 
   private cleanScriptData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== 'object' || !('isInactive' in data)) {
+    if (!data || typeof data !== 'object') {
       return data;
     }
+    if (!('isInactive' in data) && !('isinactive' in data)) {
+      return data;
+    }
+
+    // SuiteQL lowercases aliases; normalize to shared Script wire keys.
+    data.apiVersion = data.apiVersion ?? data.apiversion;
+    data.isInactive = data.isInactive ?? data.isinactive;
+    data.scriptType = data.scriptType ?? data.scripttype;
+    data.scriptId = data.scriptId ?? data.scriptid;
+    data.scriptFile = data.scriptFile ?? data.scriptfile;
+    data.notifyEmails = data.notifyEmails ?? data.notifyemails;
+    delete data.apiversion;
+    delete data.isinactive;
+    delete data.scripttype;
+    delete data.scriptid;
+    delete data.scriptfile;
+    delete data.notifyemails;
 
     // Normalize NetSuite T/F to boolean for shared schema validation.
     if (data.isInactive === 'F') {
@@ -337,18 +367,52 @@ export class SuiteToolsApiGet {
     return response;
   }
 
+  /**
+   * SuiteQL `asMappedResults()` lowercases aliases (`AS dateCreated` → `datecreated`).
+   * Remap to the shared camelCase File wire contract before SPA Zod parse.
+   */
+  private cleanFileData(data: any): object {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    data.dateCreated = data.dateCreated ?? data.datecreated;
+    data.lastModifiedDate = data.lastModifiedDate ?? data.lastmodifieddate;
+    data.fileTypeName = data.fileTypeName ?? data.filetypename ?? '';
+    data.fileSize = data.fileSize ?? data.filesize;
+    delete data.datecreated;
+    delete data.lastmodifieddate;
+    delete data.filetypename;
+    delete data.filesize;
+
+    return data;
+  }
+
+  private cleanFilesData(response: Response): Response {
+    if (response && Array.isArray(response.data) && response.data.length > 0) {
+      (response.data as any[]).forEach((record) => {
+        this.cleanFileData(record);
+      });
+    }
+
+    return response;
+  }
+
   private cleanUserData(data: any): object {
-    // switch isinactive values to active values
-    if (data.isinactive === 'F') {
-      data.isinactive = 'Yes';
+    // Soft-miss / empty payloads can be null or non-objects — bail before field access.
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    // SuiteQL lowercases `AS isInactive` → `isinactive`; prefer camelCase wire key.
+    const inactive = data.isInactive ?? data.isinactive;
+    if (inactive === 'F') {
+      data.isInactive = 'Yes';
     } else {
-      data.isinactive = 'No';
+      data.isInactive = 'No';
     }
-    // clear role field if empty
-    if (data.role === ' ()') {
-      data.role = '';
-    }
-    // clear supervisor field if empty
+    delete data.isinactive;
+    // clear supervisor field if empty DF()
     if (data.supervisor === ' ()') {
       data.supervisor = '';
     }
