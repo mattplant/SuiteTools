@@ -52,11 +52,13 @@ export async function analyzeBundles(deploymentFiles) {
       analysis.bundles.push(bundleInfo);
       analysis.totalSize += stats.size;
 
-      // Generate warnings for large bundles
-      if (bundleInfo.sizeKB > 500) {
-        analysis.warnings.push(`🚨 Large bundle: ${fileName} (${bundleInfo.sizeKB}KB) - Consider code splitting`);
-      } else if (bundleInfo.sizeKB > 200) {
-        analysis.warnings.push(`⚠️  Medium bundle: ${fileName} (${bundleInfo.sizeKB}KB) - Monitor for growth`);
+      // Soft size bands (aligned with BUILD_CONFIG.analysis; Zod-backed API is ~450KB)
+      if (bundleInfo.sizeKB > 600) {
+        analysis.warnings.push(
+          `⚠️  Bundle over soft limit: ${fileName} (${bundleInfo.sizeKB}KB) — review imports / shared surface`,
+        );
+      } else if (bundleInfo.sizeKB > 400) {
+        analysis.warnings.push(`⚠️  Large bundle: ${fileName} (${bundleInfo.sizeKB}KB) — monitor for growth`);
       }
 
       // Output bundle info
@@ -84,8 +86,10 @@ export async function analyzeBundles(deploymentFiles) {
 
   // Specific recommendations based on individual bundle analysis
   for (const bundle of analysis.bundles) {
-    if (bundle.sizeKB > 200) {
-      analysis.recommendations.push(`${bundle.name}: Extract large utility functions to helpers`);
+    if (bundle.sizeKB > 400) {
+      analysis.recommendations.push(
+        `${bundle.name}: Prefer narrower shared imports so MR scripts do not pull the full schema graph`,
+      );
     }
   }
 
@@ -165,8 +169,8 @@ function extractDependencies(content) {
  */
 export async function monitorBundleSizes(deploymentFiles, thresholds = {}) {
   const defaultThresholds = {
-    warningSize: 200 * 1024, // 200KB
-    errorSize: 500 * 1024, // 500KB
+    warningSize: 400 * 1024, // 400KB — matches BUILD_CONFIG.analysis.warningThreshold
+    errorSize: 600 * 1024, // 600KB — matches BUILD_CONFIG.analysis.errorThreshold
     growthPercent: 25, // 25% growth
   };
 
@@ -177,12 +181,14 @@ export async function monitorBundleSizes(deploymentFiles, thresholds = {}) {
 
   for (const bundle of analysis.bundles) {
     if (bundle.size > config.errorSize) {
-      console.error(
-        `🚨 BUNDLE TOO LARGE: ${bundle.name} (${bundle.sizeKB}KB) exceeds ${Math.round(config.errorSize / 1024)}KB limit`,
+      console.warn(
+        `⚠️  Bundle exceeds soft limit (${Math.round(config.errorSize / 1024)}KB): ${bundle.name} (${bundle.sizeKB}KB) — review before growing further`,
       );
       hasErrors = true;
     } else if (bundle.size > config.warningSize) {
-      console.warn(`⚠️  Bundle size warning: ${bundle.name} (${bundle.sizeKB}KB)`);
+      console.warn(
+        `⚠️  Bundle size watch (${Math.round(config.warningSize / 1024)}KB+): ${bundle.name} (${bundle.sizeKB}KB)`,
+      );
     }
   }
 

@@ -35,6 +35,8 @@
   "scripts": {
     "sdf-account-setup": "yarn workspace backend suitecloud account:setup",
     "watch:backend": "yarn workspace backend run watch",
+    "build:all": "yarn workspace frontend run build && yarn workspace backend run build",
+    "deploy:all": "yarn build:all && yarn workspace backend run deploy",
     "lint": "yarn workspace @suiteworks/suitetools-shared run build:types && eslint backend frontend shared --report-unused-disable-directives --max-warnings 0",
     "lint:docs": "eslint '**/*.md'",
     "typecheck": "yarn workspace @suiteworks/suitetools-shared run typecheck && yarn workspace frontend run typecheck && yarn workspace backend run typecheck",

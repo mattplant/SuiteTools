@@ -1,6 +1,6 @@
 # 📘 SuiteTools Build & Release Checklist
 
-Last updated: 2026-08-04
+Last updated: 2026-08-06
 
 ---
 
@@ -21,6 +21,8 @@ For full context, see:
 
 Prereqs: **Node 24** (`.node-version`), NetSuite auth configured (`yarn run sdf-account-setup`), **JDK** available for SuiteCloud CLI, and Yarn 4 from this repo (`packageManager` / `.yarn/releases`).
 
+Prefer `build-and-deploy` (or root `deploy:all`) over bare `deploy` so you never upload a stale build.
+
 ### Frontend (SPA only)
 
 From the monorepo root:
@@ -36,13 +38,22 @@ yarn workspace frontend run build-and-deploy
 ### Backend (SuiteScript / SDF objects)
 
 ```bash
-yarn workspace backend run build
-yarn workspace backend run deploy
+yarn workspace backend run build-and-deploy
 ```
 
-- ✅ `prebuild` builds **shared** automatically.
-- ✅ `deploy` is full SDF `project:deploy` (scripts, objects, FileCabinet).
-- ✅ For a **first-time** account install, build **frontend** as well before `backend` deploy so SPA `dist/` is present — see [Installation](./installation.md).
+- ✅ Builds **shared** (`prebuild`), builds SuiteScript bundles, then full SDF `project:deploy` (scripts, objects, FileCabinet).
+- ✅ Prefer `build-and-deploy` — bare `deploy` uploads without rebuilding.
+- ❌ SPA `dist/` is only included if you built frontend first (or use `deploy:all` below).
+
+### Full-stack (first install / shared or cross-cutting changes)
+
+```bash
+yarn deploy:all
+```
+
+- ✅ Runs `yarn build:all`, then backend `deploy` (bare deploy is fine here — artifacts were just built).
+- ✅ After FE `build`, SPA assets sit under FileCabinet `dist/`; BE `project:deploy` ships them — do **not** also run FE `build-and-deploy` in this path (redundant `file:upload`).
+- ✅ Local builds only (no NetSuite): `yarn build:all`.
 
 ---
 
@@ -51,13 +62,16 @@ yarn workspace backend run deploy
 GitLab CI (`.gitlab-ci.yml`) on MRs and the default branch:
 
 ```bash
-yarn typecheck   # merge-blocking — shared types + FE/BE tsc
-yarn lint        # merge-blocking — shared types emit, then ESLint (--max-warnings 0)
-yarn test        # merge-blocking
+yarn install --immutable   # before_script — lockfile must match
+yarn typecheck             # merge-blocking — shared types + FE/BE tsc
+yarn lint                  # merge-blocking — shared types emit, then ESLint (--max-warnings 0)
+yarn test                  # merge-blocking
 ```
 
 - ✅ Red **typecheck** / **lint** / **test** should block merge when **Pipelines must succeed** is enabled in project settings.
+- ✅ Dependency MRs: run `yarn install` locally (and `yarn dedupe --check` when touching deps) before push so immutable CI install succeeds.
 - ❌ SuiteCloud deploy is not run in MR CI.
+- ❌ `yarn dedupe --check` is not a CI job yet — enforce locally on dependency changes.
 
 ---
 
@@ -79,8 +93,9 @@ yarn test        # merge-blocking
 - ❌ Publishing without typecheck/tests → ✅ Rely on CI gates / run full validation before tagging
 - ❌ Cross‑workspace imports → ✅ Use `shared/` outputs only
 - ❌ Missing migration notes → ✅ Every breaking change must include guidance
-- ❌ Backend deploy without a prior frontend build on a fresh account → ✅ Build FE then BE for first install
+- ❌ Backend deploy without a prior frontend build on a fresh account → ✅ Use `yarn deploy:all` (or build FE then BE `build-and-deploy`)
 - ❌ Using a different Yarn than this repo pins → ✅ Use Yarn 4 from `packageManager` / `.yarn/releases`
+- ❌ Pushing lockfile drift → ✅ Run `yarn install` locally; CI uses `--immutable`
 
 ---
 
@@ -89,3 +104,4 @@ yarn test        # merge-blocking
 - [📚 Installation Guide](./installation.md)
 - [📚 Customizing Guide](./customizing.md)
 - [🛠️ Build & Release Guide](./build-release.md)
+- [📦 Yarn Foundations](./yarn.md)

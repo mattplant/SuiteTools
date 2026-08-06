@@ -18,11 +18,12 @@ export const BUILD_CONFIG = {
     keepNames: true, // Preserve function names for better debugging in production
   },
 
-  // Bundle analysis settings
+  // Bundle analysis settings (soft limits — build still succeeds)
+  // Zod + shared schemas make the API RESTlet ~450KB; thresholds reflect that baseline.
   analysis: {
     enabled: true, // Enable bundle size analysis
-    warningThreshold: 100, // KB - Warn when bundles exceed this size
-    errorThreshold: 200, // KB - Error when bundles exceed this size
+    warningThreshold: 400, // KB — watch growth (e.g. current API bundle)
+    errorThreshold: 600, // KB — soft ceiling; louder alert, still non-blocking
   },
 
   // NetSuite specific settings

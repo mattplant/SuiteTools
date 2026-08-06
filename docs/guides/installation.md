@@ -1,6 +1,6 @@
 # 📚 SuiteTools Installation Guide
 
-Last updated: 2026-08-05
+Last updated: 2026-08-06
 
 ---
 
@@ -99,8 +99,7 @@ yarn install
 Frontend `prebuild` and backend `prebuild` each build **shared** automatically. For a first install, build both consumers so FileCabinet has SPA assets **and** SuiteScript bundles:
 
 ```bash
-yarn workspace frontend run build
-yarn workspace backend run build
+yarn build:all
 ```
 
 - Frontend output: `backend/src/FileCabinet/SuiteScripts/SuiteTools/dist/` (`index.html`, `output.css`, `app-bundle.js`)
@@ -120,10 +119,10 @@ Follow the SuiteCloud prompts (uses the Java-backed CLI).
 
 ### Deploy to NetSuite (first time)
 
-Full SDF deploy from the backend workspace (scripts, objects, FileCabinet — including SPA `dist/` if you built frontend first):
+Builds the SPA into FileCabinet `dist/`, builds SuiteScript, then full SDF `project:deploy` (scripts, objects, FileCabinet — including SPA assets):
 
 ```bash
-yarn workspace backend run deploy
+yarn deploy:all
 ```
 
 ---
@@ -143,11 +142,10 @@ Reload the SuiteTools Suitelet and confirm the **app-bundle** timestamp if debug
 ### Backend-only (RESTlet / Suitelet / Map-Reduce / objects)
 
 ```bash
-yarn workspace backend run build
-yarn workspace backend run deploy
+yarn workspace backend run build-and-deploy
 ```
 
-`prebuild` builds shared first. Use `build:prod` instead of `build` when you want production bundle settings.
+`prebuild` builds shared first. Prefer `build-and-deploy` over bare `deploy`. Use `build:prod` instead of `build` when you want production bundle settings before deploy.
 
 ---
 
