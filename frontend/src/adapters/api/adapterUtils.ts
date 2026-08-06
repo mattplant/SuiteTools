@@ -14,7 +14,7 @@
  */
 
 import { handleError, isNotFound, NotFoundError, toArray } from '@suiteworks/suitetools-shared';
-import type { BaseSchema, NotFound, SingularEntityName } from '@suiteworks/suitetools-shared';
+import type { BaseSchema, EndpointName, NotFound, SingularEntityName } from '@suiteworks/suitetools-shared';
 import { getData } from './netSuiteClient';
 
 /* -------------------------------------------------------------------------- */
@@ -70,6 +70,55 @@ export function makeSingularAdapter<TEntity>(
     }
 
     return adapt(parsed.data as TEntity);
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/* makeListAdapter                                                             */
+/* -------------------------------------------------------------------------- */
+
+type MakeListAdapterOptions<TItem, TCriteria extends object> = {
+  /** Enrich each validated row (e.g. add `urlNs` / `urlDetail`). */
+  adaptItem?: (item: TItem) => TItem;
+  /**
+   * Optional transform after {@link pickCriteria} (e.g. join multi-selects).
+   * Default: forward the picked object as query params.
+   */
+  mapParams?: (picked: Partial<TCriteria>) => Record<string, unknown>;
+};
+
+/**
+ * Creates a list entity adapter for fetching and adapting records by criteria.
+ * Always returns an array (empty on NotFound / nullish / non-array data).
+ * @template TItem - Element type of the list.
+ * @template TCriteria - Criteria object type (e.g. `CriteriaFields`).
+ * @template K - Whitelisted criteria keys forwarded to the API.
+ * @param endpoint - Plural (or list) endpoint name for {@link getData}.
+ * @param schema - Request/response envelope schema (`makeRequestResponseSchema` + list-or-NotFound).
+ * @param criteriaKeys - Keys projected via {@link pickCriteria}.
+ * @param [options] - Optional per-item adapt and param mapping.
+ * @returns An async function `(fields) => TItem[]`.
+ */
+export function makeListAdapter<TItem, TCriteria extends object, K extends keyof TCriteria>(
+  endpoint: EndpointName,
+  schema: BaseSchema<TItem[] | NotFound>,
+  criteriaKeys: readonly K[],
+  options?: MakeListAdapterOptions<TItem, TCriteria>,
+): (fields: TCriteria) => Promise<TItem[]> {
+  return async (fields: TCriteria): Promise<TItem[]> => {
+    console.log(`[${endpoint}:list] criteria: %o`, fields);
+
+    const picked = pickCriteria(fields, criteriaKeys);
+    const urlParams = options?.mapParams ? options.mapParams(picked) : (picked as Record<string, unknown>);
+    const response = await getData(endpoint, urlParams);
+    const parsed = schema.parse(response);
+
+    if (parsed.data == null || isNotFound(parsed.data)) {
+      return [];
+    }
+
+    const rows = toEntityArray<TItem>(parsed.data);
+    return options?.adaptItem ? rows.map(options.adaptItem) : rows;
   };
 }
 
