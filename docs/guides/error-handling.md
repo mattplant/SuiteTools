@@ -62,7 +62,7 @@ Before a successful GET returns JSON, `SuiteToolsApiGet` validates through `vali
 1. **All GET endpoints** — shared `requestResponse` envelope (`status`, `data`, optional `message`).
 2. **Selected endpoints** — see `GET_PAYLOAD_VALIDATED_ENDPOINTS` in `SuiteToolsApiGetValidate.ts` (expanded in #44).
 
-Failures throw `SchemaValidationError` → `ErrorResponse` with `SCHEMA_VALIDATION_ERROR` (HTTP-style status 500), including Zod `issues` in `context`. List getters normalize empty `{}` to `[]`. Legacy empty-object soft-misses still skip entity validation when they appear; singular GET handlers should emit canonical soft NotFound instead (see below).
+Failures throw `SchemaValidationError` → `ErrorResponse` with `SCHEMA_VALIDATION_ERROR` (HTTP-style status 500), including Zod `issues` in `context`. List getters normalize empty `{}` to `[]`. Empty-object singular misses are **not** skipped — emit canonical soft NotFound (see below) or validation fails.
 
 Frontend `getData` / `postData` / `putData` in `netSuiteClient`:
 
@@ -78,9 +78,8 @@ Do not treat typed API errors as schema‑validation failures.
 |------|--------|---------|
 | Soft NotFound (preferred) | Success envelope `{ status: 404, data: { code: 'NOT_FOUND', message } }` | file, job, user, script, jobRun, token, integration, scriptLog (`ensureEntityOrSoftNotFound` / `softNotFoundResponse`) |
 | Hard NotFound | Thrown `NotFoundError` → `ErrorResponse` | Role (today) |
-| Legacy empty `{}` | `{ status: 200\|404, data: {} }` | Being removed from singular GETs; FE `adapterUtils` still shims |
 
-Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`.
+Singular adapters turn soft NotFound into `NotFoundError` via `handleNotFound`. Model may still init with `data: {}` internally; Get-layer helpers normalize before validation.
 
 ---
 

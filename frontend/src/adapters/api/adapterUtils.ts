@@ -58,23 +58,14 @@ export function makeSingularAdapter<TEntity>(
     }
     const response = await getData(entity, { id });
 
-    // Legacy backends sometimes return `{ status: 200, data: {}, message }` for misses.
-    // Treat empty payloads as NotFound before Zod tries to parse them as the entity.
-    const payload = response.data;
-    if (
-      payload == null ||
-      (typeof payload === 'object' &&
-        !Array.isArray(payload) &&
-        !('id' in payload) &&
-        !isNotFound(payload as NotFound))
-    ) {
+    // Nullish data is treated as miss; empty `{}` is not (must be canonical NotFound).
+    if (response.data == null) {
       return handleNotFound(entity, id);
     }
 
     const parsed = schema.parse(response);
 
     if (isNotFound(parsed.data)) {
-      // Governance‑aligned: throw a SuiteError subclass
       return handleNotFound(entity, id);
     }
 
