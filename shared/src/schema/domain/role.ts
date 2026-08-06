@@ -13,7 +13,7 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  * - `id`: unique numeric identifier
  * - `isInactive`: boolean indicating if the role is inactive
  * - `name`: name of the role
- * - `centerType`: type of center associated with the role
+ * - `centerType`: center associated with the role (empty when SuiteQL returns null)
  * - `isSalesRole`: boolean indicating if the role is a sales role
  * - `isSupportRole`: boolean indicating if the role is a support role
  * - `isWebServiceOnlyRole`: boolean indicating if the role is web service only
@@ -24,7 +24,7 @@ const schema = z.object({
   id: z.number().positive(),
   isInactive: zNetSuite.booleanFromTF.schema,
   name: z.string(),
-  centerType: z.string(),
+  centerType: zNetSuite.stringOrEmpty.schema,
   isSalesRole: zNetSuite.booleanFromTF.schema,
   isSupportRole: zNetSuite.booleanFromTF.schema,
   isWebServiceOnlyRole: zNetSuite.booleanFromTF.schema,

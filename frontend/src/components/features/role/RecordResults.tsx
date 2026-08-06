@@ -23,7 +23,7 @@ const columns: Column<Role, SummaryRow>[] = [
     renderCell: ({ row }) => (!row.isInactive ? 'Yes' : 'No'),
     renderSummaryCell: ({ row }: { row: { totalCount: number } }) => `${row.totalCount} records`,
   },
-  { key: 'name', name: 'Name TEST' },
+  { key: 'name', name: 'Name' },
   {
     key: 'centerType',
     name: 'Center Type',
