@@ -49,6 +49,23 @@ describe("RoleBundle / JobBundle schemas", () => {
     });
   });
 
+  it("coerces null centerType to empty string", () => {
+    expect(
+      RoleBundle.schema.parse({
+        id: 4,
+        isInactive: "F",
+        name: "Custom Role",
+        centerType: null,
+        isSalesRole: "F",
+        isSupportRole: "F",
+        isWebServiceOnlyRole: "F",
+      }),
+    ).toMatchObject({
+      id: 4,
+      centerType: "",
+    });
+  });
+
   it("parses a valid job", () => {
     const job = JobBundle.schema.parse({
       id: 9,
