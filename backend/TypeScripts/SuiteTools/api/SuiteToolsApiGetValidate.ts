@@ -14,7 +14,6 @@ import type { z, ZodIssue } from 'zod';
 import {
   makeRequestResponseSchema,
   requestResponse,
-  isNotFound,
   SettingsSchema,
   userOrNotFoundSchema,
   usersOrNotFoundSchema,
@@ -102,22 +101,12 @@ const GET_PAYLOAD_SCHEMAS: Record<PayloadValidatedEndpoint, z.ZodTypeAny> = {
 };
 
 /**
- * Legacy soft-miss / empty object payloads that are not yet canonical NotFound.
- * Skip entity-schema validation so we do not turn these into SCHEMA_VALIDATION_ERROR noise.
+ * Skip domain payload validation only for nullish `data`.
+ * Empty `{}` is no longer skipped — singular GETs must emit canonical soft
+ * NotFound (#45); a regressing empty object should fail schema validation.
  */
 function shouldSkipPayloadValidation(data: unknown): boolean {
-  if (data == null) {
-    return true;
-  }
-  if (typeof data !== 'object' || Array.isArray(data)) {
-    return false;
-  }
-  if (isNotFound(data)) {
-    return false;
-  }
-  // Legacy soft-miss is an empty object only. Do not treat id-less payloads
-  // (e.g. settings) as skips — those still need schema validation.
-  return Object.keys(data as object).length === 0;
+  return data == null;
 }
 
 /**

@@ -82,9 +82,23 @@ describe("validateGetResponse", () => {
     });
   });
 
-  it("skips entity validation for legacy empty-object soft misses", () => {
-    const response = validateGetResponse("user", { status: 200, data: {} });
-    expect(response).toEqual({ status: 200, data: {} });
+  it("throws SchemaValidationError for empty-object payloads on validated endpoints", () => {
+    expect(() => validateGetResponse("user", { status: 200, data: {} })).toThrow(
+      SchemaValidationError,
+    );
+  });
+
+  it("accepts canonical soft NotFound on validated singular endpoints", () => {
+    const response = validateGetResponse("user", {
+      status: 404,
+      data: { code: "NOT_FOUND", message: "No user found with id of 9" },
+      message: "No user found with id of 9",
+    });
+    expect(response).toEqual({
+      status: 404,
+      data: { code: "NOT_FOUND", message: "No user found with id of 9" },
+      message: "No user found with id of 9",
+    });
   });
 
   it("throws SchemaValidationError for an invalid user payload", () => {

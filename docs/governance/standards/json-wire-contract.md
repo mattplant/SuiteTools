@@ -107,13 +107,12 @@ List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #
 
 ### Soft NotFound (singular GET)
 
-Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). Role still throws hard `NotFoundError`.
+Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). Role still throws hard `NotFoundError`. Empty-`{}` validation skip and FE pre-Zod shim removed in #46 — regressing empty misses fail loudly.
 
 ### Suggested follow-on order
 
-1. Drop validation empty-`{}` skip + FE `adapterUtils` legacy empty-payload shim once no singular GET emits `{}`
-2. Add `optionValues` to `GET_PAYLOAD_VALIDATED_ENDPOINTS` (align empty `{}` vs array if needed)
-3. Add `integration` / `integrations` once scrape vs RESTlet paths share one contract
+1. Add `optionValues` to `GET_PAYLOAD_VALIDATED_ENDPOINTS` (align empty `{}` vs array if needed)
+2. Add `integration` / `integrations` once scrape vs RESTlet paths share one contract
 
 ---
 
