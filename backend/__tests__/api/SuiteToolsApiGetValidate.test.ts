@@ -74,7 +74,7 @@ describe("validateGetResponse", () => {
         status: 200,
         data: {
           id: -1,
-          isinactive: false,
+          isInactive: false,
           email: "a@example.com",
           name: "Ada",
           title: "Engineer",

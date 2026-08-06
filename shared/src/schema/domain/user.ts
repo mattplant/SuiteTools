@@ -11,26 +11,26 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  *
  * Fields:
  * - `id`: unique numeric identifier
- * - `isinactive`: boolean indicating if the user is inactive
+ * - `isInactive`: boolean indicating if the user is inactive
  * - `email`: email address of the user
  * - `name`: full name of the user
  * - `supervisor`: optional supervisor name
- * - `title`: job title of the user
+ * - `title`: job title of the user (empty when SuiteQL returns null)
  * - `lastLogin`: optional timestamp of the last login
- * - `role_names`: optional string of role names
+ * - `roleNames`: optional string of role names
  * - `urlNs`: optional URL for NetSuite context
  * - `urlDetail`: optional URL for additional context
  */
 const schema = z.object({
   id: z.number().positive(),
-  isinactive: zNetSuite.booleanFromTF.schema,
-  email: z.string(),
-  name: z.string(),
+  isInactive: zNetSuite.booleanFromTF.schema,
+  email: zNetSuite.stringOrEmpty.schema,
+  name: zNetSuite.stringOrEmpty.schema,
   supervisor: z.string().optional().nullable(),
-  title: z.string(),
+  title: zNetSuite.stringOrEmpty.schema,
   // SUPPLEMENTAL PROPERTIES
   lastLogin: z.string().optional(),
-  role_names: z.string().optional(),
+  roleNames: z.string().optional(),
   // ADDITIONAL PROPERTIES
   urlNs: z.string().optional(),
   urlDetail: z.string().optional(),

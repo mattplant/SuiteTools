@@ -25,14 +25,14 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  *
  * ## Fields from NetSuite
  * - id: unique numeric identifier
- * - folder: folder ID (string or number)
- * - createddate: timestamp when the file was created
- * - lastmodifieddate: timestamp when the file was last modified
- * - filetypename: type of the file (e.g., PDF, CSV)
+ * - folder: folder ID
+ * - dateCreated: timestamp when the file was created
+ * - lastModifiedDate: timestamp when the file was last modified
+ * - fileTypeName: type of the file (e.g., PDF, CSV); empty when SuiteQL returns null
  * - name: human‑readable name of the file
- * - filesize: size of the file in bytes
- * - description: optional description of the file (coerced to empty string if not provided)
- * - url: URL (path only) to the file in NetSuite
+ * - fileSize: size of the file in bytes
+ * - description: optional description (coerced to empty string if not provided)
+ * - url: URL (path only) to the file in NetSuite; empty when SuiteQL returns null
  *
  * ## Additional fields populated by SuiteTools
  * - urlNs: optional path to the file record in NetSuite UI
@@ -40,14 +40,14 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  */
 const FileSchema = z.object({
   id: z.number().positive(),
-  folder: z.number(),
-  createddate: zNetSuite.dateFromString.schema,
-  lastmodifieddate: zNetSuite.dateFromString.schema,
-  filetypename: z.string(),
-  name: z.string(),
-  filesize: z.number(),
+  folder: zNetSuite.numberFromString.schema,
+  dateCreated: zNetSuite.dateFromString.schema,
+  lastModifiedDate: zNetSuite.dateFromString.schema,
+  fileTypeName: zNetSuite.stringOrEmpty.schema,
+  name: zNetSuite.stringOrEmpty.schema,
+  fileSize: zNetSuite.numberFromString.schema,
   description: zNetSuite.stringOrEmpty.schema,
-  url: z.string(),
+  url: zNetSuite.stringOrEmpty.schema,
   // SuiteTools‑added: fields for convenience, not in raw NetSuite response
   urlNs: z.string().optional(),
   urlDetail: z.string().optional(),

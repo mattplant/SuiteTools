@@ -42,12 +42,12 @@ export class SuiteToolsApiModel {
     const sql = `SELECT
       file.id,
       file.folder,
-      TO_CHAR(file.createddate, 'YYYY-MM-DD HH24:MI:SS') AS createddate,
-      TO_CHAR(file.lastmodifieddate, 'YYYY-MM-DD HH24:MI:SS') AS lastmodifieddate,
+      TO_CHAR(file.createddate, 'YYYY-MM-DD HH24:MI:SS') AS dateCreated,
+      TO_CHAR(file.lastmodifieddate, 'YYYY-MM-DD HH24:MI:SS') AS lastModifiedDate,
       file.filetype,
-      BUILTIN.DF(file.filetype) AS filetypename,
+      BUILTIN.DF(file.filetype) AS fileTypeName,
       file.name || ' (' || file.id  || ')' AS name,
-      file.filesize,
+      file.filesize AS fileSize,
       file.description,
       file.url
     FROM
@@ -79,12 +79,12 @@ export class SuiteToolsApiModel {
     let sql = `SELECT
       file.id,
       file.folder,
-      TO_CHAR(file.createddate, 'YYYY-MM-DD HH24:MI:SS') AS createddate,
-      TO_CHAR(file.lastmodifieddate, 'YYYY-MM-DD HH24:MI:SS') AS lastmodifieddate,
+      TO_CHAR(file.createddate, 'YYYY-MM-DD HH24:MI:SS') AS dateCreated,
+      TO_CHAR(file.lastmodifieddate, 'YYYY-MM-DD HH24:MI:SS') AS lastModifiedDate,
       file.filetype,
-      BUILTIN.DF(file.filetype) AS filetypename,
+      BUILTIN.DF(file.filetype) AS fileTypeName,
       file.name || ' (' || file.id  || ')' AS name,
-      file.filesize,
+      file.filesize AS fileSize,
       file.description,
       file.url
     FROM
@@ -751,7 +751,7 @@ export class SuiteToolsApiModel {
     const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       employee.id,
-      employee.isinactive,
+      employee.isinactive AS isInactive,
       employee.email,
       employee.entityid AS name,
       BUILTIN.DF( employee.supervisor ) AS supervisor,
@@ -788,7 +788,7 @@ export class SuiteToolsApiModel {
     const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       employee.id,
-      employee.isinactive,
+      employee.isinactive AS isInactive,
       employee.email,
       employee.entityid AS name,
       employee.title,

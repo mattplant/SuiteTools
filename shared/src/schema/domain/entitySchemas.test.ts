@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import { requestResponse } from "../api/requestResponse";
+import { FileBundle } from "./file";
 import { JobBundle } from "./job";
 import { RoleBundle } from "./role";
 import { ScriptBundle } from "./script";
@@ -124,6 +125,52 @@ describe("RoleBundle / JobBundle schemas", () => {
       scriptType: "SCHEDULED",
       scriptName: "Nightly Cleanup (12)",
       title: "Failed",
+    });
+  });
+
+  it("parses a valid file", () => {
+    expect(
+      FileBundle.schema.parse({
+        id: 5,
+        folder: 1,
+        dateCreated: "2026-08-05T12:00:00.000Z",
+        lastModifiedDate: "2026-08-05T13:00:00.000Z",
+        fileTypeName: "PLAINTEXT",
+        name: "readme.txt (5)",
+        fileSize: 128,
+        description: null,
+        url: null,
+      }),
+    ).toMatchObject({
+      id: 5,
+      fileTypeName: "PLAINTEXT",
+      fileSize: 128,
+      description: "",
+      url: "",
+    });
+  });
+
+  it("coerces null File SuiteQL string fields to empty string", () => {
+    expect(
+      FileBundle.schema.parse({
+        id: 6,
+        folder: "2",
+        dateCreated: "2026-08-05 12:00:00",
+        lastModifiedDate: "2026-08-05 13:00:00",
+        fileTypeName: null,
+        name: null,
+        fileSize: "256",
+        description: null,
+        url: null,
+      }),
+    ).toMatchObject({
+      id: 6,
+      folder: 2,
+      fileTypeName: "",
+      name: "",
+      fileSize: 256,
+      description: "",
+      url: "",
     });
   });
 

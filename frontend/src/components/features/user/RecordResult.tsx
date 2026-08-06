@@ -19,12 +19,12 @@ export function UserResult({ data, modal = false }: Props): JSX.Element {
   const fields: EntityField[] = [
     { label: 'ID', value: data.id },
     { label: 'Name', value: data.name },
-    { label: 'Active', value: data.isinactive ? 'No' : 'Yes' },
+    { label: 'Active', value: data.isInactive ? 'No' : 'Yes' },
     { label: 'Email', value: data.email },
     { label: 'Supervisor', value: data.supervisor },
     { label: 'Title', value: data.title },
     { label: 'Last Login', value: data.lastLogin },
-    { label: 'Role(s)', value: data.role_names },
+    { label: 'Role(s)', value: data.roleNames },
   ];
 
   return (

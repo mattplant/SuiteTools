@@ -17,19 +17,19 @@ export function FileResult({ data, modal }: Props) {
         <b>Folder</b>: {data.folder}
       </p>
       <p>
-        <b>Created Date</b>: {data.createddate.toLocaleString()}
+        <b>Created Date</b>: {data.dateCreated.toLocaleString()}
       </p>
       <p>
-        <b>Lastmodified Date</b>:{data.lastmodifieddate.toLocaleString()}
+        <b>Last Modified Date</b>: {data.lastModifiedDate.toLocaleString()}
       </p>
       <p>
-        <b>Type</b>: {data.filetypename}
+        <b>Type</b>: {data.fileTypeName}
       </p>
       <p>
         <b>Name</b>: {data.name}
       </p>
       <p>
-        <b>File Size</b>: {data.filesize}
+        <b>File Size</b>: {data.fileSize}
       </p>
       <p>
         <b>Description</b>: {data.description}
