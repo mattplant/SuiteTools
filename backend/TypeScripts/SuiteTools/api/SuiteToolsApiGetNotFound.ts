@@ -4,7 +4,7 @@
  * Canonical singular miss shape in the success envelope:
  * `{ status: 404, data: { code: 'NOT_FOUND', message }, message }`
  *
- * Distinct from throwing `NotFoundError` (hard ErrorResponse path, e.g. Role).
+ * Distinct from throwing `NotFoundError` (hard ErrorResponse path used elsewhere).
  *
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later

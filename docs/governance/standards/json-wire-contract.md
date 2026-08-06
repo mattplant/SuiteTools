@@ -5,6 +5,7 @@
 
 Last updated: 2026-08-06
 
+
 ---
 
 ## Purpose
@@ -107,11 +108,11 @@ List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #
 
 ### Soft NotFound (singular GET)
 
-Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). Role still throws hard `NotFoundError`. Empty-`{}` validation skip and FE pre-Zod shim removed in #46 — regressing empty misses fail loudly.
+Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). All singular GETs use soft NotFound (Role aligned in #49). Empty-`{}` validation skip and FE pre-Zod shim removed in #46 — regressing empty misses fail loudly.
 
 ### Suggested follow-on order
 
-1. Optional: FE Integrations cutover from scrape → RESTlet (separate product slice; synthetic LoginAudit ids)
+None active for the wire/validation track. **Skipped:** FE Integrations scrape → RESTlet cutover (keep scrape; SuiteQL/LoginAudit synthetic ids are a product concern, not a contract gap).
 
 ---
 

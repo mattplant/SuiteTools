@@ -173,6 +173,18 @@ describe("validateGetResponse", () => {
     });
   });
 
+  it("accepts canonical soft NotFound for role", () => {
+    const response = validateGetResponse("role", {
+      status: 404,
+      data: { code: "NOT_FOUND", message: "No role found with id of 9" },
+      message: "No role found with id of 9",
+    });
+    expect(response.data).toEqual({
+      code: "NOT_FOUND",
+      message: "No role found with id of 9",
+    });
+  });
+
   it("throws SchemaValidationError for an invalid user payload", () => {
     expect(() =>
       validateGetResponse("user", {
