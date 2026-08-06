@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-05
+Last updated: 2026-08-06
 
 ---
 
@@ -105,10 +105,15 @@ List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #
 
 `GET_PAYLOAD_VALIDATED_ENDPOINTS` (RESTlet domain Zod, in addition to the envelope) currently includes: `settings`, `user`/`users`, `role`/`roles`, `job`/`jobs`, `file`/`files`, `script`/`scripts`, `scriptLog`/`scriptLogs`, `jobRun`/`jobRuns`, `logins`, `token`/`tokens` (#44).
 
+### Soft NotFound (singular GET)
+
+Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). Role still throws hard `NotFoundError`.
+
 ### Suggested follow-on order
 
-1. Add `optionValues` to `GET_PAYLOAD_VALIDATED_ENDPOINTS` (align empty `{}` vs array if needed)
-2. Add `integration` / `integrations` once scrape vs RESTlet paths share one contract
+1. Drop validation empty-`{}` skip + FE `adapterUtils` legacy empty-payload shim once no singular GET emits `{}`
+2. Add `optionValues` to `GET_PAYLOAD_VALIDATED_ENDPOINTS` (align empty `{}` vs array if needed)
+3. Add `integration` / `integrations` once scrape vs RESTlet paths share one contract
 
 ---
 
