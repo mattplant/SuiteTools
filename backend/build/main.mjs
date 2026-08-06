@@ -442,7 +442,7 @@ async function buildAllDeployments(isProduction) {
     );
 
     if (hasErrors) {
-      console.warn('⚠️  Build completed with bundle size warnings - review output above');
+      console.warn('⚠️  Build completed with soft bundle-size alerts — review output above (build still succeeded)');
     }
   } catch (error) {
     handleBuildError(error, 'Build All Deployments', {

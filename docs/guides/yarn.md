@@ -1,6 +1,6 @@
 # Yarn Foundations Guide
 
-Last updated: July 12, 2026
+Last updated: 2026-08-06
 
 ---
 
@@ -29,8 +29,8 @@ It does **not** cover:
 > - Use this project’s Yarn 4 (`packageManager` / `.yarn/releases`).
 > - PnP means no `node_modules` — undeclared dependencies will fail immediately.
 > - Workspaces are isolated — declare cross‑workspace dependencies explicitly.
-<!-- TODO: > - Lockfile is immutable in CI — run `yarn install` locally before pushing to avoid merge conflicts. -->
-
+> - Lockfile is immutable in CI (`yarn install --immutable`) — run `yarn install` locally after dependency changes before pushing.
+>
 ---
 
 ## 📐 Why Yarn Berry & PnP
@@ -138,7 +138,8 @@ Contains Yarn plugins that extend functionality.
 **Notable plugins:**
 
 - `@yarnpkg/plugin-licenses`: Generates `THIRD_PARTY_LICENSES.md` listing third‑party packages and their licenses.
-<!-- TODO: Investigate whether `@yarnpkg/plugin-typescript` would be beneficial for TypeScript support. -->
+
+`@yarnpkg/plugin-typescript` is **not** used. TypeScript support comes from workspace `tsconfig`s, Yarn SDKs (`.yarn/sdks`), and root `yarn typecheck` — not from auto-adding `@types/*` via that plugin.
 
 #### `.yarn/unplugged`
 
@@ -165,7 +166,7 @@ With `enableGlobalCache: false`, `.pnp.cjs` resolves packages via `./.yarn/cache
 
 ### Custom Scripts
 
-- `yarn reset`: Clears Yarn caches and restores a clean install state.
+- `yarn run yarn:reset`: Clears Yarn caches and restores a clean install state (`scripts/resetYarn.sh`).
 
 ---
 

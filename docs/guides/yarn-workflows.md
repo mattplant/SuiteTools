@@ -1,6 +1,6 @@
 # 🛠️ Yarn Workflows
 
-Last updated: 2026-08-05
+Last updated: 2026-08-06
 
 ---
 
@@ -39,6 +39,18 @@ yarn workspace <workspace-name> run <script>
 # Run a script in all workspaces
 yarn workspaces foreach run <script>
 ```
+
+### Build & deploy shortcuts (root)
+
+```bash
+yarn build:all     # FE build + BE build (no NetSuite upload)
+yarn deploy:all    # yarn build:all + BE deploy (full SDF; includes SPA dist/)
+
+yarn workspace frontend run build-and-deploy   # SPA file:upload only
+yarn workspace backend run build-and-deploy    # SuiteScript + full SDF
+```
+
+Prefer `build-and-deploy` over bare `deploy`. See [Build & Release Checklist](./build-release-checklist.md) for when to use each path.
 
 ### Checking for Dependency Issues
 
