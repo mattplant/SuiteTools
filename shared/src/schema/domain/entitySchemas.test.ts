@@ -73,7 +73,7 @@ describe("RoleBundle / JobBundle schemas", () => {
     const job = JobBundle.schema.parse({
       id: 9,
       name: "Cleanup",
-      isinactive: false,
+      isInactive: false,
       config: "{}",
       description: "nightly",
       scheduled: true,
@@ -82,7 +82,27 @@ describe("RoleBundle / JobBundle schemas", () => {
     expect(job).toMatchObject({
       id: 9,
       name: "Cleanup",
+      isInactive: false,
       scheduled: true,
+      notify: false,
+    });
+  });
+
+  it("coerces Job isInactive T/F flags", () => {
+    expect(
+      JobBundle.schema.parse({
+        id: 10,
+        name: "Nightly",
+        isInactive: "T",
+        config: "{}",
+        description: "nightly",
+        scheduled: "F",
+        notify: "F",
+      }),
+    ).toMatchObject({
+      id: 10,
+      isInactive: true,
+      scheduled: false,
       notify: false,
     });
   });

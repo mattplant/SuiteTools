@@ -75,7 +75,7 @@ export function JobResult({ data, modal }: Props) {
         <b>Name</b>: {data.name}
       </p>
       <p>
-        <b>Active</b>: {data.isinactive ? 'No' : 'Yes'}
+        <b>Active</b>: {data.isInactive ? 'No' : 'Yes'}
       </p>
       <p>
         <b>Description</b>: {data.description}

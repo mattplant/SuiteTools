@@ -159,7 +159,7 @@ export class SuiteToolsApiModel {
     const sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
-      ${customRecord}.isinactive,
+      ${customRecord}.isinactive AS isInactive,
       ${customRecord}.custrecord_idev_st_mr_job_config as config,
       ${customRecord}.custrecord_idev_st_mr_job_desc as description,
       ${customRecord}.custrecord_idev_st_mr_job_scheduled as scheduled,
@@ -190,7 +190,7 @@ export class SuiteToolsApiModel {
     let sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
-      ${customRecord}.isinactive,
+      ${customRecord}.isinactive AS isInactive,
       ${customRecord}.custrecord_idev_st_mr_job_config as config,
       ${customRecord}.custrecord_idev_st_mr_job_desc as description,
       ${customRecord}.custrecord_idev_st_mr_job_scheduled as scheduled,

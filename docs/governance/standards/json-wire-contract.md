@@ -52,7 +52,7 @@ Classification of keys under `shared/src/schema/domain/` (excluding tests/helper
 | Token | camelCase | — | Reference |
 | Integration | camelCase | — | Reference |
 | SoapLog | mostly camelCase | — | Reference; single-token keys OK |
-| Job | mixed | `isinactive` | Has `lastRun` already |
+| Job | **camelCase** | — | Migrated in #40 |
 | Login | **camelCase** | — | Migrated in #39 |
 | JobRun | **camelCase** | — | Migrated in #39 |
 | OptionValues | simple tokens | — | `value` / `text` only |
@@ -81,10 +81,11 @@ Use Role as the template. One entity (or small cluster) per MR:
 - **User** (#38) — `isinactive` → `isInactive`, `role_names` → `roleNames`
 - **Login** (#39) — `oauthappname` → `oauthAppName`, `oauthaccesstokenname` → `oauthAccessTokenName`, `username` → `userName`, `rolename` → `roleName`, `emailaddress` → `emailAddress`, `ipaddress` → `ipAddress`, `requesturi` → `requestUri`, `secchallenge` → `secChallenge`, `useragent` → `userAgent`
 - **JobRun** (#39) — `jobid` → `jobId`, `jobname` → `jobName`
+- **Job** (#40) — `isinactive` → `isInactive`
 
 ### Suggested follow-on order
 
-1. Job (`isinactive` → `isInactive`) as needed
+1. _(none — domain multi-word wire keys migrated)_
 
 ---
 

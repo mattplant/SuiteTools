@@ -11,7 +11,7 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  * Fields:
  * - `id`: unique numeric identifier
  * - `name`: name of the job
- * - `isinactive`: boolean indicating if the job is inactive
+ * - `isInactive`: boolean indicating if the job is inactive
  * - `config`: JSON string configuration for the job
  * - `description`: description of the job
  * - `scheduled`: boolean indicating if the job is scheduled
@@ -22,7 +22,7 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 const schema = z.object({
   id: z.number().positive(),
   name: z.string(),
-  isinactive: zNetSuite.booleanFromTF.schema,
+  isInactive: zNetSuite.booleanFromTF.schema,
   config: zNetSuite.stringOrEmpty.schema, // JSON string configuration
   description: z.string(),
   scheduled: zNetSuite.booleanFromTF.schema,
