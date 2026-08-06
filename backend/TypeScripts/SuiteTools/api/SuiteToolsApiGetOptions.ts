@@ -46,7 +46,6 @@ export class SuiteToolsApiGetOptions {
 
   public process(requestParams: RequestParams): Response {
     let data: unknown;
-    let result = {};
     const type = requestParams.type;
     switch (type) {
       case 'file':
@@ -81,22 +80,22 @@ export class SuiteToolsApiGetOptions {
         });
     }
     this.assertIsOptionValuesResponse(data);
+    // Always return an array on the wire (never legacy `{}`) for payload validation.
     const optionValues = this.convertOptionValuesResponse(data);
     if (optionValues.length === 0) {
-      log.error({ title: 'SuiteToolsApiGetOptions:process() no results', details: '' });
-    } else {
-      result = optionValues;
+      log.debug({ title: 'SuiteToolsApiGetOptions:process() no results', details: { type } });
     }
 
-    return { status: 200, data: result };
+    return { status: 200, data: optionValues };
   }
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
     if (!Array.isArray(data)) {
       throw new Error('OptionValuesResponse is not an array');
     }
+    // Empty SuiteQL results are valid — emit `[]` on the wire.
     if (data.length === 0) {
-      throw new Error('OptionValuesResponse is empty');
+      return;
     }
     // check the data for the required fields
     // id
