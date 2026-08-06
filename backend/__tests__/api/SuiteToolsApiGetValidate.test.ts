@@ -9,26 +9,45 @@ import {
 describe("validateGetResponse", () => {
   it("exports the incremental payload-validated endpoint list", () => {
     expect(GET_PAYLOAD_VALIDATED_ENDPOINTS).toEqual(
-      expect.arrayContaining(["settings", "user", "users", "role", "roles", "job", "jobs"]),
+      expect.arrayContaining([
+        "settings",
+        "user",
+        "users",
+        "role",
+        "roles",
+        "job",
+        "jobs",
+        "file",
+        "files",
+        "script",
+        "scripts",
+        "scriptLog",
+        "scriptLogs",
+        "jobRun",
+        "jobRuns",
+        "logins",
+        "token",
+        "tokens",
+      ]),
     );
   });
 
   it("accepts a valid envelope for an unvalidated endpoint", () => {
-    const response = validateGetResponse("files", {
+    const response = validateGetResponse("optionValues", {
       status: 200,
-      data: [{ id: 1 }],
+      data: [{ value: "1", text: "PDF" }],
       message: "ok",
     });
     expect(response).toEqual({
       status: 200,
-      data: [{ id: 1 }],
+      data: [{ value: "1", text: "PDF" }],
       message: "ok",
     });
   });
 
   it("rejects a broken envelope", () => {
     expect(() =>
-      validateGetResponse("files", { status: 99, data: null }),
+      validateGetResponse("optionValues", { status: 99, data: null }),
     ).toThrow(SchemaValidationError);
   });
 
@@ -79,6 +98,40 @@ describe("validateGetResponse", () => {
           name: "Ada",
           title: "Engineer",
         },
+      }),
+    ).toThrow(SchemaValidationError);
+  });
+
+  it("validates a jobRuns list payload", () => {
+    const response = validateGetResponse("jobRuns", {
+      status: 200,
+      data: [
+        {
+          id: 9,
+          created: "2026-08-05T12:00:00.000Z",
+          jobId: 3,
+          jobName: "Cleanup",
+          completed: "T",
+          results: "ok",
+        },
+      ],
+    });
+    expect(response.status).toBe(200);
+    expect(response.data).toEqual([
+      expect.objectContaining({
+        id: 9,
+        jobId: 3,
+        jobName: "Cleanup",
+        completed: true,
+      }),
+    ]);
+  });
+
+  it("throws SchemaValidationError for an invalid jobRuns payload", () => {
+    expect(() =>
+      validateGetResponse("jobRuns", {
+        status: 200,
+        data: [{ id: 9, created: "not-a-date" }],
       }),
     ).toThrow(SchemaValidationError);
   });

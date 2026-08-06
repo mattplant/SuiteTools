@@ -22,6 +22,17 @@ import {
   rolesOrNotFoundSchema,
   jobOrNotFoundSchema,
   jobsOrNotFoundSchema,
+  fileOrNotFoundSchema,
+  filesOrNotFoundSchema,
+  scriptOrNotFoundSchema,
+  scriptsOrNotFoundSchema,
+  scriptLogOrNotFoundSchema,
+  scriptLogsOrNotFoundSchema,
+  jobRunOrNotFoundSchema,
+  jobRunsOrNotFoundSchema,
+  loginsOrNotFoundSchema,
+  tokenOrNotFoundSchema,
+  tokensOrNotFoundSchema,
 } from '@suiteworks/suitetools-shared';
 // Error classes from `/errors` so `instanceof SuiteError` matches SuiteToolsApiGet
 // (main package vs `/errors` are separate Rollup bundles — do not mix).
@@ -43,7 +54,8 @@ function zodIssues(err: unknown): ZodIssue[] | null {
 
 /**
  * Endpoints that validate `data` with a shared domain schema (in addition to the envelope).
- * Documented for #27 — expand incrementally as cleaners/models align with schemas.
+ * Expand incrementally as cleaners/models align with schemas (#27, #44).
+ * Still held: integration(s), optionValues.
  */
 export const GET_PAYLOAD_VALIDATED_ENDPOINTS = [
   'settings',
@@ -53,6 +65,17 @@ export const GET_PAYLOAD_VALIDATED_ENDPOINTS = [
   'roles',
   'job',
   'jobs',
+  'file',
+  'files',
+  'script',
+  'scripts',
+  'scriptLog',
+  'scriptLogs',
+  'jobRun',
+  'jobRuns',
+  'logins',
+  'token',
+  'tokens',
 ] as const;
 
 type PayloadValidatedEndpoint = (typeof GET_PAYLOAD_VALIDATED_ENDPOINTS)[number];
@@ -65,6 +88,17 @@ const GET_PAYLOAD_SCHEMAS: Record<PayloadValidatedEndpoint, z.ZodTypeAny> = {
   roles: rolesOrNotFoundSchema,
   job: jobOrNotFoundSchema,
   jobs: jobsOrNotFoundSchema,
+  file: fileOrNotFoundSchema,
+  files: filesOrNotFoundSchema,
+  script: scriptOrNotFoundSchema,
+  scripts: scriptsOrNotFoundSchema,
+  scriptLog: scriptLogOrNotFoundSchema,
+  scriptLogs: scriptLogsOrNotFoundSchema,
+  jobRun: jobRunOrNotFoundSchema,
+  jobRuns: jobRunsOrNotFoundSchema,
+  logins: loginsOrNotFoundSchema,
+  token: tokenOrNotFoundSchema,
+  tokens: tokensOrNotFoundSchema,
 };
 
 /**
