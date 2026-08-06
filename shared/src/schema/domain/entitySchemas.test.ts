@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import { requestResponse } from "../api/requestResponse";
 import { JobBundle } from "./job";
 import { RoleBundle } from "./role";
+import { ScriptBundle } from "./script";
+import { ScriptLogBundle } from "./scriptLog";
 import { SettingsSchema } from "./settings";
 
 describe("requestResponse envelope", () => {
@@ -62,6 +64,49 @@ describe("RoleBundle / JobBundle schemas", () => {
       name: "Cleanup",
       scheduled: true,
       notify: false,
+    });
+  });
+
+  it("parses a valid script", () => {
+    expect(
+      ScriptBundle.schema.parse({
+        id: 12,
+        apiVersion: "2.1",
+        isInactive: "F",
+        scriptType: "SCHEDULED",
+        name: "Nightly Cleanup",
+        scriptId: "customscript_cleanup",
+        owner: "Ada (7)",
+        scriptFile: "cleanup.js (99)",
+        notifyEmails: "",
+        description: "runs nightly",
+      }),
+    ).toMatchObject({
+      id: 12,
+      apiVersion: "2.1",
+      isInactive: false,
+      scriptType: "SCHEDULED",
+      scriptId: "customscript_cleanup",
+    });
+  });
+
+  it("parses a valid script log", () => {
+    expect(
+      ScriptLogBundle.schema.parse({
+        id: 100,
+        timestamp: "2026-08-05T12:00:00.000Z",
+        type: "ERROR",
+        scriptType: "SCHEDULED",
+        owner: "Ada (7)",
+        scriptName: "Nightly Cleanup (12)",
+        title: "Failed",
+        detail: "boom",
+      }),
+    ).toMatchObject({
+      id: 100,
+      scriptType: "SCHEDULED",
+      scriptName: "Nightly Cleanup (12)",
+      title: "Failed",
     });
   });
 });

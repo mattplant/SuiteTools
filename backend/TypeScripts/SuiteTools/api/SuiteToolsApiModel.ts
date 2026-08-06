@@ -635,14 +635,14 @@ export class SuiteToolsApiModel {
     const response: Response = { status: 200, data: {} };
     const sql = `SELECT
       script.id,
-      script.apiversion,
-      script.isinactive,
-      script.scripttype,
+      script.apiversion AS apiVersion,
+      script.isinactive AS isInactive,
+      script.scripttype AS scriptType,
       script.name,
-      script.scriptid,
+      script.scriptid AS scriptId,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      NVL(file.name || ' (' || file.id  || ')', '') AS scriptfile,
-      script.notifyemails,
+      NVL(file.name || ' (' || file.id  || ')', '') AS scriptFile,
+      script.notifyemails AS notifyEmails,
       script.description
     FROM
       script
@@ -683,14 +683,14 @@ export class SuiteToolsApiModel {
     const response: Response = { status: 200, data: {} };
     let sql = `SELECT
       script.id,
-      script.apiversion,
-      script.isinactive,
-      script.scripttype,
+      script.apiversion AS apiVersion,
+      script.isinactive AS isInactive,
+      script.scripttype AS scriptType,
       script.name || ' (' || script.id  || ')' AS name,
-      script.scriptid,
+      script.scriptid AS scriptId,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      NVL(file.name || ' (' || file.id  || ')', '') AS scriptfile,
-      script.notifyemails,
+      NVL(file.name || ' (' || file.id  || ')', '') AS scriptFile,
+      script.notifyemails AS notifyEmails,
       script.description
     FROM
       script
@@ -855,9 +855,9 @@ export class SuiteToolsApiModel {
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
       ScriptNote.type,
-      script.scripttype,
+      script.scripttype AS scriptType,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptName,
       ScriptNote.title, REPLACE( ScriptNote.detail, '"', '""' ) AS detail
     FROM ScriptNote
     INNER JOIN script
@@ -903,9 +903,9 @@ export class SuiteToolsApiModel {
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
       ScriptNote.type,
-      script.scripttype,
+      script.scripttype AS scriptType,
       BUILTIN.DF( script.owner ) || ' (' || script.owner  || ')' AS owner,
-      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptname,
+      BUILTIN.DF( script.name ) || ' (' || script.id  || ')' AS scriptName,
       ScriptNote.title, REPLACE( ScriptNote.detail, '"', '""' ) AS detail
     FROM ScriptNote
     INNER JOIN script

@@ -11,14 +11,14 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  *
  * Fields:
  * - `id`: unique numeric identifier
- * - `apiversion`: API version of the script
- * - `isinactive`: boolean indicating if the script is inactive
- * - `scripttype`: type of the script
+ * - `apiVersion`: API version of the script
+ * - `isInactive`: boolean indicating if the script is inactive
+ * - `scriptType`: type of the script
  * - `name`: name of the script
- * - `scriptid`: unique identifier for the script
+ * - `scriptId`: unique identifier for the script
  * - `owner`: owner of the script
- * - `scriptfile`: file associated with the script
- * - `notifyemails`: emails to notify
+ * - `scriptFile`: file associated with the script
+ * - `notifyEmails`: emails to notify
  * - `description`: description of the script
  * - `urlNs`: optional URL for NetSuite context
  * - `urlDetail`: optional URL for additional context
@@ -26,14 +26,14 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  */
 const ScriptSchema = z.object({
   id: zNetSuite.numberFromString.schema,
-  apiversion: zNetSuite.stringOrEmpty.schema,
-  isinactive: zNetSuite.booleanFromTF.schema,
-  scripttype: zNetSuite.stringOrEmpty.schema,
+  apiVersion: zNetSuite.stringOrEmpty.schema,
+  isInactive: zNetSuite.booleanFromTF.schema,
+  scriptType: zNetSuite.stringOrEmpty.schema,
   name: zNetSuite.stringOrEmpty.schema,
-  scriptid: zNetSuite.stringOrEmpty.schema,
+  scriptId: zNetSuite.stringOrEmpty.schema,
   owner: zNetSuite.stringOrEmpty.schema,
-  scriptfile: zNetSuite.stringOrEmpty.schema,
-  notifyemails: zNetSuite.stringOrEmpty.schema,
+  scriptFile: zNetSuite.stringOrEmpty.schema,
+  notifyEmails: zNetSuite.stringOrEmpty.schema,
   description: zNetSuite.stringOrEmpty.schema,
   // additional properties
   urlNs: z.string().optional(),

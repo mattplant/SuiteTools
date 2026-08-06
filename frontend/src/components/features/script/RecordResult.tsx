@@ -14,28 +14,28 @@ export function ScriptResult({ data, modal }: Props) {
   return (
     <>
       <p>
-        <b>API Version:</b> {data.apiversion}
+        <b>API Version:</b> {data.apiVersion}
       </p>
       <p>
-        <b>Active:</b> {data.isinactive ? 'No' : 'Yes'}
+        <b>Active:</b> {data.isInactive ? 'No' : 'Yes'}
       </p>
       <p>
-        <b>Script Type:</b> {data.scripttype}
+        <b>Script Type:</b> {data.scriptType}
       </p>
       <p>
         <b>Name:</b> {data.name}
       </p>
       <p>
-        <b>ID:</b> {data.scriptid} ({data.id})
+        <b>ID:</b> {data.scriptId} ({data.id})
       </p>
       <p>
         <b>Owner:</b> {data.owner}
       </p>
       <p>
-        <b>File:</b> {data.scriptfile}
+        <b>File:</b> {data.scriptFile}
       </p>
       <p>
-        <b>Notify Emails:</b> {data.notifyemails}
+        <b>Notify Emails:</b> {data.notifyEmails}
       </p>
       <p>
         <b>Description:</b> {data.description}

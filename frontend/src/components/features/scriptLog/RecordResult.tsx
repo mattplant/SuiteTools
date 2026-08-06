@@ -20,9 +20,9 @@ export function ScriptLogResult({ data, modal }: Props): JSX.Element {
     { label: 'ID', value: data.id },
     { label: 'Timestamp', value: data.timestamp },
     { label: 'Type', value: data.type },
-    { label: 'Script Type', value: data.scripttype },
+    { label: 'Script Type', value: data.scriptType },
     { label: 'Owner', value: data.owner },
-    { label: 'Name', value: data.scriptname },
+    { label: 'Name', value: data.scriptName },
     { label: 'Title', value: data.title },
     { label: 'Detail', value: data.detail },
   ];

@@ -12,9 +12,9 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  * - `id`: unique numeric identifier
  * - `timestamp`: ISO8601 string (validated via `Date.parse`)
  * - `type`: arbitrary string (consider swapping for an `enum`)
- * - `scripttype`: string category
+ * - `scriptType`: string category
  * - `owner`: name of the script owner
- * - `scriptname`: script identifier
+ * - `scriptName`: script identifier
  * - `title`: human-readable title
  * - `detail`: detailed message or payload
  * - `urlNs`, `urlDetail` (optional): additional context properties
@@ -25,9 +25,9 @@ export const schema = z.object({
     message: "Invalid ISO timestamp",
   }),
   type: z.string(),
-  scripttype: z.string(),
+  scriptType: z.string(),
   owner: z.string(),
-  scriptname: z.string(),
+  scriptName: z.string(),
   title: z.string(),
   detail: z.string().optional().nullable(),
   // ADDITIONAL PROPERTIES
