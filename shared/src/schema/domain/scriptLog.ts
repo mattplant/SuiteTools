@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { z } from "zod";
+import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
 import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
@@ -11,10 +12,10 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  * Fields:
  * - `id`: unique numeric identifier
  * - `timestamp`: ISO8601 string (validated via `Date.parse`)
- * - `type`: arbitrary string (consider swapping for an `enum`)
- * - `scriptType`: string category
- * - `owner`: name of the script owner
- * - `scriptName`: script identifier
+ * - `type`: log level / type (empty when SuiteQL returns null)
+ * - `scriptType`: script category (empty when SuiteQL returns null)
+ * - `owner`: script owner display string
+ * - `scriptName`: script display name
  * - `title`: human-readable title
  * - `detail`: detailed message or payload
  * - `urlNs`, `urlDetail` (optional): additional context properties
@@ -24,11 +25,11 @@ export const schema = z.object({
   timestamp: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
     message: "Invalid ISO timestamp",
   }),
-  type: z.string(),
-  scriptType: z.string(),
-  owner: z.string(),
-  scriptName: z.string(),
-  title: z.string(),
+  type: zNetSuite.stringOrEmpty.schema,
+  scriptType: zNetSuite.stringOrEmpty.schema,
+  owner: zNetSuite.stringOrEmpty.schema,
+  scriptName: zNetSuite.stringOrEmpty.schema,
+  title: zNetSuite.stringOrEmpty.schema,
   detail: z.string().optional().nullable(),
   // ADDITIONAL PROPERTIES
   urlNs: z.string().optional(),

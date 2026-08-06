@@ -126,6 +126,29 @@ describe("RoleBundle / JobBundle schemas", () => {
       title: "Failed",
     });
   });
+
+  it("coerces null ScriptLog SuiteQL string fields to empty string", () => {
+    expect(
+      ScriptLogBundle.schema.parse({
+        id: 101,
+        timestamp: "2026-08-05T12:00:00.000Z",
+        type: "ERROR",
+        scriptType: null,
+        owner: null,
+        scriptName: null,
+        title: null,
+        detail: null,
+      }),
+    ).toMatchObject({
+      id: 101,
+      type: "ERROR",
+      scriptType: "",
+      owner: "",
+      scriptName: "",
+      title: "",
+      detail: null,
+    });
+  });
 });
 
 describe("SettingsSchema", () => {

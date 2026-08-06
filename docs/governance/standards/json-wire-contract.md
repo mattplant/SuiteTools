@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-05
 
 ---
 
@@ -22,6 +22,7 @@ Normative naming summary also lives in [STYLE.md — JSON / API Wire Fields](../
 3. **Normalize at the API edge** — SuiteQL may return NetSuite column names; cleaners must emit the shared contract **before** `validateGetResponse` / Zod parse ([#27](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/27)).
 4. **One contract per entity** — do not keep dual flat + camel keys on the wire; migrate schema, cleaner, and SPA in the same change set.
 5. **Schema artifact names are separate** — TypeScript exports stay `userSchema` / `UserBundle` (see STYLE Schema Artifacts).
+6. **SuiteQL nullables** — multi-word (and most other) string columns from SuiteQL may be `null`. Prefer `zNetSuite.stringOrEmpty` over bare `z.string()` for those wire fields so list endpoints do not fail validation. Add a null-coercion test when migrating an entity.
 
 ### Examples
 
@@ -61,14 +62,14 @@ Classification of keys under `shared/src/schema/domain/` (excluding tests/helper
 
 Use Role as the template. One entity (or small cluster) per MR:
 
-1. **Shared schema** — rename keys in `shared/src/schema/domain/<entity>.ts`; update JSDoc.
-2. **Shared tests** — fixtures/assertions in `entitySchemas.test.ts` (or entity tests).
+1. **Shared schema** — rename keys in `shared/src/schema/domain/<entity>.ts`; update JSDoc; use `stringOrEmpty` for SuiteQL string columns that can be null.
+2. **Shared tests** — fixtures/assertions in `entitySchemas.test.ts` (or entity tests), including a **null-field** case for each coerced string column.
 3. **Backend cleaner** — remove remaps that force flat keys; keep SuiteQL camelCase (or map *up* to camelCase); boolean/T-F cleanup on the new names.
 4. **SQL** — aliases already camelCase need no change; if SELECT uses flat names, alias to camelCase at the query edge.
 5. **Frontend** — update DataGrid `key:` / `RecordResult` property access in the same MR.
 6. **Validation** — if the entity is in `GET_PAYLOAD_VALIDATED_ENDPOINTS`, confirm soft NotFound / empty list still skip or pass; happy path still validates.
-7. **Rebuild shared** — `yarn workspace @suiteworks/suitetools-shared run build:types` (or `yarn typecheck` / `yarn lint`) so consumers see new `.d.ts`.
-8. **Smoke** — list + detail happy path for that entity.
+7. **Rebuild** — `yarn workspace backend run build` (bundles schemas into the RESTlet) and frontend `build-and-deploy` as needed; do not smoke until both sides that validate the entity are redeployed.
+8. **Smoke** — list + detail happy path for that entity (including filters that return sparse/null columns).
 
 ### Completed slices
 
