@@ -32,6 +32,7 @@ import {
   loginsOrNotFoundSchema,
   tokenOrNotFoundSchema,
   tokensOrNotFoundSchema,
+  optionValuesOrNotFoundSchema,
 } from '@suiteworks/suitetools-shared';
 // Error classes from `/errors` so `instanceof SuiteError` matches SuiteToolsApiGet
 // (main package vs `/errors` are separate Rollup bundles — do not mix).
@@ -53,8 +54,8 @@ function zodIssues(err: unknown): ZodIssue[] | null {
 
 /**
  * Endpoints that validate `data` with a shared domain schema (in addition to the envelope).
- * Expand incrementally as cleaners/models align with schemas (#27, #44).
- * Still held: integration(s), optionValues.
+ * Expand incrementally as cleaners/models align with schemas (#27, #44, #47).
+ * Still held: integration(s).
  */
 export const GET_PAYLOAD_VALIDATED_ENDPOINTS = [
   'settings',
@@ -75,6 +76,7 @@ export const GET_PAYLOAD_VALIDATED_ENDPOINTS = [
   'logins',
   'token',
   'tokens',
+  'optionValues',
 ] as const;
 
 type PayloadValidatedEndpoint = (typeof GET_PAYLOAD_VALIDATED_ENDPOINTS)[number];
@@ -98,6 +100,7 @@ const GET_PAYLOAD_SCHEMAS: Record<PayloadValidatedEndpoint, z.ZodTypeAny> = {
   logins: loginsOrNotFoundSchema,
   token: tokenOrNotFoundSchema,
   tokens: tokensOrNotFoundSchema,
+  optionValues: optionValuesOrNotFoundSchema,
 };
 
 /**

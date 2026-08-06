@@ -28,26 +28,52 @@ describe("validateGetResponse", () => {
         "logins",
         "token",
         "tokens",
+        "optionValues",
       ]),
     );
   });
 
   it("accepts a valid envelope for an unvalidated endpoint", () => {
-    const response = validateGetResponse("optionValues", {
+    const response = validateGetResponse("integrations", {
       status: 200,
-      data: [{ value: "1", text: "PDF" }],
+      data: [{ id: 1 }],
       message: "ok",
     });
     expect(response).toEqual({
       status: 200,
-      data: [{ value: "1", text: "PDF" }],
+      data: [{ id: 1 }],
       message: "ok",
     });
   });
 
   it("rejects a broken envelope", () => {
     expect(() =>
-      validateGetResponse("optionValues", { status: 99, data: null }),
+      validateGetResponse("integrations", { status: 99, data: null }),
+    ).toThrow(SchemaValidationError);
+  });
+
+  it("validates an optionValues list payload", () => {
+    const response = validateGetResponse("optionValues", {
+      status: 200,
+      data: [{ value: "PDF", text: "PDF" }],
+    });
+    expect(response).toEqual({
+      status: 200,
+      data: [{ value: "PDF", text: "PDF" }],
+    });
+  });
+
+  it("accepts an empty optionValues array", () => {
+    const response = validateGetResponse("optionValues", {
+      status: 200,
+      data: [],
+    });
+    expect(response).toEqual({ status: 200, data: [] });
+  });
+
+  it("throws SchemaValidationError for legacy empty-object optionValues", () => {
+    expect(() =>
+      validateGetResponse("optionValues", { status: 200, data: {} }),
     ).toThrow(SchemaValidationError);
   });
 
