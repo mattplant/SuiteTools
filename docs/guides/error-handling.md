@@ -181,7 +181,7 @@ Once an error is caught, **how it’s displayed depends on the environment and w
 - **Expected soft cases** — In‑page status (amber) without overlay; keep app chrome usable.
 - **Production / Dev Mode off** — Log via `handleError`; avoid raw stack traces in the main UI. Route loaders may still map `NotFoundError` to an HTTP 404 → `ErrorPage`.
 
-> Telemetry/`reportError` is planned; today logging is console‑centered via `handleError`. See [📡 Telemetry & Integrations](./error-handling-advanced.md#-telemetry--integrations-planned).
+> Telemetry/`reportError` is **deferred** (not scheduled). Today logging is console‑centered via `handleError`. See [📡 Telemetry & Integrations](./error-handling-advanced.md#-telemetry--integrations-deferred).
 
 ---
 

@@ -5,6 +5,7 @@ import { EntityFields, type EntityField } from '../../shared/ui/EntityFields';
 
 type Props = {
   data: ScriptLog;
+  /** When true (ResultsModal), show navigation actions. Detail page omits them. */
   modal?: boolean;
 };
 
@@ -27,20 +28,15 @@ export function ScriptLogResult({ data, modal }: Props): JSX.Element {
     { label: 'Detail', value: data.detail },
   ];
 
-  // TODO: is this used? If not remove.
-  if (!modal) {
-    return <EntityFields fields={fields} />;
-  }
-
   return (
     <>
       <EntityFields fields={fields} />
-      {modal && (
+      {modal ? (
         <ButtonGroup>
           <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View Script Log Record</Button>
           <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Script Log Details</Button>
         </ButtonGroup>
-      )}
+      ) : null}
     </>
   );
 }

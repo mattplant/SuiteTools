@@ -1,62 +1,39 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools Dates Library
- *
- * This library provides functions to support dates in SuiteTools.
+ * SuiteTools Dates Library — native `Date` formatters for concurrency / APM views.
+ * No moment.js / dayjs / date-fns dependency — keep formatting local and tiny.
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2024  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-/**
- * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
- *
- * TODO replace with moment.js
- * @param date - the date object to format
- * @returns formattedDate - the formatted date string
- */
-export function formatDate(date: number): string {
-  const d = new Date(date);
-  let month = '' + (d.getMonth() + 1);
-  let day = '' + d.getDate();
-  const year = d.getFullYear();
-  let hour = '' + d.getHours();
-  let minute = '' + d.getMinutes();
-  let second = '' + d.getSeconds();
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-  if (hour.length < 2) hour = '0' + hour;
-  if (minute.length < 2) minute = '0' + minute;
-  if (second.length < 2) second = '0' + second;
-
-  return [year, month, day].join('-') + ' ' + [hour, minute, second].join(':');
+function pad2(value: number): string {
+  return value < 10 ? `0${value}` : String(value);
 }
 
 /**
- * Format date object into a string with the format mi:ss.
- *
- * TODO replace with moment.js
- * @param date - the date object to format
- * @returns formattedDate - the formatted date string
+ * Format a timestamp as `YYYY-MM-DD HH:mm:ss` (local time).
+ * @param date - Milliseconds since epoch.
+ * @returns Formatted date-time string.
+ */
+export function formatDate(date: number): string {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = pad2(d.getMonth() + 1);
+  const day = pad2(d.getDate());
+  const hour = pad2(d.getHours());
+  const minute = pad2(d.getMinutes());
+  const second = pad2(d.getSeconds());
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
+
+/**
+ * Format a timestamp as `mm:ss` (local time).
+ * @param date - Milliseconds since epoch.
+ * @returns Formatted minute:second string.
  */
 export function formatMinuteSecond(date: number): string {
   const d = new Date(date);
-  let minute = '' + d.getMinutes();
-  let second = '' + d.getSeconds();
-  if (minute.length < 2) minute = '0' + minute;
-  if (second.length < 2) second = '0' + second;
-
-  return [minute, second].join(':');
+  return `${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
 }
