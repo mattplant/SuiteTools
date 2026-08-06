@@ -4,15 +4,10 @@
  * @file API adapter for retrieving Login Audit records.
  */
 
-import {
-  makeRequestResponseSchema,
-  loginsOrNotFoundSchema,
-  isNotFound,
-  toArray,
-} from '@suiteworks/suitetools-shared';
+import { makeRequestResponseSchema, loginsOrNotFoundSchema } from '@suiteworks/suitetools-shared';
 import type { Logins } from '@suiteworks/suitetools-shared';
 import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { getData } from './netSuiteClient';
+import { makeListAdapter } from './adapterUtils';
 
 const loginsRequestResponseSchema = makeRequestResponseSchema(loginsOrNotFoundSchema);
 
@@ -29,12 +24,12 @@ function multiSelectParam(values: string[] | string | undefined): string | undef
 }
 
 /**
- * Build RESTlet query params, omitting empty / undefined values.
- * @param fields - Login list criteria.
+ * Build RESTlet query params from picked login criteria.
+ * @param fields - Picked login list criteria.
  */
-function toLoginUrlParams(fields: CriteriaFields): Record<string, string> {
-  const params: Record<string, string> = {};
-  if (fields.rows) {
+function toLoginUrlParams(fields: Partial<CriteriaFields>): Record<string, unknown> {
+  const params: Record<string, unknown> = {};
+  if (fields.rows != null) {
     params.rows = String(fields.rows);
   }
   if (fields.active) {
@@ -60,17 +55,14 @@ function toLoginUrlParams(fields: CriteriaFields): Record<string, string> {
 /**
  * Fetch and validate a list of `Login` records using optional criteria.
  * Always returns a `Logins` array, empty if none found.
- * @param fields - Criteria to filter the login audit list.
  */
-export async function getLogins(fields: CriteriaFields): Promise<Logins> {
-  console.log('[logins:getLogins] criteria: %o', fields);
-
-  const response = await getData('logins', toLoginUrlParams(fields));
-  const parsed = loginsRequestResponseSchema.parse(response);
-
-  if (isNotFound(parsed.data)) {
-    return [];
-  }
-
-  return toArray<Logins[number]>(parsed.data);
-}
+export const getLogins = makeListAdapter<
+  Logins[number],
+  CriteriaFields,
+  'rows' | 'active' | 'integrationName' | 'tokenName' | 'users' | 'roles'
+>(
+  'logins',
+  loginsRequestResponseSchema,
+  ['rows', 'active', 'integrationName', 'tokenName', 'users', 'roles'] as const,
+  { mapParams: toLoginUrlParams },
+);
