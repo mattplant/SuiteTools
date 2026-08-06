@@ -2,7 +2,6 @@
 
 Last updated: 2026-08-05
 
-
 ---
 
 ## 🎯 Purpose & Scope
@@ -27,6 +26,8 @@ Does **not** cover:
 ---
 
 ## 📋 Basic Commands
+
+Use **Node 24** (see `.node-version` / [Installation](./installation.md)). Root `yarn install` runs `scripts/check-node.mjs` and fails on other majors. Yarn 4 does not enforce `engines` on its own.
 
 ```bash
 # Install all dependencies

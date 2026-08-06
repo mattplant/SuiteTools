@@ -19,7 +19,7 @@ For full context, see:
 
 ## 🚀 Deploy Commands (Users and Contributors)
 
-Prereqs: NetSuite auth configured (`yarn run sdf-account-setup`), **JDK** available for SuiteCloud CLI, and Yarn 4 from this repo (`packageManager` / `.yarn/releases`).
+Prereqs: **Node 24** (`.node-version`), NetSuite auth configured (`yarn run sdf-account-setup`), **JDK** available for SuiteCloud CLI, and Yarn 4 from this repo (`packageManager` / `.yarn/releases`).
 
 ### Frontend (SPA only)
 
