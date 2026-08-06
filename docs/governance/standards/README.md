@@ -5,7 +5,7 @@ Canonical patterns for structure, style integration, and governance application.
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-05
 
 ---
 
@@ -38,6 +38,7 @@ Each standard implements the principles in [SuiteTools Documentation as Architec
 - [Emoji Usage](emoji.md) — Official rule set for emoji usage.
 - [Emoji Reference](emoji-reference.md) — Full definitions, scope, and usage rules for all approved emojis.
 - [Governance Document Definition](governance-docs.md) — Criteria for what qualifies as a governance document.
+- [JSON Wire Contract](json-wire-contract.md) — camelCase JSON/API field naming, domain inventory, migration checklist.
 - [Linting Standards](linting-standards.md) — Rule categories and rule reference.
 - [Yarn Dependencies](yarn-dependencies.md) – Governance and enforcement rules for dependency management
 

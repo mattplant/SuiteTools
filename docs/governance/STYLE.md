@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](./README.md) for related policies and resources.
 
-Last updated: September 28, 2025
+Last updated: 2026-08-05
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
@@ -87,6 +87,16 @@ This convention ensures contributors can distinguish artifact categories at a gl
 - lowercase = schema definition
 - PascalCase = type or bundle
 - `Bundle` suffix = grouped exports
+
+### JSON / API Wire Fields
+
+These rules cover **payload property keys** on the shared API contract (Zod domain schemas and RESTlet JSON). They are separate from schema **artifact** names above (`userSchema` / `UserBundle`).
+
+- Prefer **camelCase** for multi-word JSON fields — e.g. `centerType`, `isInactive`, `dateCreated`.
+- Keep short single-token keys unchanged — e.g. `id`, `name`, `email`.
+- SuiteQL / NetSuite column names may exist internally; **normalize at the API edge** to this contract **before** shared-schema validation (see [#27](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/27)).
+
+Full rules, inventory, and migration checklist: [JSON Wire Contract](./standards/json-wire-contract.md).
 
 ---
 

@@ -32,18 +32,18 @@ describe("RoleBundle / JobBundle schemas", () => {
     expect(
       RoleBundle.schema.parse({
         id: 3,
-        isinactive: "F",
+        isInactive: "F",
         name: "Administrator",
-        centertype: "ACCOUNTCENTER",
-        issalesrole: "F",
-        issupportrole: "F",
-        iswebserviceonlyrole: "F",
+        centerType: "ACCOUNTCENTER",
+        isSalesRole: "F",
+        isSupportRole: "F",
+        isWebServiceOnlyRole: "F",
       }),
     ).toMatchObject({
       id: 3,
-      isinactive: false,
+      isInactive: false,
       name: "Administrator",
-      centertype: "ACCOUNTCENTER",
+      centerType: "ACCOUNTCENTER",
     });
   });
 
