@@ -26,7 +26,7 @@ See the parent directory [README](../README.md) for more information about the S
 - **Composable Views** — Pages should be composed from reusable components and hooks, not monolithic logic.
 - **DX Matters** — All code should be easy to read, test, and onboard into.
 
-### Unit tests (Vitest)
+### Unit Tests (Vitest)
 
 - Run: `yarn test` from the monorepo root (builds `shared/` first, then all workspaces), or `yarn workspace frontend run test` when `shared/dist` is already built.
 - Colocate tests as `src/**/*.test.ts` / `*.test.tsx` (node env by default; hook tests may set `@vitest-environment jsdom`).

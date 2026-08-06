@@ -53,7 +53,7 @@ backend/
 
 Build compiles `TypeScripts/SuiteTools/` → `src/FileCabinet/SuiteScripts/SuiteTools/` (see [NetSuite-TypeScript-SDF](https://github.com/mattplant/NetSuite-TypeScript-SDF)).
 
-### Unit tests (Jest + SuiteCloud stubs)
+### Unit Tests (Jest + SuiteCloud Stubs)
 
 - Edit and assert against **`TypeScripts/`** only — do not treat generated FileCabinet JS as the system under test.
 - Run: `yarn test` from the monorepo root (builds `shared/` first, then all workspaces), or `yarn workspace backend run test` when `shared/dist` is already built.

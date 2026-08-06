@@ -1,12 +1,14 @@
 // Component supports both real-time monitoring and retrospective debugging use cases.
 import React from 'react';
-import { UseFormRegister, Control, useWatch } from 'react-hook-form';
-import { CriteriaFields } from './types';
+import type { UseFormRegister, Control} from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
+import type { CriteriaFields } from './types';
 import { SearchCriteriaDateCreated } from './SearchCriteriaDateCreated';
 import { SearchCriteriaDateTimePicker } from './SearchCriteriaDateTimePicker';
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- advanced-* fields are not on CriteriaFields yet
   control: Control<any>;
   dateDefaultValue: Date;
   timeDefaultValue?: string;

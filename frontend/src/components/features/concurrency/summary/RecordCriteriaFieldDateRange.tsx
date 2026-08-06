@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { CriteriaFields } from './types';
+import type { UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import type { CriteriaFields } from './types';
 import { Datepicker } from 'flowbite-react';
 
 interface RecordCriteriaFieldDateRangeProps {

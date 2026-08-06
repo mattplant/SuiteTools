@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { ConcurrencyRequestData } from '../types';
+import type { ConcurrencyRequestData } from '../types';
 
 type Props = {
   data: ConcurrencyRequestData | undefined;

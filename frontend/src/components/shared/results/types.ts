@@ -3,6 +3,10 @@ export type ModalResult = {
   id: number;
 };
 
+/**
+ * Narrow unknown modal payload to {@link ModalResult}, or throw if `id` is missing/invalid.
+ * @param data - Candidate modal result from a results row click.
+ */
 export function assertIsModalResult(data: unknown): asserts data is ModalResult {
   if (!Array.isArray(data)) {
     throw new Error('ModalResult data is not an array');

@@ -24,6 +24,10 @@ export const APM_UNAVAILABLE_MESSAGE =
   'Could not load concurrency data from NetSuite Application Performance Management (APM) tools ' +
   '(Concurrency Monitor). APM may be unavailable in this account — check Customization > Performance.';
 
+/**
+ * Type guard for {@link ApmUnavailableError} so concurrency pages can soft-handle APM gaps.
+ * @param err - Caught value from an APM scrape/fetch.
+ */
 export function isApmUnavailableError(err: unknown): err is ApmUnavailableError {
   return err instanceof ApmUnavailableError;
 }

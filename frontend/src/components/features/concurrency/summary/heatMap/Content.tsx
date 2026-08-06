@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import React, { useMemo } from 'react';
-import { ConcurrencySummaryData } from '../types';
+import type { ConcurrencySummaryData } from '../types';
 
 type Props = {
   data: ConcurrencySummaryData | undefined;
@@ -18,9 +18,12 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const peaks = data!.concurrency.series.peak;
   const allXGroups = useMemo(() => [...new Set(peaks.map((d) => d[0].toString()))], [peaks]);
   const allYGroups = useMemo(() => [...new Set(peaks.map((d) => d[1].toString()))], [peaks]);
+  // Keep proxy deps (peaks/width) so scale rebuild timing stays as before APM verification.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- peaks covers allXGroups; width is constant layout
   const xScale = useMemo(() => d3.scaleBand().range([0, boundsWidth]).domain(allXGroups).padding(0.05), [peaks, width]);
   const yScale = useMemo(
     () => d3.scaleBand().range([boundsHeight, 0]).domain(allYGroups).padding(0.05),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- peaks covers allYGroups; height tracks day count
     [peaks, height],
   );
 
@@ -135,6 +138,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const allAvgGroups = useMemo(() => Array.from({ length: 24 }, (_, i) => i.toString()), []);
   const xAvgScale = useMemo(
     () => d3.scaleBand().range([0, boundsWidth]).domain(allAvgGroups).padding(0.05),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- allAvgGroups is stable (empty-deps memo)
     [boundsWidth],
   );
   const yAvgScale = useMemo(

@@ -7,6 +7,10 @@
  * @NApiVersion 2.1
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return --
+ * SuiteQL / settings bags are loosely typed today; tighten under #28.
+ */
+
 import * as log from 'N/log';
 import type { Response } from './types';
 import { SuiteToolsApiGetOptions } from './SuiteToolsApiGetOptions';
@@ -166,7 +170,6 @@ export class SuiteToolsApiGet {
     return field ? (field.includes(',') ? field.split(',') : [field]) : null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private addUserLastLogin(data: any): object {
     if (data) {
       // get last logins data for users
@@ -205,7 +208,6 @@ export class SuiteToolsApiGet {
     return response;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanJobData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
     if (!data || typeof data !== 'object' || !('isinactive' in data)) {
@@ -232,7 +234,6 @@ export class SuiteToolsApiGet {
     return response;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private addJobLastRun(data: any): object {
     log.debug({ title: 'SuiteToolsApiGet:addJobLastRun() initiated', details: { data } });
 
@@ -268,7 +269,6 @@ export class SuiteToolsApiGet {
     return response;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanRoleData(data: any): object {
     // Soft-miss / empty payloads can be null or non-objects — bail before field access.
     if (!data || typeof data !== 'object') {
@@ -328,7 +328,6 @@ export class SuiteToolsApiGet {
     return response;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanScriptData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
     if (!data || typeof data !== 'object' || !('isinactive' in data)) {
@@ -355,7 +354,6 @@ export class SuiteToolsApiGet {
     return response;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private cleanUserData(data: any): object {
     // switch isinactive values to active values
     if (data.isinactive === 'F') {

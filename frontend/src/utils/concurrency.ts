@@ -2,7 +2,6 @@
  * SuiteTools Concurrency Library
  *
  * This library provides functions to support concurrency in SuiteTools.
- *
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  *
@@ -22,18 +21,18 @@
  */
 
 import { getDataFromPageContent } from '../lib/netsuite/collectData';
-import { Column } from '../components/features/concurrency/types';
-import {
+import type { Column } from '../components/features/concurrency/types';
+import type {
   ConcurrencySummaryData,
   ConcurrencySummaryDataConcurrency,
   ConcurrencySummaryDataViolations,
 } from '../components/features/concurrency/summary/types';
-import {
+import type {
   ConcurrencyDetailData,
   ConcurrencyDetailDataConcurrency,
   ConcurrencyDetailDataViolations,
 } from '../components/features/concurrency/detail/types';
-import { ConcurrencyRequestData } from '../components/features/concurrency/request/types';
+import type { ConcurrencyRequestData } from '../components/features/concurrency/request/types';
 // import { ConcurrencyRequestLogsData } from '../components/concurrency/requestLogs/types';
 // -----------------------------------------------------------------------------
 // SUMMARY
@@ -41,9 +40,9 @@ import { ConcurrencyRequestData } from '../components/features/concurrency/reque
 
 /**
  * Get NetSuite concurrency summary data.
- *
  * @param accountId - the NetSuite account ID
- * @param dateRange - the number of days to get the summary for
+ * @param startDate - range start (inclusive)
+ * @param endDate - range end (inclusive calendar day; APM end is exclusive)
  * @returns the concurrency summary data
  */
 export async function getConcurrencySummaryData(
@@ -77,11 +76,8 @@ export async function getConcurrencySummaryData(
 
 /**
  * Add concurrency average data.
- *
- * @param accountId - NetSuite account ID
- * @param startDate - detail data start date
- * @param endDate - detail data end date
- * @returns concurrency detail data
+ * @param currencyResponse - concurrency summary peaks payload
+ * @returns concurrency summary with hour averages
  */
 export function addConcurrencySummaryAverage(
   currencyResponse: ConcurrencySummaryDataConcurrency,
@@ -103,9 +99,9 @@ export function addConcurrencySummaryAverage(
 
 /**
  * Build the relative URL to get the concurrency summary.
- *
  * @param accountId - the NetSuite account ID
- * @param days - the number of days to get the summary for
+ * @param startDate - range start
+ * @param endDate - range end (APM exclusive)
  * @returns url - the url to get the concurrency summary
  */
 function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: Date): string {
@@ -129,9 +125,9 @@ function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: D
 
 /**
  * Build the relative URL to get the violations data.
- *
  * @param accountId - the NetSuite account ID
- * @param days - the number of days to get the data for
+ * @param startDate - range start
+ * @param endDate - range end (APM exclusive)
  * @returns url - the url to get the violation data
  */
 function getConcurrencySummaryViolationsUrl(accountId: string, startDate: Date, endDate: Date): string {
@@ -153,6 +149,11 @@ function getConcurrencySummaryViolationsUrl(accountId: string, startDate: Date, 
   return url;
 }
 
+/**
+ * Build DataGrid columns for the concurrency summary average grid (date + 24 hour slots).
+ * @param hours - Epoch timestamps for each hour category (`xCategories`).
+ * @returns Column defs with a leading date column and localized hour headers.
+ */
 export function initializeConcurrencySummaryColumns(hours: number[]): Column[] {
   const columns: Column[] = [];
   // add initial top left cell
@@ -177,7 +178,6 @@ export function initializeConcurrencySummaryColumns(hours: number[]): Column[] {
 
 /**
  * Gets concurrency detail data.
- *
  * @param accountId - NetSuite account ID
  * @param startDate - detail data start date
  * @param endDate - detail data end date
@@ -205,7 +205,6 @@ export async function getConcurrencyDetailData(
 
 /**
  * Build the relative URL to get the concurrency detail.
- *
  * @param accountId - the NetSuite account ID
  * @param startDate - the start date
  * @param endDate - the end date
@@ -235,10 +234,10 @@ function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: 
 }
 
 /**
- * Build the relative URL to get the violations data.
- *
+ * Build the relative URL to get the detail violations data.
  * @param accountId - the NetSuite account ID
- * @param days - the number of days to get the data for
+ * @param startDate - range start (ms string)
+ * @param endDate - range end (ms string)
  * @returns url - the url to get the violation data
  */
 function getConcurrencyDetailViolationsUrl(accountId: string, startDate: string, endDate: string): string {
@@ -267,7 +266,6 @@ function getConcurrencyDetailViolationsUrl(accountId: string, startDate: string,
 
 /**
  * Gets concurrency request (web service log) data.
- *
  * @param accountId - NetSuite account ID
  * @param startDate - request data start date
  * @param endDate - request data end date
@@ -295,7 +293,6 @@ export async function getConcurrencyRequestData(
 
 /**
  * Build the relative URL to get the concurrency request.
- *
  * @param accountId - the NetSuite account ID
  * @param startDate - the start date
  * @param endDate - the end date

@@ -2,7 +2,6 @@
  * SuiteTools Dates Library
  *
  * This library provides functions to support dates in SuiteTools.
- *
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  *
@@ -25,9 +24,8 @@
  * Format date object into a string with the format YYYY-MM-DD hh24:mi:ss.
  *
  * TODO replace with moment.js
- *
- * @param {Date} date - the date object to format
- * @returns {string} formattedDate - the formatted date string
+ * @param date - the date object to format
+ * @returns formattedDate - the formatted date string
  */
 export function formatDate(date: number): string {
   const d = new Date(date);
@@ -50,9 +48,8 @@ export function formatDate(date: number): string {
  * Format date object into a string with the format mi:ss.
  *
  * TODO replace with moment.js
- *
- * @param {Date} date - the date object to format
- * @returns {string} formattedDate - the formatted date string
+ * @param date - the date object to format
+ * @returns formattedDate - the formatted date string
  */
 export function formatMinuteSecond(date: number): string {
   const d = new Date(date);

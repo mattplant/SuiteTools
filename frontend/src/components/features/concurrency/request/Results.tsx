@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
-import { Export } from '../../../shared/results/Export.tsx';
-import { ConcurrencyRequestData, ConcurrencyRequestRows } from './types.ts';
-import { formatDate } from '../../../../utils/date.ts';
+import { Export } from '../../../shared/results/Export';
+import type { ConcurrencyRequestData, ConcurrencyRequestRows } from './types';
+import { formatDate } from '../../../../utils/date';
 
 type Props = {
   data: ConcurrencyRequestData | undefined;

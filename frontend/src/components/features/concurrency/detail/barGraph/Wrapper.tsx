@@ -1,5 +1,5 @@
-import { ConcurrencyDetailBarGraphContent } from './Content.tsx';
-import { ConcurrencyDetailData } from '../types.ts';
+import { ConcurrencyDetailBarGraphContent } from './Content';
+import type { ConcurrencyDetailData } from '../types';
 
 type Props = {
   data: ConcurrencyDetailData | undefined;

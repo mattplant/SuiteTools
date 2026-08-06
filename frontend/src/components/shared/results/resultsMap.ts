@@ -1,15 +1,15 @@
-import { ResultsProps } from './types.ts';
-import { RecordResults as FileResults } from '../../features/file/RecordResults.tsx';
-import { RecordResults as IntegrationResults } from '../../features/integration/RecordResults.tsx';
-import { RecordResults as JobResults } from '../../features/job/RecordResults.tsx';
-import { RecordResults as JobRunResults } from '../../features/job/run/RecordResults.tsx';
-import { RecordResults as LoginResults } from '../../features/login/RecordResults.tsx';
-import { RecordResults as RolesResults } from '../../features/role/RecordResults.tsx';
-import { RecordResults as ScriptsResults } from '../../features/script/RecordResults.tsx';
-import { RecordResults as ScriptLogsResults } from '../../features/scriptLog/RecordResults.tsx';
-import { RecordResults as SoapLogResults } from '../../features/soapLog/RecordResults.tsx';
-import { RecordResults as TokenResults } from '../../features/token/RecordResults.tsx';
-import { RecordResults as UserResults } from '../../features/user/RecordResults.tsx';
+import type { ResultsProps } from './types';
+import { RecordResults as FileResults } from '../../features/file/RecordResults';
+import { RecordResults as IntegrationResults } from '../../features/integration/RecordResults';
+import { RecordResults as JobResults } from '../../features/job/RecordResults';
+import { RecordResults as JobRunResults } from '../../features/job/run/RecordResults';
+import { RecordResults as LoginResults } from '../../features/login/RecordResults';
+import { RecordResults as RolesResults } from '../../features/role/RecordResults';
+import { RecordResults as ScriptsResults } from '../../features/script/RecordResults';
+import { RecordResults as ScriptLogsResults } from '../../features/scriptLog/RecordResults';
+import { RecordResults as SoapLogResults } from '../../features/soapLog/RecordResults';
+import { RecordResults as TokenResults } from '../../features/token/RecordResults';
+import { RecordResults as UserResults } from '../../features/user/RecordResults';
 
 interface ResultsMap {
   [key: string]: React.FC<ResultsProps>;

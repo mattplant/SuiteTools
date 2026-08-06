@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-05
 
 ---
 
@@ -87,9 +87,9 @@ We group rules into **tiers** for clarity:
 
 ## 📚 Rule Reference
 
-> ⚠️ **Work in Progress** — first draft, currently aspirational.
+Live ESLint config ([`eslint.config.cjs`](../../../eslint.config.cjs)) enforces **exports-only** return types (`explicit-module-boundary-types`) and JSDoc (`jsdoc/require-jsdoc` with `publicOnly`). Frontend overrides the stricter `jsdoc/recommended-typescript-error` preset accordingly. Root `yarn lint` uses `--max-warnings 0`.
 
-Functions as the implementation spec.
+Functions as the implementation spec. Some rows below remain aspirational (not yet wired).
 
 | Category | Rule | ESLint / TS Rule Name | Severity | Source | Rationale |
 |----------|------|-----------------------|----------|--------|-----------|

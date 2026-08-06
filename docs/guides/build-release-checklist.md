@@ -52,11 +52,11 @@ GitLab CI (`.gitlab-ci.yml`) on MRs and the default branch:
 
 ```bash
 yarn typecheck   # merge-blocking — shared types + FE/BE tsc
+yarn lint        # merge-blocking — shared types emit, then ESLint (--max-warnings 0)
 yarn test        # merge-blocking
-yarn lint        # advisory (allow_failure) until ESLint debt is cleared
 ```
 
-- ✅ Red **typecheck** / **test** should block merge when **Pipelines must succeed** is enabled in project settings.
+- ✅ Red **typecheck** / **lint** / **test** should block merge when **Pipelines must succeed** is enabled in project settings.
 - ❌ SuiteCloud deploy is not run in MR CI.
 
 ---

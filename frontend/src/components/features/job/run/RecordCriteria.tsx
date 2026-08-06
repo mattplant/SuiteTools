@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
-import { CriteriaFields } from '../../../shared/criteria/types';
+import type { CriteriaFields } from '../../../shared/criteria/types';
 import { SearchCriteriaJob } from '../../../shared/criteria/SearchCriteriaJob';
 import { SearchCriteriaCompleted } from '../../../shared/criteria/SearchCriteriaCompleted';
 

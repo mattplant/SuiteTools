@@ -57,7 +57,7 @@ export class SuiteToolsApiPut {
   public putSettings(requestBodyData: object): Response {
     assertIsRequestBodyData(requestBodyData);
 
-    const devMode = (requestBodyData as any).devMode;
+    const devMode = (requestBodyData as { devMode?: boolean }).devMode;
     const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
     this.stCommon.stSettings.getSettings();
     const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(

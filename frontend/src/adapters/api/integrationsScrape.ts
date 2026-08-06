@@ -21,6 +21,12 @@ const INTEGRAPP_HREF_RE = /integrapp\.nl\?(?:[^"'#]*&)?id=(\d+)/i;
 const APPLICATION_ID_RE = /^[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$|^[0-9A-Fa-f]{32}$/;
 const DATE_CREATED_RE = /(?:\d{1,4}[-/]\d{1,2}[-/]\d{1,4})|(?:\d{1,2}\/\d{1,2}\/\d{2,4})|(?:[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4})/;
 
+/**
+ * Normalize a scraped integration display name: strip HTML and remap known NetSuite aliases
+ * (e.g. "SuiteCloud IDE & CLI" → "SuiteCloud Development Integration").
+ * @param name - Raw name from scrape or list UI text.
+ * @returns Cleaned display name suitable for merge/lookup.
+ */
 export function normalizeIntegrationName(name: string): string {
   const cleaned = stripHtml(name);
   if (cleaned === 'SuiteCloud IDE & CLI') {

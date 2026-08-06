@@ -1,5 +1,5 @@
 import { Button } from 'flowbite-react';
-import { exportToCsv } from '../ui/exportUtils.tsx';
+import { exportToCsv } from '../ui/exportUtils';
 import 'react-data-grid/lib/styles.css';
 import { type DataGridHandle } from 'react-data-grid';
 

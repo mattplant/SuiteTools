@@ -2,7 +2,6 @@
  * SuiteTools Data Collection Library
  *
  * This library provides functions to collect data from NetSuite pages.
- *
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  *
@@ -31,7 +30,6 @@ export interface NetSuiteResponse {
 
 /**
  * Get data from NetSuite page
- *
  * @param url - the URL to the page to load
  * @returns string
  */
@@ -86,7 +84,6 @@ export async function getDataFromPageContent(url: string): Promise<NetSuiteRespo
  * Gets data from table shown in NetSuite's UI.
  *
  * Allows access to your own NetSuite data that is not available via APIs.
- *
  * @param url - url of the page
  * @param id - id of the table element on page
  * @returns data from page table

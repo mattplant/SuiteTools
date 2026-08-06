@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react';
 import DataGrid, { type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../shared/results/Export';
-import { ResultsProps, SummaryRow } from '../../shared/results/types';
+import type { ResultsProps, SummaryRow } from '../../shared/results/types';
 import { FileBundle, type File } from '@suiteworks/suitetools-shared';
 
 function formatFileDate(value: Date | string | undefined): string {

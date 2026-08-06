@@ -1,7 +1,7 @@
 import 'react-data-grid/lib/styles.css';
 import DataGrid from 'react-data-grid';
-import { Column, RowCol } from '../types';
-import { ConcurrencySummaryData } from './types';
+import type { Column, RowCol } from '../types';
+import type { ConcurrencySummaryData } from './types';
 import { initializeConcurrencySummaryColumns } from '../../../../utils/concurrency';
 
 type Props = {
