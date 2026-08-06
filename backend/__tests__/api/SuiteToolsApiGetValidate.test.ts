@@ -29,12 +29,14 @@ describe("validateGetResponse", () => {
         "token",
         "tokens",
         "optionValues",
+        "integration",
+        "integrations",
       ]),
     );
   });
 
   it("accepts a valid envelope for an unvalidated endpoint", () => {
-    const response = validateGetResponse("integrations", {
+    const response = validateGetResponse("_envelopeOnly", {
       status: 200,
       data: [{ id: 1 }],
       message: "ok",
@@ -48,7 +50,51 @@ describe("validateGetResponse", () => {
 
   it("rejects a broken envelope", () => {
     expect(() =>
-      validateGetResponse("integrations", { status: 99, data: null }),
+      validateGetResponse("_envelopeOnly", { status: 99, data: null }),
+    ).toThrow(SchemaValidationError);
+  });
+
+  it("validates an integrations list payload", () => {
+    const response = validateGetResponse("integrations", {
+      status: 200,
+      data: [
+        {
+          id: 900000001,
+          name: "LoginAudit App",
+          applicationId: "",
+          state: "Enabled",
+          dateCreated: "",
+        },
+      ],
+    });
+    expect(response.status).toBe(200);
+    expect(response.data).toEqual([
+      expect.objectContaining({
+        id: 900000001,
+        name: "LoginAudit App",
+        state: "Enabled",
+      }),
+    ]);
+  });
+
+  it("accepts canonical soft NotFound for integration", () => {
+    const response = validateGetResponse("integration", {
+      status: 404,
+      data: { code: "NOT_FOUND", message: "No integration found with id of 9" },
+      message: "No integration found with id of 9",
+    });
+    expect(response.data).toEqual({
+      code: "NOT_FOUND",
+      message: "No integration found with id of 9",
+    });
+  });
+
+  it("throws SchemaValidationError for an invalid integration payload", () => {
+    expect(() =>
+      validateGetResponse("integration", {
+        status: 200,
+        data: { id: "not-a-number", name: "x" },
+      }),
     ).toThrow(SchemaValidationError);
   });
 
