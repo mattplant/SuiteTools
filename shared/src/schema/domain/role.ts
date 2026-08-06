@@ -23,7 +23,7 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
 const schema = z.object({
   id: z.number().positive(),
   isInactive: zNetSuite.booleanFromTF.schema,
-  name: z.string(),
+  name: zNetSuite.stringOrEmpty.schema,
   centerType: zNetSuite.stringOrEmpty.schema,
   isSalesRole: zNetSuite.booleanFromTF.schema,
   isSupportRole: zNetSuite.booleanFromTF.schema,
