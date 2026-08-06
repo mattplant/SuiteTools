@@ -1,40 +1,22 @@
-// need to have a base type for ModalResult
+/**
+ * Minimal shape for modal detail payloads (entity row with numeric id).
+ * FE view-layer type — not a shared domain schema.
+ */
 export type ModalResult = {
   id: number;
 };
 
 /**
- * Narrow unknown modal payload to {@link ModalResult}, or throw if `id` is missing/invalid.
- * @param data - Candidate modal result from a results row click.
+ * Props for entity results grids that open a detail modal.
+ * Kept in the frontend: UI wiring, not a cross-workspace domain contract.
  */
-export function assertIsModalResult(data: unknown): asserts data is ModalResult {
-  if (!Array.isArray(data)) {
-    throw new Error('ModalResult data is not an array');
-  }
-  // check the data for the required fields
-  // id
-  if (!('id' in data)) {
-    throw new Error('ModalResult data is missing the "id" field');
-  }
-  if (typeof data.id !== 'number') {
-    throw new Error('ModalResult data "id" field is not a number');
-  }
-}
-
 export type ResultsProps = {
   rows: readonly unknown[];
   setId: (id: number) => void;
   setOpenModal: (openModal: boolean) => void;
 };
 
-// TODO: move over to this once I have transitioned over all the types to shared
-// export type ResultsProps<T> = {
-//   rows: T[];
-//   setId: (id: number) => void;
-//   setOpenModal: (open: boolean) => void;
-// };
-
-// using ALL CAPS since we need enum to be of type string for ResultsMap
+/** String enum keys for {@link resultsMap} / ResultsModal switches. */
 export enum ResultsTypes {
   FILE = 'file',
   INTEGRATION = 'integration',

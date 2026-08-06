@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-04
+Last updated: 2026-08-06
 
 ---
 
@@ -31,20 +31,12 @@ These standards are designed to be enforceable by automated tooling such as lint
 
 All errors in SuiteTools must follow this lifecycle:
 
-1. **Origin** — errors are thrown only at defined boundaries.
-2. **Intercept** — errors are caught and normalized into a `SuiteError`.
-3. **Normalize** — errors are enriched with metadata (code, context, severity).
-4. **Log** — errors are recorded locally or sent to telemetry.
-5. **Surface** — errors are displayed consistently (dev overlays, prod fallbacks).
-6. **Propagate** — errors are rethrown or escalated if not fully handled.
-
-<!-- TODO: reconcile above with this.
-1. **Origin** – Error occurs in app code, a dependency, or a global event like `window.onerror`.
-2. **Intercept** – Outermost `catch` block or global hook captures it.
-3. **Normalize** – Convert any thrown value to a `NormalizedError`.
-4. **Log** – Emit with `[SuiteTools]` prefix for grep‑friendly output.
-5. **Surface (Dev)** – Optionally trigger overlays/UI for developer visibility.
-6. **Propagate** – Rethrow for upstream handling, monitoring, and triage. -->
+1. **Origin** — error occurs at a boundary (app code, dependency, or global hook such as `window.onerror`).
+2. **Intercept** — outermost `catch` or global handler captures it.
+3. **Normalize** — convert any thrown value into a `SuiteError` (code, context, severity).
+4. **Log** — emit with a `[SuiteTools]` prefix (grep-friendly); telemetry sink is deferred.
+5. **Surface** — Dev Mode may open `DevSuiteErrorOverlay`; production uses safe fallback UI only.
+6. **Propagate** — rethrow / escalate unless a classified soft path applies.
 
 ```mermaid
 sequenceDiagram
@@ -99,11 +91,12 @@ Error handling behavior differs by environment. These rules are **binding** and 
 
 Every `SuiteError` **must** include:
 
-- `code` — unique, stable identifier (used in logs, telemetry, dashboards)
+- `code` — unique, stable identifier (used in logs, dashboards, future telemetry)
 - `message` — developer‑facing, actionable description
 - `context` — structured metadata (object with reproducible details)
-- `severity` — one of: `info`, `warning`, `error`, `fatal`
-<!-- TODO: check this metadata. Severity list does not match NetSuite. -->
+- `severity` — SuiteTools taxonomy: `info` | `warning` | `error` | `fatal`
+
+> **Severity vs NetSuite:** This is the SuiteTools/`SuiteError` contract, not NetSuite’s native log levels (`DEBUG` / `AUDIT` / `ERROR` / `EMERGENCY`). Do not expect a 1:1 mapping when writing `N/log` calls.
 
 ## 🗂️ Error Taxonomy
 
@@ -127,30 +120,20 @@ All thrown errors **must** extend from **`SuiteError`** to ensure a consistent s
 
 - **Base class:** `SuiteError`
 
-### Canonical Subclasses
+### Canonical Subclasses (implemented)
 
-- **`SchemaValidationError`** — Data shape or type is invalid.
-  Common at transport/domain boundaries or when mapping between layers.
-  Examples: missing required fields, invalid date formats, mismatched enum values.
-
-- **`NetSuiteApiError`** — Communication with the NetSuite API failed.
-  Includes request‑side issues (timeouts, bad payloads) and response‑side errors (unexpected status codes, malformed data).
+- **`SchemaValidationError`** — Data shape or type is invalid at transport/domain boundaries.
+- **`NetSuiteApiError`** — Communication with the NetSuite API failed (request or response side).
+- **`NotFoundError`** — Singular resource missing (adapters / loaders; severity `warning`).
+- **`InvalidParameterError`** — Bad or missing request parameter (severity `warning`).
+- **`UnexpectedError`** — Catch‑all for unclassified failures after normalization; use sparingly when no better subclass fits.
 
 ### Proposed / Planned Subclasses
 
-Not yet implemented, subject to governance review.
+Not yet implemented; subject to governance review before adding.
 
-- **`ConfigError`** — Required configuration is missing or invalid.
-  Often caught at startup to prevent runtime failures.
-  Examples: missing environment variables, unsupported feature flags.
-
+- **`ConfigError`** — Required configuration missing or invalid (startup / env).
 - **`UIRenderError`** — Unexpected rendering failure in the frontend.
-  Typically caused by missing props, incompatible view models, or unhandled state.
-
-<!-- TODO: Do we also need an `UnexpectedError`?
-- **`UnexpectedError`** — Catch‑all for unclassified or unknown failures.
-  Used sparingly; most errors should map to a specific subclass.
-  Helps ensure no error goes unhandled. -->
 
 ### When to Create a New Subclass
 

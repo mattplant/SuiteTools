@@ -89,7 +89,7 @@ rehydrate / normalize ──→ cross boundary ──→ [ Workspace B ]
                                              ├─ log ([SuiteTools])
                                              ├─ Dev Mode → DevSuiteErrorOverlay
                                              └─ rethrow
-                                             (reportError planned — see Telemetry)
+                                             (reportError deferred — see Telemetry)
 ```
 
 ---
@@ -187,28 +187,19 @@ By standardizing where and how errors are caught, we:
 
 ---
 
-## 📡 Telemetry & Integrations (Planned)
+## 📡 Telemetry & Integrations (Deferred)
 
-Catching an error is only half the job — **reporting it ensures we can diagnose, track, and improve over time**.
+Catching an error is only half the job — **external reporting** would help diagnose and track failures over time. SuiteTools does **not** ship a `reportError` / Sentry / Datadog integration yet.
 
-SuiteTools will use a **single, centralized reporting utility** to keep error data consistent across environments and make future integrations with monitoring services (e.g., Sentry, Datadog, custom dashboards) straightforward.
+**Today:** `handleError()` normalizes, logs with a `[SuiteTools]` prefix, optionally surfaces the Dev overlay, and rethrows. That is the complete production path.
 
-By standardizing reporting, we:
-
-- **Avoid fragmented or duplicate logging logic** — one path for all error reporting.
-- **Ensure consistent metadata** — every error carries the same core fields for debugging and analysis.
-- **Keep development feedback loops fast** — rich local reporting now, production‑grade monitoring later.
-- **Prepare for seamless integrations** — external services can be added without changing developer workflows.
-
-### Planned Utility & Flow
-
-- **`reportError`** — A single entry point for normalized error data (from `handleError()`) that routes to:
-  - Dev: console + overlay
-  - Prod: monitoring service
+**Deferred (not scheduled):** a single `reportError` sink called from `handleError()` that could route to a monitoring service in production without changing call sites:
 
 ```text
-Throw → Catch → handleError() → reportError()
+Throw → Catch → handleError() → [future] reportError()
 ```
+
+Do not add ad‑hoc third‑party SDK calls in feature code; any future telemetry should go through that centralized hook when prioritized.
 
 ---
 
