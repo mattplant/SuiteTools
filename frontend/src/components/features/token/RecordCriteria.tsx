@@ -1,6 +1,7 @@
-import { useForm } from 'react-hook-form';
-import { Button } from 'flowbite-react';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from '../../shared/criteria/types';
+import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
 import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
 import { SearchCriteriaIntegrationName } from '../../shared/criteria/SearchCriteriaIntegrationName';
 import { SearchCriteriaRoleName } from '../../shared/criteria/SearchCriteriaRoleName';
@@ -12,21 +13,20 @@ interface Props {
 }
 
 export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
-  const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
-
-  function onSubmit(criteria: CriteriaFields) {
-    setCriteria(criteria);
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Get Tokens</Button>
-      <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} title="Status" trueLabel="Active" falseLabel="Revoked" />
-        <SearchCriteriaIntegrationName register={register} />
-        <SearchCriteriaUserName register={register} />
-        <SearchCriteriaRoleName register={register} />
-      </div>
-    </form>
+    <RecordCriteriaForm
+      defaultCriteria={defaultCriteria}
+      setCriteria={setCriteria}
+      submitLabel="Get Tokens"
+    >
+      {({ register }) => (
+        <>
+          <SearchCriteriaActive register={register} title="Status" trueLabel="Active" falseLabel="Revoked" />
+          <SearchCriteriaIntegrationName register={register} />
+          <SearchCriteriaUserName register={register} />
+          <SearchCriteriaRoleName register={register} />
+        </>
+      )}
+    </RecordCriteriaForm>
   );
 }

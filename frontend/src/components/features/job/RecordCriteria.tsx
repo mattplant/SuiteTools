@@ -1,8 +1,10 @@
-import { useForm } from 'react-hook-form';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { Button } from 'flowbite-react';
 import { handleError, UnexpectedError } from '@suiteworks/suitetools-shared';
 import { initiateJob } from '../../../adapters/api/job';
 import type { CriteriaFields } from '../../shared/criteria/types';
+import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
 import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
 import { getAppBaseUrl } from '../../../utils/navigation';
 import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
@@ -14,7 +16,6 @@ interface Props {
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const triggerError = useErrorBoundaryTrigger();
-  const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   const initiateJobsClick = async () => {
     console.log('Jobs Criteria: initiateJobsClick() initiated');
@@ -33,25 +34,23 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
     }
   };
 
-  function onSubmit(criteria: CriteriaFields) {
-    console.log('Submitted details:', criteria);
-    setCriteria(criteria);
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Get Jobs</Button>
-      <Button
-        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-          e.preventDefault();
-          initiateJobsClick();
-        }}
-      >
-        Run Jobs
-      </Button>
-      <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
-      </div>
-    </form>
+    <RecordCriteriaForm
+      defaultCriteria={defaultCriteria}
+      setCriteria={setCriteria}
+      submitLabel="Get Jobs"
+      actions={
+        <Button
+          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            void initiateJobsClick();
+          }}
+        >
+          Run Jobs
+        </Button>
+      }
+    >
+      {({ register }) => <SearchCriteriaActive register={register} />}
+    </RecordCriteriaForm>
   );
 }

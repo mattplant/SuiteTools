@@ -938,19 +938,17 @@ export class SuiteToolsApiModel {
 
     // Add date/time filtering
     if (timemode === 'now' && date) {
-      // Filter by relative time from now (e.g., last 15 minutes)
-      // NetSuite uses fractional days: minutes / 1440 (minutes in a day)
-      const minutes = parseInt(date, 10);
-      if (!isNaN(minutes) && minutes > 0) {
-        where.push(`ScriptNote.date >= (SYSDATE - ${minutes} / 1440)`);
-      }
+      // Named windows (today/yesterday/…) and minute offsets via addDateFilter
+      this.addDateFilter(where, 'SuiteToolsApiModel:getScriptLogsViaSuiteQL()', 'ScriptNote', 'date', date);
     } else if (timemode === 'custom' && customdatetime && customduration) {
-      // Filter by custom datetime and duration
-      // NetSuite uses fractional days: minutes / 1440 (minutes in a day)
-      const duration = parseInt(customduration, 10);
-      if (!isNaN(duration) && duration > 0) {
-        where.push(`ScriptNote.date >= (TO_DATE('${customdatetime}', 'YYYY-MM-DD HH24:MI:SS') - ${duration} / 1440)`);
-        where.push(`ScriptNote.date <= TO_DATE('${customdatetime}', 'YYYY-MM-DD HH24:MI:SS')`);
+      // End datetime (YYYY-MM-DD HH24:MI:SS or epoch ms) + lookback in minutes
+      const durationMinutes = this.resolveDurationMinutes(customduration);
+      const endDateTime = this.resolveSuiteQlDateTime(customdatetime);
+      if (durationMinutes > 0 && endDateTime) {
+        where.push(
+          `ScriptNote.date >= (TO_DATE('${endDateTime}', 'YYYY-MM-DD HH24:MI:SS') - ${durationMinutes} / 1440)`,
+        );
+        where.push(`ScriptNote.date <= TO_DATE('${endDateTime}', 'YYYY-MM-DD HH24:MI:SS')`);
       }
     }
 
@@ -1034,6 +1032,46 @@ export class SuiteToolsApiModel {
         break;
       }
     }
+  }
+
+  /**
+   * Resolve a custom lookback duration to minutes.
+   * Accepts numeric minutes or legacy named tokens (`hour`, `day`, `week`, `month`).
+   */
+  private resolveDurationMinutes(duration: string): number {
+    const named: Record<string, number> = {
+      hour: 60,
+      day: 1440,
+      week: 10080,
+      month: 43200,
+    };
+    if (named[duration] != null) {
+      return named[duration];
+    }
+    const minutes = parseInt(duration, 10);
+    return !isNaN(minutes) && minutes > 0 ? minutes : 0;
+  }
+
+  /**
+   * Normalize custom end datetime for SuiteQL `TO_DATE(..., 'YYYY-MM-DD HH24:MI:SS')`.
+   * Accepts that string form, or a millisecond epoch (legacy FE).
+   */
+  private resolveSuiteQlDateTime(value: string): string {
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
+      return value;
+    }
+    if (/^\d+$/.test(value)) {
+      const date = new Date(Number(value));
+      if (!isNaN(date.getTime())) {
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
+      }
+    }
+    log.debug({
+      title: 'SuiteToolsApiModel:resolveSuiteQlDateTime',
+      details: `Unhandled customDateTime value: ${value}`,
+    });
+    return '';
   }
 
   /**

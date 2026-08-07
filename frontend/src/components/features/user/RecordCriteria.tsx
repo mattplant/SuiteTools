@@ -1,6 +1,7 @@
-import { useForm } from 'react-hook-form';
-import { Button } from 'flowbite-react';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from '../../shared/criteria/types';
+import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
 import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
 import { SearchCriteriaOwners } from '../../shared/criteria/SearchCriteriaOwners';
 import { SearchCriteriaRoles } from '../../shared/criteria/SearchCriteriaRoles';
@@ -11,21 +12,19 @@ interface Props {
 }
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
-  const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
-
-  function onSubmit(criteria: CriteriaFields) {
-    console.log('Submitted details:', criteria);
-    setCriteria(criteria);
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Get Users</Button>
-      <div className="flex gap-4 p-2.5">
-        <SearchCriteriaActive register={register} />
-        <SearchCriteriaRoles register={register} />
-        <SearchCriteriaOwners register={register} title="Supervisors" />
-      </div>
-    </form>
+    <RecordCriteriaForm
+      defaultCriteria={defaultCriteria}
+      setCriteria={setCriteria}
+      submitLabel="Get Users"
+    >
+      {({ register }) => (
+        <>
+          <SearchCriteriaActive register={register} />
+          <SearchCriteriaRoles register={register} />
+          <SearchCriteriaOwners register={register} title="Supervisors" />
+        </>
+      )}
+    </RecordCriteriaForm>
   );
 }
