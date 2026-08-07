@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getToken } from '../adapters/api/token';
 import { getTokens, addTokenLastLogins } from '../adapters/api/tokens';
 import type { Tokens } from '@suiteworks/suitetools-shared';
+import { toArray } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/token/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
 import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError, toArray } from '@suiteworks/suitetools-shared';
+import { useEntityList } from '../hooks/useEntityList';
 
 /**
  * Tokens page — list TBA tokens with criteria filters.
@@ -18,7 +17,6 @@ import { handleError, toArray } from '@suiteworks/suitetools-shared';
  */
 export function TokensPage(): React.ReactElement {
   const { settings } = useAppSettingsContext();
-  const triggerError = useErrorBoundaryTrigger();
 
   const defaultCriteria: CriteriaFields = {
     active: 'T',
@@ -26,33 +24,15 @@ export function TokensPage(): React.ReactElement {
     userName: '',
     roleName: '',
   };
-  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Tokens>([]);
 
-  useEffect(() => {
-    let ignore = false;
-
-    async function fetchData(): Promise<void> {
-      try {
-        const data = await getTokens(criteria);
-        const normalized = toArray<Tokens[number]>(data);
-        addTokenLastLogins(normalized, settings);
-        if (!ignore) {
-          setResults(normalized);
-        }
-      } catch (err) {
-        if (!ignore) {
-          setResults([]);
-        }
-        handleError(err, { reactTrigger: triggerError });
-      }
-    }
-
-    fetchData();
-    return (): void => {
-      ignore = true;
-    };
-  }, [criteria, settings, triggerError]);
+  const { setCriteria, results } = useEntityList({
+    defaultCriteria,
+    deps: [settings],
+    fetchList: async (criteria): Promise<Tokens> => {
+      const data = await getTokens(criteria);
+      return addTokenLastLogins(toArray<Tokens[number]>(data), settings);
+    },
+  });
 
   return (
     <div className="mt-4">

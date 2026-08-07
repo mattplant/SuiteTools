@@ -129,22 +129,21 @@ export function makeListAdapter<TItem, TCriteria extends object, K extends keyof
 /**
  * Pick only the allowed keys from a criteria object.
  * Ensures adapters only forward whitelisted fields to the API.
+ * Missing / undefined keys are skipped (form submit often returns a partial object vs page defaults).
  * @param fields - The full criteria object.
  * @param keys - The keys to include in the output.
- * @returns A partial object containing only the selected keys.
+ * @returns A partial object containing only the selected keys that are defined.
  * @example
  * const urlParams = pickCriteria(fields, ['active', 'roles'] as const);
  */
 export function pickCriteria<T extends object, K extends keyof T>(fields: T, keys: readonly K[]): Partial<T> {
-  return keys.reduce((acc, key) => {
-    if (!(key in fields)) {
-      throw new Error(`Invalid criteria key: ${String(key)}`);
-    }
+  const out: Partial<T> = {};
+  for (const key of keys) {
     if (fields[key] !== undefined) {
-      acc[key] = fields[key];
+      out[key] = fields[key];
     }
-    return acc;
-  }, {} as Partial<T>);
+  }
+  return out;
 }
 
 /* -------------------------------------------------------------------------- */
