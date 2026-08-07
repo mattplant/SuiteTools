@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from '../../shared/criteria/types';
 import { getToken } from '../../../adapters/api/token';
 import { getTokens } from '../../../adapters/api/tokens';
 import { integrationLookupKey } from '../../../adapters/api/integrationsScrape';
 import type { Token, Tokens } from '@suiteworks/suitetools-shared';
-import { handleError } from '@suiteworks/suitetools-shared';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
-import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
+import { useEntityList } from '../../../hooks/useEntityList';
 
 type Props = {
   integrationName: string;
@@ -34,44 +34,25 @@ function tokensForIntegration(tokens: Tokens, integrationName: string): Tokens {
   });
 }
 
-export function IntegrationTokens({ integrationName }: Props) {
-  const triggerError = useErrorBoundaryTrigger();
-  const [results, setResults] = useState<Tokens>([]);
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function fetchData() {
+/**
+ * Nested tokens list for an integration detail page.
+ * @param props - Component props.
+ * @param props.integrationName - Integration display name filter.
+ * @returns The rendered tokens section.
+ */
+export function IntegrationTokens({ integrationName }: Props): React.ReactElement {
+  const { results } = useEntityList<Tokens[number], CriteriaFields>({
+    defaultCriteria: { active: 'T', integrationName },
+    deps: [integrationName],
+    fetchList: async () => {
       if (!integrationName.trim()) {
-        setResults([]);
-        return;
+        return [];
       }
-
-      const criteria: CriteriaFields = {
-        active: 'T',
-        integrationName,
-      };
-
-      try {
-        const data = await getTokens(criteria);
-        // Enforce integration scope even if the adapter filter is bypassed or names differ.
-        const scoped = tokensForIntegration(data, integrationName);
-        if (!ignore) {
-          setResults(scoped);
-        }
-      } catch (error) {
-        if (!ignore) {
-          setResults([]);
-        }
-        handleError(error, { reactTrigger: triggerError });
-      }
-    }
-    fetchData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [integrationName, triggerError]);
+      const data = await getTokens({ active: 'T', integrationName });
+      // Enforce integration scope even if the adapter filter is bypassed or names differ.
+      return tokensForIntegration(data, integrationName);
+    },
+  });
 
   return (
     <>
