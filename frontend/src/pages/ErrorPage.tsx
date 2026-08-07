@@ -7,7 +7,7 @@ import { DefaultFallback } from '../components/shared/errors/DefaultFallback';
 import { useShowDevErrorOverlay } from '../hooks/useShowDevErrorOverlay';
 
 /**
- * Normalize loader / Await failures that surface as HTTP-style responses.
+ * Normalize loader failures that surface as HTTP-style responses.
  *
  * React Router unwraps `throw new Response(...)` from loaders into an
  * ErrorResponse (`isRouteErrorResponse`). Deferred `<Await>` rejections can

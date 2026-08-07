@@ -1,5 +1,6 @@
-import { Suspense } from 'react';
-import { Await, useLoaderData } from 'react-router-dom';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import { useLoaderData } from 'react-router-dom';
 import { FileResult } from '../components/features/file/RecordResult';
 import type { FileLoaderData } from '../routes/fileLoader';
 
@@ -8,19 +9,13 @@ import type { FileLoaderData } from '../routes/fileLoader';
  * @returns The rendered file page component.
  */
 export function FilePage(): JSX.Element {
-  const data = useLoaderData() as FileLoaderData;
+  const { file } = useLoaderData() as FileLoaderData;
 
   return (
     <div className="mx-auto mt-6">
       <h2 className="text-xl font-bold text-slate-900">File</h2>
       <br />
-      <Suspense fallback={<div>Fetching...</div>}>
-        <Await resolve={data.file}>
-          {(record) => {
-            return <FileResult data={record} />;
-          }}
-        </Await>
-      </Suspense>
+      <FileResult data={file} />
     </div>
   );
 }

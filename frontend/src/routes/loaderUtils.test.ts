@@ -10,35 +10,22 @@ function loaderArgs(id: string | undefined): LoaderFunctionArgs {
 }
 
 describe("makeEntityLoader", () => {
-  it("returns a deferred promise by default", async () => {
+  it("awaits the record and returns it under the key", async () => {
     const fetchById = vi.fn().mockResolvedValue({ id: 1, name: "a" });
     const loader = makeEntityLoader("user", "User", fetchById);
 
     const data = await loader(loaderArgs("1"));
 
     expect(fetchById).toHaveBeenCalledWith(1);
-    expect(data.user).toBeInstanceOf(Promise);
-    await expect(data.user).resolves.toEqual({ id: 1, name: "a" });
+    expect(data).toEqual({ user: { id: 1, name: "a" } });
+    expect(data.user).not.toBeInstanceOf(Promise);
   });
 
-  it("awaits the record when awaitResult is true", async () => {
-    const fetchById = vi.fn().mockResolvedValue({ id: 2 });
-    const loader = makeEntityLoader("script", "Script", fetchById, {
-      awaitResult: true,
-    });
-
-    const data = await loader(loaderArgs("2"));
-
-    expect(data).toEqual({ script: { id: 2 } });
-    expect(data.script).not.toBeInstanceOf(Promise);
-  });
-
-  it("maps fetch failures through mapLoaderError (deferred)", async () => {
+  it("maps fetch failures through mapLoaderError", async () => {
     const fetchById = vi.fn().mockRejectedValue(new NotFoundError("User", 9));
     const loader = makeEntityLoader("user", "User", fetchById);
 
-    const data = await loader(loaderArgs("9"));
-    await expect(data.user).rejects.toBeInstanceOf(NotFoundError);
+    await expect(loader(loaderArgs("9"))).rejects.toBeInstanceOf(NotFoundError);
   });
 
   it("rejects non-positive ids when requirePositiveId is set", async () => {

@@ -12,7 +12,7 @@ import { getJob } from '../adapters/api/job';
 import { makeEntityLoader } from './loaderUtils';
 
 /**
- * Loader for the `/job/:id` route (deferred for Suspense/`Await`).
+ * Loader for the `/job/:id` route.
  * Rejects non-finite / ≤0 ids before fetch (e.g. `/job/undefined` from stale wire keys).
  */
 export const jobLoader = makeEntityLoader('job', 'Job', getJob, {
