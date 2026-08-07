@@ -118,6 +118,7 @@ None active for the wire/validation track. **Skipped:** FE Integrations scrape �
 
 ## Related
 
+- [Add an Entity](../../guides/add-an-entity.md) — full-stack checklist for **new** entities (schema → API → FE factories)
 - [STYLE.md](../STYLE.md) — micro-level naming (includes wire-field summary)
 - [Validation architecture](../../architecture/validation.md) — transport / domain / view layering
 - [#27](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/27) — RESTlet response schema validation (done)

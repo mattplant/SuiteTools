@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-Last updated: July 12, 2026
+Last updated: 2026-08-06
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
@@ -90,7 +90,7 @@ Practical, task‑oriented instructions for contributors.
 
 <!-- “how + steps” layer -->
 - **Setup**: [Installation](./guides/installation.md), [Uninstall](./guides/uninstall.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md)
-- **Development**: [Customizing](./guides/customizing.md), [Linting](./guides/linting.md)
+- **Development**: [Add an Entity](./guides/add-an-entity.md), [Customizing](./guides/customizing.md), [Linting](./guides/linting.md)
 - **Release**: [Build & Release](./guides/build-release.md)
 
 ---
