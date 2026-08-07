@@ -33,7 +33,6 @@ export function ConcurrencyRequestPage(): React.ReactElement {
   const endDate = params.endDate;
   const peakConcurrency = params.peakConcurrency;
   const peakConcurrencyTime = params.peakConcurrencyTime;
-  console.log('ConcurrencyRequestPage inititated with params:', { startDate, endDate });
   if (!startDate || !endDate) {
     throw new Error('Missing required parameters');
   }

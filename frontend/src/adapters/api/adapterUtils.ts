@@ -106,8 +106,6 @@ export function makeListAdapter<TItem, TCriteria extends object, K extends keyof
   options?: MakeListAdapterOptions<TItem, TCriteria>,
 ): (fields: TCriteria) => Promise<TItem[]> {
   return async (fields: TCriteria): Promise<TItem[]> => {
-    console.log(`[${endpoint}:list] criteria: %o`, fields);
-
     const picked = pickCriteria(fields, criteriaKeys);
     const urlParams = options?.mapParams ? options.mapParams(picked) : (picked as Record<string, unknown>);
     const response = await getData(endpoint, urlParams);

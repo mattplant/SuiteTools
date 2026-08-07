@@ -56,7 +56,6 @@ export function ConcurrencyDetailResults({ data }: Props) {
           }}
           className="fill-grid"
           onCellClick={(cell) => {
-            console.log(cell);
             const startDate = cell.row[`startTimeMS`];
             const endDate = cell.row[`endTimeMS`];
             const peakConcurrency = cell.row[`peakConcurrency`];

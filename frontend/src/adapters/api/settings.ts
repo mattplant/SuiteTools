@@ -22,7 +22,6 @@ const settingsRequestResponseSchema = makeRequestResponseSchema(SettingsSchema);
  * @returns A Promise resolving to a Settings object.
  */
 export async function getSettings(): Promise<Settings> {
-  console.log('[settings:getSettings] initiated');
   const response = await getData('settings');
   const parsed = settingsRequestResponseSchema.parse(response);
   return parsed.data;
@@ -34,6 +33,5 @@ export async function getSettings(): Promise<Settings> {
  * @returns The API response envelope.
  */
 export async function saveSettings(data: NewSettings): Promise<RequestResponse> {
-  console.log('[settings:saveSettings] initiated', data);
   return putData(PutEndpoint.SETTINGS, data);
 }

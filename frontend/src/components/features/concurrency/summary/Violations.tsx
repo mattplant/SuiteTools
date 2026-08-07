@@ -10,7 +10,6 @@ type Props = {
 };
 
 export function ConcurrencySummaryViolations({ data }: Props) {
-  console.log('ConcurrencySummaryOverview() initiated', { data });
   const gridRef = useRef<DataGridHandle>(null);
   const violations = useMemo(() => {
     if (!data) return [];
@@ -22,7 +21,6 @@ export function ConcurrencySummaryViolations({ data }: Props) {
       };
     });
   }, [data]);
-  console.log('violations', violations);
 
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [

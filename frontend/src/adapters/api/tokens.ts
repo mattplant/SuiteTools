@@ -4,15 +4,10 @@
  * @file API adapter for retrieving TBA access tokens.
  */
 
-import {
-  makeRequestResponseSchema,
-  tokensOrNotFoundSchema,
-  isNotFound,
-  toArray,
-} from '@suiteworks/suitetools-shared';
+import { makeRequestResponseSchema, tokensOrNotFoundSchema } from '@suiteworks/suitetools-shared';
 import type { Settings, Tokens } from '@suiteworks/suitetools-shared';
 import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { getData } from './netSuiteClient';
+import { makeListAdapter } from './adapterUtils';
 import { adaptToken } from './tokenAdapt';
 import { integrationLookupKey } from './integrationsScrape';
 
@@ -20,18 +15,12 @@ export { adaptToken } from './tokenAdapt';
 
 const tokensRequestResponseSchema = makeRequestResponseSchema(tokensOrNotFoundSchema);
 
-/**
- * Build RESTlet query params, omitting empty / undefined values.
- * URLSearchParams stringifies `undefined` as `"undefined"`, which breaks SuiteQL filters.
- * @param fields - Token list criteria.
- */
-function toTokenUrlParams(fields: CriteriaFields): Record<string, string> {
-  const params: Record<string, string> = {};
-  if (fields.active) {
-    params.active = fields.active;
-  }
-  return params;
-}
+const fetchTokensBase = makeListAdapter<Tokens[number], CriteriaFields, 'active'>(
+  'tokens',
+  tokensRequestResponseSchema,
+  ['active'] as const,
+  { adaptItem: adaptToken },
+);
 
 /**
  * Fetch and validate a list of `Token` records using optional criteria.
@@ -39,16 +28,7 @@ function toTokenUrlParams(fields: CriteriaFields): Record<string, string> {
  * @param fields - Optional filters (active, integration, user, role).
  */
 export async function getTokens(fields: CriteriaFields): Promise<Tokens> {
-  console.log('[tokens:getTokens] criteria: %o', fields);
-
-  const response = await getData('tokens', toTokenUrlParams(fields));
-  const parsed = tokensRequestResponseSchema.parse(response);
-
-  if (isNotFound(parsed.data)) {
-    return [];
-  }
-
-  let rows = toArray<Tokens[number]>(parsed.data).map(adaptToken);
+  let rows = await fetchTokensBase(fields);
 
   if (fields.integrationName) {
     const key = integrationLookupKey(fields.integrationName);

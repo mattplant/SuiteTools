@@ -50,7 +50,6 @@ export async function getConcurrencySummaryData(
   startDate: Date,
   endDate: Date,
 ): Promise<ConcurrencySummaryData> {
-  console.log('getConcurrencySummaryData() initiated', { accountId, startDate, endDate });
 
   // Clone before mutating — callers often pass React state Date instances.
   const rangeStart = new Date(startDate);
@@ -92,7 +91,6 @@ export function addConcurrencySummaryAverage(
   }
   const daysTotal = peaks.length / 24;
   currencyResponse.hourAverages = hourTotals.map((total) => (daysTotal ? total / daysTotal : 0));
-  console.log('addConcurrencySummaryAverage() returning', { currencyResponse });
 
   return currencyResponse;
 }
@@ -105,7 +103,6 @@ export function addConcurrencySummaryAverage(
  * @returns url - the url to get the concurrency summary
  */
 function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: Date): string {
-  // console.log('getConcurrencySummaryUrl() initiated with ' + JSON.stringify({ accountId: accountId, days: days }));
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_concurrency_v2&deploy=customdeploy_nsapm_cm_sl_concurrency_v2&compfil=(REDACTED)&testmode=F&startDateMS=1683512580000&endDateMS=1683771780000&integId=&offsetMins=420
   const path = '/app/site/hosting/scriptlet.nl';
   const params = [];
@@ -118,7 +115,6 @@ function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: D
   params.push('integId='); // integration ID
   params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
   const url = path + '?' + params.join('&');
-  console.log('getConcurrencySummaryUrl() returning ' + url);
 
   return url;
 }
@@ -131,7 +127,6 @@ function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: D
  * @returns url - the url to get the violation data
  */
 function getConcurrencySummaryViolationsUrl(accountId: string, startDate: Date, endDate: Date): string {
-  // console.log('getConcurrencyViolationsUrl() initiated with ' + JSON.stringify({ accountId: accountId, days: days }));
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_violations_v2&deploy=customdeploy_nsapm_cm_sl_violations_v2&testmode=F&startDateMS=1686034800000&endDateMS=1686380400000&compfil=(REDACTED)&integId=&allocatedList=
   const path = '/app/site/hosting/scriptlet.nl';
   const params = [];
@@ -144,7 +139,6 @@ function getConcurrencySummaryViolationsUrl(accountId: string, startDate: Date, 
   params.push('integId='); // integration ID
   params.push('allocatedList'); // 7 (420/60) hour time offset for PST
   const url = path + '?' + params.join('&');
-  console.log('getConcurrencyViolationsUrl() returning ' + url);
 
   return url;
 }
@@ -188,7 +182,6 @@ export async function getConcurrencyDetailData(
   startDate: string,
   endDate: string,
 ): Promise<ConcurrencyDetailData> {
-  console.log('getConcurrencyDetailData() initiated', { accountId, startDate, endDate });
 
   // get concurrency detail from NetSuite's APM service
   const concurrencyUrl = getConcurrencyDetailUrl(accountId, startDate, endDate);
@@ -211,10 +204,6 @@ export async function getConcurrencyDetailData(
  * @returns url - the url to get the concurrency summary
  */
 function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: string): string {
-  console.log(
-    'getConcurrencyDetailUrl() initiated with ' +
-      JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }),
-  );
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_concurrency_v2&deploy=customdeploy_nsapm_cd_sl_concurrency_v2&testmode=F&startDateMS=1682002800000&endDateMS=1682006400000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
   const path = '/app/site/hosting/scriptlet.nl';
   const params = [];
@@ -228,7 +217,6 @@ function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: 
   params.push('allocatedList='); // allocated list
   params.push('integId='); // integration ID
   const url = path + '?' + params.join('&');
-  console.log('getConcurrencyDetailUrl() returning ' + url);
 
   return url;
 }
@@ -241,9 +229,6 @@ function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: 
  * @returns url - the url to get the violation data
  */
 function getConcurrencyDetailViolationsUrl(accountId: string, startDate: string, endDate: string): string {
-  console.log(
-    'getConcurrencyDetailViolationsUrl() initiated with ' + JSON.stringify({ accountId, startDate, endDate }),
-  );
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_violations_v2&deploy=customdeploy_nsapm_cd_sl_violations_v2&testmode=F&startDateMS=1685383200000&endDateMS=1685386800000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
   const path = '/app/site/hosting/scriptlet.nl';
   const params = [];
@@ -255,7 +240,6 @@ function getConcurrencyDetailViolationsUrl(accountId: string, startDate: string,
   params.push('compfil=' + accountId); // accountId
   params.push('allocatedList'); // 7 (420/60) hour time offset for PST
   const url = path + '?' + params.join('&');
-  console.log('getConcurrencyDetailViolationsUrl() returning ' + url);
 
   return url;
 }
@@ -276,7 +260,6 @@ export async function getConcurrencyRequestData(
   startDate: string,
   endDate: string,
 ): Promise<ConcurrencyRequestData> {
-  console.log('getConcurrencyRequestData() initiated', { accountId, startDate, endDate });
 
   // get concurrency requests from NetSuite's APM service
   const concurrencyUrl = getConcurrencyRequestUrl(accountId, startDate, endDate);
@@ -299,10 +282,6 @@ export async function getConcurrencyRequestData(
  * @returns url - the url to get the concurrency summary
  */
 function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate: string): string {
-  console.log(
-    'getConcurrencyRequestUrl() initiated with ' +
-      JSON.stringify({ accountId: accountId, startDate: startDate, endDate: endDate }),
-  );
   // widen the duration window to get long running requests
   const windowExtended = 6 * 60 * 1000; // 5 + 1 minute extra in milliseconds
   const startDateExtended = Number(startDate) - windowExtended;
@@ -324,7 +303,6 @@ function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate:
   // params.push('startIndex=0'); // start index (note that we do not want to page unless we need to)
 
   const url = path + '?' + params.join('&');
-  console.log('getConcurrencyRequestUrl() returning ' + url);
 
   return url;
 }

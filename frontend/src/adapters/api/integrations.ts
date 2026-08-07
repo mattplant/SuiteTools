@@ -16,24 +16,6 @@ import type { CriteriaFields } from '../../components/shared/criteria/types';
 import { integrationLookupKey, scrapeIntegrations } from './integrationsScrape';
 
 /**
- * Merge scraped integration metadata with optional last-login values by name.
- * @param scrapeRows - Rows from integrapplist.nl (source of truth for ids/metadata).
- * @param lastLoginByName - Map of lowercase name → lastLogin timestamp.
- */
-export function applyLastLoginsByName(
-  scrapeRows: Integrations,
-  lastLoginByName: Map<string, string>,
-): Integrations {
-  return scrapeRows.map((row) => {
-    const lastLogin = lastLoginByName.get(integrationLookupKey(row.name));
-    if (!lastLogin) {
-      return row;
-    }
-    return { ...row, lastLogin };
-  });
-}
-
-/**
  * Fetch Integration records.
  * Scrape is required for real NetSuite ids — RESTlet LoginAudit fallbacks use synthetic ids
  * that break integrapp.nl links and leave applicationId / dateCreated empty.
@@ -41,7 +23,6 @@ export function applyLastLoginsByName(
  * @returns A Promise resolving to an Integrations array.
  */
 export async function getIntegrations(fields: CriteriaFields): Promise<Integrations> {
-  console.log('[integrations:getIntegrations] criteria: %o', fields);
   return scrapeIntegrations(fields);
 }
 

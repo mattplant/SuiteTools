@@ -39,7 +39,6 @@ const apiBaseUrl = `/app/site/hosting/restlet.nl?script=${script}&deploy=${deplo
  * @throws {NetSuiteApiError} When the HTTP response status is not OK (non‑2xx).
  */
 export async function getData(endpoint: EndpointName, params: Record<string, unknown> = {}): Promise<RequestResponse> {
-  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" initiated`, { params });
   let result: RequestResponse; // = { status: 500, data: {} }; // default to error
 
   // Guard against reserved keys in the params object - first 3 used by NetSuite and last by SuiteTools
@@ -76,12 +75,7 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
   const url = paramString
     ? `${apiBaseUrl}&endpoint=${endpoint}&${paramString}`
     : `${apiBaseUrl}&endpoint=${endpoint}`;
-  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" fetching URL: ${url}`);
   const res = await fetch(url);
-  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" responded`, {
-    status: res.status,
-    ok: res.ok,
-  });
 
   // Read the body once
   let raw = '';
@@ -125,8 +119,6 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
     throw err;
   }
 
-  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" payload`, payload);
-
   // Successful handshake and parse so now handle based on payload.status
   // The `payload.status` is the "real" status signal from the RESTlet endpoint for for business‑level success/failure
   switch (payload.status) {
@@ -144,10 +136,6 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
         status: payload.status,
       });
   }
-  console.log(`[SuiteTools API] getData() endpoint "${endpoint}" and status "${payload.status}" returning`, {
-    payload,
-  });
-
   return result;
 }
 
@@ -198,7 +186,6 @@ async function saveData(
     headers: { 'Content-Type': 'application/json' },
   });
   const parsedResponse = requestResponse.parse(await response.json());
-  console.log(`[SuiteTools API] saveData() ${httpMethod} ${endpoint} response`, parsedResponse);
 
   return parsedResponse;
 }

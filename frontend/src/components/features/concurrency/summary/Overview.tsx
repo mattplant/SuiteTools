@@ -6,7 +6,6 @@ type Props = {
 };
 
 export function ConcurrencySummaryOverview({ data }: Props) {
-  console.log('ConcurrencySummaryOverview() initiated', { data });
   if (!data) {
     return null;
   }

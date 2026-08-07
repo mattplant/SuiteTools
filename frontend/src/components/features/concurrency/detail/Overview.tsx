@@ -6,7 +6,6 @@ type Props = {
 };
 
 export function ConcurrencyDetailOverview({ data }: Props) {
-  console.log('ConcurrencyDetailOverview() initiated', { data });
   if (!data) {
     return null;
   }
@@ -15,7 +14,6 @@ export function ConcurrencyDetailOverview({ data }: Props) {
   const errorRateRounded = Math.round(errorRate * 100) / 100 + '%';
   // get top integrations
   const topIntegrations = data.violations.overview.topIntegrations;
-  console.log('topIntegrations = ' + JSON.stringify(topIntegrations));
   const topIntegrationsArray = [];
   if (topIntegrations && topIntegrations.length > 0) {
     for (let i = 0; i < topIntegrations.length; i++) {
