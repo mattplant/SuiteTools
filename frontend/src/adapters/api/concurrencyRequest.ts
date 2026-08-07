@@ -19,7 +19,6 @@ export async function getConcurrencyRequest(
   fields: CriteriaFields,
   accountId: string,
 ): Promise<ConcurrencyRequestData> {
-  console.log('[concurrency:getConcurrencyRequest] criteria: %o', { fields, accountId });
 
   if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
     return [

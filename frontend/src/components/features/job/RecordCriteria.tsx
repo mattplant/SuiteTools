@@ -18,13 +18,10 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const triggerError = useErrorBoundaryTrigger();
 
   const initiateJobsClick = async () => {
-    console.log('Jobs Criteria: initiateJobsClick() initiated');
     try {
       const responseData = await initiateJob({ id: 0 });
-      console.log('Jobs Criteria: initiateJobsClick() response', responseData);
       if (responseData.status === 200) {
         const redirectToPage = getAppBaseUrl() + `#/jobRuns`;
-        console.log('Jobs Criteria: initiateJobsClick() redirectToPage', redirectToPage);
         window.location.href = redirectToPage;
         return;
       }

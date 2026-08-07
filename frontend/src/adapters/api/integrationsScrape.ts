@@ -176,11 +176,6 @@ export function parseIntegrationsHtml(html: string): Integrations {
     urlDetail: `#/integration/${row.id}`,
   }));
 
-  console.log('[integrationsScrape] parsed rows', {
-    anchorCount: anchors.length,
-    rowCount: mapped.length,
-    sample: mapped[0],
-  });
 
   return IntegrationBundle.parseMany(mapped).map(adaptIntegration);
 }

@@ -233,14 +233,11 @@ export async function scrapeSoapLogs(fields: CriteriaFields): Promise<SoapLogs> 
 
   let rawRows: RawSoapRow[] = [];
   let lastError: unknown;
-  let usedUrl = urls[0];
 
   for (const url of urls) {
     try {
       const html = await fetchSoapLogsHtml(url);
       rawRows = parseSoapLogsHtml(html);
-      usedUrl = url;
-      console.log('[soapLogsScrape] fetched', { url, rowCount: rawRows.length, sample: rawRows[0] });
       if (rawRows.length > 0) {
         break;
       }
@@ -256,22 +253,12 @@ export async function scrapeSoapLogs(fields: CriteriaFields): Promise<SoapLogs> 
 
   const safe = SoapLogBundle.safeParseMany(rawRows);
   const parsed: SoapLog[] = [];
-  let failed = 0;
   for (const result of safe) {
     if (result.success) {
       parsed.push(adaptSoapLog(result.data));
-    } else {
-      failed += 1;
     }
   }
 
-  console.log('[soapLogsScrape] parsed rows', {
-    url: usedUrl,
-    rawCount: rawRows.length,
-    okCount: parsed.length,
-    failedCount: failed,
-    sample: parsed[0],
-  });
 
   if (rawRows.length > 0 && parsed.length === 0) {
     throw new Error('SOAP Sync Status rows were found but failed schema validation. Check the browser console.');

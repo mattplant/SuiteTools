@@ -40,7 +40,6 @@ type Props = {
 };
 
 export function ResultsModal({ type, loading, data }: Props) {
-  console.log('ResultsModal() initiated', type, loading, data);
 
   if (loading) {
     return 'Loading...';

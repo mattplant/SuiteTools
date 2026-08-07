@@ -1,22 +1,19 @@
-// src/components/shared/messages/MessageAutoClear.tsx
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useInlineMessage } from '../../../hooks/useInlineMessage';
 
-export function MessageAutoClear() {
+/**
+ * Clears inline messages on route changes.
+ * @returns null (side-effect only).
+ */
+export function MessageAutoClear(): null {
   const { clearMessage } = useInlineMessage();
   const location = useLocation();
 
-  // Debugging: Log the current message context
-  // This can help ensure that the context is being used correctly
-  const ctx = useInlineMessage();
-  console.log('MessageAutoClear message context:', ctx);
-
   useEffect(() => {
-    // Clear any existing inline message on every route change
-    // if (currentMessage?.type !== 'error') {
     clearMessage();
-    // }
   }, [location.pathname, clearMessage]);
 
   return null;

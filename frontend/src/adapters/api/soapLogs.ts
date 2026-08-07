@@ -15,6 +15,5 @@ export { adaptSoapLog } from './soapLogAdapt';
  * @param fields - Optional integration id filter.
  */
 export async function getSoapLogs(fields: CriteriaFields): Promise<SoapLogs> {
-  console.log('[soapLogs:getSoapLogs] criteria: %o', fields);
   return scrapeSoapLogs(fields);
 }

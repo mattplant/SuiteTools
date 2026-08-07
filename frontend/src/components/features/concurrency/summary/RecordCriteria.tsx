@@ -12,7 +12,6 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   const { register, handleSubmit, setValue } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   function onSubmit(criteria: CriteriaFields) {
-    console.log('Submitted details:', criteria);
     setCriteria(criteria);
   }
 

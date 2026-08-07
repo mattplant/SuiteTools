@@ -19,7 +19,6 @@ export async function getConcurrencySummary(
   fields: CriteriaFields,
   accountId?: string,
 ): Promise<ConcurrencySummaryData> {
-  console.log('[concurrency:getConcurrencySummary] criteria: %o', { fields, accountId });
 
   if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
     return {

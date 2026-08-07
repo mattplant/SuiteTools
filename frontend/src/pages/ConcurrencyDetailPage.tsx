@@ -29,7 +29,6 @@ export function ConcurrencyDetailPage(): React.ReactElement {
   const params = useParams<Params>();
   const startDate = params.startDate;
   const endDate = params.endDate;
-  console.log('ConcurrencyDetailPage inititated with params:', { startDate, endDate });
   if (!startDate || !endDate) {
     throw new Error('Missing required parameters');
   }

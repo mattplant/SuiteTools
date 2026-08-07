@@ -18,7 +18,6 @@ export function JobResult({ data, modal }: Props) {
   const triggerError = useErrorBoundaryTrigger();
 
   const initiateJobClick = async () => {
-    console.log('JobResult: initiateJobClick() initiated', { jobId: data.id });
     const entityRecords: LastLoginEntity[] = [];
 
     // Last Logins job needs the entity list (integrations + tokens) as Map/Reduce input.
@@ -35,7 +34,6 @@ export function JobResult({ data, modal }: Props) {
         for (const token of tokens) {
           entityRecords.push({ type: 'token', name: token.name });
         }
-        console.log('JobResult: Last Logins entities', entityRecords);
       } catch (err) {
         // Expected environmental soft case — backend LoginAudit fallback will be used.
         console.warn('JobResult: entity scrape failed; backend LoginAudit fallback will be used', err);
@@ -47,7 +45,6 @@ export function JobResult({ data, modal }: Props) {
         id: data.id,
         data: entityRecords,
       });
-      console.log('JobResult: initiateJobClick() response', responseData);
       if (responseData.status === 200) {
         const redirectToPage = getAppBaseUrl() + `#/job/${data.id}`;
         window.location.href = redirectToPage;

@@ -34,7 +34,6 @@ export interface NetSuiteResponse {
  * @returns string
  */
 export async function getDataFromPageContent(url: string): Promise<NetSuiteResponse> {
-  console.log('getDataFromPageContent() initiated', { url });
 
   const response = await fetch(url, { credentials: 'same-origin' }).catch((error) => {
     console.error(`getDataFromPageContent() error =\n`, error);
@@ -75,7 +74,6 @@ export async function getDataFromPageContent(url: string): Promise<NetSuiteRespo
   if (!data.success && data.message) {
     throw new Error(`getDataFromPageContent() response not successful: ${data.message}`);
   }
-  console.log('getDataFromPageContent() returning', data);
 
   return data;
 }
@@ -93,7 +91,6 @@ export async function getDataFromPageTable(
   id: string,
   removeHeader: boolean = false,
 ): Promise<string[][]> {
-  console.log('getDataFromPageTable() initiated', { url, id });
   const tableHtml = await getPageTable(url, id);
   const tableArray = convertTableToArray(tableHtml);
   if (removeHeader) {
@@ -107,14 +104,9 @@ export async function getDataFromPageTable(
     tableArray[0].length >= 1 &&
     String(tableArray[0][0]).includes('No records to show');
   if (noRecords) {
-    console.log('getDataFromPageTable() has no records to show');
     return [];
   }
 
-  console.log('getDataFromPageTable() returning', {
-    rowCount: tableArray.length,
-    sampleRow: tableArray[0],
-  });
 
   return tableArray;
 }

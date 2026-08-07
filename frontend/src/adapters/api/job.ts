@@ -51,6 +51,5 @@ type InitiateJobPayload = {
  * @returns The API response envelope.
  */
 export async function initiateJob(payload: InitiateJobPayload): Promise<RequestResponse> {
-  console.log('[job:initiateJob] initiated', payload);
   return postData(PostEndpoint.INITIATEJOB, payload);
 }

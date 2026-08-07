@@ -55,7 +55,6 @@ const columns: Column<Role, SummaryRow>[] = [
  */
 export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): JSX.Element {
   RoleBundle.assertMany(rows);
-  console.log('[roles:RecordResults] rows: %o', rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [
