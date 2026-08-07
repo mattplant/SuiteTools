@@ -5,7 +5,8 @@
  * @description Shared helpers for React Router loaders.
  */
 
-import { isNotFoundError } from '@suiteworks/suitetools-shared';
+import type { LoaderFunctionArgs } from 'react-router-dom';
+import { isNotFoundError, NotFoundError } from '@suiteworks/suitetools-shared';
 
 /**
  * Map a failed singular-entity fetch into a React Router error.
@@ -22,4 +23,80 @@ export function mapLoaderError(err: unknown, resourceLabel: string): never {
   }
   console.error(`router: ${resourceLabel} loader failed`, err);
   throw err;
+}
+
+type MakeEntityLoaderOptions = {
+  /**
+   * When true, await the fetch and return `{ [key]: T }`.
+   * When false (default), return `{ [key]: Promise<T> }` for Suspense/`Await`.
+   */
+  awaitResult?: boolean;
+  /**
+   * When true, reject non-finite / ≤0 ids with {@link NotFoundError} before fetch
+   * (Job loader — e.g. `/job/undefined` from stale wire keys).
+   */
+  requirePositiveId?: boolean;
+};
+
+/**
+ * Creates an id-based singular entity route loader (awaited result).
+ * @template T - Entity record type.
+ * @template K - Property key on the loader result object (e.g. `"script"`).
+ */
+export function makeEntityLoader<T, K extends string>(
+  key: K,
+  resourceLabel: string,
+  fetchById: (id: number) => Promise<T>,
+  options: MakeEntityLoaderOptions & { awaitResult: true },
+): (args: LoaderFunctionArgs) => Promise<{ [P in K]: T }>;
+
+/**
+ * Creates an id-based singular entity route loader (deferred Promise for Suspense/`Await`).
+ * @template T - Entity record type.
+ * @template K - Property key on the loader result object (e.g. `"user"`).
+ */
+export function makeEntityLoader<T, K extends string>(
+  key: K,
+  resourceLabel: string,
+  fetchById: (id: number) => Promise<T>,
+  options?: MakeEntityLoaderOptions & { awaitResult?: false },
+): (args: LoaderFunctionArgs) => Promise<{ [P in K]: Promise<T> }>;
+
+/**
+ * Creates an id-based singular entity route loader.
+ * @param key - Result object key matching what the page reads from `useLoaderData`.
+ * @param resourceLabel - Label passed to {@link mapLoaderError} / NotFound.
+ * @param fetchById - Adapter fetch for a numeric id.
+ * @param [options] - Deferred vs awaited return shape; optional id guard.
+ */
+export function makeEntityLoader<T, K extends string>(
+  key: K,
+  resourceLabel: string,
+  fetchById: (id: number) => Promise<T>,
+  options?: MakeEntityLoaderOptions,
+): (args: LoaderFunctionArgs) => Promise<{ [P in K]: T } | { [P in K]: Promise<T> }> {
+  const awaitResult = options?.awaitResult === true;
+  const requirePositiveId = options?.requirePositiveId === true;
+
+  return async (args: LoaderFunctionArgs) => {
+    const rawId = args.params.id;
+    const id = Number(rawId);
+
+    if (requirePositiveId && (!Number.isFinite(id) || id <= 0)) {
+      throw new NotFoundError(resourceLabel, rawId ?? '');
+    }
+
+    if (awaitResult) {
+      try {
+        const record = await fetchById(id);
+        return { [key]: record } as { [P in K]: T };
+      } catch (err) {
+        mapLoaderError(err, resourceLabel);
+      }
+    }
+
+    return {
+      [key]: fetchById(id).catch((err) => mapLoaderError(err, resourceLabel)),
+    } as { [P in K]: Promise<T> };
+  };
 }
