@@ -11,9 +11,7 @@
 import { getScript } from '../adapters/api/script';
 import { makeEntityLoader } from './loaderUtils';
 
-/** Loader for the `/script/:id` route (awaits record before return). */
-export const scriptLoader = makeEntityLoader('script', 'Script', getScript, {
-  awaitResult: true,
-});
+/** Loader for the `/script/:id` route. */
+export const scriptLoader = makeEntityLoader('script', 'Script', getScript);
 
 export type ScriptLoaderData = Awaited<ReturnType<typeof scriptLoader>>;

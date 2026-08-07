@@ -11,7 +11,7 @@
 import { getFile } from '../adapters/api/file';
 import { makeEntityLoader } from './loaderUtils';
 
-/** Loader for the `/file/:id` route (deferred for Suspense/`Await`). */
+/** Loader for the `/file/:id` route. */
 export const fileLoader = makeEntityLoader('file', 'File', getFile);
 
 export type FileLoaderData = Awaited<ReturnType<typeof fileLoader>>;

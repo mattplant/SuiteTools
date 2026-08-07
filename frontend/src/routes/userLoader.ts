@@ -11,7 +11,7 @@
 import { getUser } from '../adapters/api/user';
 import { makeEntityLoader } from './loaderUtils';
 
-/** Loader for the `/users/:id` route (deferred for Suspense/`Await`). */
+/** Loader for the `/users/:id` route. */
 export const userLoader = makeEntityLoader('user', 'User', getUser);
 
 export type UserLoaderData = Awaited<ReturnType<typeof userLoader>>;

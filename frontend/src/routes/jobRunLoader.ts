@@ -11,9 +11,7 @@
 import { getJobRun } from '../adapters/api/jobRun';
 import { makeEntityLoader } from './loaderUtils';
 
-/** Loader for the `/jobRun/:id` route (awaits record before return). */
-export const jobRunLoader = makeEntityLoader('jobRun', 'Job run', getJobRun, {
-  awaitResult: true,
-});
+/** Loader for the `/jobRun/:id` route. */
+export const jobRunLoader = makeEntityLoader('jobRun', 'Job run', getJobRun);
 
 export type JobRunLoaderData = Awaited<ReturnType<typeof jobRunLoader>>;
