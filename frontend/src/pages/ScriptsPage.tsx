@@ -1,21 +1,16 @@
-import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getScriptModalData } from '../adapters/api/script';
 import { getScripts } from '../adapters/api/scripts';
-import type { Scripts } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/script/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError, toArray } from '@suiteworks/suitetools-shared';
+import { useEntityList } from '../hooks/useEntityList';
 
 /**
  * ScriptsPage component displays the scripts list and criteria filter.
  * @returns The rendered ScriptsPage component.
  */
 export function ScriptsPage(): React.ReactElement {
-  const triggerError = useErrorBoundaryTrigger();
-
   const defaultCriteria: CriteriaFields = {
     active: '',
     files: [''],
@@ -25,32 +20,10 @@ export function ScriptsPage(): React.ReactElement {
     versions: [''],
   };
 
-  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Scripts>([]);
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function fetchData(): Promise<void> {
-      try {
-        const data = await getScripts(criteria);
-        const normalized = toArray<Scripts[number]>(data);
-        if (!ignore) {
-          setResults(normalized);
-        }
-      } catch (err) {
-        if (!ignore) {
-          setResults([]);
-        }
-        handleError(err, { reactTrigger: triggerError });
-      }
-    }
-
-    fetchData();
-    return (): void => {
-      ignore = true;
-    };
-  }, [criteria, triggerError]);
+  const { setCriteria, results } = useEntityList({
+    defaultCriteria,
+    fetchList: getScripts,
+  });
 
   return (
     <div className="mt-4">

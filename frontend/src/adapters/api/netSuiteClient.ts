@@ -56,10 +56,18 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
   }
 
   // URLSearchParams stringifies undefined/null as "undefined"/"null", which breaks SuiteQL filters.
-  // Skip nullish and empty-string values; keep 0 / false if ever passed.
+  // Skip nullish / empty-string / empty-placeholder arrays (e.g. roles: ['']); keep 0 / false.
   const searchParams = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value == null || value === '') {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const joined = value.filter((entry) => entry !== '' && entry != null).join(',');
+      if (!joined) {
+        continue;
+      }
+      searchParams.set(key, joined);
       continue;
     }
     searchParams.set(key, String(value));

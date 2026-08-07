@@ -27,11 +27,11 @@ describe("pickCriteria", () => {
     });
   });
 
-  it("throws when a key is not present on the criteria object", () => {
+  it("skips whitelist keys that are absent on the criteria object", () => {
     const fields: { active?: string; missing?: string } = { active: "T" };
-    expect(() => pickCriteria(fields, ["missing"] as const)).toThrow(
-      /Invalid criteria key/,
-    );
+    expect(pickCriteria(fields, ["active", "missing"] as const)).toEqual({
+      active: "T",
+    });
   });
 });
 

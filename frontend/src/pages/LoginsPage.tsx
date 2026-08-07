@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getLoginFromResults } from '../adapters/api/login';
 import { getLogins } from '../adapters/api/logins';
-import type { Logins } from '@suiteworks/suitetools-shared';
-import { handleError, toArray } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/login/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
+import { useEntityList } from '../hooks/useEntityList';
 
-export function LoginsPage() {
-  const triggerError = useErrorBoundaryTrigger();
+/**
+ * Logins page — list login audit rows with criteria filters.
+ * @returns The rendered Logins page.
+ */
+export function LoginsPage(): React.ReactElement {
   const defaultCriteria: CriteriaFields = {
     rows: 250,
     active: '',
@@ -19,31 +19,11 @@ export function LoginsPage() {
     users: [''],
     roles: [''],
   };
-  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<Logins>([]);
 
-  useEffect(() => {
-    let ignore = false;
-
-    async function fetchData() {
-      try {
-        const data = await getLogins(criteria);
-        if (!ignore) {
-          setResults(toArray(data));
-        }
-      } catch (error) {
-        if (!ignore) {
-          setResults([]);
-        }
-        handleError(error, { reactTrigger: triggerError });
-      }
-    }
-    fetchData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [criteria, triggerError]);
+  const { setCriteria, results } = useEntityList({
+    defaultCriteria,
+    fetchList: getLogins,
+  });
 
   return (
     <div className="mt-4">

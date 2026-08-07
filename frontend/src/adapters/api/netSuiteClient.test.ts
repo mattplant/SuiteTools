@@ -64,4 +64,22 @@ describe("getData reserved params", () => {
     expect(url).not.toContain("title=");
     expect(url).not.toContain("q=");
   });
+
+  it("omits empty-placeholder arrays and joins real multi-select values", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ status: 200, data: [] }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await getData("users", {
+      roles: [""],
+      owners: ["1", "", "2"],
+    });
+
+    const url = String(fetchMock.mock.calls[0]?.[0]);
+    expect(url).not.toContain("roles=");
+    expect(url).toContain("owners=1%2C2");
+  });
 });

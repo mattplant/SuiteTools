@@ -1,26 +1,20 @@
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { CriteriaFields } from '../components/shared/criteria/types';
 import { getScriptLog } from '../adapters/api/scriptLog';
 import { getScriptLogs } from '../adapters/api/scriptLogs';
-import type { ScriptLogs } from '@suiteworks/suitetools-shared';
 import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria';
 import { Results } from '../components/shared/results/Results';
 import { ResultsTypes } from '../components/shared/results/types';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError, toArray } from '@suiteworks/suitetools-shared';
+import { useEntityList } from '../hooks/useEntityList';
 
 /**
  * ScriptLogsPage component displays the script logs list and criteria filter.
  * @returns The rendered ScriptLogsPage component.
  */
 export function ScriptLogsPage(): React.ReactElement {
-  const triggerError = useErrorBoundaryTrigger();
-
   const defaultCriteria: CriteriaFields = {
     rows: 50,
     levels: ['ERROR', 'EMERGENCY', 'SYSTEM'],
-    // user: [''],
     scriptTypes: [''],
     scriptNames: [''],
     owners: [''],
@@ -39,32 +33,10 @@ export function ScriptLogsPage(): React.ReactElement {
     defaultCriteria.levels = ['']; // clear the level criteria
   }
 
-  const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
-  const [results, setResults] = useState<ScriptLogs>([]);
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function fetchData(): Promise<void> {
-      try {
-        const data = await getScriptLogs(criteria);
-        const normalized = toArray<ScriptLogs[number]>(data);
-        if (!ignore) {
-          setResults(normalized);
-        }
-      } catch (err) {
-        if (!ignore) {
-          setResults([]); // fail safe: still give empty array
-        }
-        handleError(err, { reactTrigger: triggerError });
-      }
-    }
-
-    fetchData();
-    return (): void => {
-      ignore = true;
-    };
-  }, [criteria, triggerError]);
+  const { setCriteria, results } = useEntityList({
+    defaultCriteria,
+    fetchList: getScriptLogs,
+  });
 
   return (
     <div className="mt-4">
