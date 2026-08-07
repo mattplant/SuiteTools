@@ -5,24 +5,12 @@
  * @description Route data loader for the `/soapLog/:id` detail view.
  */
 
-import type { LoaderFunctionArgs } from 'react-router-dom';
 import { getSoapLog } from '../adapters/api/soapLog';
-import type { SoapLog } from '@suiteworks/suitetools-shared';
-import { mapLoaderError } from './loaderUtils';
+import { makeEntityLoader } from './loaderUtils';
 
-/**
- * Loader for the `/soapLog/:id` route.
- * @param args - Loader arguments provided by the router.
- */
-export async function soapLogLoader(args: LoaderFunctionArgs): Promise<{ soapLog: SoapLog }> {
-  const id = Number(args.params.id);
-
-  try {
-    const soapLog = await getSoapLog(id);
-    return { soapLog };
-  } catch (err) {
-    mapLoaderError(err, 'SOAP log');
-  }
-}
+/** Loader for the `/soapLog/:id` route (awaits record before return). */
+export const soapLogLoader = makeEntityLoader('soapLog', 'SOAP log', getSoapLog, {
+  awaitResult: true,
+});
 
 export type SoapLogLoaderData = Awaited<ReturnType<typeof soapLogLoader>>;
