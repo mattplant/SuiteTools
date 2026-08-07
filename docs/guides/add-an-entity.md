@@ -41,7 +41,7 @@ Complete in order. One entity (or tight cluster) per MR when possible.
 
 - [ ] Add singular + list getters in `SuiteToolsApiModel.ts` (or a focused model module if splitting later).
 - [ ] Alias columns clearly in SQL; **do not** assume `AS camelCase` survives `asMappedResults()` — cleaners remap lowercase → wire keys.
-- [ ] Empty singular → message string for soft NotFound at the Get layer; empty list → `[]` (not `{}`).
+- [ ] Empty singular → message string for soft NotFound at the Get layer; empty list → `[]` (not `{}`). Prefer `queryOne` / `queryMany` from `SuiteToolsApiModelQuery.ts` over hand-rolled envelopes.
 - [ ] Prefer Token/Integration-style row normalization in the model when the Get cleaner would only remap keys.
 
 ### 3. Backend Get (RESTlet)
