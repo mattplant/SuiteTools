@@ -10,6 +10,7 @@ import * as task from 'N/task';
 import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
 import type { SuiteQLResults } from '../common/types';
 
+import { queryMany, queryOne } from './SuiteToolsApiModelQuery';
 import type { Response } from './types';
 
 /**
@@ -37,7 +38,6 @@ export class SuiteToolsApiModel {
   public getFile(id: string): Response {
     log.debug({ title: `SuiteToolsApiModel:getFile() initiated`, details: { id: id } });
 
-    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       file.id,
       file.folder,
@@ -53,12 +53,10 @@ export class SuiteToolsApiModel {
       file
     WHERE
       file.id = ${id}`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No file found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
+    const response = queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No file found with id of ${id}`,
+    );
     log.debug({ title: 'SuiteToolsApiModel:getFile() returning', details: response });
 
     return response;
@@ -74,7 +72,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       file.id,
       file.folder,
@@ -109,15 +106,10 @@ export class SuiteToolsApiModel {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
     sql += ` ORDER BY name ASC`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No file records found`;
-      response.data = [];
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No file records found`,
+    );
   }
 
   /*
@@ -153,7 +145,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJob(id: string): Response {
-    const response: Response = { status: 200, data: null };
     const customRecord = 'customrecord_idev_suitetools_job';
     const sql = `SELECT
       ${customRecord}.id,
@@ -167,14 +158,10 @@ export class SuiteToolsApiModel {
       ${customRecord}
     WHERE
       ${customRecord}.id = ${id}`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No job found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
-
-    return response;
+    return queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No job found with id of ${id}`,
+    );
   }
 
   /**
@@ -184,7 +171,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobs(active: string): Response {
-    const response: Response = { status: 200, data: [] };
     const customRecord = 'customrecord_idev_suitetools_job';
     let sql = `SELECT
       ${customRecord}.id,
@@ -210,14 +196,10 @@ export class SuiteToolsApiModel {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
     sql += ` ORDER BY ${customRecord}.id ASC`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No job records found`;
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No job records found`,
+    );
   }
 
   /**
@@ -227,7 +209,6 @@ export class SuiteToolsApiModel {
    * @returns Role
    */
   public getRole(id: string): Response {
-    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       role.id,
       role.scriptId,
@@ -242,14 +223,10 @@ export class SuiteToolsApiModel {
       role
     WHERE
       role.id = ${id}`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No role found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
-
-    return response;
+    return queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No role found with id of ${id}`,
+    );
   }
 
   /**
@@ -259,7 +236,6 @@ export class SuiteToolsApiModel {
    * @returns roles
    */
   public getRoles(active: string): Response {
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       role.id,
       role.scriptId,
@@ -286,14 +262,10 @@ export class SuiteToolsApiModel {
     }
     sql += ` ORDER BY role.name`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No role records found`;
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No role records found`,
+    );
   }
 
   /**
@@ -631,7 +603,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getScript(id: string): Response {
-    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       script.id,
       script.apiversion AS apiVersion,
@@ -649,15 +620,10 @@ export class SuiteToolsApiModel {
       ON script.scriptfile = file.id
     WHERE
       script.id = ${id}`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No script found with id of ${id}`;
-      response.data = null;
-    } else {
-      response.data = sqlResults[0];
-    }
-
-    return response;
+    return queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No script found with id of ${id}`,
+    );
   }
 
   /**
@@ -679,7 +645,6 @@ export class SuiteToolsApiModel {
     owners: string[],
     files: string[],
   ): Response {
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       script.id,
       script.apiversion AS apiVersion,
@@ -729,15 +694,10 @@ export class SuiteToolsApiModel {
     }
     sql += ` ORDER BY name ASC`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No script records found`;
-      response.data = [];
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No script records found`,
+    );
   }
 
   /**
@@ -747,8 +707,7 @@ export class SuiteToolsApiModel {
    * @returns user
    */
   public getUser(id: string): Response {
-    const response: Response = { status: 200, data: null };
-    let sql = `SELECT
+    const sql = `SELECT
       employee.id,
       employee.isinactive AS isInactive,
       employee.email,
@@ -767,15 +726,11 @@ export class SuiteToolsApiModel {
       employee.entityid,
       BUILTIN.DF( employee.supervisor ),
       employee.title`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.status = 404;
-      response.message = `No user found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
-
-    return response;
+    // Soft miss via message + null (Get layer → ensureEntityOrSoftNotFound); was hard 404.
+    return queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No user found with id of ${id}`,
+    );
   }
 
   /**
@@ -784,7 +739,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getUsers(active: string, roles?: string[], supervisors?: string[]): Response {
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       employee.id,
       employee.isinactive AS isInactive,
@@ -833,14 +787,10 @@ export class SuiteToolsApiModel {
       employee.title
     ORDER BY employee.entityid`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No user records found`;
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No user records found`,
+    );
   }
 
   /**
@@ -897,7 +847,6 @@ export class SuiteToolsApiModel {
     title: string,
     detail: string,
   ): Response {
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -957,15 +906,10 @@ export class SuiteToolsApiModel {
     }
     sql += ` ORDER BY ScriptNote.date DESC`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No script log records found`;
-      response.data = [];
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No script log records found`,
+    );
   }
 
   // Additional methods exist in the original implementation:
@@ -1081,7 +1025,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRun(id: string): Response {
-    const response: Response = { status: 200, data: null };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     const sql = `SELECT
       ${customRecord}.id,
@@ -1096,14 +1039,10 @@ export class SuiteToolsApiModel {
       ON customrecord_idev_suitetools_job_run.custrecord_idev_st_mr_job_run_job_id = customrecord_idev_suitetools_job.id
     WHERE
       ${customRecord}.id = ${id}`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No job execution found with id of ${id}`;
-    } else {
-      response.data = sqlResults[0];
-    }
-
-    return response;
+    return queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No job execution found with id of ${id}`,
+    );
   }
 
   /**
@@ -1114,7 +1053,6 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRuns(job: string, completed: string): Response {
-    const response: Response = { status: 200, data: [] };
     const customRecord = 'customrecord_idev_suitetools_job_run';
     let sql = `SELECT
       ${customRecord}.id,
@@ -1139,14 +1077,10 @@ export class SuiteToolsApiModel {
       sql += ` WHERE ${where.join(' AND ')}`;
     }
     sql += ` ORDER BY ${customRecord}.id DESC`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No job execution records found`;
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No job execution records found`,
+    );
   }
 
   /**
@@ -1195,7 +1129,6 @@ export class SuiteToolsApiModel {
    * @returns Token response.
    */
   public getToken(id: string): Response {
-    const response: Response = { status: 200, data: null };
     const sql = `SELECT
       OAuthToken.id,
       OAuthToken.TBA_Token_Name AS name,
@@ -1210,15 +1143,11 @@ export class SuiteToolsApiModel {
     WHERE
       OAuthToken.id = ${id}`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length > 0) {
-      response.data = this.normalizeTokenRow(sqlResults[0]);
-      return response;
-    }
-
-    response.message = `No token found with id of ${id}`;
-    response.data = null;
-    return response;
+    return queryOne(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No token found with id of ${id}`,
+      (row) => this.normalizeTokenRow(row),
+    );
   }
 
   /**
@@ -1237,7 +1166,6 @@ export class SuiteToolsApiModel {
     _userName: string,
     _roleName: string,
   ): Response {
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       OAuthToken.id,
       OAuthToken.TBA_Token_Name AS name,
@@ -1259,15 +1187,11 @@ export class SuiteToolsApiModel {
 
     sql += ` WHERE ${where.join(' AND ')} ORDER BY OAuthToken.TBA_Token_Name`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No token records found`;
-      response.data = [];
-    } else {
-      response.data = sqlResults.map((row) => this.normalizeTokenRow(row));
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No token records found`,
+      (rows) => rows.map((row) => this.normalizeTokenRow(row)),
+    );
   }
 
   /**
@@ -1304,7 +1228,6 @@ export class SuiteToolsApiModel {
       },
     });
 
-    const response: Response = { status: 200, data: [] };
     let sql = `SELECT
       TO_CHAR ( loginAudit.date, 'YYYY-MM-DD HH24:MI:SS' ) AS date,
       loginAudit.status,
@@ -1363,14 +1286,9 @@ export class SuiteToolsApiModel {
     // add order by
     sql += ` ORDER BY loginAudit.date DESC`;
 
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
-    if (sqlResults.length === 0) {
-      response.message = `No login audit records found`;
-      response.data = [];
-    } else {
-      response.data = sqlResults;
-    }
-
-    return response;
+    return queryMany(
+      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
+      `No login audit records found`,
+    );
   }
 }
