@@ -97,6 +97,7 @@ These rules cover **payload property keys** on the shared API contract (Zod doma
 - SuiteQL / NetSuite column names may exist internally; **normalize at the API edge** to this contract **before** shared-schema validation (see [#27](https://gitlab.com/idev-systems/labs/SuiteTools/-/work_items/27)).
 
 Full rules, inventory, and migration checklist: [JSON Wire Contract](./standards/json-wire-contract.md).
+New entity end-to-end (schema → API → FE): [Add an Entity](../guides/add-an-entity.md).
 
 ---
 

@@ -1,7 +1,7 @@
 
 # SuiteTools Validation & Type Safety
 
-Last updated: September 22, 2025
+Last updated: 2026-08-06
 
 ---
 
@@ -55,6 +55,7 @@ Schemas are organized into three layers:
 - Keep transforms named and local to their layer, e.g., `toDomainCustomer`, `toTransportCustomer`
 - Do not let transport‑specific nullability leak into domain models
 - Transport / shared wire **property keys** follow [JSON Wire Contract](../governance/standards/json-wire-contract.md) (camelCase multi-word fields); see also [STYLE — JSON / API Wire Fields](../governance/STYLE.md)
+- Adding a new domain entity end-to-end: [Add an Entity](../guides/add-an-entity.md)
 
 ---
 
