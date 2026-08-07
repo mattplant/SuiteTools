@@ -1,46 +1,31 @@
-import { useEffect, useState } from 'react';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from '../../shared/criteria/types';
 import { getSoapLog } from '../../../adapters/api/soapLog';
 import { getSoapLogs } from '../../../adapters/api/soapLogs';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
 import type { SoapLogs } from '@suiteworks/suitetools-shared';
-import { handleError } from '@suiteworks/suitetools-shared';
-import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
+import { useEntityList } from '../../../hooks/useEntityList';
 
 type Props = {
   integrations: string[];
 };
 
-export function IntegrationSoapLogs({ integrations }: Props) {
-  const triggerError = useErrorBoundaryTrigger();
-  const [results, setResults] = useState<SoapLogs>([]);
-
-  useEffect(() => {
-    let ignore = false;
-    const criteria: CriteriaFields = {
-      integrations,
-    };
-
-    async function fetchData() {
-      try {
-        const data = await getSoapLogs(criteria);
-        if (!ignore) {
-          setResults(data);
-        }
-      } catch (error) {
-        if (!ignore) {
-          setResults([]);
-        }
-        handleError(error, { reactTrigger: triggerError });
-      }
-    }
-    fetchData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [integrations, triggerError]);
+/**
+ * Nested SOAP logs list for an integration detail page.
+ * @param props - Component props.
+ * @param props.integrations - Integration id filters.
+ * @returns The rendered SOAP logs section.
+ */
+export function IntegrationSoapLogs({ integrations }: Props): React.ReactElement {
+  // Parent may pass a fresh array each render — key off joined ids.
+  const integrationsKey = integrations.join(',');
+  const { results } = useEntityList<SoapLogs[number], CriteriaFields>({
+    defaultCriteria: { integrations },
+    fetchList: () => getSoapLogs({ integrations }),
+    deps: [integrationsKey],
+  });
 
   return (
     <>

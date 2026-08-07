@@ -94,4 +94,48 @@ describe("useEntityList", () => {
     });
     expect(fetchList).toHaveBeenLastCalledWith({ active: "F" });
   });
+
+  it("sets statusMessage from getStatusMessage after success", async () => {
+    const fetchList = vi.fn().mockResolvedValue([]);
+
+    const { result } = renderHook(() =>
+      useEntityList({
+        defaultCriteria: { active: "" },
+        fetchList,
+        getStatusMessage: (rows) => (rows.length === 0 ? "empty" : null),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.statusMessage).toBe("empty");
+    });
+  });
+
+  it("clears statusMessage on fetch error", async () => {
+    const fetchList = vi
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockRejectedValueOnce(new Error("boom"));
+
+    const { result } = renderHook(() =>
+      useEntityList({
+        defaultCriteria: { active: "T" },
+        fetchList,
+        getStatusMessage: () => "empty",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.statusMessage).toBe("empty");
+    });
+
+    act(() => {
+      result.current.setCriteria({ active: "F" });
+    });
+
+    await waitFor(() => {
+      expect(handleErrorMock).toHaveBeenCalled();
+    });
+    expect(result.current.statusMessage).toBeNull();
+  });
 });

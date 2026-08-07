@@ -1,47 +1,29 @@
-import { useEffect, useState } from 'react';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from '../../shared/criteria/types';
 import { getToken } from '../../../adapters/api/token';
 import { getTokens } from '../../../adapters/api/tokens';
 import type { Tokens } from '@suiteworks/suitetools-shared';
-import { handleError } from '@suiteworks/suitetools-shared';
 import { Results } from '../../shared/results/Results';
 import { ResultsTypes } from '../../shared/results/types';
-import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
+import { useEntityList } from '../../../hooks/useEntityList';
 
 type Props = {
   userName: string;
 };
 
-export function UserTokens({ userName }: Props) {
-  const triggerError = useErrorBoundaryTrigger();
-  const [results, setResults] = useState<Tokens>([]);
-
-  useEffect(() => {
-    let ignore = false;
-    const criteria: CriteriaFields = {
-      active: 'T',
-      userName: userName,
-    };
-
-    async function fetchData() {
-      try {
-        const data = await getTokens(criteria);
-        if (!ignore) {
-          setResults(data);
-        }
-      } catch (error) {
-        if (!ignore) {
-          setResults([]);
-        }
-        handleError(error, { reactTrigger: triggerError });
-      }
-    }
-    fetchData();
-
-    return () => {
-      ignore = true;
-    };
-  }, [userName, triggerError]);
+/**
+ * Nested tokens list for a user detail page.
+ * @param props - Component props.
+ * @param props.userName - User name filter.
+ * @returns The rendered tokens section.
+ */
+export function UserTokens({ userName }: Props): React.ReactElement {
+  const { results } = useEntityList<Tokens[number], CriteriaFields>({
+    defaultCriteria: { active: 'T', userName },
+    fetchList: () => getTokens({ active: 'T', userName }),
+    deps: [userName],
+  });
 
   return (
     <>
