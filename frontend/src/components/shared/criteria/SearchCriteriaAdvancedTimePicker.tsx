@@ -1,6 +1,11 @@
-// Component supports both real-time monitoring and retrospective debugging use cases.
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * Time-mode criteria: relative windows from now, or a custom end datetime + lookback duration.
+ */
+
 import React from 'react';
-import type { UseFormRegister, Control} from 'react-hook-form';
+import type { UseFormRegister, Control, UseFormSetValue } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
 import type { CriteriaFields } from './types';
 import { SearchCriteriaDateCreated } from './SearchCriteriaDateCreated';
@@ -10,17 +15,29 @@ interface Props {
   register: UseFormRegister<CriteriaFields>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- advanced-* fields are not on CriteriaFields yet
   control: Control<any>;
+  setValue: UseFormSetValue<CriteriaFields>;
   dateDefaultValue: Date;
   timeDefaultValue?: string;
 }
 
-export function SearchCriteriaAdvancedTimePicker({ register, control, dateDefaultValue, timeDefaultValue }: Props) {
+/** Format a Date as SuiteQL `TO_DATE(..., 'YYYY-MM-DD HH24:MI:SS')` input (local wall clock). */
+function formatSuiteQlDateTime(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+export function SearchCriteriaAdvancedTimePicker({
+  register,
+  control,
+  setValue,
+  dateDefaultValue,
+  timeDefaultValue,
+}: Props) {
   const timeMode = useWatch({
     control,
     name: 'timeMode',
     defaultValue: 'now',
   });
-  // set customDateTime field by combining date and time inputs
   const customDate = useWatch({
     control,
     name: 'advanced-date',
@@ -31,14 +48,17 @@ export function SearchCriteriaAdvancedTimePicker({ register, control, dateDefaul
     name: 'advanced-time',
     defaultValue: timeDefaultValue,
   });
+
   React.useEffect(() => {
-    if (timeMode === 'custom' && customDate && customTime) {
-      const [hours, minutes, seconds] = String(customTime).split(':').map(Number);
-      const combinedDate = new Date(customDate);
-      combinedDate.setHours(hours || 0, minutes || 0, seconds || 0, 0);
-      control._formValues['customDateTime'] = combinedDate.getTime();
+    if (timeMode !== 'custom' || !customDate || !customTime) {
+      return;
     }
-  }, [timeMode, customDate, customTime, control]);
+    const [hours, minutes, seconds] = String(customTime).split(':').map(Number);
+    const combinedDate = new Date(customDate);
+    combinedDate.setHours(hours || 0, minutes || 0, seconds || 0, 0);
+    setValue('customDateTime', formatSuiteQlDateTime(combinedDate), { shouldDirty: true });
+  }, [timeMode, customDate, customTime, setValue]);
+
   return (
     <>
       <div className="block mb-2 text-sm font-medium text-gray-900">
@@ -74,10 +94,10 @@ export function SearchCriteriaAdvancedTimePicker({ register, control, dateDefaul
             >
               <option value="1">Minute</option>
               <option value="15">15 min</option>
-              <option value="hour">Hour</option>
-              <option value="day">Day</option>
-              <option value="week">Week</option>
-              <option value="month">Month*</option>
+              <option value="60">Hour</option>
+              <option value="1440">Day</option>
+              <option value="10080">Week</option>
+              <option value="43200">Month*</option>
             </select>
           </div>
         </>

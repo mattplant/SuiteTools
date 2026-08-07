@@ -23,8 +23,10 @@ export type CriteriaFields = {
   versions?: string[];
   // fields for advanced time picker
   timeMode?: string; // 'now' or 'custom'
-  customDateTime?: number | undefined; // timestamp in milliseconds
-  customDuration?: string; // e.g., '1', '15', 'hour', 'day', 'week', 'all'
+  /** SuiteQL-friendly `YYYY-MM-DD HH24:MI:SS` (local wall clock), set by advanced time picker */
+  customDateTime?: string | undefined;
+  /** Lookback window in minutes (`1`, `15`, `60`, `1440`, …) */
+  customDuration?: string;
 };
 
 export interface OptionValues {

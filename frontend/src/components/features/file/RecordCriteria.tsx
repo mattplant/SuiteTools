@@ -1,6 +1,7 @@
-import { useForm } from 'react-hook-form';
-import { Button } from 'flowbite-react';
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from '../../shared/criteria/types';
+import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
 import { SearchCriteriaDateCreated } from '../../shared/criteria/SearchCriteriaDateCreated';
 import { SearchCriteriaFileTypes } from '../../shared/criteria/SearchCriteriaFileTypes';
 import { SearchCriteriaRows } from '../../shared/criteria/SearchCriteriaRows';
@@ -12,22 +13,20 @@ interface Props {
 }
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
-  const { register, handleSubmit } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
-
-  function onSubmit(criteria: CriteriaFields) {
-    console.log('Submitted details:', criteria);
-    setCriteria(criteria);
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Get Files</Button>
-      <div className="flex gap-4 p-2.5">
-        <SearchCriteriaRows register={register} />
-        <SearchCriteriaFileTypes register={register} />
-        <SearchCriteriaDateCreated register={register} title="Created Date" />
-        <SearchCriteriaDateModified register={register} title="Modified Date" />
-      </div>
-    </form>
+    <RecordCriteriaForm
+      defaultCriteria={defaultCriteria}
+      setCriteria={setCriteria}
+      submitLabel="Get Files"
+    >
+      {({ register }) => (
+        <>
+          <SearchCriteriaRows register={register} />
+          <SearchCriteriaFileTypes register={register} />
+          <SearchCriteriaDateCreated register={register} title="Created Date" />
+          <SearchCriteriaDateModified register={register} title="Modified Date" />
+        </>
+      )}
+    </RecordCriteriaForm>
   );
 }
