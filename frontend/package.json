@@ -36,8 +36,7 @@
   "dependencies": {
     "@suiteworks/suitetools-shared": "workspace:*",
     "d3": "7.9.0",
-    "flowbite": "^3.1.2",
-    "flowbite-react": "0.10.2",
+    "flowbite-react": "0.12.17",
     "react": "18.3.1",
     "react-data-grid": "7.0.0-beta.47",
     "react-dom": "18.3.1",

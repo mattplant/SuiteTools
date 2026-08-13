@@ -1,6 +1,7 @@
 // frontend/vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import flowbiteReact from 'flowbite-react/plugin/vite';
 import path from 'path';
 import postcss from 'postcss';
 import postcssNested from 'postcss-nested';
@@ -24,7 +25,7 @@ const transformReactDataGridCss = {
 };
 
 export default defineConfig({
-  plugins: [transformReactDataGridCss, react()],
+  plugins: [transformReactDataGridCss, react(), flowbiteReact()],
   resolve: {
     alias: {
       shared: path.resolve(import.meta.dirname, '../shared/src'),
