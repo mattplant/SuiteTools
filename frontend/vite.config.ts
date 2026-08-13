@@ -27,7 +27,7 @@ export default defineConfig({
   plugins: [transformReactDataGridCss, react()],
   resolve: {
     alias: {
-      shared: path.resolve(__dirname, '../shared/src'),
+      shared: path.resolve(import.meta.dirname, '../shared/src'),
     },
   },
   build: {
@@ -36,8 +36,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         entryFileNames: 'app-bundle.js',
-        assetFileNames: (assetInfo) =>
-          assetInfo.name === 'index.css' ? 'output.css' : assetInfo.name || 'default-name',
+        // The deploy script uploads /SuiteScripts/SuiteTools/dist/{index.html,output.css,app-bundle.js}
+        // by exact path, so these names must stay stable. Rolldown (Vite 8) deprecated the singular
+        // `name` in favor of `names`; read `names` first and keep `name` as a fallback.
+        assetFileNames: (assetInfo) => {
+          const assetName = assetInfo.names?.[0] ?? assetInfo.name;
+          return assetName === 'index.css' ? 'output.css' : assetName || 'default-name';
+        },
       },
     },
   },
