@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { useMemo, useRef } from 'react';
-import DataGrid from 'react-data-grid';
+import { DataGrid } from 'react-data-grid';
 import type { DataGridHandle, Column } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../shared/results/Export';
@@ -13,7 +13,7 @@ const columns: Column<Role, SummaryRow>[] = [
   {
     key: 'id',
     name: 'ID',
-    renderSummaryCell(): JSX.Element {
+    renderSummaryCell(): React.JSX.Element {
       return <strong>Total</strong>;
     },
   },
@@ -53,7 +53,7 @@ const columns: Column<Role, SummaryRow>[] = [
  * @param props.setOpenModal - Function to control modal visibility.
  * @returns The rendered data grid component.
  */
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): JSX.Element {
+export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
   RoleBundle.assertMany(rows);
   const gridRef = useRef<DataGridHandle>(null);
   const summaryRows = useMemo((): readonly SummaryRow[] => {

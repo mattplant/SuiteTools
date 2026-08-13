@@ -10,7 +10,7 @@ import type { UserLoaderData } from '../routes/userLoader';
  * Renders the user page with user details, logins, and tokens.
  * @returns The rendered user page component.
  */
-export function UserPage(): JSX.Element {
+export function UserPage(): React.JSX.Element {
   const { user } = useLoaderData() as UserLoaderData;
 
   return (

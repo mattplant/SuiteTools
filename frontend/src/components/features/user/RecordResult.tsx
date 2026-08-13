@@ -15,7 +15,7 @@ type Props = {
  * @param [props.modal] - Whether to display modal actions.
  * @returns The rendered user result component.
  */
-export function UserResult({ data, modal = false }: Props): JSX.Element {
+export function UserResult({ data, modal = false }: Props): React.JSX.Element {
   const fields: EntityField[] = [
     { label: 'ID', value: data.id },
     { label: 'Name', value: data.name },

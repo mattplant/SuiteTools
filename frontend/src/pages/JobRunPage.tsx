@@ -6,7 +6,7 @@ import type { JobRunLoaderData } from '../routes/jobRunLoader';
  * Renders the job run page with job execution details.
  * @returns The rendered job run page component.
  */
-export function JobRunPage(): JSX.Element {
+export function JobRunPage(): React.JSX.Element {
   const { jobRun } = useLoaderData() as JobRunLoaderData;
 
   return (

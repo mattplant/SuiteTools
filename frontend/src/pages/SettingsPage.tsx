@@ -12,7 +12,7 @@ import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
  * Renders the settings page with the current settings payload and save form.
  * @returns The rendered settings page component.
  */
-export function SettingsPage(): JSX.Element {
+export function SettingsPage(): React.JSX.Element {
   const { settings: loaderSettings } = useLoaderData() as SettingsLoaderData;
   const { settings: contextSettings, applySettings } = useAppSettingsContext();
   // Prefer live context after save; fall back to loader data on first paint.

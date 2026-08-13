@@ -15,7 +15,7 @@ interface Props {
  * @param props.register - The register function from react-hook-form.
  * @returns The rendered select input component.
  */
-export function SearchCriteriaFileTypes({ register }: Props): JSX.Element {
+export function SearchCriteriaFileTypes({ register }: Props): React.JSX.Element {
   const [values, setValues] = useState<OptionValues>([]);
 
   useEffect(() => {

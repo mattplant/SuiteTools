@@ -14,7 +14,7 @@ interface DevSuiteErrorOverlayProps {
  * True floating developer error overlay: fixed portal above the current page
  * (header/chrome remain visible underneath the dimmed backdrop).
  */
-export function DevSuiteErrorOverlay({ error, onDismiss }: DevSuiteErrorOverlayProps): JSX.Element {
+export function DevSuiteErrorOverlay({ error, onDismiss }: DevSuiteErrorOverlayProps): React.JSX.Element {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {

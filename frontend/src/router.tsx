@@ -195,6 +195,6 @@ export const router = createHashRouter([
  * Provides the application's router.
  * @returns The router provider component.
  */
-export default function Routes(): JSX.Element {
+export default function Routes(): React.JSX.Element {
   return <RouterProvider router={router} />;
 }

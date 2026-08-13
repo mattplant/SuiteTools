@@ -8,7 +8,7 @@ import type { ScriptLogLoaderData } from '../routes/scriptLogLoader';
  * Renders the script log page with script log details.
  * @returns The rendered script log page component.
  */
-export function ScriptLogPage(): JSX.Element {
+export function ScriptLogPage(): React.JSX.Element {
   const { scriptLog } = useLoaderData() as ScriptLogLoaderData;
 
   return (

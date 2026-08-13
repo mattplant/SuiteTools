@@ -6,7 +6,7 @@ import type { SoapLogLoaderData } from '../routes/soapLogLoader';
  * Renders the SOAP log detail page.
  * @returns The rendered SOAP log page component.
  */
-export function SoapLogPage(): JSX.Element {
+export function SoapLogPage(): React.JSX.Element {
   const { soapLog } = useLoaderData() as SoapLogLoaderData;
 
   if (!soapLog || !('id' in soapLog)) {

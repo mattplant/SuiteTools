@@ -9,7 +9,7 @@ import type { RoleLoaderData } from '../routes/roleLoader';
  * Renders the role page with role details.
  * @returns The rendered role page component.
  */
-export function RolePage(): JSX.Element {
+export function RolePage(): React.JSX.Element {
   const { role } = useLoaderData() as RoleLoaderData;
   RoleBundle.assert(role);
 

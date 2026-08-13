@@ -16,7 +16,7 @@ type Props = {
  * @param [props.modal] - Whether to display modal actions.
  * @returns The rendered script log result component.
  */
-export function ScriptLogResult({ data, modal }: Props): JSX.Element {
+export function ScriptLogResult({ data, modal }: Props): React.JSX.Element {
   const fields: EntityField[] = [
     { label: 'ID', value: data.id },
     { label: 'Timestamp', value: data.timestamp },

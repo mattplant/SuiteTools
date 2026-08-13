@@ -25,7 +25,7 @@ type Props = {
  * @param root0.getModalData - Async function to fetch modal data for a given record id.
  * @returns The rendered Results component.
  */
-export function Results({ type, lines, getModalData }: Props): JSX.Element {
+export function Results({ type, lines, getModalData }: Props): React.JSX.Element {
   const location = useLocation();
   const triggerError = useErrorBoundaryTrigger();
   const [openModal, setOpenModal] = useState(false);

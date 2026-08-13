@@ -56,7 +56,7 @@ function getHttpError(error: unknown): { status: number; statusText: string; det
  * Route-level error UI rendered inside {@link AppLayout} (header/footer stay mounted).
  * In error-dev mode, SuiteErrors use a floating {@link DevSuiteErrorOverlay} portal.
  */
-export default function ErrorPage(): JSX.Element {
+export default function ErrorPage(): React.JSX.Element {
   const error = useRouteError();
   const navigate = useNavigate();
   const showDevOverlay = useShowDevErrorOverlay();

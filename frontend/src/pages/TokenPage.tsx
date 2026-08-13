@@ -6,7 +6,7 @@ import type { TokenLoaderData } from '../routes/tokenLoader';
  * Renders the token detail page.
  * @returns The rendered token page component.
  */
-export function TokenPage(): JSX.Element {
+export function TokenPage(): React.JSX.Element {
   const { token } = useLoaderData() as TokenLoaderData;
 
   return (
