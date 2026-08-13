@@ -162,7 +162,7 @@ Installed via `package.json`:
 
 Installed via `package.json`:
 
-- **TypeScript** — 5.7.x (type safety)
+- **TypeScript** — 6.0.x (type safety)
 - **Vite** — 4.5.x (build tool)
 - **@vitejs/plugin-react** — 4.5.x (React plugin for Vite)
 - **Tailwind CSS** — 3.3.x (utility‑first styling)

@@ -14,9 +14,6 @@
     /* Interop & Compatibility */
     "isolatedModules": true,
     "resolveJsonModule": true,
-    "exactOptionalPropertyTypes": true,
-
-    /* Path Aliases */
-    "baseUrl": "."
+    "exactOptionalPropertyTypes": true
   }
 }

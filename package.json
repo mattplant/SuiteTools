@@ -56,7 +56,7 @@
     "shared"
   ],
   "dependencies": {
-    "typescript": "5.7.3"
+    "typescript": "6.0.3"
   },
   "dependenciesMeta": {
     "@hitc/netsuite-types@2024.2.12": {
@@ -67,8 +67,8 @@
     "@eslint/compat": "^1.3.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.32.0",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
-    "@typescript-eslint/parser": "^8.38.0",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/parser": "^8.67.0",
     "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.15",
     "esbuild": "^0.25.11",
     "eslint": "^9.32.0",
