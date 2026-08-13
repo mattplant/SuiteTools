@@ -8,9 +8,8 @@
     { "path": "./backend" }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@types/*": ["types/*"]
+      "@types/*": ["./types/*"]
     }
   },
   "include": []

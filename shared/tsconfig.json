@@ -4,7 +4,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "node", // overrides base
+    "moduleResolution": "bundler", // was "node" (node10), deprecated in TS 6.0
     "composite": true,
     "declaration": true,
     "declarationMap": true,
