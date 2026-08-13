@@ -34,7 +34,7 @@
     /* Monorepo Support */
     "composite": true
   },
-  "include": ["src", "src/vite-env.d.ts"],
+  "include": ["src", "src/vite-env.d.ts", ".flowbite-react/init.tsx"],
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "../shared" }]
 

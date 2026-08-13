@@ -1,8 +1,14 @@
 // tailwind.config.js
-const flowbitePlugin = require('flowbite/plugin');
+// flowbite-react 0.11+ no longer depends on the standalone `flowbite` package. Its Tailwind
+// plugin supplies the theme extensions the component defaults rely on — including the `primary`
+// palette, which the default themes reference and which nothing else in this project defines.
+const flowbiteReact = require('flowbite-react/plugin/tailwindcss');
 
 module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './node_modules/flowbite-react/**/*.{js,ts,jsx,tsx}'],
+  // `.flowbite-react/class-list.json` is generated at build time by the flowbite-react Vite
+  // plugin and lists the classes its components can emit. It replaces the old practice of
+  // globbing the package's own source, which 0.11+ no longer ships classes in.
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', '.flowbite-react/class-list.json'],
   theme: {
     extend: {
       colors: {
@@ -13,5 +19,5 @@ module.exports = {
       },
     },
   },
-  plugins: [flowbitePlugin],
+  plugins: [flowbiteReact],
 };

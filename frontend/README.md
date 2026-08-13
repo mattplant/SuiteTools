@@ -57,7 +57,6 @@ frontend/
 │   │   └── netsuite/      # NetSuite-specific utilities
 │   ├── pages/          # Top-level route views
 │   ├── routes/         # App routing configuration
-│   ├── theme/          # Flowbite theme extensions & custom styles
 │   └── utils/          # Frontend-specific utility functions
 ├── .gitignore          # Git ignore file for frontend
 ├── index.html          # Main HTML entry point
@@ -123,12 +122,6 @@ pages/
 └── UsersPage.tsx        # Users page
 ```
 
-### 📁 `theme/`
-
-Flowbite theme extensions and custom styles. This folder contains any overrides or additions to the default Flowbite theme.
-
-- `theme/customTheme.ts` — Custom Flowbite theme configuration
-
 ### 📁 `utils/`
 
 Utility functions and helpers that are specific to the frontend. These should not contain any backend logic or shared utilities.
@@ -152,8 +145,7 @@ Installed via `package.json`:
 - **React DOM** — 18.3.x (DOM renderer)
 - **React Router DOM** — 6.22.x (routing)
 - **React Hook Form** — ^7.60.x (form state management)
-- **Flowbite** — ^3.1.x (UI components)
-- **Flowbite React** — 0.10.x (React bindings for Flowbite)
+- **Flowbite React** — 0.12.x (UI components; since 0.11 it no longer depends on the standalone `flowbite` package)
 - **React Data Grid** — 7.0.0‑beta.x (data grid component)
 - **D3** — 7.9.x (data visualization)
 - **@suiteworks/suitetools-shared** — workspace module (shared logic)
