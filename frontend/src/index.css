@@ -1,24 +1,43 @@
 /* index.css */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
 /*
-  Tailwind CSS v3 uses `gray.200` as the default border color.
-  This shim preserves that behavior when upgrading to v4, which
-  changes the default to `currentColor`.
-
-  Safe to remove once all border usage is audited and explicitly styled.
+  flowbite-react's theme layer, which supplies the `primary` palette its component
+  defaults reference. Nothing else in this project defines `primary`, so this import
+  is what keeps buttons, navbar links and the datepicker coloured. In Tailwind v3 the
+  same values arrived via the `flowbite-react/plugin/tailwindcss` JS plugin in
+  tailwind.config.js; v4 replaces that with this CSS import.
 */
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: theme('colors.gray.200', currentcolor);
-  }
+@import 'flowbite-react/plugin/tailwindcss';
+
+/*
+  Generated at build time by the flowbite-react Vite plugin. v4 auto-detects sources,
+  but this file is not reachable from the default scan, so it needs to be declared or
+  the component classes get tree-shaken away.
+*/
+@source '../.flowbite-react/class-list.json';
+
+/*
+  Safelist for two classes flowbite-react applies at runtime but omits from the
+  generated class list above, so nothing in the scanned sources produces them:
+
+    rounded  — Navbar's `rounded` prop resolves to the literal class `rounded`
+               (also Avatar's base, unused here). `Header.tsx` renders
+               <Navbar fluid rounded>, where `rounded` is a JSX prop, not a class.
+    shadow   — Dropdown and Modal theme defaults (also Footer, Tabs, Toast).
+
+  Tailwind v3 emitted both by accident: its scanner matched the bare words in the
+  JSX source text. v4's scanner correctly ignores props, so without this the
+  navbar loses its corners and dropdowns and modals lose their shadow — a silent
+  restyle rather than a build failure.
+*/
+@source inline('rounded shadow');
+
+/* Project theme extensions, migrated from tailwind.config.js `theme.extend`. */
+@theme {
+  --color-suite-gray: #e5e7eb;
+  --spacing-suite-gap: 1.25rem;
 }
 
 /* react-data-grid styling */

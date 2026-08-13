@@ -25,7 +25,7 @@ export function NewSettingsForm({ defaultValues, onSave }: Props) {
   return (
     <form
       noValidate
-      className="border-b py-4"
+      className="border-b border-gray-200 py-4"
       onSubmit={handleSubmit((data) => onSave({ ...data, devMode: Boolean(data.devMode) }))}
     >
       <div className={fieldStyle}>
