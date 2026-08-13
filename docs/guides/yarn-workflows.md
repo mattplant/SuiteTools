@@ -8,7 +8,7 @@ Last updated: 2026-08-06
 
 Defines the **standard workflows** for using Yarn in the SuiteTools monorepo, ensuring clean, reproducible dependencies and a smooth onboarding experience.
 
-This is the **practical guide** for applying the governance rules in [Yarn Dependencies](../governance/standards/yarn-dependencies.md) and the baseline configuration in [Yarn Foundations](../governance/standards/yarn-core.md).
+This is the **practical guide** for applying the governance rules in [Yarn Dependencies](../governance/standards/yarn-dependencies.md) and the baseline configuration in [Yarn Foundations](./yarn.md).
 
 Covers **day‑to‑day operational steps** for working with Yarn in SuiteTools:
 
@@ -20,7 +20,7 @@ Covers **day‑to‑day operational steps** for working with Yarn in SuiteTools:
 
 Does **not** cover:
 
-- Baseline Yarn configuration or conventions — see [yarn-core.md](./yarn.md)
+- Baseline Yarn configuration or conventions — see [yarn.md](./yarn.md)
 - Dependency governance rules or enforcement policies — see [yarn-dependencies.md](../governance/standards/yarn-dependencies.md)
 
 ---
