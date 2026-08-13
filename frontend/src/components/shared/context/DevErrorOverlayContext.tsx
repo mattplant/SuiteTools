@@ -21,7 +21,7 @@ type Props = {
 /**
  * Provides a dismissible floating {@link DevSuiteErrorOverlay} above app content.
  */
-export function DevErrorOverlayProvider({ children }: Props): JSX.Element {
+export function DevErrorOverlayProvider({ children }: Props): React.JSX.Element {
   const [error, setError] = useState<SuiteError | null>(null);
 
   const dismiss = useCallback(() => {

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import DataGrid, { type DataGridHandle } from 'react-data-grid';
+import { DataGrid, type DataGridHandle } from 'react-data-grid';
 import 'react-data-grid/lib/styles.css';
 import { Export } from '../../../shared/results/Export';
 import type { ConcurrencyRequestData, ConcurrencyRequestRows } from './types';

@@ -8,7 +8,7 @@ import type { IntegrationLoaderData } from '../routes/integrationLoader';
  * Renders the integration detail page.
  * @returns The rendered integration page component.
  */
-export function IntegrationPage(): JSX.Element {
+export function IntegrationPage(): React.JSX.Element {
   const { integration } = useLoaderData() as IntegrationLoaderData;
 
   return (

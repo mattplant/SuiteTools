@@ -41,7 +41,7 @@ function syncErrorDevMode(devMode: boolean): void {
  * @param root0.children - The child components.
  * @returns The provider component wrapping its children.
  */
-export function AppSettingsProvider({ children }: Props): JSX.Element {
+export function AppSettingsProvider({ children }: Props): React.JSX.Element {
   const [settings, setSettings] = useState<Settings | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 

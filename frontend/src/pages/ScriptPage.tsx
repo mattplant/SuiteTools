@@ -6,7 +6,7 @@ import type { ScriptLoaderData } from '../routes/scriptLoader';
  * Renders the script page with script details.
  * @returns The rendered script page component.
  */
-export function ScriptPage(): JSX.Element {
+export function ScriptPage(): React.JSX.Element {
   const { script } = useLoaderData() as ScriptLoaderData;
 
   return (

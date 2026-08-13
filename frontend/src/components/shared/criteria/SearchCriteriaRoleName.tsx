@@ -9,7 +9,7 @@ interface Props {
   register: UseFormRegister<CriteriaFields>;
 }
 
-export function SearchCriteriaRoleName({ register }: Props): JSX.Element {
+export function SearchCriteriaRoleName({ register }: Props): React.JSX.Element {
   const [values, setValues] = useState<OptionValues>([]);
 
   useEffect(() => {

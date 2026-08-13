@@ -8,7 +8,7 @@ import type { FileLoaderData } from '../routes/fileLoader';
  * Renders the file page with file details.
  * @returns The rendered file page component.
  */
-export function FilePage(): JSX.Element {
+export function FilePage(): React.JSX.Element {
   const { file } = useLoaderData() as FileLoaderData;
 
   return (

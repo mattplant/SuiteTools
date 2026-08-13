@@ -9,7 +9,7 @@ import type { JobLoaderData } from '../routes/jobLoader';
  * Renders the job page with job details and related job runs.
  * @returns The rendered job page component.
  */
-export function JobPage(): JSX.Element {
+export function JobPage(): React.JSX.Element {
   const { job } = useLoaderData() as JobLoaderData;
 
   return (

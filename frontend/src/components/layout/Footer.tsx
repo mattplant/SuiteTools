@@ -1,4 +1,4 @@
-export default function Footer(): JSX.Element {
+export default function Footer(): React.JSX.Element {
   return (
     <footer style={{ padding: '1rem', textAlign: 'center', fontSize: '0.9rem', color: '#555' }}>
       <span>© {new Date().getFullYear()} Matthew Plant</span>

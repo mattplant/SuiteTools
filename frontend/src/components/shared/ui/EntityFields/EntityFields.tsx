@@ -28,7 +28,7 @@ type EntityFieldsProps = {
  * @param [props.className] - Optional additional class names.
  * @returns The rendered field/value list.
  */
-export function EntityFields({ fields, className = '' }: EntityFieldsProps): JSX.Element {
+export function EntityFields({ fields, className = '' }: EntityFieldsProps): React.JSX.Element {
   return (
     <dl className={['grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1', className].filter(Boolean).join(' ')}>
       {fields.map(({ label, value }) => (

@@ -4,7 +4,9 @@ import 'react-data-grid/lib/styles.css';
 import { type DataGridHandle } from 'react-data-grid';
 
 type Props = {
-  gridRef: React.RefObject<DataGridHandle>;
+  // `useRef<DataGridHandle>(null)` yields `RefObject<DataGridHandle | null>` under @types/react 19,
+  // where `RefObject<T>` became non-nullable. The null has to be admitted here.
+  gridRef: React.RefObject<DataGridHandle | null>;
   modal?: boolean;
 };
 
