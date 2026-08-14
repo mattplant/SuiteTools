@@ -81,8 +81,8 @@ set -euo pipefail
 echo "🔄 Enabling Corepack…"
 corepack enable
 
-echo "📌 Ensuring Yarn 4.9.2 is active…"
-yarn set version 4.9.2
+echo "🧹 Removing installed dependencies…"
+find . -name node_modules -maxdepth 3 -type d -prune -exec rm -rf {} +
 
 echo "📦 Installing dependencies (with cache check)…"
 yarn install --check-cache

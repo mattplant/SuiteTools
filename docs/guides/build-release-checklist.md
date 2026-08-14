@@ -31,7 +31,7 @@ From the monorepo root:
 yarn workspace frontend run build-and-deploy
 ```
 
-- ✅ Builds **shared** (`prebuild`), builds the SPA into `backend/.../SuiteTools/dist/`, then `suitecloud file:upload` for those assets.
+- ✅ Builds **shared** first, then the SPA into `backend/.../SuiteTools/dist/`, then `suitecloud file:upload` for those assets.
 - ✅ Always use `build-and-deploy` — bare `deploy` uploads without rebuilding.
 - ❌ Don’t forget to reload the Suitelet — stale browser assets may mask changes.
 
@@ -41,7 +41,7 @@ yarn workspace frontend run build-and-deploy
 yarn workspace backend run build-and-deploy
 ```
 
-- ✅ Builds **shared** (`prebuild`), builds SuiteScript bundles, then full SDF `project:deploy` (scripts, objects, FileCabinet).
+- ✅ Builds **shared** first, then the SuiteScript bundles, then full SDF `project:deploy` (scripts, objects, FileCabinet).
 - ✅ Prefer `build-and-deploy` — bare `deploy` uploads without rebuilding.
 - ❌ SPA `dist/` is only included if you built frontend first (or use `deploy:all` below).
 

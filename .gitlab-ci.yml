@@ -1,4 +1,4 @@
-# SuiteTools CI — install → typecheck → lint → test
+# SuiteTools CI — install → typecheck → lint → test → build
 # SuiteCloud deploy is intentionally out of scope for MR/default-branch CI.
 # Node matches .node-version; Yarn matches packageManager / .yarn/releases.
 
@@ -41,8 +41,8 @@ stages:
     - corepack enable
     - yarn --version
     - yarn install --immutable
-  # Enable "Pipelines must succeed" in GitLab → Settings → Merge requests
-  # so required jobs block merge when red.
+  # "Pipelines must succeed" is enabled in GitLab → Settings → Merge requests,
+  # with "allow merge on skipped pipeline" off, so a red job here blocks merge.
 
 typecheck:
   extends: .validate
@@ -58,3 +58,12 @@ test:
   extends: .validate
   script:
     - yarn test
+
+# Builds every workspace. `yarn build:all` was the only root script CI never ran,
+# which is how #79's broken clean-checkout build reached main unnoticed: the
+# frontend/backend `prebuild` hooks that were meant to build `shared` first never
+# fired, because Yarn Berry does not run implicit pre/post scripts.
+build:
+  extends: .validate
+  script:
+    - yarn build:all

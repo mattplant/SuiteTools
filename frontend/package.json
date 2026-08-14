@@ -19,8 +19,7 @@
   "type": "module",
   "scripts": {
     "build-and-deploy": "yarn build && yarn deploy && echo \"SuiteTools frontend build and deploy completed at $(date).\"",
-    "build": "tsc && vite build",
-    "prebuild": "yarn workspace @suiteworks/suitetools-shared build",
+    "build": "yarn workspace @suiteworks/suitetools-shared run build && tsc && vite build",
     "deploy": "cd ../backend && suitecloud file:upload --paths /SuiteScripts/SuiteTools/dist/index.html /SuiteScripts/SuiteTools/dist/output.css /SuiteScripts/SuiteTools/dist/app-bundle.js",
     "clean-local": "rm -rf dist tsconfig.tsbuildinfo",
     "dev": "vite",

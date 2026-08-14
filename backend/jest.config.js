@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * SuiteCloud Jest config adapted for Yarn PnP.
+ * SuiteCloud Jest config adapted for this monorepo's dependency layout.
  *
- * Oracle's generator hardcodes `<rootDir>/node_modules/@oracle/suitecloud-unit-testing/...`,
- * which does not exist under PnP. Rewrite those paths to the resolved package root.
+ * Oracle's generator hardcodes `<rootDir>/node_modules/@oracle/suitecloud-unit-testing/...`.
+ * That path does not exist here: rootDir is `backend/`, and Yarn hoists the package to the
+ * workspace root instead, so `backend/node_modules/` is not created at all. Rewrite those
+ * paths to the resolved package root. (Under PnP, which this project used before #74, the
+ * path was equally wrong for a different reason -- there was no node_modules anywhere.)
  *
  * Tests target `TypeScripts/` (authoring sources), not generated FileCabinet JS.
  */
@@ -46,7 +49,7 @@ module.exports = {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        // Runtime resolution uses moduleNameMapper / PnP; skip tsc path checks in tests.
+        // Runtime resolution uses moduleNameMapper; skip tsc path checks in tests.
         diagnostics: false,
         tsconfig: {
           module: "commonjs",

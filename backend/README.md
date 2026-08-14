@@ -58,7 +58,7 @@ Build compiles `TypeScripts/SuiteTools/` → `src/FileCabinet/SuiteScripts/Suite
 - Edit and assert against **`TypeScripts/`** only — do not treat generated FileCabinet JS as the system under test.
 - Run: `yarn test` from the monorepo root (builds `shared/` first, then all workspaces), or `yarn workspace backend run test` when `shared/dist` is already built.
 - `N/*` modules are mocked via `@oracle/suitecloud-unit-testing` stubs; no live NetSuite account is required.
-- Suite lives under `backend/__tests__/`. Jest is configured for Yarn PnP (Oracle’s default `node_modules/…` paths are rewritten).
+- Suite lives under `backend/__tests__/`. Jest rewrites Oracle’s default `node_modules/…` paths, which point at `backend/node_modules/` — a directory Yarn’s hoisting never creates.
 
 ---
 
@@ -69,7 +69,7 @@ This workspace requires the following tools and libraries:
 - **NetSuite Account** — with SDF enabled
 - **Java JDK** — 17+ (21 recommended) for SuiteCloud CLI
 - **NetSuite SDF CLI** — via `@oracle/suitecloud-cli` (for `suitecloud project:deploy` and `suitecloud project:validate`)
-- **Yarn (Berry)** — v4.9.2 (via this repo’s `packageManager` / `.yarn/releases`)
+- **Yarn** — v4.18.0 (via this repo’s `packageManager` / `.yarn/releases`)
 
 ### Development Dependencies
 
