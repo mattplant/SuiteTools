@@ -8,14 +8,10 @@ import { useEntityList } from "./useEntityList";
 
 const triggerError = vi.fn();
 
-vi.mock("./useErrorBoundaryTrigger", () => ({
-  useErrorBoundaryTrigger: () => triggerError,
-}));
+vi.mock("./useErrorBoundaryTrigger", () => ({ useErrorBoundaryTrigger: () => triggerError }));
 
 vi.mock("@suiteworks/suitetools-shared", async () => {
-  const actual = await vi.importActual<typeof import("@suiteworks/suitetools-shared")>(
-    "@suiteworks/suitetools-shared",
-  );
+  const actual = await vi.importActual<typeof import("@suiteworks/suitetools-shared")>("@suiteworks/suitetools-shared");
   return {
     ...actual,
     handleError: vi.fn((err: unknown, opts?: { reactTrigger?: (e: unknown) => void }) => {
@@ -37,12 +33,7 @@ describe("useEntityList", () => {
   it("loads and normalizes results when criteria is set", async () => {
     const fetchList = vi.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]);
 
-    const { result } = renderHook(() =>
-      useEntityList({
-        defaultCriteria: { active: "T" },
-        fetchList,
-      }),
-    );
+    const { result } = renderHook(() => useEntityList({ defaultCriteria: { active: "T" }, fetchList }));
 
     await waitFor(() => {
       expect(result.current.results).toEqual([{ id: 1 }, { id: 2 }]);
@@ -54,12 +45,7 @@ describe("useEntityList", () => {
     const err = new Error("boom");
     const fetchList = vi.fn().mockRejectedValue(err);
 
-    const { result } = renderHook(() =>
-      useEntityList({
-        defaultCriteria: { active: "" },
-        fetchList,
-      }),
-    );
+    const { result } = renderHook(() => useEntityList({ defaultCriteria: { active: "" }, fetchList }));
 
     await waitFor(() => {
       expect(handleErrorMock).toHaveBeenCalled();
@@ -74,12 +60,7 @@ describe("useEntityList", () => {
       .mockResolvedValueOnce([{ id: 1 }])
       .mockResolvedValueOnce([{ id: 2 }]);
 
-    const { result } = renderHook(() =>
-      useEntityList({
-        defaultCriteria: { active: "T" },
-        fetchList,
-      }),
-    );
+    const { result } = renderHook(() => useEntityList({ defaultCriteria: { active: "T" }, fetchList }));
 
     await waitFor(() => {
       expect(result.current.results).toEqual([{ id: 1 }]);
@@ -112,17 +93,10 @@ describe("useEntityList", () => {
   });
 
   it("clears statusMessage on fetch error", async () => {
-    const fetchList = vi
-      .fn()
-      .mockResolvedValueOnce([])
-      .mockRejectedValueOnce(new Error("boom"));
+    const fetchList = vi.fn().mockResolvedValueOnce([]).mockRejectedValueOnce(new Error("boom"));
 
     const { result } = renderHook(() =>
-      useEntityList({
-        defaultCriteria: { active: "T" },
-        fetchList,
-        getStatusMessage: () => "empty",
-      }),
+      useEntityList({ defaultCriteria: { active: "T" }, fetchList, getStatusMessage: () => "empty" }),
     );
 
     await waitFor(() => {

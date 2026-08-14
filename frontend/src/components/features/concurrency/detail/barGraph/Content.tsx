@@ -1,9 +1,7 @@
-import * as d3 from 'd3';
-import type { ConcurrencyDetailData } from '../types';
+import * as d3 from "d3";
+import type { ConcurrencyDetailData } from "../types";
 
-type Props = {
-  data: ConcurrencyDetailData | undefined;
-};
+type Props = { data: ConcurrencyDetailData | undefined };
 
 export function ConcurrencyDetailBarGraphContent({ data }: Props) {
   if (!data) {
@@ -23,6 +21,7 @@ export function ConcurrencyDetailBarGraphContent({ data }: Props) {
   return (
     <>
       <svg width={width + margin.left + margin.right} height={height + margin.top + margin.bottom}>
+        <title>Concurrency by minute</title>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           {data!.concurrency.concurrency.map((d, i) => (
             <g key={i} transform={`translate(${scaleX(d[0].toString())!}, 0)`}>
@@ -31,7 +30,7 @@ export function ConcurrencyDetailBarGraphContent({ data }: Props) {
                 const lineHeight = d[1] * yFactor;
                 return (
                   <>
-                    {' '}
+                    {" "}
                     <a href={`#/concurrencyRequest/${d[0]}/${d[0] + 60 * 1000}`} target="_blank" rel="noreferrer">
                       <rect x={0} y={height - lineHeight} width={scaleX.bandwidth()} height={lineHeight} />
                       {d[1] > 0 && (
@@ -41,13 +40,13 @@ export function ConcurrencyDetailBarGraphContent({ data }: Props) {
                       )}
                     </a>
                     <text x={scaleX.bandwidth() / 2} y={height + 15} textAnchor="middle" fontSize={12} fill="black">
-                      {new Date(d[0]).getMinutes() % 5 === 0 || new Date(d[0]).getMinutes() == 59
-                        ? new Date(d[0]).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
+                      {new Date(d[0]).getMinutes() % 5 === 0 || new Date(d[0]).getMinutes() === 59
+                        ? new Date(d[0]).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
                             hour12: true,
                           })
-                        : ''}
+                        : ""}
                     </text>
                   </>
                 );

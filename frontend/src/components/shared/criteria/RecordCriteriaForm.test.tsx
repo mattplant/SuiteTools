@@ -16,11 +16,7 @@ describe("RecordCriteriaForm", () => {
     const child = vi.fn(() => <span>fields</span>);
 
     render(
-      <RecordCriteriaForm
-        defaultCriteria={{ active: "T" }}
-        setCriteria={setCriteria}
-        submitLabel="Get Items"
-      >
+      <RecordCriteriaForm defaultCriteria={{ active: "T" }} setCriteria={setCriteria} submitLabel="Get Items">
         {child}
       </RecordCriteriaForm>,
     );

@@ -6,13 +6,6 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      shared: path.resolve(import.meta.dirname, "../shared/src"),
-    },
-  },
-  test: {
-    environment: "node",
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  },
+  resolve: { alias: { shared: path.resolve(import.meta.dirname, "../shared/src") } },
+  test: { environment: "node", include: ["src/**/*.test.ts", "src/**/*.test.tsx"] },
 });

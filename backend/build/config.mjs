@@ -29,8 +29,8 @@ export const BUILD_CONFIG = {
   // NetSuite specific settings
   netsuite: {
     externalModules: [
-      'N/*', // All NetSuite modules
-      'SuiteScripts/*', // NetSuite FileCabinet scripts
+      "N/*", // All NetSuite modules
+      "SuiteScripts/*", // NetSuite FileCabinet scripts
       // Note: @suiteworks/suitetools-shared is bundled into each file rather than external
       // This is because ESBuild can't remap workspace package names to NetSuite paths
     ],
@@ -38,7 +38,7 @@ export const BUILD_CONFIG = {
 
   // Clean operation settings
   clean: {
-    yarnScript: 'clean-local', // Yarn script to use for cleaning
+    yarnScript: "clean-local", // Yarn script to use for cleaning
   },
 };
 

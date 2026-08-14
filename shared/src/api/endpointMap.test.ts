@@ -11,15 +11,7 @@ describe("endpointMap", () => {
   });
 
   it("includes core entity endpoints used by FE/BE", () => {
-    for (const name of [
-      "settings",
-      "user",
-      "users",
-      "role",
-      "roles",
-      "job",
-      "jobs",
-    ] as const) {
+    for (const name of ["settings", "user", "users", "role", "roles", "job", "jobs"] as const) {
       expect(endpointMap[name]).toEqual(expect.any(String));
       expect(endpointMap[name].length).toBeGreaterThan(0);
     }

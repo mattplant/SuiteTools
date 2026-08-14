@@ -3,13 +3,13 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-05
+Last updated: August 13, 2026
 
 ---
 
 ## 🎯 Purpose
 
-Linting is not just about enforcing style — it’s about **maintainable, predictable, and readable code** across the suite.
+Linting is not just about enforcing style — it's about **maintainable, predictable, and readable code** across the suite.
 Rules are chosen to:
 
 - Reduce cognitive load for reviewers.
@@ -21,153 +21,98 @@ Rules are chosen to:
 
 ### 🔗 Related Governance {#related-governance}
 
-- [ESLint Config](config/eslint.md) — composition and application of the `eslint.config.cjs` file.
-- [Prettier Config](./config/prettier.md) — formatting alignment.
+- [Biome Config](config/biome.md) — annotated `biome.json`, and every deviation from a Biome default.
+- [Linting Guide](../../guides/linting.md) — commands and day‑to‑day workflow.
 - [TypeScript Config](./config/typescript.md) — type‑checking alignment.
 
 ---
 
 ## 🗂️ Rule Categories
 
-Organized into thematic groups for clarity and actionability.
+Organized into thematic groups for clarity and actionability. Biome groups its own rules along similar lines — `correctness`, `suspicious`, `complexity`, `style`, `security`, `performance` and `a11y`.
 
 ### Code Style
 
 Readability, consistency, and review ergonomics.
 
-- Always use Prettier formatting so diffs are clean and predictable.
-- Keep imports grouped (external → internal → relative) for easy scanning.
+- Formatting is not a matter of opinion; `yarn format` decides it.
+- Keep imports grouped (external → internal → relative) for easy scanning. This is convention, not enforced: automatic import sorting is off because it also reorders `export *` statements and would break curated barrel files.
+- Use camelCase for variables and functions, PascalCase for types and components. Convention, not enforced.
 
 ### Error Prevention
 
 Avoid bugs and runtime surprises.
 
-- Use const instead of let when variables don’t change.
-- Replace “magic numbers” with named constants for clarity.
+- Use `const` instead of `let` when variables don't change.
+- Replace "magic numbers" with named constants for clarity.
+- Use strict equality; loose `==` is an error.
 
 ### Type Safety
 
 Correctness via TypeScript constraints.
 
-- No implicit any — every type should be explicit.
+- No implicit `any` — every type should be explicit.
 - Add return types to exported functions so APIs are self‑documenting.
+
+Note that **type-aware linting is not available**. Biome does not use type information, so rules such as `no-unsafe-return` and `explicit-module-boundary-types` are no longer enforced by the linter. `yarn typecheck` remains the authority on type correctness.
 
 ### Maintainability
 
 Long‑term clarity and complexity limits.
 
-- Keep functions small enough to be easily tested.
-- Use JSDoc on exported APIs to help future maintainers.
+- Keep functions small enough to be easily tested; Biome's `complexity` group flags the worst offenders.
+- Use JSDoc on exported APIs to help future maintainers. This is now **convention rather than an enforced rule** — see [JSDoc Standards](../../guides/jsdoc-standards.md).
 
 ### Workspace Boundaries
 
 Layering, modularity, and import hygiene.
 
-- Don’t import directly from another workspace’s internals.
+- Don't import directly from another workspace's internals.
 - Use only the public API of a package, not deep file paths.
+
+These are conventions reinforced by the TypeScript project references and by review, not by a lint rule.
 
 ### Documentation & Exports
 
 Discoverability and public API clarity.
 
-- Every export should have JSDoc so it’s clear in IDEs.
+- Every export should have JSDoc so it's clear in IDEs.
 - Avoid anonymous default exports so code is traceable.
 
-### Rule Tiers
+---
 
-We group rules into **tiers** for clarity:
+## 🚦 Rule Tiers
 
-- **Core Enforcement**
-  Non-negotiable rules that block commits and PRs if violated.
+- **Core Enforcement** — Biome's `recommended` preset, at `error`. `yarn lint` fails, so violations block merges.
+- **Advisory** — a small set of rules with pre-existing backlogs, at `warn`. Reported on every run but non-blocking, and tracked for promotion to `error`.
 
-- **Advisory Conventions**
-  Guide preferred patterns and best practices. May surface warnings but don't block progress.
+The advisory tier exists so a known backlog stays visible in the tool itself rather than being disabled and forgotten. The rules currently in it, and why each is deferred, are listed in [Biome Config](config/biome.md#-rule-severity).
 
 ---
 
 ## 📚 Rule Reference
 
-Live ESLint config ([`eslint.config.cjs`](../../../eslint.config.cjs)) enforces **exports-only** return types (`explicit-module-boundary-types`) and JSDoc (`jsdoc/require-jsdoc` with `publicOnly`). Frontend overrides the stricter `jsdoc/recommended-typescript-error` preset accordingly. Root `yarn lint` uses `--max-warnings 0`.
+[`biome.json`](../../../biome.json) is the single source of truth for which rules are active and at what severity. Biome's own [rule reference](https://biomejs.dev/linter/rules/) documents what each rule does; duplicating that list here would only let it drift.
 
-Functions as the implementation spec. Some rows below remain aspirational (not yet wired).
+What this project decides, and therefore records in [Biome Config](config/biome.md), is narrower:
 
-| Category | Rule | ESLint / TS Rule Name | Severity | Source | Rationale |
-|----------|------|-----------------------|----------|--------|-----------|
-| **Code Style** | Formatting | `prettier/prettier` | error | Prettier | Enforces consistent quotes, semicolons, spacing for minimal diffs. |
-|  | Naming | `@typescript-eslint/naming-convention` | error | @typescript-eslint | Standardizes camelCase for vars/functions, PascalCase for types/components. |
-|  | Import ordering | `import/order` | error | eslint-plugin-import | Groups and sorts imports (external → internal → relative) for readability. |
-| **Error Prevention** | Prefer `const` over `let` | `prefer-const` | error | ESLint core | Ensures predictable scoping and immutability where possible. |
-|  | Disallow `var` | `no-var` | error | ESLint core | Prevents function‑scoped variables and promotes block scoping. |
-|  | No undeclared variables | `no-undef` | error | ESLint core | Catches runtime reference errors from undeclared variables. |
-|  | No shadowed variables | `no-shadow` | error | ESLint core | Prevents accidental variable overrides. |
-|  | No magic numbers | `no-magic-numbers` | warn | ESLint core | Encourages named constants for clarity. |
-|  | Consistent null checks | `eqeqeq` (`always`) | error | ESLint core | Avoids loose equality pitfalls. |
-|  | No unused variables | `@typescript-eslint/no-unused-vars` | error | @typescript-eslint | Keeps code clean and avoids confusion. |
-| **Type Safety** | No explicit `any` | `@typescript-eslint/no-explicit-any` | error | @typescript-eslint | Prevents structural holes in type safety. |
-|  | Explicit return types | `@typescript-eslint/explicit-module-boundary-types` | warn | @typescript-eslint | Improves API clarity for exported functions. |
-|  | No unsafe assignments | `@typescript-eslint/no-unsafe-assignment` | error | @typescript-eslint | Prevents structural type holes. |
-|  | No unsafe return | `@typescript-eslint/no-unsafe-return` | error | @typescript-eslint | Ensures predictable output types. |
-|  | Prefer readonly types | `@typescript-eslint/prefer-readonly` | warn | @typescript-eslint | Encourages immutability. |
-|  | Consistent type exports | `@typescript-eslint/consistent-type-exports` | warn | @typescript-eslint | Enforces explicit and stable type exports. |
-| **Maintainability** | Max line length | `max-len` | warn | ESLint core | Improves readability in diffs and side‑by‑side review. |
-|  | Cyclomatic complexity limits | `complexity` | warn | ESLint core | Encourages smaller, testable functions. |
-|  | Comment style | `valid-jsdoc` or `@typescript-eslint/jsdoc` | warn | ESLint core / plugin-jsdoc | Standardizes JSDoc for exported APIs. |
-| **Workspace Boundaries** | No cross‑workspace imports | `no-restricted-imports` | error | ESLint core | Preserves domain boundaries (except from `shared/`). |
-|  | Restrict deep imports | `import/no-internal-modules` | error | eslint-plugin-import | Enforces public API usage, prevents bypassing encapsulation. |
-| **Code Exports** | JSDoc required for all exports | `jsdoc/require-jsdoc`, `@typescript-eslint/explicit-module-boundary-types` | warn | plugin-jsdoc / @typescript-eslint | Improves IDE support and onboarding. |
-|  | No unused exports | `unused-imports/no-unused-vars` | error | eslint-plugin-unused-imports | Keeps public surfaces clean. |
-|  | No anonymous default exports | `import/no-anonymous-default-export` | error | eslint-plugin-import | Improves traceability in codebase. |
-| **Documentation Standards** | Title Case headings | `heading-title-case/heading-title-case` | error | custom rule | Ensures consistent capitalization in Markdown headings |
-
----
-
-## 🧩 SuiteTools ESLint Rules
-
-These rules enforce suite-wide governance standards across documentation, configuration, and code. They are wired into the root `eslint.config.cjs` file and apply to all workspaces.
-
-### Custom ESLint Rules
-
-Custom rules are implemented in the `/scripts/eslint-rules/` directory and include:
-
-- [heading-title-case.js](../../../scripts/eslint-rules/heading-title-case.js) — Enforces Title Case in Markdown headings
-
-### `heading-title-case.js`: Markdown Heading Capitalization
-
-This rule enforces **Title Case** in all Markdown headings across the suite. It supports developer clarity, onboarding consistency, and structural discoverability.
-
-- **Location:** `/scripts/eslint-rules/heading-title-case.js`
-- **Scope:** All `.md` files in all workspaces
-- **Severity:** `error` (Core Enforcement)
-- **Usage:** Run with `yarn lint:docs` or just view in VSCode with ESLint extension installed.
-
-#### ✅ What’s Enforced
-
-- Headings must follow Title Case (e.g. `### Architecture Overview`)
-- Acronyms and inline code (e.g. `NetSuite`, `tailwindcss`) preserve original casing
-- Hyphenated modifiers are capitalized (e.g. `Language-Specific Rules`)
-
-See the [Documentation Body Standard](./documentation-body.md#heading-capitalization-enforcement) for the details and rationale including opting out.
-
-#### 🛠️ Technical Notes
-
-This rule is implemented via a custom ESLint plugin located at [/scripts/eslint-rules/heading-title-case.js](../../../scripts/eslint-rules/heading-title-case.js).
-
-It uses `remark().parse()` inside a `Program()` visitor to extract Markdown heading nodes from the raw source text. ESLint’s native parser does not support `.md` files, so the rule relies on a no-op parser defined at [/scripts/eslint-rules/noop-parser.js](../../../scripts/eslint-rules/noop-parser.js) to satisfy ESLint’s parser requirement.
-
-The rule inspects each heading and compares its raw text (excluding inline code and formatting) against the expected Title Case version using `title-case`. If the heading differs, it reports a lint error with the original text.
+- Which defaults are overridden, and the measurement behind each.
+- Which rules are advisory rather than enforced, and why.
+- Which ESLint capability was not carried over — JSDoc rules, type-aware rules, and Markdown heading checks.
 
 ---
 
 ## 🚫 Exceptions & Overrides
 
-- Temporary overrides must be justified in a comment above the rule disable line.
-- Use `// eslint-disable-next-line rule-name -- reason` format.
-- Overrides are reviewed during PRs and should be removed as soon as possible.
+- Suppress a rule inline only with a stated reason, using `// biome-ignore lint/<rule>: <reason>`.
+- The reason must be on the **same line** as the directive, and the directive must **immediately precede** the reported node.
+- Overrides are reviewed during MRs and should be removed as soon as the underlying issue is fixed.
+- Path-scoped exceptions belong in `overrides` in `biome.json`, and require the same justification.
 
 ---
 
 ## 🧭 Stewardship Callout
 
-- This table is the **single source of truth**.
-- Update this table **in the same commit** as any `.eslintrc` or `tsconfig.json` changes.
-- Include rule names in commit messages when adding/removing rules.
+- [`biome.json`](../../../biome.json) is the source of truth for rules; this document is the source of truth for **policy**.
+- Update [Biome Config](config/biome.md) **in the same commit** as any `biome.json` change.
+- Include rule names in commit messages when adding, removing or re-tiering rules.

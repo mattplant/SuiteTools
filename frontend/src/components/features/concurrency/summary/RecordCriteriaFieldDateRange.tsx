@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import type { UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import type { CriteriaFields } from './types';
-import { Datepicker } from 'flowbite-react';
+import { useState } from "react";
+import type { UseFormRegister, UseFormSetValue } from "react-hook-form";
+import type { CriteriaFields } from "./types";
+import { Datepicker } from "flowbite-react";
 
 interface RecordCriteriaFieldDateRangeProps {
   register: UseFormRegister<CriteriaFields>;
@@ -11,9 +11,7 @@ interface RecordCriteriaFieldDateRangeProps {
 export function RecordCriteriaFieldDateRange({
   setValue,
   defaultValues,
-}: RecordCriteriaFieldDateRangeProps & {
-  defaultValues?: Partial<CriteriaFields>;
-}) {
+}: RecordCriteriaFieldDateRangeProps & { defaultValues?: Partial<CriteriaFields> }) {
   const [startDate, setStartDate] = useState<Date | null>(
     defaultValues?.startDate ? new Date(defaultValues.startDate) : null,
   );
@@ -32,7 +30,7 @@ export function RecordCriteriaFieldDateRange({
           maxDate={new Date()}
           onChange={(date: Date | null) => {
             setStartDate(date);
-            setValue('startDate', date ? date : undefined);
+            setValue("startDate", date ? date : undefined);
           }}
         />
       </div>
@@ -47,7 +45,7 @@ export function RecordCriteriaFieldDateRange({
           maxDate={new Date()}
           onChange={(date: Date | null) => {
             setEndDate(date);
-            setValue('endDate', date ? date : undefined);
+            setValue("endDate", date ? date : undefined);
           }}
         />
       </div>

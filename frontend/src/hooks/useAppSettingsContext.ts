@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import { AppSettingsContext } from '../components/shared/context/AppSettingsContext';
+import { useContext } from "react";
+import { AppSettingsContext } from "../components/shared/context/AppSettingsContext";
 
 /**
  * Custom hook to access the AppSettingsContext.

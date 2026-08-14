@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../../shared/criteria/types';
-import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
-import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
-import { SearchCriteriaOwners } from '../../shared/criteria/SearchCriteriaOwners';
-import { SearchCriteriaRoles } from '../../shared/criteria/SearchCriteriaRoles';
+import type { CriteriaFields } from "../../shared/criteria/types";
+import { RecordCriteriaForm } from "../../shared/criteria/RecordCriteriaForm";
+import { SearchCriteriaActive } from "../../shared/criteria/SearchCriteriaActive";
+import { SearchCriteriaOwners } from "../../shared/criteria/SearchCriteriaOwners";
+import { SearchCriteriaRoles } from "../../shared/criteria/SearchCriteriaRoles";
 
 interface Props {
   defaultCriteria: CriteriaFields;
@@ -13,11 +13,7 @@ interface Props {
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   return (
-    <RecordCriteriaForm
-      defaultCriteria={defaultCriteria}
-      setCriteria={setCriteria}
-      submitLabel="Get Users"
-    >
+    <RecordCriteriaForm defaultCriteria={defaultCriteria} setCriteria={setCriteria} submitLabel="Get Users">
       {({ register }) => (
         <>
           <SearchCriteriaActive register={register} />

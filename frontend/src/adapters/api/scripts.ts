@@ -10,11 +10,11 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, scriptsOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Scripts } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
-import { adaptScript } from './script';
+import { makeRequestResponseSchema, scriptsOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Scripts } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
+import { adaptScript } from "./script";
 
 const scriptsRequestResponseSchema = makeRequestResponseSchema(scriptsOrNotFoundSchema);
 
@@ -25,7 +25,10 @@ const scriptsRequestResponseSchema = makeRequestResponseSchema(scriptsOrNotFound
 export const getScripts = makeListAdapter<
   Scripts[number],
   CriteriaFields,
-  'active' | 'versions' | 'scriptTypes' | 'scriptNames' | 'owners' | 'files'
->('scripts', scriptsRequestResponseSchema, ['active', 'versions', 'scriptTypes', 'scriptNames', 'owners', 'files'] as const, {
-  adaptItem: adaptScript,
-});
+  "active" | "versions" | "scriptTypes" | "scriptNames" | "owners" | "files"
+>(
+  "scripts",
+  scriptsRequestResponseSchema,
+  ["active", "versions", "scriptTypes", "scriptNames", "owners", "files"] as const,
+  { adaptItem: adaptScript },
+);

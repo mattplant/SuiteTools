@@ -7,10 +7,10 @@
  * @NApiVersion 2.1
  */
 
-import * as log from 'N/log';
-import * as record from 'N/record';
-import * as query from 'N/query';
-import type { SuiteToolsCommon } from '../SuiteToolsCommon';
+import * as log from "N/log";
+import * as record from "N/record";
+import * as query from "N/query";
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite Record Library
@@ -37,22 +37,17 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    */
   public createCustomRecordEntry(recordType: string, values: object): number {
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecordEntry() initiated',
+      title: "SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecordEntry() initiated",
       details: { recordType: recordType, values: values },
     });
     let recordId = 0;
 
     try {
-      const recordObj = record.create({
-        type: recordType,
-      });
+      const recordObj = record.create({ type: recordType });
       for (const field in values) {
         recordObj.setValue({ fieldId: field, value: values[field] });
       }
-      recordId = recordObj.save({
-        enableSourcing: false,
-        ignoreMandatoryFields: true,
-      });
+      recordId = recordObj.save({ enableSourcing: false, ignoreMandatoryFields: true });
     } catch (e) {
       log.error({
         title: `SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecordEntry - Error on ${recordType}`,
@@ -72,15 +67,12 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    */
   public getCustomRecord(recordType: string, recordId: number): record.Record | undefined {
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecord() initiated',
+      title: "SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecord() initiated",
       details: { recordType: recordType, recordId: recordId },
     });
 
     try {
-      const recordObj = record.load({
-        type: recordType,
-        id: recordId,
-      });
+      const recordObj = record.load({ type: recordType, id: recordId });
 
       return recordObj;
     } catch (e) {
@@ -101,23 +93,17 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    */
   public updateCustomRecordEntry(recordType: string, recordId: string, values: object): boolean {
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteRecord:updateCustomRecord() initiated',
+      title: "SuiteToolsCommonLibraryNetSuiteRecord:updateCustomRecord() initiated",
       details: { recordType: recordType, recordId: recordId, values: values },
     });
     let success = false;
 
     try {
-      const recordObj = record.load({
-        type: recordType,
-        id: recordId,
-      });
+      const recordObj = record.load({ type: recordType, id: recordId });
       for (const field in values) {
         recordObj.setValue({ fieldId: field, value: values[field] });
       }
-      recordObj.save({
-        enableSourcing: false,
-        ignoreMandatoryFields: true,
-      });
+      recordObj.save({ enableSourcing: false, ignoreMandatoryFields: true });
       success = true;
     } catch (e) {
       log.error({
@@ -142,7 +128,7 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
       for (let i = 0; i < queryResults.length; i++) {
         const recordId = queryResults[i].id as string;
         log.debug({
-          title: 'SuiteToolsCommonLibraryNetSuiteRecord:clearCustomRecord() deleting record',
+          title: "SuiteToolsCommonLibraryNetSuiteRecord:clearCustomRecord() deleting record",
           details: { recordType: recordType, recordID: recordId },
         });
         record.delete({ type: recordType, id: recordId });
@@ -176,18 +162,18 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
       `;
     const resultSet = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecordInternalId() - resultSet',
+      title: "SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecordInternalId() - resultSet",
       details: resultSet,
     });
     if (resultSet.length > 0) {
       const internalId = resultSet[0].internalid;
-      result = typeof internalId === 'number' ? internalId : Number(internalId);
+      result = typeof internalId === "number" ? internalId : Number(internalId);
       if (!Number.isFinite(result)) {
         result = 0;
       }
     }
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecordInternalId() returning',
+      title: "SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecordInternalId() returning",
       details: result,
     });
 

@@ -55,8 +55,7 @@ const NormalizedSoapLogSchema = SoapLogSchema.transform((data) => {
 
 const SoapLogBundle = zHelpers.zCreateBundle(SoapLogSchema, {
   meta: { entity: "SoapLog", plural: "SoapLogs" },
-  normalize: (data: z.output<typeof SoapLogSchema>) =>
-    NormalizedSoapLogSchema.parse(data),
+  normalize: (data: z.output<typeof SoapLogSchema>) => NormalizedSoapLogSchema.parse(data),
 });
 
 export { SoapLogBundle };
@@ -66,7 +65,5 @@ export type SoapLogs = typeof SoapLogBundle.types.array;
 export const soapLogOrNotFoundSchema = orNotFoundSchema(SoapLogSchema);
 export type SoapLogOrNotFound = OrNotFound<SoapLog>;
 
-export const soapLogsOrNotFoundSchema = orNotFoundSchema(
-  SoapLogBundle.schema.array()
-);
+export const soapLogsOrNotFoundSchema = orNotFoundSchema(SoapLogBundle.schema.array());
 export type SoapLogsOrNotFound = OrNotFound<SoapLogs>;

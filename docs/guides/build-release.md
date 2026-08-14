@@ -57,7 +57,7 @@ Defined in [`.gitlab-ci.yml`](../../.gitlab-ci.yml). Runs on **merge request** e
 | Job | Command | Merge-blocking? | Notes |
 | --- | --- | --- | --- |
 | `typecheck` | `yarn typecheck` | Yes | Shared types emit, then frontend + backend `tsc --noEmit` |
-| `lint` | `yarn lint` | Yes | ESLint across workspaces (`--max-warnings 0`) |
+| `lint` | `yarn lint` | Yes | Biome check (lint + format) across all workspaces |
 | `test` | `yarn test` | Yes | Workspace Vitest (shared/frontend) + SuiteCloud Jest (backend) |
 
 - **Image / toolchain** — `node:24-bookworm` (matches [`.node-version`](../../.node-version)); Yarn **4.9.2** via Corepack / `packageManager` and the checked-in `.yarn/releases` binary; Yarn PnP with `.yarn/cache` cached on `yarn.lock`.
@@ -74,7 +74,7 @@ yarn lint
 yarn test
 ```
 
-Note: Yarn 4 does **not** run npm-style `pretest` / `prelint` hooks. Root `yarn test` builds `shared/` first so backend Jest can resolve `@suiteworks/suitetools-shared/*` from `shared/dist` on a clean checkout. Root `yarn lint` emits shared types first so typed ESLint rules do not see unresolved `error` types when `shared/dist` is missing.
+Note: Yarn 4 does **not** run npm-style `pretest` / `prelint` hooks. Root `yarn test` builds `shared/` first so backend Jest can resolve `@suiteworks/suitetools-shared/*` from `shared/dist` on a clean checkout. Root `yarn lint` no longer needs to emit shared types first: Biome does not use type information, so it has no equivalent of ESLint's typed rules.
 
 ---
 

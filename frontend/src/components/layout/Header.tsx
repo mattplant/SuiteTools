@@ -8,8 +8,8 @@ import {
   NavbarCollapse,
   NavbarLink,
   NavbarToggle,
-} from 'flowbite-react';
-import { useAppSettingsContext } from '../../hooks/useAppSettingsContext';
+} from "flowbite-react";
+import { useAppSettingsContext } from "../../hooks/useAppSettingsContext";
 
 export default function Header() {
   const { settings } = useAppSettingsContext();

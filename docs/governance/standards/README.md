@@ -44,7 +44,7 @@ Each standard implements the principles in [SuiteTools Documentation as Architec
 
 ### 📂 Configuration Standards Subdirectory
 
-- [ESLint Config](config/eslint.md) — Composition and application of the `eslint.config.cjs` file.
+- [Biome Config](config/biome.md) — Annotated `biome.json`, covering lint and format for all workspaces.
 
 ---
 

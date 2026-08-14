@@ -30,14 +30,10 @@ describe("makeEntityLoader", () => {
 
   it("rejects non-positive ids when requirePositiveId is set", async () => {
     const fetchById = vi.fn();
-    const loader = makeEntityLoader("job", "Job", fetchById, {
-      requirePositiveId: true,
-    });
+    const loader = makeEntityLoader("job", "Job", fetchById, { requirePositiveId: true });
 
     await expect(loader(loaderArgs("0"))).rejects.toBeInstanceOf(NotFoundError);
-    await expect(loader(loaderArgs("undefined"))).rejects.toBeInstanceOf(
-      NotFoundError,
-    );
+    await expect(loader(loaderArgs("undefined"))).rejects.toBeInstanceOf(NotFoundError);
     expect(fetchById).not.toHaveBeenCalled();
   });
 });

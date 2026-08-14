@@ -25,10 +25,7 @@ import { isNotFound } from "../../../typeGuards/isNotFound.guard";
  * const Extended = z.object({ foo: z.string() });
  * type ExtendedType = z.infer<MergeShapes<typeof base.shape, typeof Extended.shape>>;
  */
-export type MergeShapes<
-  A extends z.ZodRawShape,
-  B extends z.ZodRawShape,
-> = z.ZodObject<A & B>;
+export type MergeShapes<A extends z.ZodRawShape, B extends z.ZodRawShape> = z.ZodObject<A & B>;
 
 /* -------------------------------------------------------------------------- */
 /* orNotFound                                                                 */
@@ -40,12 +37,8 @@ export type MergeShapes<
  * The inferred type of the returned schema is automatically
  * `z.infer<TSchema> | NotFound`.
  */
-export function orNotFoundSchema<TSchema extends z.ZodTypeAny>(
-  entitySchema: TSchema
-) {
-  return entitySchema.or(NotFoundBundle.schema) as z.ZodUnion<
-    [TSchema, typeof NotFoundBundle.schema]
-  > & {
+export function orNotFoundSchema<TSchema extends z.ZodTypeAny>(entitySchema: TSchema) {
+  return entitySchema.or(NotFoundBundle.schema) as z.ZodUnion<[TSchema, typeof NotFoundBundle.schema]> & {
     _output: z.infer<TSchema> | NotFound;
     _input: z.input<TSchema> | NotFound;
   };

@@ -10,10 +10,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, scriptLogsOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { ScriptLogs } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, scriptLogsOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { ScriptLogs } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
 
 const scriptLogsRequestResponseSchema = makeRequestResponseSchema(scriptLogsOrNotFoundSchema);
 
@@ -24,31 +24,27 @@ const scriptLogsRequestResponseSchema = makeRequestResponseSchema(scriptLogsOrNo
 export const getScriptLogs = makeListAdapter<
   ScriptLogs[number],
   CriteriaFields,
-  | 'rows'
-  | 'levels'
-  | 'scriptTypes'
-  | 'scriptNames'
-  | 'owners'
-  | 'dateCreated'
-  | 'title'
-  | 'detail'
-  | 'timeMode'
-  | 'customDateTime'
-  | 'customDuration'
->(
-  'scriptLogs',
-  scriptLogsRequestResponseSchema,
-  [
-    'rows',
-    'levels',
-    'scriptTypes',
-    'scriptNames',
-    'owners',
-    'dateCreated',
-    'title',
-    'detail',
-    'timeMode',
-    'customDateTime',
-    'customDuration',
-  ] as const,
-);
+  | "rows"
+  | "levels"
+  | "scriptTypes"
+  | "scriptNames"
+  | "owners"
+  | "dateCreated"
+  | "title"
+  | "detail"
+  | "timeMode"
+  | "customDateTime"
+  | "customDuration"
+>("scriptLogs", scriptLogsRequestResponseSchema, [
+  "rows",
+  "levels",
+  "scriptTypes",
+  "scriptNames",
+  "owners",
+  "dateCreated",
+  "title",
+  "detail",
+  "timeMode",
+  "customDateTime",
+  "customDuration",
+] as const);

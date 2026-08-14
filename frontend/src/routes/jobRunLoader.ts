@@ -8,10 +8,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getJobRun } from '../adapters/api/jobRun';
-import { makeEntityLoader } from './loaderUtils';
+import { getJobRun } from "../adapters/api/jobRun";
+import { makeEntityLoader } from "./loaderUtils";
 
 /** Loader for the `/jobRun/:id` route. */
-export const jobRunLoader = makeEntityLoader('jobRun', 'Job run', getJobRun);
+export const jobRunLoader = makeEntityLoader("jobRun", "Job run", getJobRun);
 
 export type JobRunLoaderData = Awaited<ReturnType<typeof jobRunLoader>>;

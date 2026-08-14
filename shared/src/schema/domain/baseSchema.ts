@@ -9,9 +9,5 @@
  */
 
 export interface BaseSchema<T> {
-  parse: (input: unknown) => {
-    data: T;
-    status?: number;
-    message?: string;
-  };
+  parse: (input: unknown) => { data: T; status?: number; message?: string };
 }

@@ -15,9 +15,5 @@ import type { NotFound } from "../domain/notFound";
  * Runtime check for a NotFound payload.
  */
 export function isNotFound(data: unknown): data is NotFound {
-  return (
-    typeof data === "object" &&
-    data !== null &&
-    (data as Record<string, unknown>).code === "NOT_FOUND"
-  );
+  return typeof data === "object" && data !== null && (data as Record<string, unknown>).code === "NOT_FOUND";
 }

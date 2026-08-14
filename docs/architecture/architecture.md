@@ -61,8 +61,7 @@ SuiteTools enforces trust and long-term maintainability through typed models, sc
 - Suite-wide
   - **TypeScript** as the language of record.
   - **Yarn** for monorepo management, dependency resolution, and workspace orchestration.
-  - **ESLint** for linting with flat config for suite-wide and workspace-specific rules.
-  - **Prettier** for consistent code formatting.
+  - **Biome** for linting and formatting, from a single suite-wide configuration.
   - **Git** version control, with a focus on clear commit messages onto issue/feature branches.
   - **Github** for code hosting, issue tracking
   - **VS Code** as the primary development environment with recommended extensions and settings.
@@ -105,7 +104,7 @@ These patterns and enforcement strategies apply across all workspaces to preserv
 
 Linting is wired into our suite-wide tooling strategy:
 
-- **Flat ESLint configs** support layered rule composition and override ergonomics.
+- **A single Biome config** applies uniformly to every workspace, with path-scoped `overrides` only where a rule is genuinely wrong for a location.
 - **Workspace-specific extensions** allow domain-aware enforcement where needed.
 - **Custom rules** codify architecture: blocking cross-layer imports, ensuring validation symmetry, and guiding type usage.
 

@@ -33,12 +33,9 @@ const schema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const RoleBundle: ZEntityBundle<typeof schema, "Role"> = zHelpers.zCreateBundle(
-  schema,
-  {
-    meta: { entity: "Role", plural: "Roles" },
-  }
-);
+const RoleBundle: ZEntityBundle<typeof schema, "Role"> = zHelpers.zCreateBundle(schema, {
+  meta: { entity: "Role", plural: "Roles" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -53,7 +50,5 @@ export const roleOrNotFoundSchema = orNotFoundSchema(schema);
 export type RoleOrNotFound = OrNotFound<Role>;
 
 // Convenience union for multiple entities
-export const rolesOrNotFoundSchema = orNotFoundSchema(
-  RoleBundle.schema.array()
-);
+export const rolesOrNotFoundSchema = orNotFoundSchema(RoleBundle.schema.array());
 export type RolesOrNotFound = OrNotFound<Roles>;

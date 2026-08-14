@@ -7,7 +7,7 @@
  * @NApiVersion 2.1
  */
 
-import * as log from 'N/log';
+import * as log from "N/log";
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {
@@ -77,7 +77,7 @@ export class SuiteToolsCommonSettings {
    * Get Settings
    */
   public getSettings(): boolean {
-    log.debug({ title: `SuiteToolsCommonSettings:getSettings() initiated`, details: '' });
+    log.debug({ title: `SuiteToolsCommonSettings:getSettings() initiated`, details: "" });
     let settingsFound = false;
 
     const sql = `
@@ -102,7 +102,7 @@ export class SuiteToolsCommonSettings {
       this._recordId = sqlResults[0].id;
       this._cssUrl = sqlResults[0].cssurl;
       this._jsUrl = sqlResults[0].jsurl;
-      this._devMode = sqlResults[0].devmode === 'T' ? true : false;
+      this._devMode = sqlResults[0].devmode === "T" ? true : false;
       this._notifyAuthor = sqlResults[0].notifyauthor;
       this._notifyEmail = sqlResults[0].notifyemail;
       this._lastLogins = this.parseLastLogins(sqlResults[0].lastlogins);
@@ -114,23 +114,23 @@ export class SuiteToolsCommonSettings {
   }
 
   private parseLastLogins(raw: unknown): LastLogins | null {
-    if (raw == null || raw === '') {
+    if (raw == null || raw === "") {
       return null;
     }
     try {
-      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-      if (!parsed || typeof parsed !== 'object') {
+      const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+      if (!parsed || typeof parsed !== "object") {
         return null;
       }
       return parsed as LastLogins;
     } catch (e) {
-      log.error({ title: 'SuiteToolsCommonSettings:parseLastLogins() failed', details: e });
+      log.error({ title: "SuiteToolsCommonSettings:parseLastLogins() failed", details: e });
       return null;
     }
   }
 
   public initializeApp(): void {
-    log.audit({ title: `SuiteToolsCommonSettings:initializeApp() initiated`, details: '' });
+    log.audit({ title: `SuiteToolsCommonSettings:initializeApp() initiated`, details: "" });
 
     const cssUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile);
     const jsUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile);

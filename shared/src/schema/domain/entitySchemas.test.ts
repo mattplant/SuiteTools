@@ -13,22 +13,12 @@ import { SettingsSchema } from "./settings";
 
 describe("requestResponse envelope", () => {
   it("accepts a valid success envelope", () => {
-    const parsed = requestResponse.parse({
-      status: 200,
-      data: { ok: true },
-      message: "ok",
-    });
-    expect(parsed).toEqual({
-      status: 200,
-      data: { ok: true },
-      message: "ok",
-    });
+    const parsed = requestResponse.parse({ status: 200, data: { ok: true }, message: "ok" });
+    expect(parsed).toEqual({ status: 200, data: { ok: true }, message: "ok" });
   });
 
   it("rejects invalid status codes", () => {
-    expect(() =>
-      requestResponse.parse({ status: 99, data: null }),
-    ).toThrow();
+    expect(() => requestResponse.parse({ status: 99, data: null })).toThrow();
   });
 });
 
@@ -44,12 +34,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         isSupportRole: "F",
         isWebServiceOnlyRole: "F",
       }),
-    ).toMatchObject({
-      id: 3,
-      isInactive: false,
-      name: "Administrator",
-      centerType: "ACCOUNTCENTER",
-    });
+    ).toMatchObject({ id: 3, isInactive: false, name: "Administrator", centerType: "ACCOUNTCENTER" });
   });
 
   it("coerces null centerType to empty string", () => {
@@ -63,10 +48,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         isSupportRole: "F",
         isWebServiceOnlyRole: "F",
       }),
-    ).toMatchObject({
-      id: 4,
-      centerType: "",
-    });
+    ).toMatchObject({ id: 4, centerType: "" });
   });
 
   it("parses a valid job", () => {
@@ -79,13 +61,7 @@ describe("RoleBundle / JobBundle schemas", () => {
       scheduled: true,
       notify: false,
     });
-    expect(job).toMatchObject({
-      id: 9,
-      name: "Cleanup",
-      isInactive: false,
-      scheduled: true,
-      notify: false,
-    });
+    expect(job).toMatchObject({ id: 9, name: "Cleanup", isInactive: false, scheduled: true, notify: false });
   });
 
   it("coerces Job isInactive T/F flags", () => {
@@ -99,12 +75,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         scheduled: "F",
         notify: "F",
       }),
-    ).toMatchObject({
-      id: 10,
-      isInactive: true,
-      scheduled: false,
-      notify: false,
-    });
+    ).toMatchObject({ id: 10, isInactive: true, scheduled: false, notify: false });
   });
 
   it("parses a valid script", () => {
@@ -142,12 +113,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         title: "Failed",
         detail: "boom",
       }),
-    ).toMatchObject({
-      id: 100,
-      scriptType: "SCHEDULED",
-      scriptName: "Nightly Cleanup (12)",
-      title: "Failed",
-    });
+    ).toMatchObject({ id: 100, scriptType: "SCHEDULED", scriptName: "Nightly Cleanup (12)", title: "Failed" });
   });
 
   it("parses a valid file", () => {
@@ -163,13 +129,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         description: null,
         url: null,
       }),
-    ).toMatchObject({
-      id: 5,
-      fileTypeName: "PLAINTEXT",
-      fileSize: 128,
-      description: "",
-      url: "",
-    });
+    ).toMatchObject({ id: 5, fileTypeName: "PLAINTEXT", fileSize: 128, description: "", url: "" });
   });
 
   it("coerces null File SuiteQL string fields to empty string", () => {
@@ -185,15 +145,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         description: null,
         url: null,
       }),
-    ).toMatchObject({
-      id: 6,
-      folder: 2,
-      fileTypeName: "",
-      name: "",
-      fileSize: 256,
-      description: "",
-      url: "",
-    });
+    ).toMatchObject({ id: 6, folder: 2, fileTypeName: "", name: "", fileSize: 256, description: "", url: "" });
   });
 
   it("coerces null ScriptLog SuiteQL string fields to empty string", () => {
@@ -208,15 +160,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         title: null,
         detail: null,
       }),
-    ).toMatchObject({
-      id: 101,
-      type: "ERROR",
-      scriptType: "",
-      owner: "",
-      scriptName: "",
-      title: "",
-      detail: null,
-    });
+    ).toMatchObject({ id: 101, type: "ERROR", scriptType: "", owner: "", scriptName: "", title: "", detail: null });
   });
 
   it("parses a valid login", () => {
@@ -287,12 +231,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         completed: "T",
         results: "ok",
       }),
-    ).toMatchObject({
-      id: 9,
-      jobId: 3,
-      jobName: "Cleanup",
-      completed: true,
-    });
+    ).toMatchObject({ id: 9, jobId: 3, jobName: "Cleanup", completed: true });
   });
 
   it("coerces null JobRun jobName on camelCase wire keys", () => {
@@ -305,12 +244,7 @@ describe("RoleBundle / JobBundle schemas", () => {
         completed: "F",
         results: null,
       }),
-    ).toMatchObject({
-      id: 10,
-      jobId: 4,
-      jobName: "",
-      completed: false,
-    });
+    ).toMatchObject({ id: 10, jobId: 4, jobName: "", completed: false });
   });
 
   it("rejects legacy flat JobRun keys", () => {

@@ -1,13 +1,11 @@
-import { useMemo, useRef } from 'react';
-import { DataGrid, type DataGridHandle } from 'react-data-grid';
-import 'react-data-grid/lib/styles.css';
-import { Export } from '../../../shared/results/Export';
-import type { SummaryRow } from '../../../shared/results/types';
-import type { ConcurrencySummaryData } from './types';
+import { useMemo, useRef } from "react";
+import { DataGrid, type DataGridHandle } from "react-data-grid";
+import "react-data-grid/lib/styles.css";
+import { Export } from "../../../shared/results/Export";
+import type { SummaryRow } from "../../../shared/results/types";
+import type { ConcurrencySummaryData } from "./types";
 
-type Props = {
-  data: ConcurrencySummaryData | undefined;
-};
+type Props = { data: ConcurrencySummaryData | undefined };
 
 export function ConcurrencySummaryViolations({ data }: Props) {
   const gridRef = useRef<DataGridHandle>(null);
@@ -15,20 +13,12 @@ export function ConcurrencySummaryViolations({ data }: Props) {
     if (!data) return [];
     const violationData = data.violations.series.violation;
     return Object.keys(violationData).map((key) => {
-      return {
-        key: Number(key),
-        value: violationData[Number(key)],
-      };
+      return { key: Number(key), value: violationData[Number(key)] };
     });
   }, [data]);
 
   const summaryRows = useMemo((): readonly SummaryRow[] => {
-    return [
-      {
-        id: 'total_0',
-        totalCount: violations.length,
-      },
-    ];
+    return [{ id: "total_0", totalCount: violations.length }];
   }, [violations]);
 
   if (!data) {
@@ -37,15 +27,15 @@ export function ConcurrencySummaryViolations({ data }: Props) {
 
   const columns = [
     {
-      key: 'key',
-      name: 'Date',
+      key: "key",
+      name: "Date",
       renderSummaryCell() {
         return <strong>Total</strong>;
       },
     },
     {
-      key: 'value',
-      name: 'Error Rate %',
+      key: "value",
+      name: "Error Rate %",
       renderSummaryCell({ row }: { row: SummaryRow }) {
         return `${row.totalCount} records`;
       },
@@ -58,15 +48,12 @@ export function ConcurrencySummaryViolations({ data }: Props) {
       <p className="text-sm text-gray-500">Below are the violations for the selected date range.</p>
       <p className="text-sm text-gray-500">Click on a row to view the violation details.</p>
       <Export gridRef={gridRef} />
-      <div style={{ height: '600px', overflowY: 'auto' }}>
+      <div style={{ height: "600px", overflowY: "auto" }}>
         <DataGrid
           ref={gridRef}
           columns={columns}
           rows={violations}
-          defaultColumnOptions={{
-            sortable: true,
-            resizable: true,
-          }}
+          defaultColumnOptions={{ sortable: true, resizable: true }}
           bottomSummaryRows={summaryRows}
           // onCellClick={(cell) => {
           //   setId(cell.row.id);

@@ -41,7 +41,7 @@ Every source file should begin with a structured JSDoc block:
 
 ## ⚙️ Lint & Enforcement
 
-- JSDoc blocks are validated via ESLint rules.
+- JSDoc blocks are a documented convention upheld in review. They were previously validated by `eslint-plugin-jsdoc`; Biome has no JSDoc rules, so this is no longer machine-enforced.
 - Missing or malformed tags will fail lint checks.
 - SPDX identifiers are required for every file.
 - Attribution tags are required when code is adapted or inspired by external sources.
@@ -69,7 +69,7 @@ Every source file should begin with a structured JSDoc block:
 ## 📋 Stewardship Notes
 
 - Treat JSDoc as part of SuiteTools’ **public contract** — changes to tags or structure should be reflected in the changelog.
-- Keep this standard in sync with ESLint rules in `/scripts/eslint-rules/`.
+- Keep this standard in sync with [Linting Standards](../governance/standards/linting-standards.md).
 - Ensure new contributors understand that JSDoc is **not optional commentary** but enforceable metadata.
 - Cross‑link updates here with [ATTRIBUTION.md](../../ATTRIBUTION.md) and [STYLE.md](../governance/STYLE.md) to avoid drift.
 

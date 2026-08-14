@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../../shared/criteria/types';
-import { getSoapLog } from '../../../adapters/api/soapLog';
-import { getSoapLogs } from '../../../adapters/api/soapLogs';
-import { Results } from '../../shared/results/Results';
-import { ResultsTypes } from '../../shared/results/types';
-import type { SoapLogs } from '@suiteworks/suitetools-shared';
-import { useEntityList } from '../../../hooks/useEntityList';
+import type { CriteriaFields } from "../../shared/criteria/types";
+import { getSoapLog } from "../../../adapters/api/soapLog";
+import { getSoapLogs } from "../../../adapters/api/soapLogs";
+import { Results } from "../../shared/results/Results";
+import { ResultsTypes } from "../../shared/results/types";
+import type { SoapLogs } from "@suiteworks/suitetools-shared";
+import { useEntityList } from "../../../hooks/useEntityList";
 
-type Props = {
-  integrations: string[];
-};
+type Props = { integrations: string[] };
 
 /**
  * Nested SOAP logs list for an integration detail page.
@@ -20,7 +18,7 @@ type Props = {
  */
 export function IntegrationSoapLogs({ integrations }: Props): React.ReactElement {
   // Parent may pass a fresh array each render — key off joined ids.
-  const integrationsKey = integrations.join(',');
+  const integrationsKey = integrations.join(",");
   const { results } = useEntityList<SoapLogs[number], CriteriaFields>({
     defaultCriteria: { integrations },
     fetchList: () => getSoapLogs({ integrations }),

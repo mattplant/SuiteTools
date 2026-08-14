@@ -4,12 +4,12 @@
  * Time-mode criteria: relative windows from now, or a custom end datetime + lookback duration.
  */
 
-import React from 'react';
-import type { UseFormRegister, Control, UseFormSetValue } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
-import type { CriteriaFields } from './types';
-import { SearchCriteriaDateCreated } from './SearchCriteriaDateCreated';
-import { SearchCriteriaDateTimePicker } from './SearchCriteriaDateTimePicker';
+import React from "react";
+import type { UseFormRegister, Control, UseFormSetValue } from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import type { CriteriaFields } from "./types";
+import { SearchCriteriaDateCreated } from "./SearchCriteriaDateCreated";
+import { SearchCriteriaDateTimePicker } from "./SearchCriteriaDateTimePicker";
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
@@ -22,7 +22,7 @@ interface Props {
 
 /** Format a Date as SuiteQL `TO_DATE(..., 'YYYY-MM-DD HH24:MI:SS')` input (local wall clock). */
 function formatSuiteQlDateTime(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
+  const pad = (n: number) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
@@ -33,30 +33,18 @@ export function SearchCriteriaAdvancedTimePicker({
   dateDefaultValue,
   timeDefaultValue,
 }: Props) {
-  const timeMode = useWatch({
-    control,
-    name: 'timeMode',
-    defaultValue: 'now',
-  });
-  const customDate = useWatch({
-    control,
-    name: 'advanced-date',
-    defaultValue: dateDefaultValue,
-  });
-  const customTime = useWatch({
-    control,
-    name: 'advanced-time',
-    defaultValue: timeDefaultValue,
-  });
+  const timeMode = useWatch({ control, name: "timeMode", defaultValue: "now" });
+  const customDate = useWatch({ control, name: "advanced-date", defaultValue: dateDefaultValue });
+  const customTime = useWatch({ control, name: "advanced-time", defaultValue: timeDefaultValue });
 
   React.useEffect(() => {
-    if (timeMode !== 'custom' || !customDate || !customTime) {
+    if (timeMode !== "custom" || !customDate || !customTime) {
       return;
     }
-    const [hours, minutes, seconds] = String(customTime).split(':').map(Number);
+    const [hours, minutes, seconds] = String(customTime).split(":").map(Number);
     const combinedDate = new Date(customDate);
     combinedDate.setHours(hours || 0, minutes || 0, seconds || 0, 0);
-    setValue('customDateTime', formatSuiteQlDateTime(combinedDate), { shouldDirty: true });
+    setValue("customDateTime", formatSuiteQlDateTime(combinedDate), { shouldDirty: true });
   }, [timeMode, customDate, customTime, setValue]);
 
   return (
@@ -67,13 +55,13 @@ export function SearchCriteriaAdvancedTimePicker({
           size={2}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           id="timeMode"
-          {...register('timeMode')}
+          {...register("timeMode")}
         >
           <option value="now">Now</option>
           <option value="custom">Custom</option>
         </select>
       </div>
-      {timeMode === 'custom' ? (
+      {timeMode === "custom" ? (
         <>
           <SearchCriteriaDateTimePicker
             control={control}
@@ -90,7 +78,7 @@ export function SearchCriteriaAdvancedTimePicker({
               size={6}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               id="customDuration"
-              {...register('customDuration')}
+              {...register("customDuration")}
             >
               <option value="1">Minute</option>
               <option value="15">15 min</option>

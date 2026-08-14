@@ -23,19 +23,11 @@ export class InvalidParameterError extends SuiteError {
    * throw new InvalidParameterError("endpoint", "invalid_endpoint", "Endpoint not recognized");
    * throw new InvalidParameterError("id", undefined, "Missing required parameter");
    */
-  constructor(
-    parameterName: string,
-    value?: unknown,
-    reason?: string,
-    cause?: unknown
-  ) {
+  constructor(parameterName: string, value?: unknown, reason?: string, cause?: unknown) {
     const message = reason
       ? `Invalid parameter: ${parameterName}=${String(value)} - ${reason}`
       : `Invalid parameter: ${parameterName}=${String(value)}`;
 
-    super(message, {
-      context: { parameterName, value, reason },
-      cause,
-    });
+    super(message, { context: { parameterName, value, reason }, cause });
   }
 }

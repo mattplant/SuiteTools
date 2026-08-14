@@ -8,10 +8,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getSoapLog } from '../adapters/api/soapLog';
-import { makeEntityLoader } from './loaderUtils';
+import { getSoapLog } from "../adapters/api/soapLog";
+import { makeEntityLoader } from "./loaderUtils";
 
 /** Loader for the `/soapLog/:id` route. */
-export const soapLogLoader = makeEntityLoader('soapLog', 'SOAP log', getSoapLog);
+export const soapLogLoader = makeEntityLoader("soapLog", "SOAP log", getSoapLog);
 
 export type SoapLogLoaderData = Awaited<ReturnType<typeof soapLogLoader>>;

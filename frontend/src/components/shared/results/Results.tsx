@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect, useState } from 'react';
-import { Modal } from 'flowbite-react';
-import { useLocation } from 'react-router-dom';
-import { DynamicResultsRenderer } from './DynamicResultsRenderer';
-import type { NotFound } from '@suiteworks/suitetools-shared';
-import { handleError, isNotFound, NotFoundError } from '@suiteworks/suitetools-shared';
-import { ResultsTypes } from './types';
-import type { ModalResult } from './types';
-import { ResultsModal } from './ResultsModal';
-import { useErrorBoundaryTrigger } from '../../../hooks/useErrorBoundaryTrigger';
+import { useEffect, useState } from "react";
+import { Modal } from "flowbite-react";
+import { useLocation } from "react-router-dom";
+import { DynamicResultsRenderer } from "./DynamicResultsRenderer";
+import type { NotFound } from "@suiteworks/suitetools-shared";
+import { handleError, isNotFound, NotFoundError } from "@suiteworks/suitetools-shared";
+import { ResultsTypes } from "./types";
+import type { ModalResult } from "./types";
+import { ResultsModal } from "./ResultsModal";
+import { useErrorBoundaryTrigger } from "../../../hooks/useErrorBoundaryTrigger";
 
 type Props = {
   type: ResultsTypes;
@@ -35,20 +35,20 @@ export function Results({ type, lines, getModalData }: Props): React.JSX.Element
 
   // determine modal title based on modal type
   const modalTitles: Record<ResultsTypes, string> = {
-    [ResultsTypes.FILE]: 'File',
-    [ResultsTypes.INTEGRATION]: 'Integration',
-    [ResultsTypes.JOB]: 'Job',
-    [ResultsTypes.JOBRUN]: 'Job Execution',
-    [ResultsTypes.LOGIN]: 'Login',
-    [ResultsTypes.ROLE]: 'Role',
-    [ResultsTypes.SCRIPT]: 'Script',
-    [ResultsTypes.SCRIPTLOG]: 'Script Log Details',
-    [ResultsTypes.SOAPLOG]: 'SOAP Log Details',
-    [ResultsTypes.TOKEN]: 'Token',
-    [ResultsTypes.USER]: 'User',
+    [ResultsTypes.FILE]: "File",
+    [ResultsTypes.INTEGRATION]: "Integration",
+    [ResultsTypes.JOB]: "Job",
+    [ResultsTypes.JOBRUN]: "Job Execution",
+    [ResultsTypes.LOGIN]: "Login",
+    [ResultsTypes.ROLE]: "Role",
+    [ResultsTypes.SCRIPT]: "Script",
+    [ResultsTypes.SCRIPTLOG]: "Script Log Details",
+    [ResultsTypes.SOAPLOG]: "SOAP Log Details",
+    [ResultsTypes.TOKEN]: "Token",
+    [ResultsTypes.USER]: "User",
   };
 
-  const modalTitle = modalTitles[type] ?? 'Unknown';
+  const modalTitle = modalTitles[type] ?? "Unknown";
 
   useEffect(() => {
     if (id === null) return; // skip since no record selected
@@ -63,7 +63,7 @@ export function Results({ type, lines, getModalData }: Props): React.JSX.Element
         if (isNotFound(result)) {
           throw new NotFoundError(modalTitle, selectedId);
         }
-        if (!ignore && 'id' in result) {
+        if (!ignore && "id" in result) {
           setData(result);
         }
       } catch (error) {

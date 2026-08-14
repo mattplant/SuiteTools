@@ -1,12 +1,10 @@
-import 'react-data-grid/lib/styles.css';
-import { DataGrid } from 'react-data-grid';
-import type { Column, RowCol } from '../types';
-import type { ConcurrencySummaryData } from './types';
-import { initializeConcurrencySummaryColumns } from '../../../../utils/concurrency';
+import "react-data-grid/lib/styles.css";
+import { DataGrid } from "react-data-grid";
+import type { Column, RowCol } from "../types";
+import type { ConcurrencySummaryData } from "./types";
+import { initializeConcurrencySummaryColumns } from "../../../../utils/concurrency";
 
-type Props = {
-  data: ConcurrencySummaryData | undefined;
-};
+type Props = { data: ConcurrencySummaryData | undefined };
 
 export function ConcurrencySummaryAverage({ data }: Props) {
   let columns: Column[] = [];
@@ -16,7 +14,7 @@ export function ConcurrencySummaryAverage({ data }: Props) {
     const results = data.concurrency.results;
     if (results && results.length > 0) {
       columns = initializeConcurrencySummaryColumns(data.concurrency.xCategories);
-      const url = '{{{scriptUrl}}}&action=apmConcurDetail';
+      const url = "{{{scriptUrl}}}&action=apmConcurDetail";
       let rowCol: RowCol = {};
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
@@ -25,15 +23,15 @@ export function ConcurrencySummaryAverage({ data }: Props) {
         const concurrency = result.averageConcurrency;
         // create new row every 24 columns
         const colPosition = i % 24;
-        if (colPosition == 0) {
+        if (colPosition === 0) {
           if (i > 0) {
             rows.push(rowCol);
             rowCol = {};
           }
-          rowCol['date'] = new Date(startDate).toLocaleDateString();
+          rowCol["date"] = new Date(startDate).toLocaleDateString();
         }
         rowCol[String(colPosition)] = String(concurrency);
-        rowCol['link' + String(colPosition)] = url + '&startDate=' + startDate + '&endDate=' + endDate;
+        rowCol["link" + String(colPosition)] = url + "&startDate=" + startDate + "&endDate=" + endDate;
       }
       // if last row is not full, add it
       if (rowCol && Object.keys(rowCol).length > 0) {
@@ -49,10 +47,7 @@ export function ConcurrencySummaryAverage({ data }: Props) {
       <DataGrid
         columns={columns}
         rows={rows}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true,
-        }}
+        defaultColumnOptions={{ sortable: true, resizable: true }}
         className="fill-grid"
       />
     </>

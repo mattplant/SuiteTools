@@ -6,13 +6,13 @@
  * escalating through {@link handleError}.
  */
 export class ApmUnavailableError extends Error {
-  readonly reason = 'apm_unavailable' as const;
+  readonly reason = "apm_unavailable" as const;
   readonly url: string | undefined;
   readonly status: number | undefined;
 
   constructor(message: string, opts?: { url?: string; status?: number }) {
     super(message);
-    this.name = 'ApmUnavailableError';
+    this.name = "ApmUnavailableError";
     this.url = opts?.url;
     this.status = opts?.status;
     Object.setPrototypeOf(this, new.target.prototype);
@@ -21,8 +21,8 @@ export class ApmUnavailableError extends Error {
 
 /** User-facing copy for concurrency pages when APM is unavailable. */
 export const APM_UNAVAILABLE_MESSAGE =
-  'Could not load concurrency data from NetSuite Application Performance Management (APM) tools ' +
-  '(Concurrency Monitor). APM may be unavailable in this account — check Customization > Performance.';
+  "Could not load concurrency data from NetSuite Application Performance Management (APM) tools " +
+  "(Concurrency Monitor). APM may be unavailable in this account — check Customization > Performance.";
 
 /**
  * Type guard for {@link ApmUnavailableError} so concurrency pages can soft-handle APM gaps.

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useLoaderData } from 'react-router-dom';
-import { ScriptLogResult } from '../components/features/scriptLog/RecordResult';
-import type { ScriptLogLoaderData } from '../routes/scriptLogLoader';
+import { useLoaderData } from "react-router-dom";
+import { ScriptLogResult } from "../components/features/scriptLog/RecordResult";
+import type { ScriptLogLoaderData } from "../routes/scriptLogLoader";
 
 /**
  * Renders the script log page with script log details.

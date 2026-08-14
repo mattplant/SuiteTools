@@ -5,20 +5,11 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const sucrase = require("@rollup/plugin-sucrase");
 const terser = require("@rollup/plugin-terser");
 
-const basePlugins = [
-  nodeResolve(),
-  sucrase({
-    exclude: ["node_modules/**"],
-    transforms: ["typescript"],
-  }),
-];
+const basePlugins = [nodeResolve(), sucrase({ exclude: ["node_modules/**"], transforms: ["typescript"] })];
 
 // Minify library outputs (backend esbuild inlines shared dist). Use a single
 // terser worker — parallel terser was exiting early and leaving stale dist/.
-const minifyPlugins = [
-  ...basePlugins,
-  terser({ maxWorkers: 1 }),
-];
+const minifyPlugins = [...basePlugins, terser({ maxWorkers: 1 })];
 
 module.exports = [
   // Main entry — minify cjs/mjs (consumed by backend bundle); skip minify on
@@ -37,9 +28,7 @@ module.exports = [
       {
         file: "../backend/src/FileCabinet/SuiteScripts/SuiteTools/idev-suitetools-shared.js",
         format: "amd",
-        amd: {
-          id: "SuiteScripts/SuiteTools/idev-suitetools-shared",
-        },
+        amd: { id: "SuiteScripts/SuiteTools/idev-suitetools-shared" },
         sourcemap: false,
       },
     ],

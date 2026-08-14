@@ -1,26 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useForm } from 'react-hook-form';
-import { Button } from 'flowbite-react';
-import type { NewSettings } from '@suiteworks/suitetools-shared';
+import { useForm } from "react-hook-form";
+import { Button } from "flowbite-react";
+import type { NewSettings } from "@suiteworks/suitetools-shared";
 
-type Props = {
-  defaultValues: NewSettings;
-  onSave: (data: NewSettings) => void | Promise<void>;
-};
+type Props = { defaultValues: NewSettings; onSave: (data: NewSettings) => void | Promise<void> };
 
 export function NewSettingsForm({ defaultValues, onSave }: Props) {
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, isSubmitSuccessful },
-  } = useForm<NewSettings>({
-    defaultValues: {
-      ...defaultValues,
-      devMode: Boolean(defaultValues.devMode),
-    },
-  });
-  const fieldStyle = 'flex flex-col mb-2';
+  } = useForm<NewSettings>({ defaultValues: { ...defaultValues, devMode: Boolean(defaultValues.devMode) } });
+  const fieldStyle = "flex flex-col mb-2";
 
   return (
     <form
@@ -32,17 +24,11 @@ export function NewSettingsForm({ defaultValues, onSave }: Props) {
         <label htmlFor="devMode" className="block text-sm font-medium text-slate-700">
           Dev Mode
         </label>
-        <input
-          type="checkbox"
-          id="devMode"
-          {...register('devMode', {
-            setValueAs: (value) => Boolean(value),
-          })}
-        />
+        <input type="checkbox" id="devMode" {...register("devMode", { setValueAs: (value) => Boolean(value) })} />
       </div>
       <div className={fieldStyle}>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save'}
+          {isSubmitting ? "Saving..." : "Save"}
         </Button>
         {isSubmitSuccessful && (
           <div role="alert" className="text-green-500 text-xs mt-1">

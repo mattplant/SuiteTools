@@ -12,9 +12,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, scriptOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Script } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, scriptOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Script } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
 
 /**
  * Transform a validated `Script` payload into the enriched view model used by the frontend.
@@ -39,7 +39,7 @@ const scriptRequestResponseSchema = makeRequestResponseSchema(scriptOrNotFoundSc
  * @param id - The ID of the script to retrieve.
  * @returns A Promise resolving to a Script object.
  */
-export const getScript = makeSingularAdapter<Script>('script', scriptRequestResponseSchema, adaptScript);
+export const getScript = makeSingularAdapter<Script>("script", scriptRequestResponseSchema, adaptScript);
 
 /**
  * Resolve a Script for the Scripts list modal.
@@ -52,7 +52,7 @@ export const getScript = makeSingularAdapter<Script>('script', scriptRequestResp
 export async function getScriptModalData(id: number, lines?: readonly unknown[]): Promise<Script> {
   if (lines?.length) {
     const match = lines.find((line) => {
-      if (!line || typeof line !== 'object' || !('id' in line)) return false;
+      if (!line || typeof line !== "object" || !("id" in line)) return false;
       return Number((line as Script).id) === id;
     }) as Script | undefined;
     if (match) {

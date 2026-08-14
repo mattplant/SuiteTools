@@ -13,12 +13,9 @@ const path = require("path");
 const SuiteCloudJestConfiguration = require("@oracle/suitecloud-unit-testing/jest-configuration/SuiteCloudJestConfiguration");
 const cliConfig = require("./suitecloud.config");
 
-const suitecloudPkgRoot = path.dirname(
-  require.resolve("@oracle/suitecloud-unit-testing/package.json"),
-);
+const suitecloudPkgRoot = path.dirname(require.resolve("@oracle/suitecloud-unit-testing/package.json"));
 
-const ORACLE_NODE_MODULES_PREFIX =
-  "<rootDir>/node_modules/@oracle/suitecloud-unit-testing";
+const ORACLE_NODE_MODULES_PREFIX = "<rootDir>/node_modules/@oracle/suitecloud-unit-testing";
 
 function rewriteOraclePaths(value) {
   if (typeof value === "string") {
@@ -28,12 +25,7 @@ function rewriteOraclePaths(value) {
     return value.map(rewriteOraclePaths);
   }
   if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, nested]) => [
-        key,
-        rewriteOraclePaths(nested),
-      ]),
-    );
+    return Object.fromEntries(Object.entries(value).map(([key, nested]) => [key, rewriteOraclePaths(nested)]));
   }
   return value;
 }
@@ -71,11 +63,8 @@ module.exports = {
     ...suitecloud.moduleNameMapper,
     // Prefer authoring sources over generated FileCabinet bundles.
     "^SuiteScripts(.*)$": "<rootDir>/TypeScripts$1",
-    "^@suiteworks/suitetools-shared$":
-      "<rootDir>/../shared/dist/index.cjs",
-    "^@suiteworks/suitetools-shared/errors$":
-      "<rootDir>/../shared/dist/errors/index.cjs",
-    "^@suiteworks/suitetools-shared/contracts$":
-      "<rootDir>/../shared/dist/contracts/index.cjs",
+    "^@suiteworks/suitetools-shared$": "<rootDir>/../shared/dist/index.cjs",
+    "^@suiteworks/suitetools-shared/errors$": "<rootDir>/../shared/dist/errors/index.cjs",
+    "^@suiteworks/suitetools-shared/contracts$": "<rootDir>/../shared/dist/contracts/index.cjs",
   },
 };

@@ -1,11 +1,11 @@
-import { useParams } from 'react-router-dom';
-import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getScriptLog } from '../adapters/api/scriptLog';
-import { getScriptLogs } from '../adapters/api/scriptLogs';
-import { RecordCriteria } from '../components/features/scriptLog/RecordCriteria';
-import { Results } from '../components/shared/results/Results';
-import { ResultsTypes } from '../components/shared/results/types';
-import { useEntityList } from '../hooks/useEntityList';
+import { useParams } from "react-router-dom";
+import type { CriteriaFields } from "../components/shared/criteria/types";
+import { getScriptLog } from "../adapters/api/scriptLog";
+import { getScriptLogs } from "../adapters/api/scriptLogs";
+import { RecordCriteria } from "../components/features/scriptLog/RecordCriteria";
+import { Results } from "../components/shared/results/Results";
+import { ResultsTypes } from "../components/shared/results/types";
+import { useEntityList } from "../hooks/useEntityList";
 
 /**
  * ScriptLogsPage component displays the script logs list and criteria filter.
@@ -14,29 +14,26 @@ import { useEntityList } from '../hooks/useEntityList';
 export function ScriptLogsPage(): React.ReactElement {
   const defaultCriteria: CriteriaFields = {
     rows: 50,
-    levels: ['ERROR', 'EMERGENCY', 'SYSTEM'],
-    scriptTypes: [''],
-    scriptNames: [''],
-    owners: [''],
-    timeMode: 'now',
-    dateCreated: '15', // default to last 15 minutes
+    levels: ["ERROR", "EMERGENCY", "SYSTEM"],
+    scriptTypes: [""],
+    scriptNames: [""],
+    owners: [""],
+    timeMode: "now",
+    dateCreated: "15", // default to last 15 minutes
     customDateTime: undefined, // will be set by SearchCriteriaAdvancedTimePicker
-    customDuration: '1', // default to 1 minute
-    title: '',
-    detail: '',
+    customDuration: "1", // default to 1 minute
+    title: "",
+    detail: "",
   };
 
   // if a script param was passed in, set the scriptname criteria
   const { script } = useParams();
   if (script) {
     defaultCriteria.scriptNames = [script]; // set the script to see logs for
-    defaultCriteria.levels = ['']; // clear the level criteria
+    defaultCriteria.levels = [""]; // clear the level criteria
   }
 
-  const { setCriteria, results } = useEntityList({
-    defaultCriteria,
-    fetchList: getScriptLogs,
-  });
+  const { setCriteria, results } = useEntityList({ defaultCriteria, fetchList: getScriptLogs });
 
   return (
     <div className="mt-4">

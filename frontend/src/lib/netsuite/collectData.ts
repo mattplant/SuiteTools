@@ -20,7 +20,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ApmUnavailableError } from './ApmUnavailableError';
+import { ApmUnavailableError } from "./ApmUnavailableError";
 
 export interface NetSuiteResponse {
   success: boolean;
@@ -34,8 +34,7 @@ export interface NetSuiteResponse {
  * @returns string
  */
 export async function getDataFromPageContent(url: string): Promise<NetSuiteResponse> {
-
-  const response = await fetch(url, { credentials: 'same-origin' }).catch((error) => {
+  const response = await fetch(url, { credentials: "same-origin" }).catch((error) => {
     console.error(`getDataFromPageContent() error =\n`, error);
     throw error;
   });
@@ -47,7 +46,7 @@ export async function getDataFromPageContent(url: string): Promise<NetSuiteRespo
 
   // Missing APM / failed scriptlet typically returns HTTP 500 + HTML Notice, or HTML with 200.
   if (!response.ok) {
-    const snippet = content.replace(/\s+/g, ' ').slice(0, 180);
+    const snippet = content.replace(/\s+/g, " ").slice(0, 180);
     throw new ApmUnavailableError(
       `NetSuite returned HTTP ${response.status} for ${url}. ` +
         `This usually means the APM scriptlet is missing or failed. Preview: ${snippet}`,
@@ -67,7 +66,7 @@ export async function getDataFromPageContent(url: string): Promise<NetSuiteRespo
   try {
     data = JSON.parse(content);
   } catch (error) {
-    console.error('getDataFromPageContent() error parsing JSON data:', error);
+    console.error("getDataFromPageContent() error parsing JSON data:", error);
     throw new Error(`Failed to parse JSON from ${url}: ${error instanceof Error ? error.message : String(error)}`);
   }
 
@@ -102,11 +101,10 @@ export async function getDataFromPageTable(
     tableArray.length === 1 &&
     Array.isArray(tableArray[0]) &&
     tableArray[0].length >= 1 &&
-    String(tableArray[0][0]).includes('No records to show');
+    String(tableArray[0][0]).includes("No records to show");
   if (noRecords) {
     return [];
   }
-
 
   return tableArray;
 }
@@ -115,7 +113,7 @@ async function getPageTable(url: string, id: string): Promise<string> {
   const response = await fetch(url);
   const pageData = await response.text();
   const parser = new DOMParser();
-  const domPage = parser.parseFromString(pageData, 'text/html');
+  const domPage = parser.parseFromString(pageData, "text/html");
 
   // Session expiry often returns the login form instead of the list page.
   const looksLikeLogin =
@@ -130,8 +128,8 @@ async function getPageTable(url: string, id: string): Promise<string> {
     // NetSuite list markup varies by version; fall back to common list tables.
     element =
       domPage.querySelector(`table#${CSS.escape(id)}`) ||
-      domPage.querySelector('table.listtable') ||
-      domPage.querySelector('table.uir-list-table') ||
+      domPage.querySelector("table.listtable") ||
+      domPage.querySelector("table.uir-list-table") ||
       domPage.querySelector('table[id*="div__body"]');
   }
   if (!element) {
@@ -143,24 +141,24 @@ async function getPageTable(url: string, id: string): Promise<string> {
 
 function convertTableToArray(html: string): string[][] {
   const table: string[][] = [];
-  const tableRows = html.split('</tr>');
+  const tableRows = html.split("</tr>");
   tableRows.forEach((row) => {
-    const tableColumns = row.split('</td>');
+    const tableColumns = row.split("</td>");
     const tableRow: string[] = [];
     tableColumns.forEach((column) => {
-      if (column.includes('<a')) {
+      if (column.includes("<a")) {
         const matchResult = column.match(/<a[^>]*>[\s\S]*?<\/a>/);
         if (matchResult) {
           tableRow.push(matchResult[0]);
         } else {
-          tableRow.push(column.replace(/<[^>]*>?/gm, '').trim());
+          tableRow.push(column.replace(/<[^>]*>?/gm, "").trim());
         }
       } else {
-        const tableCell = column.replace(/<[^>]*>?/gm, '').trim();
+        const tableCell = column.replace(/<[^>]*>?/gm, "").trim();
         tableRow.push(tableCell);
       }
     });
-    if (!(Array.isArray(tableRow) && tableRow.length === 1 && tableRow[0] === '')) {
+    if (!(Array.isArray(tableRow) && tableRow.length === 1 && tableRow[0] === "")) {
       table.push(tableRow);
     }
   });

@@ -1,8 +1,6 @@
-import type { Login } from '@suiteworks/suitetools-shared';
+import type { Login } from "@suiteworks/suitetools-shared";
 
-type Props = {
-  data: Login;
-};
+type Props = { data: Login };
 
 export function LoginResult({ data }: Props) {
   return (

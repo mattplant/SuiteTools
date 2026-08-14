@@ -2,11 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Integration } from "@suiteworks/suitetools-shared";
-import {
-  SYNTHETIC_INTEGRATION_ID_MIN,
-  adaptIntegration,
-  isSyntheticIntegrationId,
-} from "./integrationAdapt";
+import { SYNTHETIC_INTEGRATION_ID_MIN, adaptIntegration, isSyntheticIntegrationId } from "./integrationAdapt";
 
 function baseIntegration(overrides: Partial<Integration> = {}): Integration {
   return {
@@ -37,17 +33,11 @@ describe("adaptIntegration", () => {
   });
 
   it("preserves an existing urlNs for real ids", () => {
-    expect(
-      adaptIntegration(
-        baseIntegration({ id: 7, urlNs: "/custom/ns/url" }),
-      ).urlNs,
-    ).toBe("/custom/ns/url");
+    expect(adaptIntegration(baseIntegration({ id: 7, urlNs: "/custom/ns/url" })).urlNs).toBe("/custom/ns/url");
   });
 
   it("does not invent integrapp.nl links for synthetic ids", () => {
-    const adapted = adaptIntegration(
-      baseIntegration({ id: SYNTHETIC_INTEGRATION_ID_MIN, urlNs: undefined }),
-    );
+    const adapted = adaptIntegration(baseIntegration({ id: SYNTHETIC_INTEGRATION_ID_MIN, urlNs: undefined }));
     expect(adapted.urlNs).toBeUndefined();
     expect(adapted.urlDetail).toBeUndefined();
   });

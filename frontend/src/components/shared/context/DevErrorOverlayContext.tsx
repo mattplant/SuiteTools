@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
-import { SuiteError } from '@suiteworks/suitetools-shared';
-import { DevSuiteErrorOverlay } from '../errors/DevSuiteErrorOverlay';
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { SuiteError } from "@suiteworks/suitetools-shared";
+import { DevSuiteErrorOverlay } from "../errors/DevSuiteErrorOverlay";
 
 type DevErrorOverlayContextValue = {
   /** Show the floating overlay for a SuiteError (no-op if not a SuiteError). */
@@ -14,9 +14,7 @@ type DevErrorOverlayContextValue = {
 
 const DevErrorOverlayContext = createContext<DevErrorOverlayContextValue | null>(null);
 
-type Props = {
-  children: ReactNode;
-};
+type Props = { children: ReactNode };
 
 /**
  * Provides a dismissible floating {@link DevSuiteErrorOverlay} above app content.
@@ -52,7 +50,7 @@ export function DevErrorOverlayProvider({ children }: Props): React.JSX.Element 
 export function useDevErrorOverlay(): DevErrorOverlayContextValue {
   const ctx = useContext(DevErrorOverlayContext);
   if (!ctx) {
-    throw new Error('useDevErrorOverlay must be used within DevErrorOverlayProvider');
+    throw new Error("useDevErrorOverlay must be used within DevErrorOverlayProvider");
   }
   return ctx;
 }

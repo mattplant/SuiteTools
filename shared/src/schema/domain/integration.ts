@@ -29,12 +29,10 @@ export const IntegrationSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const IntegrationBundle: ZEntityBundle<
-  typeof IntegrationSchema,
-  "Integration"
-> = zHelpers.zCreateBundle(IntegrationSchema, {
-  meta: { entity: "Integration", plural: "Integrations" },
-});
+const IntegrationBundle: ZEntityBundle<typeof IntegrationSchema, "Integration"> = zHelpers.zCreateBundle(
+  IntegrationSchema,
+  { meta: { entity: "Integration", plural: "Integrations" } },
+);
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -47,7 +45,5 @@ export type Integrations = typeof IntegrationBundle.types.array;
 export const integrationOrNotFoundSchema = orNotFoundSchema(IntegrationSchema);
 export type IntegrationOrNotFound = OrNotFound<Integration>;
 
-export const integrationsOrNotFoundSchema = orNotFoundSchema(
-  IntegrationBundle.schema.array()
-);
+export const integrationsOrNotFoundSchema = orNotFoundSchema(IntegrationBundle.schema.array());
 export type IntegrationsOrNotFound = OrNotFound<Integrations>;

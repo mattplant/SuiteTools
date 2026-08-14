@@ -11,14 +11,14 @@
  * SuiteQL / settings bags are loosely typed today; tighten under #28.
  */
 
-import * as log from 'N/log';
-import type { Response } from './types';
-import { SuiteToolsApiGetOptions } from './SuiteToolsApiGetOptions';
-import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
-import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
-import { SuiteError, InvalidParameterError, UnexpectedError } from '@suiteworks/suitetools-shared/errors';
-import { validateGetResponse } from './SuiteToolsApiGetValidate';
-import { ensureEntityOrSoftNotFound, softNotFoundResponse } from './SuiteToolsApiGetNotFound';
+import * as log from "N/log";
+import type { Response } from "./types";
+import { SuiteToolsApiGetOptions } from "./SuiteToolsApiGetOptions";
+import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
+import type { SuiteToolsApiModel } from "./SuiteToolsApiModel";
+import { SuiteError, InvalidParameterError, UnexpectedError } from "@suiteworks/suitetools-shared/errors";
+import { validateGetResponse } from "./SuiteToolsApiGetValidate";
+import { ensureEntityOrSoftNotFound, softNotFoundResponse } from "./SuiteToolsApiGetNotFound";
 
 type RequestParams = { [key: string]: string };
 
@@ -49,7 +49,7 @@ export class SuiteToolsApiGet {
   }
 
   public process(requestParams: unknown): Response {
-    log.debug({ title: 'SuiteToolsApiGet:process() initiated', details: requestParams });
+    log.debug({ title: "SuiteToolsApiGet:process() initiated", details: requestParams });
     this.assertIsGetRequestParams(requestParams);
 
     try {
@@ -57,97 +57,97 @@ export class SuiteToolsApiGet {
 
       const endpoint = requestParams.endpoint;
       switch (endpoint) {
-        case 'file':
+        case "file":
           response = this.getFile(requestParams);
           response.data = this.cleanFileData(response.data);
           break;
-        case 'files':
+        case "files":
           response = this.getFiles(requestParams);
           response = this.cleanFilesData(response);
           break;
-        case 'job':
+        case "job":
           response = this.getJob(requestParams);
           response.data = this.cleanJobData(response.data);
           response.data = this.addJobLastRun(response.data);
           break;
-        case 'jobs':
+        case "jobs":
           response = this.getJobs(requestParams);
           response = this.cleanJobsData(response);
           break;
-        case 'jobRun':
+        case "jobRun":
           response = this.getJobRun(requestParams);
           response.data = this.cleanJobRunData(response.data);
           break;
-        case 'jobRuns':
+        case "jobRuns":
           response = this.getJobRuns(requestParams);
           response = this.cleanJobRunsData(response);
           break;
-        case 'integration':
+        case "integration":
           response = this.getIntegration(requestParams);
           break;
-        case 'integrations':
+        case "integrations":
           response = this.getIntegrations(requestParams);
           break;
-        case 'logins':
+        case "logins":
           response = this.getLogins(requestParams);
           response = this.cleanLoginsData(response);
           break;
-        case 'optionValues':
+        case "optionValues":
           response = this.stApiGetOptions.process(requestParams);
           break;
-        case 'role':
+        case "role":
           response = this.getRole(requestParams);
           response.data = this.cleanRoleData(response.data);
           break;
-        case 'roles':
+        case "roles":
           response = this.getRoles(requestParams);
           response = this.cleanRolesData(response);
           break;
-        case 'script':
+        case "script":
           response = this.getScript(requestParams);
           // Only clean successful payloads; leave NotFound / empty shapes alone.
           if (response.status === 200) {
             response.data = this.cleanScriptData(response.data);
           }
           break;
-        case 'scripts':
+        case "scripts":
           response = this.getScripts(requestParams);
           response = this.cleanScriptsData(response);
           break;
-        case 'scriptLog':
+        case "scriptLog":
           response = this.getScriptLog(requestParams);
           if (response.status === 200) {
             response.data = this.cleanScriptLogData(response.data);
           }
           break;
-        case 'scriptLogs':
+        case "scriptLogs":
           response = this.getScriptLogs(requestParams);
           response = this.cleanScriptLogsData(response);
           break;
-        case 'settings':
+        case "settings":
           response = this.getSettings();
           break;
-        case 'token':
+        case "token":
           response = this.getToken(requestParams);
           break;
-        case 'tokens':
+        case "tokens":
           response = this.getTokens(requestParams);
           break;
-        case 'user':
+        case "user":
           response = this.getUser(requestParams);
           response.data = this.cleanUserData(response.data);
           response.data = this.addUserLastLogin(response.data);
           break;
-        case 'users':
+        case "users":
           response = this.getUsers(requestParams);
           response = this.cleanUsersData(response);
           response = this.addUsersLastLogins(response);
           break;
         default:
-          throw new InvalidParameterError('endpoint', endpoint, 'Endpoint not recognized');
+          throw new InvalidParameterError("endpoint", endpoint, "Endpoint not recognized");
       }
 
-      log.debug({ title: 'get() response', details: response });
+      log.debug({ title: "get() response", details: response });
 
       return validateGetResponse(endpoint, response);
     } catch (err) {
@@ -157,26 +157,26 @@ export class SuiteToolsApiGet {
       }
 
       // Wrap unexpected errors in UnexpectedError
-      throw new UnexpectedError('process()', err, { endpoint: requestParams.endpoint });
+      throw new UnexpectedError("process()", err, { endpoint: requestParams.endpoint });
     }
   }
 
   private assertIsGetRequestParams(data: unknown): asserts data is RequestParams {
     // check if the data is an object
-    if (typeof data !== 'object' || data === null) {
-      throw new InvalidParameterError('requestParams', data, 'Request params must be an object');
+    if (typeof data !== "object" || data === null) {
+      throw new InvalidParameterError("requestParams", data, "Request params must be an object");
     }
     // endpoint
-    if (!('endpoint' in data)) {
-      throw new InvalidParameterError('endpoint', undefined, 'Missing required field');
+    if (!("endpoint" in data)) {
+      throw new InvalidParameterError("endpoint", undefined, "Missing required field");
     }
-    if (typeof data.endpoint !== 'string') {
-      throw new InvalidParameterError('endpoint', data.endpoint, 'Must be a string');
+    if (typeof data.endpoint !== "string") {
+      throw new InvalidParameterError("endpoint", data.endpoint, "Must be a string");
     }
   }
 
   private convertMultiSelectToArray(field: string): string[] | null {
-    return field ? (field.includes(',') ? field.split(',') : [field]) : null;
+    return field ? (field.includes(",") ? field.split(",") : [field]) : null;
   }
 
   private addUserLastLogin(data: any): object {
@@ -185,7 +185,7 @@ export class SuiteToolsApiGet {
       this.stCommon.stSettings.getSettings();
       const lastLoginsObj = this.stCommon.stSettings.lastLogins;
       if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
-        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === 'user');
+        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === "user");
         // add the last login data to the user record
         const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === data.email);
         if (lastlogin) {
@@ -203,7 +203,7 @@ export class SuiteToolsApiGet {
       this.stCommon.stSettings.getSettings();
       const lastLoginsObj = this.stCommon.stSettings.lastLogins;
       if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
-        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === 'user');
+        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === "user");
         (response.data as any[]).forEach((record) => {
           // add the last login data to the user record
           const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === record.email);
@@ -219,18 +219,18 @@ export class SuiteToolsApiGet {
 
   private cleanJobData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
-    if (!('isInactive' in data) && !('isinactive' in data)) {
+    if (!("isInactive" in data) && !("isinactive" in data)) {
       return data;
     }
 
     // SuiteQL may return `isinactive`; emit shared camelCase wire key.
     const inactive = data.isInactive ?? data.isinactive;
-    if (inactive === 'F' || inactive === false) {
+    if (inactive === "F" || inactive === false) {
       data.isInactive = false;
-    } else if (inactive === 'T' || inactive === true) {
+    } else if (inactive === "T" || inactive === true) {
       data.isInactive = true;
     } else {
       data.isInactive = Boolean(inactive);
@@ -251,10 +251,10 @@ export class SuiteToolsApiGet {
   }
 
   private addJobLastRun(data: any): object {
-    log.debug({ title: 'SuiteToolsApiGet:addJobLastRun() initiated', details: { data } });
+    log.debug({ title: "SuiteToolsApiGet:addJobLastRun() initiated", details: { data } });
 
     // Only attach lastRun when a run exists.
-    if (typeof data === 'object' && data !== null && data.id) {
+    if (typeof data === "object" && data !== null && data.id) {
       const lastRun = this.stCommon.stJobs.getJobLastRun(data.id);
       if (lastRun) {
         data.lastRun = lastRun;
@@ -269,20 +269,20 @@ export class SuiteToolsApiGet {
    * Login camelCase wire contract and drop flat leftovers.
    */
   private cleanLoginData(data: any): object {
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
 
-    data.oauthAppName = data.oauthAppName ?? data.oauthappname ?? data.oAuthAppName ?? '';
+    data.oauthAppName = data.oauthAppName ?? data.oauthappname ?? data.oAuthAppName ?? "";
     data.oauthAccessTokenName =
-      data.oauthAccessTokenName ?? data.oauthaccesstokenname ?? data.oAuthAccessTokenName ?? '';
-    data.userName = data.userName ?? data.username ?? '';
-    data.roleName = data.roleName ?? data.rolename ?? '';
-    data.emailAddress = data.emailAddress ?? data.emailaddress ?? '';
-    data.ipAddress = data.ipAddress ?? data.ipaddress ?? '';
-    data.requestUri = data.requestUri ?? data.requesturi ?? '';
-    data.secChallenge = data.secChallenge ?? data.secchallenge ?? '';
-    data.userAgent = data.userAgent ?? data.useragent ?? '';
+      data.oauthAccessTokenName ?? data.oauthaccesstokenname ?? data.oAuthAccessTokenName ?? "";
+    data.userName = data.userName ?? data.username ?? "";
+    data.roleName = data.roleName ?? data.rolename ?? "";
+    data.emailAddress = data.emailAddress ?? data.emailaddress ?? "";
+    data.ipAddress = data.ipAddress ?? data.ipaddress ?? "";
+    data.requestUri = data.requestUri ?? data.requesturi ?? "";
+    data.secChallenge = data.secChallenge ?? data.secchallenge ?? "";
+    data.userAgent = data.userAgent ?? data.useragent ?? "";
     delete data.oauthappname;
     delete data.oauthaccesstokenname;
     delete data.username;
@@ -314,12 +314,12 @@ export class SuiteToolsApiGet {
    * Remap SuiteQL-lowercased JobRun aliases to the shared camelCase wire contract.
    */
   private cleanJobRunData(data: any): object {
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
 
     data.jobId = data.jobId ?? data.jobid;
-    data.jobName = data.jobName ?? data.jobname ?? '';
+    data.jobName = data.jobName ?? data.jobname ?? "";
     delete data.jobid;
     delete data.jobname;
 
@@ -338,12 +338,12 @@ export class SuiteToolsApiGet {
 
   private cleanRoleData(data: any): object {
     // Soft-miss / empty payloads can be null or non-objects — bail before field access.
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
 
     // SuiteQL may lowercase multi-word keys; normalize to the shared Role wire contract.
-    data.centerType = data.centerType ?? data.centertype ?? '';
+    data.centerType = data.centerType ?? data.centertype ?? "";
     data.isInactive = data.isInactive ?? data.isinactive;
     data.isSalesRole = data.isSalesRole ?? data.issalesrole;
     data.isSupportRole = data.isSupportRole ?? data.issupportrole;
@@ -355,25 +355,25 @@ export class SuiteToolsApiGet {
     delete data.iswebserviceonlyrole;
 
     // Map T/F flags to Yes/No strings for zNetSuite.booleanFromTF.
-    if (data.isInactive === 'F') {
-      data.isInactive = 'Yes';
+    if (data.isInactive === "F") {
+      data.isInactive = "Yes";
     } else {
-      data.isInactive = 'No';
+      data.isInactive = "No";
     }
-    if (data.isSalesRole === 'F') {
-      data.isSalesRole = 'No';
+    if (data.isSalesRole === "F") {
+      data.isSalesRole = "No";
     } else {
-      data.isSalesRole = 'Yes';
+      data.isSalesRole = "Yes";
     }
-    if (data.isSupportRole === 'F') {
-      data.isSupportRole = 'No';
+    if (data.isSupportRole === "F") {
+      data.isSupportRole = "No";
     } else {
-      data.isSupportRole = 'Yes';
+      data.isSupportRole = "Yes";
     }
-    if (data.isWebServiceOnlyRole === 'F') {
-      data.isWebServiceOnlyRole = 'No';
+    if (data.isWebServiceOnlyRole === "F") {
+      data.isWebServiceOnlyRole = "No";
     } else {
-      data.isWebServiceOnlyRole = 'Yes';
+      data.isWebServiceOnlyRole = "Yes";
     }
 
     return data;
@@ -391,10 +391,10 @@ export class SuiteToolsApiGet {
 
   private cleanScriptData(data: any): object {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
-    if (!('isInactive' in data) && !('isinactive' in data)) {
+    if (!("isInactive" in data) && !("isinactive" in data)) {
       return data;
     }
 
@@ -413,9 +413,9 @@ export class SuiteToolsApiGet {
     delete data.notifyemails;
 
     // Normalize NetSuite T/F to boolean for shared schema validation.
-    if (data.isInactive === 'F') {
+    if (data.isInactive === "F") {
       data.isInactive = false;
-    } else if (data.isInactive === 'T') {
+    } else if (data.isInactive === "T") {
       data.isInactive = true;
     }
 
@@ -437,15 +437,15 @@ export class SuiteToolsApiGet {
    * ScriptLog camelCase wire contract before SPA Zod parse.
    */
   private cleanScriptLogData(data: any): object {
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
 
-    data.scriptType = data.scriptType ?? data.scripttype ?? '';
-    data.scriptName = data.scriptName ?? data.scriptname ?? '';
-    data.owner = data.owner ?? '';
-    data.type = data.type ?? '';
-    data.title = data.title ?? '';
+    data.scriptType = data.scriptType ?? data.scripttype ?? "";
+    data.scriptName = data.scriptName ?? data.scriptname ?? "";
+    data.owner = data.owner ?? "";
+    data.type = data.type ?? "";
+    data.title = data.title ?? "";
     delete data.scripttype;
     delete data.scriptname;
 
@@ -467,13 +467,13 @@ export class SuiteToolsApiGet {
    * Remap to the shared camelCase File wire contract before SPA Zod parse.
    */
   private cleanFileData(data: any): object {
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
 
     data.dateCreated = data.dateCreated ?? data.datecreated;
     data.lastModifiedDate = data.lastModifiedDate ?? data.lastmodifieddate;
-    data.fileTypeName = data.fileTypeName ?? data.filetypename ?? '';
+    data.fileTypeName = data.fileTypeName ?? data.filetypename ?? "";
     data.fileSize = data.fileSize ?? data.filesize;
     delete data.datecreated;
     delete data.lastmodifieddate;
@@ -495,29 +495,29 @@ export class SuiteToolsApiGet {
 
   private cleanUserData(data: any): object {
     // Soft-miss / empty payloads can be null or non-objects — bail before field access.
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       return data;
     }
 
     // SuiteQL lowercases `AS isInactive` → `isinactive`; prefer camelCase wire key.
     const inactive = data.isInactive ?? data.isinactive;
-    if (inactive === 'F') {
-      data.isInactive = 'Yes';
+    if (inactive === "F") {
+      data.isInactive = "Yes";
     } else {
-      data.isInactive = 'No';
+      data.isInactive = "No";
     }
     delete data.isinactive;
     // clear supervisor field if empty DF()
-    if (data.supervisor === ' ()') {
-      data.supervisor = '';
+    if (data.supervisor === " ()") {
+      data.supervisor = "";
     }
     // set title field to "" if empty
     if (data.title === null) {
-      data.title = '';
+      data.title = "";
     }
     // set lastLogin field to "" if empty
     if (data.lastLogin === null) {
-      data.lastLogin = '';
+      data.lastLogin = "";
     }
 
     return data;
@@ -542,7 +542,7 @@ export class SuiteToolsApiGet {
   private getFile(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getFile(id);
     return ensureEntityOrSoftNotFound(result, `No file found with id of ${id}`);
@@ -555,10 +555,10 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getFiles(requestParams: RequestParams): Response {
-    const row = requestParams['rows'];
-    const types = this.convertMultiSelectToArray(requestParams['fileTypes']);
-    const createdDate = requestParams['dateCreated'];
-    const modifiedDate = requestParams['lastModifiedDate'];
+    const row = requestParams["rows"];
+    const types = this.convertMultiSelectToArray(requestParams["fileTypes"]);
+    const createdDate = requestParams["dateCreated"];
+    const modifiedDate = requestParams["lastModifiedDate"];
     const result = this.stApiModel.getFiles(row, types, createdDate, modifiedDate);
 
     // List endpoints must return an array (legacy code used `{}` for empty).
@@ -578,7 +578,7 @@ export class SuiteToolsApiGet {
   private getJob(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getJob(id);
     return ensureEntityOrSoftNotFound(result, `No job found with id of ${id}`);
@@ -591,7 +591,7 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobs(requestParams: RequestParams): Response {
-    const active = requestParams['active'];
+    const active = requestParams["active"];
     const result = this.stApiModel.getJobs(active);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
@@ -611,7 +611,7 @@ export class SuiteToolsApiGet {
   private getIntegration(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getIntegration(id);
     return ensureEntityOrSoftNotFound(result, `No integration found with id of ${id}`);
@@ -624,7 +624,7 @@ export class SuiteToolsApiGet {
    * @returns integrations
    */
   private getIntegrations(requestParams: RequestParams): Response {
-    const active = requestParams['active'];
+    const active = requestParams["active"];
     const result = this.stApiModel.getIntegrations(active);
 
     if (!Array.isArray(result.data)) {
@@ -643,7 +643,7 @@ export class SuiteToolsApiGet {
   private getJobRun(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getJobRun(id);
     return ensureEntityOrSoftNotFound(result, `No job execution found with id of ${id}`);
@@ -656,8 +656,8 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobRuns(requestParams: RequestParams): Response {
-    const job = requestParams['job'];
-    const completed = requestParams['completed'];
+    const job = requestParams["job"];
+    const completed = requestParams["completed"];
     const result = this.stApiModel.getJobRuns(job, completed);
 
     // Legacy model uses `{}` for empty lists; adapters expect an array or NotFound.
@@ -675,13 +675,13 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getLogins(requestParams: RequestParams): Response {
-    const rows = requestParams['rows'];
-    const active = requestParams['active'];
-    const integrationName = requestParams['integrationName'];
-    const tokenName = requestParams['tokenName'];
-    const users = this.convertMultiSelectToArray(requestParams['users']);
-    const roles = this.convertMultiSelectToArray(requestParams['roles']);
-    const dates = requestParams['dates'];
+    const rows = requestParams["rows"];
+    const active = requestParams["active"];
+    const integrationName = requestParams["integrationName"];
+    const tokenName = requestParams["tokenName"];
+    const users = this.convertMultiSelectToArray(requestParams["users"]);
+    const roles = this.convertMultiSelectToArray(requestParams["roles"]);
+    const dates = requestParams["dates"];
     const result = this.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dates);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
@@ -701,7 +701,7 @@ export class SuiteToolsApiGet {
   private getRole(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getRole(id);
     return ensureEntityOrSoftNotFound(result, `No role found with id of ${id}`);
@@ -714,7 +714,7 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getRoles(requestParams: RequestParams): Response {
-    const active = requestParams['active'];
+    const active = requestParams["active"];
     const result = this.stApiModel.getRoles(active);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
@@ -734,7 +734,7 @@ export class SuiteToolsApiGet {
   private getScript(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getScript(id);
     return ensureEntityOrSoftNotFound(result, `No script found with id of ${id}`);
@@ -747,12 +747,12 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScripts(requestParams: RequestParams): Response {
-    const active = requestParams['active'];
-    const versions = this.convertMultiSelectToArray(requestParams['versions']);
-    const scripttypes = this.convertMultiSelectToArray(requestParams['scriptTypes']);
-    const scripts = this.convertMultiSelectToArray(requestParams['scriptNames']);
-    const owners = this.convertMultiSelectToArray(requestParams['owners']);
-    const files = this.convertMultiSelectToArray(requestParams['files']);
+    const active = requestParams["active"];
+    const versions = this.convertMultiSelectToArray(requestParams["versions"]);
+    const scripttypes = this.convertMultiSelectToArray(requestParams["scriptTypes"]);
+    const scripts = this.convertMultiSelectToArray(requestParams["scriptNames"]);
+    const owners = this.convertMultiSelectToArray(requestParams["owners"]);
+    const files = this.convertMultiSelectToArray(requestParams["files"]);
     const result = this.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
 
     // List endpoints must return an array
@@ -772,7 +772,7 @@ export class SuiteToolsApiGet {
   private getScriptLog(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getScriptLog(id);
     if (!result || result.length === 0) {
@@ -788,52 +788,52 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScriptLogs(requestParams: RequestParams): Response {
-    const row = requestParams['rows'] ? requestParams['rows'] : '50';
-    const levels = this.convertMultiSelectToArray(requestParams['levels']);
-    const types = this.convertMultiSelectToArray(requestParams['scriptTypes']);
-    const scripts = this.convertMultiSelectToArray(requestParams['scriptNames']);
-    const owners = this.convertMultiSelectToArray(requestParams['owners']);
-    const timemode = requestParams['timeMode'] ? requestParams['timeMode'] : 'now';
-    let date = requestParams['dateCreated'] ? requestParams['dateCreated'] : '15';
-    let customdatetime = requestParams['customDateTime'];
-    let customduration = requestParams['customDuration'];
-    const title = requestParams['title'];
-    const detail = requestParams['detail'];
+    const row = requestParams["rows"] ? requestParams["rows"] : "50";
+    const levels = this.convertMultiSelectToArray(requestParams["levels"]);
+    const types = this.convertMultiSelectToArray(requestParams["scriptTypes"]);
+    const scripts = this.convertMultiSelectToArray(requestParams["scriptNames"]);
+    const owners = this.convertMultiSelectToArray(requestParams["owners"]);
+    const timemode = requestParams["timeMode"] ? requestParams["timeMode"] : "now";
+    let date = requestParams["dateCreated"] ? requestParams["dateCreated"] : "15";
+    let customdatetime = requestParams["customDateTime"];
+    let customduration = requestParams["customDuration"];
+    const title = requestParams["title"];
+    const detail = requestParams["detail"];
 
     // verify required parameters
-    if (timemode === 'now') {
-      if (!date || date === '') {
-        throw new InvalidParameterError('dateCreated', date, "Missing required parameter for 'now' time mode");
+    if (timemode === "now") {
+      if (!date || date === "") {
+        throw new InvalidParameterError("dateCreated", date, "Missing required parameter for 'now' time mode");
       }
       if (customdatetime) {
         log.debug({
-          title: 'SuiteToolsApiGet:getScriptLogs()',
+          title: "SuiteToolsApiGet:getScriptLogs()",
           details: `Clearing 'customDateTime' since 'now' time mode`,
         });
         customdatetime = null;
       }
       if (customduration) {
         log.debug({
-          title: 'SuiteToolsApiGet:getScriptLogs()',
+          title: "SuiteToolsApiGet:getScriptLogs()",
           details: `Clearing 'customDuration' for 'now' time mode`,
         });
         customduration = null;
       }
     }
-    if (timemode === 'custom') {
+    if (timemode === "custom") {
       if (!customdatetime || !customduration) {
         throw new InvalidParameterError(
-          'customDateTime/customDuration',
+          "customDateTime/customDuration",
           { customdatetime, customduration },
           "Both parameters required for 'custom' time mode",
         );
       }
-      if (date && date !== '') {
+      if (date && date !== "") {
         log.debug({
-          title: 'SuiteToolsApiGet:getScriptLogs()',
+          title: "SuiteToolsApiGet:getScriptLogs()",
           details: `Clearing 'dateCreated' since 'custom' time mode`,
         });
-        date = '';
+        date = "";
       }
     }
     const result = this.stApiModel.getScriptLogsViaSuiteQL(
@@ -865,7 +865,7 @@ export class SuiteToolsApiGet {
   private getToken(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getToken(id);
     return ensureEntityOrSoftNotFound(result, `No token found with id of ${id}`);
@@ -876,10 +876,10 @@ export class SuiteToolsApiGet {
    * @param requestParams - Optional active, integrationName, userName, roleName.
    */
   private getTokens(requestParams: RequestParams): Response {
-    const active = requestParams.active ?? '';
-    const integrationName = requestParams.integrationName ?? '';
-    const userName = requestParams.userName ?? '';
-    const roleName = requestParams.roleName ?? '';
+    const active = requestParams.active ?? "";
+    const integrationName = requestParams.integrationName ?? "";
+    const userName = requestParams.userName ?? "";
+    const roleName = requestParams.roleName ?? "";
     const result = this.stApiModel.getTokens(active, integrationName, userName, roleName);
     if (!Array.isArray(result.data)) {
       result.data = [];
@@ -937,7 +937,7 @@ export class SuiteToolsApiGet {
   private getUser(requestParams: RequestParams): Response {
     const id = requestParams.id;
     if (!id) {
-      throw new InvalidParameterError('id', undefined, 'Missing required parameter');
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
     }
     const result = this.stApiModel.getUser(id);
     return ensureEntityOrSoftNotFound(result, `No user found with id of ${id}`);
@@ -950,9 +950,9 @@ export class SuiteToolsApiGet {
    * @returns users
    */
   private getUsers(requestParams: RequestParams): Response {
-    const active = requestParams['active'];
-    const roles = this.convertMultiSelectToArray(requestParams['roles']);
-    const supervisors = this.convertMultiSelectToArray(requestParams['owners']);
+    const active = requestParams["active"];
+    const roles = this.convertMultiSelectToArray(requestParams["roles"]);
+    const supervisors = this.convertMultiSelectToArray(requestParams["owners"]);
     const result = this.stApiModel.getUsers(active, roles, supervisors);
 
     // List endpoints must return an array (legacy model used `{}` for empty).

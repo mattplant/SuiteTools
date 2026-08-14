@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useState, useCallback } from 'react';
-import { SuiteError } from '@suiteworks/suitetools-shared';
-import { useOptionalDevErrorOverlay } from '../components/shared/context/DevErrorOverlayContext';
-import { useShowDevErrorOverlay } from './useShowDevErrorOverlay';
+import { useState, useCallback } from "react";
+import { SuiteError } from "@suiteworks/suitetools-shared";
+import { useOptionalDevErrorOverlay } from "../components/shared/context/DevErrorOverlayContext";
+import { useShowDevErrorOverlay } from "./useShowDevErrorOverlay";
 
 /**
  * Custom hook to surface errors without always tearing down the tree.

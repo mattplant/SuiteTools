@@ -42,10 +42,9 @@ export const LoginSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const LoginBundle: ZEntityBundle<typeof LoginSchema, "Login"> =
-  zHelpers.zCreateBundle(LoginSchema, {
-    meta: { entity: "Login", plural: "Logins" },
-  });
+const LoginBundle: ZEntityBundle<typeof LoginSchema, "Login"> = zHelpers.zCreateBundle(LoginSchema, {
+  meta: { entity: "Login", plural: "Logins" },
+});
 
 export { LoginBundle };
 export type Login = typeof LoginBundle.types.single;
@@ -54,7 +53,5 @@ export type Logins = typeof LoginBundle.types.array;
 export const loginOrNotFoundSchema = orNotFoundSchema(LoginSchema);
 export type LoginOrNotFound = OrNotFound<Login>;
 
-export const loginsOrNotFoundSchema = orNotFoundSchema(
-  LoginBundle.schema.array()
-);
+export const loginsOrNotFoundSchema = orNotFoundSchema(LoginBundle.schema.array());
 export type LoginsOrNotFound = OrNotFound<Logins>;

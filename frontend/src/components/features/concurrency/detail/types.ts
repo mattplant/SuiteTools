@@ -1,7 +1,4 @@
-export type CriteriaFields = {
-  startDate: string;
-  endDate: string;
-};
+export type CriteriaFields = { startDate: string; endDate: string };
 
 export interface ConcurrencyDetailRows {
   startTimeMS: number;
@@ -23,20 +20,10 @@ export interface ConcurrencyDetailDataConcurrency {
     pagingStartDateMS: number;
     pagingEndDateMS: number;
     concurrencyLimit: number;
-    peakConcurrency: {
-      value: number;
-      dateMS: number;
-    };
+    peakConcurrency: { value: number; dateMS: number };
   };
-  config: {
-    startDateMS: number;
-    endDateMS: number;
-    groupAggMS: number;
-    maxConcurrency: number;
-  };
-  indices: {
-    [key: string]: number;
-  };
+  config: { startDateMS: number; endDateMS: number; groupAggMS: number; maxConcurrency: number };
+  indices: { [key: string]: number };
   concurrency: [number, number][];
   results: {
     startTime: number;
@@ -54,13 +41,7 @@ export interface ConcurrencyDetailDataViolations {
     topIntegrations: { id: number; name: string; value: number }[];
     integrationName: string;
   };
-  config: {
-    startDateMS: number;
-    endDataMS: number;
-    groupAggMS: number;
-  };
-  indices: {
-    [key: string]: number;
-  };
+  config: { startDateMS: number; endDataMS: number; groupAggMS: number };
+  indices: { [key: string]: number };
   violations: [number, number][];
 }

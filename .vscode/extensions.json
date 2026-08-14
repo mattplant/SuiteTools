@@ -1,8 +1,1 @@
-{
-  "recommendations": [
-    "arcanis.vscode-zipfs",
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "Oracle.suitecloud-vscode-extension"
-  ]
-}
+{ "recommendations": ["arcanis.vscode-zipfs", "biomejs.biome", "Oracle.suitecloud-vscode-extension"] }

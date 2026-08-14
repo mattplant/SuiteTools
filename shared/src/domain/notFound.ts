@@ -20,7 +20,4 @@ export type NotFound = z.infer<typeof notFoundSchema>;
  * Bundle form — consistent with other entities for imports like:
  * import { NotFoundBundle } from '@suiteworks/suitetools-shared';
  */
-export const NotFoundBundle = {
-  schema: notFoundSchema,
-  name: "NotFound",
-} as const;
+export const NotFoundBundle = { schema: notFoundSchema, name: "NotFound" } as const;

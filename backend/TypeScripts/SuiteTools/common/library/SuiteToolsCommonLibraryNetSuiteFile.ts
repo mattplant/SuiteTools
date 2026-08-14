@@ -7,8 +7,8 @@
  * @NApiVersion 2.1
  */
 
-import * as file from 'N/file';
-import type { SuiteToolsCommon } from '../SuiteToolsCommon';
+import * as file from "N/file";
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite File Library
@@ -35,7 +35,7 @@ export class SuiteToolsCommonLibraryNetSuiteFile {
   private getFileObj(id: number | string): file.File {
     // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteFile:getFileObj() initiated', details: { id: id } });
     let fileObj: file.File;
-    if (typeof id === 'string') {
+    if (typeof id === "string") {
       const filePath = `/SuiteScripts/${this.stCommon.appDir}/${id}`;
       fileObj = file.load({ id: filePath });
     } else {
@@ -68,7 +68,7 @@ export class SuiteToolsCommonLibraryNetSuiteFile {
     const fileObj = this.getFileObj(id);
     const sql = `select TO_CHAR(File.LastModifiedDate, 'YYYY-MM-DD HH24:MI:SS') as lastModifiedDate from file where id = ${fileObj.id}`;
     const result = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as Array<{ lastmodifieddate: string }>;
-    const lastModifiedDate = result?.[0]?.lastmodifieddate ?? '';
+    const lastModifiedDate = result?.[0]?.lastmodifieddate ?? "";
 
     return lastModifiedDate;
   }

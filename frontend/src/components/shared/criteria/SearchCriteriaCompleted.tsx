@@ -1,5 +1,5 @@
-import type { UseFormRegister } from 'react-hook-form';
-import type { CriteriaFields } from './types';
+import type { UseFormRegister } from "react-hook-form";
+import type { CriteriaFields } from "./types";
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
@@ -10,9 +10,9 @@ interface Props {
 
 export function SearchCriteriaCompleted({
   register,
-  title = 'Completed',
-  trueLabel = 'Yes',
-  falseLabel = 'No',
+  title = "Completed",
+  trueLabel = "Yes",
+  falseLabel = "No",
 }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
@@ -21,7 +21,7 @@ export function SearchCriteriaCompleted({
         size={6}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         id="completed"
-        {...register('completed')}
+        {...register("completed")}
       >
         <option value="">All</option>
         <option value="T">{trueLabel}</option>

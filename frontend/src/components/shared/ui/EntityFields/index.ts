@@ -1,1 +1,1 @@
-export * from './EntityFields';
+export * from "./EntityFields";

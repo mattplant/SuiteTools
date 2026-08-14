@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../../shared/criteria/types';
-import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
-import { SearchCriteriaActive } from '../../shared/criteria/SearchCriteriaActive';
-import { SearchCriteriaIntegrationName } from '../../shared/criteria/SearchCriteriaIntegrationName';
-import { SearchCriteriaTokenName } from '../../shared/criteria/SearchCriteriaTokenName';
-import { SearchCriteriaRoles } from '../../shared/criteria/SearchCriteriaRoles';
-import { SearchCriteriaRows } from '../../shared/criteria/SearchCriteriaRows';
-import { SearchCriteriaUsers } from '../../shared/criteria/SearchCriteriaUsers';
+import type { CriteriaFields } from "../../shared/criteria/types";
+import { RecordCriteriaForm } from "../../shared/criteria/RecordCriteriaForm";
+import { SearchCriteriaActive } from "../../shared/criteria/SearchCriteriaActive";
+import { SearchCriteriaIntegrationName } from "../../shared/criteria/SearchCriteriaIntegrationName";
+import { SearchCriteriaTokenName } from "../../shared/criteria/SearchCriteriaTokenName";
+import { SearchCriteriaRoles } from "../../shared/criteria/SearchCriteriaRoles";
+import { SearchCriteriaRows } from "../../shared/criteria/SearchCriteriaRows";
+import { SearchCriteriaUsers } from "../../shared/criteria/SearchCriteriaUsers";
 
 interface Props {
   defaultCriteria: CriteriaFields;
@@ -16,11 +16,7 @@ interface Props {
 
 export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
   return (
-    <RecordCriteriaForm
-      defaultCriteria={defaultCriteria}
-      setCriteria={setCriteria}
-      submitLabel="Get Logins"
-    >
+    <RecordCriteriaForm defaultCriteria={defaultCriteria} setCriteria={setCriteria} submitLabel="Get Logins">
       {({ register }) => (
         <>
           <SearchCriteriaRows register={register} />

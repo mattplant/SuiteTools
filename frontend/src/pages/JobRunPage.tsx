@@ -1,6 +1,6 @@
-import { useLoaderData } from 'react-router-dom';
-import { JobRunResult } from '../components/features/job/run/RecordResult';
-import type { JobRunLoaderData } from '../routes/jobRunLoader';
+import { useLoaderData } from "react-router-dom";
+import { JobRunResult } from "../components/features/job/run/RecordResult";
+import type { JobRunLoaderData } from "../routes/jobRunLoader";
 
 /**
  * Renders the job run page with job execution details.

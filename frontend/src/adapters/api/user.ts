@@ -12,9 +12,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, userOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { User } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, userOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { User } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
 
 /**
  * Transform a validated `User` payload into the enriched view model used by the frontend.
@@ -22,11 +22,7 @@ import { makeSingularAdapter } from './adapterUtils';
  * @returns The enriched User object with navigation URLs.
  */
 function adaptUser(user: User): User {
-  return {
-    ...user,
-    urlNs: `/app/common/entity/employee.nl?id=${user.id}`,
-    urlDetail: `#/user/${user.id}`,
-  };
+  return { ...user, urlNs: `/app/common/entity/employee.nl?id=${user.id}`, urlDetail: `#/user/${user.id}` };
 }
 
 const userRequestResponseSchema = makeRequestResponseSchema(userOrNotFoundSchema);
@@ -38,4 +34,4 @@ const userRequestResponseSchema = makeRequestResponseSchema(userOrNotFoundSchema
  * @param id - The ID of the user to retrieve.
  * @returns A Promise resolving to a User object or NotFound payload.
  */
-export const getUser = makeSingularAdapter<User>('user', userRequestResponseSchema, adaptUser);
+export const getUser = makeSingularAdapter<User>("user", userRequestResponseSchema, adaptUser);

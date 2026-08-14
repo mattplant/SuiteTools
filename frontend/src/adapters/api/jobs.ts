@@ -10,10 +10,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, jobsOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Jobs } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, jobsOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Jobs } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
 
 const jobsRequestResponseSchema = makeRequestResponseSchema(jobsOrNotFoundSchema);
 
@@ -21,8 +21,6 @@ const jobsRequestResponseSchema = makeRequestResponseSchema(jobsOrNotFoundSchema
  * Fetch and validate a list of `Job` records using optional criteria.
  * Always returns a `Jobs` array, empty if none found.
  */
-export const getJobs = makeListAdapter<Jobs[number], CriteriaFields, 'active'>(
-  'jobs',
-  jobsRequestResponseSchema,
-  ['active'] as const,
-);
+export const getJobs = makeListAdapter<Jobs[number], CriteriaFields, "active">("jobs", jobsRequestResponseSchema, [
+  "active",
+] as const);

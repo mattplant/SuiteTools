@@ -12,9 +12,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, scriptLogOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { ScriptLog } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, scriptLogOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { ScriptLog } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
 
 /**
  * Transform a validated `ScriptLog` payload into the enriched view model used by the frontend.
@@ -38,4 +38,4 @@ const scriptLogRequestResponseSchema = makeRequestResponseSchema(scriptLogOrNotF
  * @param id - The ID of the script log to retrieve.
  * @returns A Promise resolving to a ScriptLog object or NotFound payload.
  */
-export const getScriptLog = makeSingularAdapter<ScriptLog>('scriptLog', scriptLogRequestResponseSchema, adaptScriptLog);
+export const getScriptLog = makeSingularAdapter<ScriptLog>("scriptLog", scriptLogRequestResponseSchema, adaptScriptLog);

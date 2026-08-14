@@ -5,8 +5,8 @@
  * @description Shared helpers for React Router loaders.
  */
 
-import type { LoaderFunctionArgs } from 'react-router-dom';
-import { isNotFoundError, NotFoundError } from '@suiteworks/suitetools-shared';
+import type { LoaderFunctionArgs } from "react-router-dom";
+import { isNotFoundError, NotFoundError } from "@suiteworks/suitetools-shared";
 
 /**
  * Map a failed singular-entity fetch into a React Router error.
@@ -54,7 +54,7 @@ export function makeEntityLoader<T, K extends string>(
     const id = Number(rawId);
 
     if (requirePositiveId && (!Number.isFinite(id) || id <= 0)) {
-      throw new NotFoundError(resourceLabel, rawId ?? '');
+      throw new NotFoundError(resourceLabel, rawId ?? "");
     }
 
     try {

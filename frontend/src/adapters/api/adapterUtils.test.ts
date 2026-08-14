@@ -5,33 +5,23 @@ import type { NotFound } from "@suiteworks/suitetools-shared";
 import { makeListAdapter, pickCriteria, toEntityArray } from "./adapterUtils";
 import { getData } from "./netSuiteClient";
 
-vi.mock("./netSuiteClient", () => ({
-  getData: vi.fn(),
-}));
+vi.mock("./netSuiteClient", () => ({ getData: vi.fn() }));
 
 const getDataMock = vi.mocked(getData);
 
 describe("pickCriteria", () => {
   it("keeps defined whitelist keys and drops undefined", () => {
-    const fields: {
-      active?: string | undefined;
-      roles?: string | undefined;
-      extra?: string | undefined;
-    } = {
+    const fields: { active?: string | undefined; roles?: string | undefined; extra?: string | undefined } = {
       active: "T",
       roles: undefined,
       extra: "x",
     };
-    expect(pickCriteria(fields, ["active", "roles"] as const)).toEqual({
-      active: "T",
-    });
+    expect(pickCriteria(fields, ["active", "roles"] as const)).toEqual({ active: "T" });
   });
 
   it("skips whitelist keys that are absent on the criteria object", () => {
     const fields: { active?: string; missing?: string } = { active: "T" };
-    expect(pickCriteria(fields, ["active", "missing"] as const)).toEqual({
-      active: "T",
-    });
+    expect(pickCriteria(fields, ["active", "missing"] as const)).toEqual({ active: "T" });
   });
 });
 
@@ -55,21 +45,12 @@ describe("makeListAdapter", () => {
   type Row = { id: number; name: string };
   type Criteria = { active?: string; roles?: string[] };
 
-  const schema = {
-    parse: (input: unknown) => input as { data: Row[] | NotFound; status?: number },
-  };
+  const schema = { parse: (input: unknown) => input as { data: Row[] | NotFound; status?: number } };
 
   it("fetches, validates, and returns rows with picked criteria", async () => {
-    getDataMock.mockResolvedValue({
-      status: 200,
-      data: [{ id: 1, name: "a" }],
-    });
+    getDataMock.mockResolvedValue({ status: 200, data: [{ id: 1, name: "a" }] });
 
-    const getRows = makeListAdapter<Row, Criteria, "active" | "roles">(
-      "users",
-      schema,
-      ["active", "roles"] as const,
-    );
+    const getRows = makeListAdapter<Row, Criteria, "active" | "roles">("users", schema, ["active", "roles"] as const);
 
     const result = await getRows({ active: "T", roles: undefined });
 
@@ -78,16 +59,9 @@ describe("makeListAdapter", () => {
   });
 
   it("returns [] on NotFound data", async () => {
-    getDataMock.mockResolvedValue({
-      status: 404,
-      data: { code: "NOT_FOUND", message: "gone" },
-    });
+    getDataMock.mockResolvedValue({ status: 404, data: { code: "NOT_FOUND", message: "gone" } });
 
-    const getRows = makeListAdapter<Row, Criteria, "active">(
-      "users",
-      schema,
-      ["active"] as const,
-    );
+    const getRows = makeListAdapter<Row, Criteria, "active">("users", schema, ["active"] as const);
 
     await expect(getRows({ active: "T" })).resolves.toEqual([]);
   });
@@ -95,30 +69,18 @@ describe("makeListAdapter", () => {
   it("returns [] on nullish data", async () => {
     getDataMock.mockResolvedValue({ status: 200, data: null as unknown as Row[] });
 
-    const getRows = makeListAdapter<Row, Criteria, "active">(
-      "users",
-      schema,
-      ["active"] as const,
-    );
+    const getRows = makeListAdapter<Row, Criteria, "active">("users", schema, ["active"] as const);
 
     await expect(getRows({ active: "T" })).resolves.toEqual([]);
   });
 
   it("applies adaptItem and mapParams when provided", async () => {
-    getDataMock.mockResolvedValue({
-      status: 200,
-      data: [{ id: 1, name: "a" }],
-    });
+    getDataMock.mockResolvedValue({ status: 200, data: [{ id: 1, name: "a" }] });
 
-    const getRows = makeListAdapter<Row, Criteria, "active" | "roles">(
-      "users",
-      schema,
-      ["active", "roles"] as const,
-      {
-        mapParams: (picked) => ({ active: picked.active, joined: "x" }),
-        adaptItem: (row) => ({ ...row, name: row.name.toUpperCase() }),
-      },
-    );
+    const getRows = makeListAdapter<Row, Criteria, "active" | "roles">("users", schema, ["active", "roles"] as const, {
+      mapParams: (picked) => ({ active: picked.active, joined: "x" }),
+      adaptItem: (row) => ({ ...row, name: row.name.toUpperCase() }),
+    });
 
     const result = await getRows({ active: "T", roles: ["1"] });
 

@@ -5,9 +5,9 @@
  * @description Criteria-driven list fetch loop shared by SuiteTools list pages.
  */
 
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
-import { handleError, toArray } from '@suiteworks/suitetools-shared';
-import { useErrorBoundaryTrigger } from './useErrorBoundaryTrigger';
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { handleError, toArray } from "@suiteworks/suitetools-shared";
+import { useErrorBoundaryTrigger } from "./useErrorBoundaryTrigger";
 
 type UseEntityListOptions<TItem, TCriteria> = {
   /** Initial criteria (also passed through to RecordCriteria as defaultCriteria). */

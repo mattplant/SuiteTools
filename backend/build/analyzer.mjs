@@ -1,6 +1,6 @@
-import { readFile } from 'fs/promises';
-import { existsSync, statSync } from 'fs';
-import { resolve } from 'path';
+import { readFile } from "fs/promises";
+import { existsSync, statSync } from "fs";
+import { resolve } from "path";
 
 /**
  * Bundle analysis utilities for monitoring build output sizes and performance
@@ -13,14 +13,9 @@ import { resolve } from 'path';
  * @returns {Object} Analysis results with bundle metrics
  */
 export async function analyzeBundles(deploymentFiles) {
-  console.log('📊 Analyzing bundle sizes...\n');
+  console.log("📊 Analyzing bundle sizes...\n");
 
-  const analysis = {
-    totalSize: 0,
-    bundles: [],
-    warnings: [],
-    recommendations: [],
-  };
+  const analysis = { totalSize: 0, bundles: [], warnings: [], recommendations: [] };
 
   for (const fileConfig of deploymentFiles) {
     const fileName = `${fileConfig.name}.js`;
@@ -33,7 +28,7 @@ export async function analyzeBundles(deploymentFiles) {
 
     try {
       const stats = statSync(filePath);
-      const content = await readFile(filePath, 'utf8');
+      const content = await readFile(filePath, "utf8");
 
       // Calculate bundle metrics (skip expensive content analysis for now)
       const bundleInfo = {
@@ -41,7 +36,7 @@ export async function analyzeBundles(deploymentFiles) {
         type: fileConfig.type,
         size: stats.size,
         sizeKB: Math.round((stats.size / 1024) * 100) / 100,
-        lines: content.split('\n').length,
+        lines: content.split("\n").length,
         exports: fileConfig.exports.length,
         dependencies: [], // Skip dependency extraction as it can be slow
         lastModified: stats.mtime,
@@ -68,7 +63,7 @@ export async function analyzeBundles(deploymentFiles) {
       console.log(`   Lines: ${bundleInfo.lines}`);
       console.log(`   Exports: ${bundleInfo.exports}`);
       console.log(`   Dependencies: ${bundleInfo.dependencies.length}`);
-      console.log('');
+      console.log("");
     } catch (error) {
       analysis.warnings.push(`❌ Failed to analyze ${fileName}: ${error.message}`);
     }
@@ -80,8 +75,8 @@ export async function analyzeBundles(deploymentFiles) {
 
   // Add optimization recommendations based on analysis
   if (totalSizeKB > 1000) {
-    analysis.recommendations.push('Consider externalizing shared dependencies');
-    analysis.recommendations.push('Review bundle contents for unnecessary code');
+    analysis.recommendations.push("Consider externalizing shared dependencies");
+    analysis.recommendations.push("Review bundle contents for unnecessary code");
   }
 
   // Specific recommendations based on individual bundle analysis
@@ -95,14 +90,18 @@ export async function analyzeBundles(deploymentFiles) {
 
   // Show warnings
   if (analysis.warnings.length > 0) {
-    console.log('\n⚠️  Warnings:');
-    analysis.warnings.forEach((warning) => console.log(`   ${warning}`));
+    console.log("\n⚠️  Warnings:");
+    analysis.warnings.forEach((warning) => {
+      console.log(`   ${warning}`);
+    });
   }
 
   // Show recommendations
   if (analysis.recommendations.length > 0) {
-    console.log('\n💡 Optimization Recommendations:');
-    analysis.recommendations.forEach((rec) => console.log(`   • ${rec}`));
+    console.log("\n💡 Optimization Recommendations:");
+    analysis.recommendations.forEach((rec) => {
+      console.log(`   • ${rec}`);
+    });
   }
 
   return analysis;
@@ -119,13 +118,13 @@ function analyzeFileContent(content) {
   let strings = 0;
 
   // Simple line-by-line analysis for comments (much faster than complex regex)
-  const lines = content.split('\n');
+  const lines = content.split("\n");
   for (const line of lines) {
-    if (line.trim().startsWith('//')) {
+    if (line.trim().startsWith("//")) {
       comments += line.length;
     }
     // Simple block comment detection (approximate)
-    if (line.includes('/*') || line.includes('*/')) {
+    if (line.includes("/*") || line.includes("*/")) {
       comments += line.length;
     }
   }
@@ -151,7 +150,7 @@ function extractDependencies(content) {
   const amdMatch = content.match(/define\(\[(.*?)\]/);
   if (amdMatch) {
     const depString = amdMatch[1];
-    const deps = depString.split(',').map((dep) => dep.trim().replace(/['"]/g, ''));
+    const deps = depString.split(",").map((dep) => dep.trim().replace(/['"]/g, ""));
     dependencies.push(...deps.filter((dep) => dep.length > 0));
   }
 

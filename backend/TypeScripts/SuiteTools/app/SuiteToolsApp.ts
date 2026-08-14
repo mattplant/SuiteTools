@@ -7,11 +7,11 @@
  * @NApiVersion 2.1
  */
 
-import * as log from 'N/log';
-import * as url from 'N/url';
-import type { EntryPoints } from 'N/types';
-import { SuiteToolsCommon } from '../common/SuiteToolsCommon';
-import { SuiteToolsAppView } from './SuiteToolsAppView';
+import * as log from "N/log";
+import * as url from "N/url";
+import type { EntryPoints } from "N/types";
+import { SuiteToolsCommon } from "../common/SuiteToolsCommon";
+import { SuiteToolsAppView } from "./SuiteToolsAppView";
 
 /**
  * SuiteTools Application Class
@@ -35,13 +35,13 @@ export class SuiteToolsApp {
 
   constructor(context: EntryPoints.Suitelet.onRequestContext | null = null) {
     this._appUrl = url.resolveScript({
-      scriptId: 'customscript_idev_suitetools_app',
-      deploymentId: 'customdeploy_idev_suitetools_app',
+      scriptId: "customscript_idev_suitetools_app",
+      deploymentId: "customdeploy_idev_suitetools_app",
       returnExternalUrl: false,
     });
     this._apiUrl = url.resolveScript({
-      scriptId: 'customscript_idev_suitetools_api', // the SuiteTools API script id
-      deploymentId: 'customdeploy_idev_suitetools_api', // the SuiteTools API deployment id
+      scriptId: "customscript_idev_suitetools_api", // the SuiteTools API script id
+      deploymentId: "customdeploy_idev_suitetools_api", // the SuiteTools API deployment id
       returnExternalUrl: false,
     });
     this._stCommon = new SuiteToolsCommon();
@@ -54,22 +54,22 @@ export class SuiteToolsApp {
   }
 
   private bootstrapLibrary(context: EntryPoints.Suitelet.onRequestContext): void {
-    log.debug({ title: 'SuiteToolsApp:bootstrapLibrary() initiated', details: context });
+    log.debug({ title: "SuiteToolsApp:bootstrapLibrary() initiated", details: context });
 
     // verify integrity of app settings before proceeding
     const issues = [];
     // check that settings were found
     const settingsFound = this.stCommon.stSettings.getSettings();
     if (!settingsFound) {
-      issues.push('SuiteToolsApp:bootstrapLibrary() did not find any settings');
+      issues.push("SuiteToolsApp:bootstrapLibrary() did not find any settings");
     }
     // check that core configs are set
     if (!this.stCommon.stSettings.cssUrl || !this.stCommon.stSettings.jsUrl) {
-      issues.push('Core config settings were not set.');
+      issues.push("Core config settings were not set.");
     }
     // log app issues
     if (issues.length > 0) {
-      log.error({ title: 'SuiteToolsApp:bootstrapLibrary() found issues', details: issues });
+      log.error({ title: "SuiteToolsApp:bootstrapLibrary() found issues", details: issues });
     }
   }
 
@@ -89,7 +89,7 @@ export class SuiteToolsApp {
       const appIssues = [];
       // check that core configs are set
       if (!this._stCommon.stSettings.cssUrl || !this._stCommon.stSettings.jsUrl) {
-        appIssues.push('Core config settings were not set. Refresh page to see if the issue has been resolved.');
+        appIssues.push("Core config settings were not set. Refresh page to see if the issue has been resolved.");
       }
 
       // render the SPA or issues form
@@ -98,12 +98,12 @@ export class SuiteToolsApp {
         stAppView.renderSpa();
       } else {
         // log app issues and render the app issues form
-        log.error({ title: 'SuiteToolsApp:bootstrapSpa() found issues', details: appIssues });
+        log.error({ title: "SuiteToolsApp:bootstrapSpa() found issues", details: appIssues });
         stAppView.renderAppIssuesForm(appIssues);
       }
     } catch (e) {
       // log the error and render the app error form
-      log.error({ title: 'SuiteToolsApp:bootstrapSpa() caught error', details: e });
+      log.error({ title: "SuiteToolsApp:bootstrapSpa() caught error", details: e });
       stAppView.renderAppErrorForm(e);
     }
   }

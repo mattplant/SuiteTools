@@ -22,11 +22,7 @@ export function isErrorResponse(value: unknown): value is ErrorResponse {
     return false;
   }
 
-  if (
-    typeof v.status !== "number" ||
-    typeof v.code !== "string" ||
-    typeof v.message !== "string"
-  ) {
+  if (typeof v.status !== "number" || typeof v.code !== "string" || typeof v.message !== "string") {
     return false;
   }
 
@@ -34,10 +30,7 @@ export function isErrorResponse(value: unknown): value is ErrorResponse {
     return false;
   }
 
-  if (
-    v.context !== undefined &&
-    (typeof v.context !== "object" || v.context === null || Array.isArray(v.context))
-  ) {
+  if (v.context !== undefined && (typeof v.context !== "object" || v.context === null || Array.isArray(v.context))) {
     return false;
   }
 
@@ -53,15 +46,9 @@ export function parseErrorResponse(value: unknown): ErrorResponse | null {
     return null;
   }
 
-  const severity =
-    value.severity && SEVERITIES.has(value.severity) ? value.severity : "error";
+  const severity = value.severity && SEVERITIES.has(value.severity) ? value.severity : "error";
 
-  const out: ErrorResponse = {
-    status: value.status,
-    code: value.code,
-    message: value.message,
-    severity,
-  };
+  const out: ErrorResponse = { status: value.status, code: value.code, message: value.message, severity };
 
   if (value.context) {
     out.context = value.context;

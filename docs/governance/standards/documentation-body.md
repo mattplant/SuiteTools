@@ -45,7 +45,7 @@ Use clear, descriptive headings to organize content logically.
 
 #### Heading Capitalization Enforcement
 
-SuiteTools enforces **Title Case** in all Markdown headings via a custom ESLint rule. This ensures consistent structure, developer clarity, and suite-wide discoverability.
+SuiteTools uses **Title Case** in all Markdown headings for consistent structure, developer clarity and suite-wide discoverability. This was previously enforced by a custom ESLint rule; that rule was removed with ESLint in #70, as Biome does not lint Markdown, so the convention is now upheld in review.
 
 - Headings must follow Title Case (e.g. `### Architecture Overview`)
 - Acronyms and inline code (e.g. `NetSuite`, `tailwindcss`) preserve original casing
@@ -58,7 +58,7 @@ To skip enforcement for a specific heading, add this comment (`<!-- heading-titl
 ### `flowbite` → `tailwindcss` Patch
 ```
 
-This checks all `.md` files across the suite for heading capitalization violations.
+The marker is retained so the intent stays visible in the source, and so enforcement can be restored if a Markdown-aware checker is reintroduced.
 
 ---
 

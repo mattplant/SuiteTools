@@ -23,16 +23,14 @@ import { SchemaValidationError } from "../domain/schema-validation.error";
 export const makeNetSuiteApiError = (
   endpoint: string,
   message: string,
-  opts?: { status?: number; code?: string; cause?: unknown }
+  opts?: { status?: number; code?: string; cause?: unknown },
 ): NetSuiteApiError => new NetSuiteApiError(message, { endpoint, ...opts });
 
 /**
  * Factory to create a NotFoundError instance.
  */
-export const makeNotFoundError = (
-  resource: string,
-  id: string | number
-): NotFoundError => new NotFoundError(resource, id);
+export const makeNotFoundError = (resource: string, id: string | number): NotFoundError =>
+  new NotFoundError(resource, id);
 
 /**
  * Factory to create a SchemaValidationError instance.

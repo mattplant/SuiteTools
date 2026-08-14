@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useNavigate, useRouteError, isRouteErrorResponse } from 'react-router-dom';
-import { isNotFoundError, SuiteError } from '@suiteworks/suitetools-shared';
-import { DevSuiteErrorOverlay } from '../components/shared/errors/DevSuiteErrorOverlay';
-import { DefaultFallback } from '../components/shared/errors/DefaultFallback';
-import { useShowDevErrorOverlay } from '../hooks/useShowDevErrorOverlay';
+import { useNavigate, useRouteError, isRouteErrorResponse } from "react-router-dom";
+import { isNotFoundError, SuiteError } from "@suiteworks/suitetools-shared";
+import { DevSuiteErrorOverlay } from "../components/shared/errors/DevSuiteErrorOverlay";
+import { DefaultFallback } from "../components/shared/errors/DefaultFallback";
+import { useShowDevErrorOverlay } from "../hooks/useShowDevErrorOverlay";
 
 /**
  * Normalize loader failures that surface as HTTP-style responses.
@@ -15,20 +15,20 @@ import { useShowDevErrorOverlay } from '../hooks/useShowDevErrorOverlay';
  */
 function statusTextFor(status: number, statusText: string): string {
   if (statusText) return statusText;
-  if (status === 404) return 'Not Found';
-  if (status === 400) return 'Bad Request';
-  if (status === 500) return 'Internal Server Error';
-  return 'Error';
+  if (status === 404) return "Not Found";
+  if (status === 400) return "Bad Request";
+  if (status === 500) return "Internal Server Error";
+  return "Error";
 }
 
 /** True for RR ErrorResponse or a Response-like object (avoids fragile instanceof). */
 function isResponseLike(error: unknown): error is { status: number; statusText?: string; ok?: boolean } {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'status' in error &&
-    typeof (error as { status: unknown }).status === 'number' &&
-    ('ok' in error || 'headers' in error || error instanceof Response)
+    "status" in error &&
+    typeof (error as { status: unknown }).status === "number" &&
+    ("ok" in error || "headers" in error || error instanceof Response)
   );
 }
 
@@ -38,16 +38,13 @@ function getHttpError(error: unknown): { status: number; statusText: string; det
       status: error.status,
       statusText: statusTextFor(error.status, error.statusText),
     };
-    if (typeof error.data === 'string') {
+    if (typeof error.data === "string") {
       result.detail = error.data;
     }
     return result;
   }
   if (isResponseLike(error)) {
-    return {
-      status: error.status,
-      statusText: statusTextFor(error.status, error.statusText ?? ''),
-    };
+    return { status: error.status, statusText: statusTextFor(error.status, error.statusText ?? "") };
   }
   return null;
 }
@@ -67,7 +64,7 @@ export default function ErrorPage(): React.JSX.Element {
     if (window.history.length > 1) {
       navigate(-1);
     } else {
-      navigate('/');
+      navigate("/");
     }
   };
 

@@ -6,8 +6,8 @@
  * @license GPL-3.0-or-later
  */
 
-import type { SuiteQLResults } from '../common/types';
-import type { Response } from './types';
+import type { SuiteQLResults } from "../common/types";
+import type { Response } from "./types";
 
 type SuiteQLRow = SuiteQLResults[number];
 

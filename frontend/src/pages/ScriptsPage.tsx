@@ -1,10 +1,10 @@
-import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getScriptModalData } from '../adapters/api/script';
-import { getScripts } from '../adapters/api/scripts';
-import { RecordCriteria } from '../components/features/script/RecordCriteria';
-import { Results } from '../components/shared/results/Results';
-import { ResultsTypes } from '../components/shared/results/types';
-import { useEntityList } from '../hooks/useEntityList';
+import type { CriteriaFields } from "../components/shared/criteria/types";
+import { getScriptModalData } from "../adapters/api/script";
+import { getScripts } from "../adapters/api/scripts";
+import { RecordCriteria } from "../components/features/script/RecordCriteria";
+import { Results } from "../components/shared/results/Results";
+import { ResultsTypes } from "../components/shared/results/types";
+import { useEntityList } from "../hooks/useEntityList";
 
 /**
  * ScriptsPage component displays the scripts list and criteria filter.
@@ -12,18 +12,15 @@ import { useEntityList } from '../hooks/useEntityList';
  */
 export function ScriptsPage(): React.ReactElement {
   const defaultCriteria: CriteriaFields = {
-    active: '',
-    files: [''],
-    owners: [''],
-    scriptTypes: [''],
-    scriptNames: [''],
-    versions: [''],
+    active: "",
+    files: [""],
+    owners: [""],
+    scriptTypes: [""],
+    scriptNames: [""],
+    versions: [""],
   };
 
-  const { setCriteria, results } = useEntityList({
-    defaultCriteria,
-    fetchList: getScripts,
-  });
+  const { setCriteria, results } = useEntityList({ defaultCriteria, fetchList: getScripts });
 
   return (
     <div className="mt-4">

@@ -1,7 +1,4 @@
-export type CriteriaFields = {
-  startDate: string;
-  endDate: string;
-};
+export type CriteriaFields = { startDate: string; endDate: string };
 
 interface ConcurrencyRequestRow {
   startDate: string;

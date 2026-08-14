@@ -43,11 +43,7 @@ export type EndpointName = keyof typeof endpointMap;
 
 /** Endpoint names that do not end with "s". */
 export type SingularEntityName =
-  Extract<EndpointName, `${string}`> extends infer T
-    ? T extends `${infer _}s`
-      ? never
-      : T
-    : never;
+  Extract<EndpointName, `${string}`> extends infer T ? (T extends `${infer _}s` ? never : T) : never;
 
 /** Endpoint names that end with "s". */
 export type PluralEntityName = Extract<EndpointName, `${string}s`>;

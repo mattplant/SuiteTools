@@ -5,24 +5,11 @@ import { isErrorResponse, parseErrorResponse } from "./isErrorResponse";
 
 describe("isErrorResponse", () => {
   it("accepts a minimal error payload", () => {
-    expect(
-      isErrorResponse({
-        status: 404,
-        code: "NOT_FOUND",
-        message: "User not found",
-      }),
-    ).toBe(true);
+    expect(isErrorResponse({ status: 404, code: "NOT_FOUND", message: "User not found" })).toBe(true);
   });
 
   it("rejects success envelopes that carry data", () => {
-    expect(
-      isErrorResponse({
-        status: 200,
-        code: "OK",
-        message: "ok",
-        data: {},
-      }),
-    ).toBe(false);
+    expect(isErrorResponse({ status: 200, code: "OK", message: "ok", data: {} })).toBe(false);
   });
 
   it("rejects non-objects and incomplete shapes", () => {
@@ -32,21 +19,11 @@ describe("isErrorResponse", () => {
   });
 
   it("rejects invalid severity or non-object context", () => {
+    expect(isErrorResponse({ status: 500, code: "UNEXPECTED_ERROR", message: "boom", severity: "critical" })).toBe(
+      false,
+    );
     expect(
-      isErrorResponse({
-        status: 500,
-        code: "UNEXPECTED_ERROR",
-        message: "boom",
-        severity: "critical",
-      }),
-    ).toBe(false);
-    expect(
-      isErrorResponse({
-        status: 500,
-        code: "UNEXPECTED_ERROR",
-        message: "boom",
-        context: ["not-an-object"],
-      }),
+      isErrorResponse({ status: 500, code: "UNEXPECTED_ERROR", message: "boom", context: ["not-an-object"] }),
     ).toBe(false);
   });
 });

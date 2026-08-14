@@ -20,19 +20,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getDataFromPageContent } from '../lib/netsuite/collectData';
-import type { Column } from '../components/features/concurrency/types';
+import { getDataFromPageContent } from "../lib/netsuite/collectData";
+import type { Column } from "../components/features/concurrency/types";
 import type {
   ConcurrencySummaryData,
   ConcurrencySummaryDataConcurrency,
   ConcurrencySummaryDataViolations,
-} from '../components/features/concurrency/summary/types';
+} from "../components/features/concurrency/summary/types";
 import type {
   ConcurrencyDetailData,
   ConcurrencyDetailDataConcurrency,
   ConcurrencyDetailDataViolations,
-} from '../components/features/concurrency/detail/types';
-import type { ConcurrencyRequestData } from '../components/features/concurrency/request/types';
+} from "../components/features/concurrency/detail/types";
+import type { ConcurrencyRequestData } from "../components/features/concurrency/request/types";
 // import { ConcurrencyRequestLogsData } from '../components/concurrency/requestLogs/types';
 // -----------------------------------------------------------------------------
 // SUMMARY
@@ -50,7 +50,6 @@ export async function getConcurrencySummaryData(
   startDate: Date,
   endDate: Date,
 ): Promise<ConcurrencySummaryData> {
-
   // Clone before mutating — callers often pass React state Date instances.
   const rangeStart = new Date(startDate);
   const rangeEnd = new Date(endDate);
@@ -104,17 +103,17 @@ export function addConcurrencySummaryAverage(
  */
 function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: Date): string {
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_concurrency_v2&deploy=customdeploy_nsapm_cm_sl_concurrency_v2&compfil=(REDACTED)&testmode=F&startDateMS=1683512580000&endDateMS=1683771780000&integId=&offsetMins=420
-  const path = '/app/site/hosting/scriptlet.nl';
+  const path = "/app/site/hosting/scriptlet.nl";
   const params = [];
-  params.push('script=customscript_nsapm_cm_sl_concurrency_v2'); // script (note cm instead of cd)
-  params.push('deploy=customdeploy_nsapm_cm_sl_concurrency_v2'); // deploy (note cm instead of cd)
-  params.push('compfil=' + accountId); // account ID
-  params.push('testmode=F'); // test mode
-  params.push('startDateMS=' + Number(startDate)); // start date
-  params.push('endDateMS=' + Number(endDate)); // end date
-  params.push('integId='); // integration ID
-  params.push('offsetMins=420'); // 7 (420/60) hour time offset for PST
-  const url = path + '?' + params.join('&');
+  params.push("script=customscript_nsapm_cm_sl_concurrency_v2"); // script (note cm instead of cd)
+  params.push("deploy=customdeploy_nsapm_cm_sl_concurrency_v2"); // deploy (note cm instead of cd)
+  params.push("compfil=" + accountId); // account ID
+  params.push("testmode=F"); // test mode
+  params.push("startDateMS=" + Number(startDate)); // start date
+  params.push("endDateMS=" + Number(endDate)); // end date
+  params.push("integId="); // integration ID
+  params.push("offsetMins=420"); // 7 (420/60) hour time offset for PST
+  const url = path + "?" + params.join("&");
 
   return url;
 }
@@ -128,17 +127,17 @@ function getConcurrencySummaryUrl(accountId: string, startDate: Date, endDate: D
  */
 function getConcurrencySummaryViolationsUrl(accountId: string, startDate: Date, endDate: Date): string {
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cm_sl_violations_v2&deploy=customdeploy_nsapm_cm_sl_violations_v2&testmode=F&startDateMS=1686034800000&endDateMS=1686380400000&compfil=(REDACTED)&integId=&allocatedList=
-  const path = '/app/site/hosting/scriptlet.nl';
+  const path = "/app/site/hosting/scriptlet.nl";
   const params = [];
-  params.push('script=customscript_nsapm_cm_sl_violations_v2'); // script (note cm instead of cd)
-  params.push('deploy=customdeploy_nsapm_cm_sl_violations_v2'); // deploy (note cm instead of cd)
-  params.push('compfil=' + accountId); // account ID
-  params.push('testmode=F'); // test mode
-  params.push('startDateMS=' + Number(startDate)); // start date
-  params.push('endDateMS=' + Number(endDate)); // end date
-  params.push('integId='); // integration ID
-  params.push('allocatedList'); // 7 (420/60) hour time offset for PST
-  const url = path + '?' + params.join('&');
+  params.push("script=customscript_nsapm_cm_sl_violations_v2"); // script (note cm instead of cd)
+  params.push("deploy=customdeploy_nsapm_cm_sl_violations_v2"); // deploy (note cm instead of cd)
+  params.push("compfil=" + accountId); // account ID
+  params.push("testmode=F"); // test mode
+  params.push("startDateMS=" + Number(startDate)); // start date
+  params.push("endDateMS=" + Number(endDate)); // end date
+  params.push("integId="); // integration ID
+  params.push("allocatedList"); // 7 (420/60) hour time offset for PST
+  const url = path + "?" + params.join("&");
 
   return url;
 }
@@ -151,12 +150,12 @@ function getConcurrencySummaryViolationsUrl(accountId: string, startDate: Date, 
 export function initializeConcurrencySummaryColumns(hours: number[]): Column[] {
   const columns: Column[] = [];
   // add initial top left cell
-  columns.push({ name: '', key: 'date', width: 92 });
+  columns.push({ name: "", key: "date", width: 92 });
   // add hours
   for (let i = 0; i < 24; i++) {
     const hour = new Date(hours[i]);
     const col = {
-      name: hour.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
+      name: hour.toLocaleTimeString("en-US", { hour: "numeric", hour12: true }),
       key: String(i),
       width: 38,
     };
@@ -182,7 +181,6 @@ export async function getConcurrencyDetailData(
   startDate: string,
   endDate: string,
 ): Promise<ConcurrencyDetailData> {
-
   // get concurrency detail from NetSuite's APM service
   const concurrencyUrl = getConcurrencyDetailUrl(accountId, startDate, endDate);
   const currencyResponse = await getDataFromPageContent(concurrencyUrl);
@@ -205,18 +203,18 @@ export async function getConcurrencyDetailData(
  */
 function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: string): string {
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_concurrency_v2&deploy=customdeploy_nsapm_cd_sl_concurrency_v2&testmode=F&startDateMS=1682002800000&endDateMS=1682006400000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
-  const path = '/app/site/hosting/scriptlet.nl';
+  const path = "/app/site/hosting/scriptlet.nl";
   const params = [];
-  params.push('script=customscript_nsapm_cd_sl_concurrency_v2'); // script (note cd instead of cm)
-  params.push('deploy=customdeploy_nsapm_cd_sl_concurrency_v2'); // deploy (note cd instead of cm)
-  params.push('compfil=' + accountId); // account ID
-  params.push('testmode=F'); // test mode
-  params.push('startDateMS=' + startDate); // start date
-  params.push('endDateMS=' + endDate); // end date
-  params.push('concurrencyMode=noallocation'); // concurrency mode
-  params.push('allocatedList='); // allocated list
-  params.push('integId='); // integration ID
-  const url = path + '?' + params.join('&');
+  params.push("script=customscript_nsapm_cd_sl_concurrency_v2"); // script (note cd instead of cm)
+  params.push("deploy=customdeploy_nsapm_cd_sl_concurrency_v2"); // deploy (note cd instead of cm)
+  params.push("compfil=" + accountId); // account ID
+  params.push("testmode=F"); // test mode
+  params.push("startDateMS=" + startDate); // start date
+  params.push("endDateMS=" + endDate); // end date
+  params.push("concurrencyMode=noallocation"); // concurrency mode
+  params.push("allocatedList="); // allocated list
+  params.push("integId="); // integration ID
+  const url = path + "?" + params.join("&");
 
   return url;
 }
@@ -230,16 +228,16 @@ function getConcurrencyDetailUrl(accountId: string, startDate: string, endDate: 
  */
 function getConcurrencyDetailViolationsUrl(accountId: string, startDate: string, endDate: string): string {
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_violations_v2&deploy=customdeploy_nsapm_cd_sl_violations_v2&testmode=F&startDateMS=1685383200000&endDateMS=1685386800000&concurrencyMode=noallocation&integId=&compfil=(REDACTED)&allocatedList=
-  const path = '/app/site/hosting/scriptlet.nl';
+  const path = "/app/site/hosting/scriptlet.nl";
   const params = [];
-  params.push('script=customscript_nsapm_cd_sl_violations_v2'); // script (note cm instead of cd)
-  params.push('deploy=customdeploy_nsapm_cd_sl_violations_v2'); // deploy (note cm instead of cd)
-  params.push('startDateMS=' + startDate); // start date
-  params.push('endDateMS=' + endDate); // end date
-  params.push('integId='); // integration ID
-  params.push('compfil=' + accountId); // accountId
-  params.push('allocatedList'); // 7 (420/60) hour time offset for PST
-  const url = path + '?' + params.join('&');
+  params.push("script=customscript_nsapm_cd_sl_violations_v2"); // script (note cm instead of cd)
+  params.push("deploy=customdeploy_nsapm_cd_sl_violations_v2"); // deploy (note cm instead of cd)
+  params.push("startDateMS=" + startDate); // start date
+  params.push("endDateMS=" + endDate); // end date
+  params.push("integId="); // integration ID
+  params.push("compfil=" + accountId); // accountId
+  params.push("allocatedList"); // 7 (420/60) hour time offset for PST
+  const url = path + "?" + params.join("&");
 
   return url;
 }
@@ -260,7 +258,6 @@ export async function getConcurrencyRequestData(
   startDate: string,
   endDate: string,
 ): Promise<ConcurrencyRequestData> {
-
   // get concurrency requests from NetSuite's APM service
   const concurrencyUrl = getConcurrencyRequestUrl(accountId, startDate, endDate);
   const currencyResponse = await getDataFromPageContent(concurrencyUrl);
@@ -286,23 +283,23 @@ function getConcurrencyRequestUrl(accountId: string, startDate: string, endDate:
   const windowExtended = 6 * 60 * 1000; // 5 + 1 minute extra in milliseconds
   const startDateExtended = Number(startDate) - windowExtended;
   // example URL: /app/site/hosting/scriptlet.nl?script=customscript_nsapm_cd_sl_instances_v2&deploy=customdeploy_nsapm_cd_sl_instances_v2&testmode=F&startDateMS=1748941020000&endDateMS=1748941080000&compfil=(REDACTED)&allocatedList=&concurrencyMode=noallocation&integId=&sort=startDate&dir=ASC&pageLimit=10&startIndex=0
-  const path = '/app/site/hosting/scriptlet.nl';
+  const path = "/app/site/hosting/scriptlet.nl";
   const params = [];
-  params.push('script=customscript_nsapm_cd_sl_instances_v2'); // script (note cd instead of cm)
-  params.push('deploy=customdeploy_nsapm_cd_sl_instances_v2'); // deploy (note cd instead of cm)
-  params.push('testmode=F'); // test mode
-  params.push('startDateMS=' + startDateExtended); // start date
-  params.push('endDateMS=' + endDate); // end date
-  params.push('compfil=' + accountId); // account ID
-  params.push('allocatedList='); // allocated list (optional)
-  params.push('concurrencyMode=noallocation'); // concurrency mode
-  params.push('integId='); // integration ID (optional)
-  params.push('sort=startDate'); // sort order
-  params.push('dir=ASC'); // sort direction
+  params.push("script=customscript_nsapm_cd_sl_instances_v2"); // script (note cd instead of cm)
+  params.push("deploy=customdeploy_nsapm_cd_sl_instances_v2"); // deploy (note cd instead of cm)
+  params.push("testmode=F"); // test mode
+  params.push("startDateMS=" + startDateExtended); // start date
+  params.push("endDateMS=" + endDate); // end date
+  params.push("compfil=" + accountId); // account ID
+  params.push("allocatedList="); // allocated list (optional)
+  params.push("concurrencyMode=noallocation"); // concurrency mode
+  params.push("integId="); // integration ID (optional)
+  params.push("sort=startDate"); // sort order
+  params.push("dir=ASC"); // sort direction
   // params.push('pageLimit=10'); // page limit (note that we do not want to page unless we need to)
   // params.push('startIndex=0'); // start index (note that we do not want to page unless we need to)
 
-  const url = path + '?' + params.join('&');
+  const url = path + "?" + params.join("&");
 
   return url;
 }

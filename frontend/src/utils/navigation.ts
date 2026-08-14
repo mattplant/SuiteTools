@@ -15,18 +15,18 @@
  * @returns Base URL with script and deploy parameters
  */
 export function getAppBaseUrl(): string {
-  const rootElement = document.getElementById('root');
-  const appUrl = rootElement?.getAttribute('data-app-url');
+  const rootElement = document.getElementById("root");
+  const appUrl = rootElement?.getAttribute("data-app-url");
 
   if (appUrl) {
-    if (appUrl.startsWith('/')) {
+    if (appUrl.startsWith("/")) {
       const { origin } = window.location;
       return `${origin}${appUrl}`;
     }
     return appUrl;
   }
 
-  return '';
+  return "";
 }
 
 /**
@@ -35,13 +35,13 @@ export function getAppBaseUrl(): string {
  * @returns Hash path such as `#/user/123`
  */
 function toHashPath(path: string): string {
-  if (path.startsWith('#/')) {
+  if (path.startsWith("#/")) {
     return path;
   }
-  if (path.startsWith('#')) {
-    return `#/${path.slice(1).replace(/^\/+/, '')}`;
+  if (path.startsWith("#")) {
+    return `#/${path.slice(1).replace(/^\/+/, "")}`;
   }
-  if (path.startsWith('/')) {
+  if (path.startsWith("/")) {
     return `#${path}`;
   }
   return `#/${path}`;
@@ -56,7 +56,7 @@ function toHashPath(path: string): string {
 export function openAppPage(path: string): void {
   const hashPath = toHashPath(path);
   const baseUrl = getAppBaseUrl();
-  const suiteletBase = baseUrl.split('#')[0];
+  const suiteletBase = baseUrl.split("#")[0];
 
   if (suiteletBase) {
     try {
@@ -71,7 +71,7 @@ export function openAppPage(path: string): void {
       // Fall through to new-tab navigation.
     }
 
-    window.open(`${suiteletBase}${hashPath}`, '_blank', 'noopener,noreferrer');
+    window.open(`${suiteletBase}${hashPath}`, "_blank", "noopener,noreferrer");
     return;
   }
 
@@ -83,5 +83,5 @@ export function openAppPage(path: string): void {
  * @param url - The NetSuite page URL (relative or absolute)
  */
 export function openNetSuitePage(url: string): void {
-  window.open(url, '_blank', 'noopener,noreferrer');
+  window.open(url, "_blank", "noopener,noreferrer");
 }

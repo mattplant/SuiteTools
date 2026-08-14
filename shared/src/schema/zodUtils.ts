@@ -72,10 +72,7 @@ function toJSON<T>(data: T): Record<string, unknown> {
 
 type ShapeKeys<TSchema extends z.ZodObject<any>> = keyof TSchema["shape"];
 
-type ZEntityMeta<
-  TSchema extends z.ZodObject<any>,
-  TName extends string = string,
-> = {
+type ZEntityMeta<TSchema extends z.ZodObject<any>, TName extends string = string> = {
   entity?: TName; // Singular name of the entity
   version?: string; // Version of the schema
   plural: string; // Plural name of the entity
@@ -87,9 +84,7 @@ type ZEntityMeta<
 type Final<
   TSchema extends z.ZodObject<any>,
   TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined,
-> = TNormalizeFn extends (...a: any) => any
-  ? ReturnType<NonNullable<TNormalizeFn>>
-  : z.output<TSchema>;
+> = TNormalizeFn extends (...a: any) => any ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>;
 
 type ZEntityTypes<TSchema extends z.ZodTypeAny, TNormalized> = {
   /** Pre-transform input type */
@@ -105,37 +100,28 @@ type ZEntityTypes<TSchema extends z.ZodTypeAny, TNormalized> = {
 type ZEntityBundle<
   TSchema extends z.ZodObject<any>,
   TName extends string,
-  TNormalizeFn extends
-    | ((data: z.output<TSchema>) => any)
-    | undefined = undefined,
+  TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined = undefined,
 > = {
   schema: TSchema;
   arraySchema: z.ZodArray<TSchema>;
 
   parse: (input: unknown) => Final<TSchema, TNormalizeFn>;
   safeParse: (
-    input: unknown
-  ) =>
-    | { success: true; data: Final<TSchema, TNormalizeFn> }
-    | { success: false; error: ZodError<z.input<TSchema>> };
+    input: unknown,
+  ) => { success: true; data: Final<TSchema, TNormalizeFn> } | { success: false; error: ZodError<z.input<TSchema>> };
 
   // Explicit predicate annotations prevent TS2775
   assert: (input: unknown) => asserts input is Final<TSchema, TNormalizeFn>;
 
-  parseMany: (
-    input: ReadonlyArray<unknown>
-  ) => ReadonlyArray<Final<TSchema, TNormalizeFn>>;
+  parseMany: (input: ReadonlyArray<unknown>) => ReadonlyArray<Final<TSchema, TNormalizeFn>>;
   safeParseMany: (
-    input: unknown[] | null | undefined
+    input: unknown[] | null | undefined,
   ) => ReadonlyArray<
-    | { success: true; data: Final<TSchema, TNormalizeFn> }
-    | { success: false; error: ZodError<z.input<TSchema>> }
+    { success: true; data: Final<TSchema, TNormalizeFn> } | { success: false; error: ZodError<z.input<TSchema>> }
   >;
 
   // Explicit predicate annotations prevent TS2775
-  assertMany: (
-    input: unknown
-  ) => asserts input is ReadonlyArray<Final<TSchema, TNormalizeFn>>;
+  assertMany: (input: unknown) => asserts input is ReadonlyArray<Final<TSchema, TNormalizeFn>>;
 
   types: ZEntityTypes<TSchema, Final<TSchema, TNormalizeFn>>;
   meta: ZEntityMeta<TSchema, TName>;
@@ -158,12 +144,10 @@ type ZEntityBundle<
 function zCreateBundle<
   const TSchema extends z.ZodObject<any>,
   const TName extends string,
-  TNormalizeFn extends
-    | ((data: z.output<TSchema>) => any)
-    | undefined = undefined,
+  TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined = undefined,
 >(
   schema: TSchema,
-  options: { normalize?: TNormalizeFn; meta: ZEntityMeta<TSchema, TName> }
+  options: { normalize?: TNormalizeFn; meta: ZEntityMeta<TSchema, TName> },
 ): ZEntityBundle<TSchema, TName, TNormalizeFn> {
   const { normalize } = options;
 
@@ -171,21 +155,13 @@ function zCreateBundle<
   const meta = {
     ...options.meta,
     // auto-fill fields if not provided
-    fields:
-      options.meta.fields ??
-      (Object.keys(schema.shape) as readonly ShapeKeys<TSchema>[]),
-    plural:
-      options.meta.plural ??
-      (options.meta.entity ? `${options.meta.entity}s` : ""),
-    displayName:
-      options.meta.displayName ??
-      (options.meta.entity ?? "").replace(/([a-z])([A-Z])/g, "$1 $2"),
+    fields: options.meta.fields ?? (Object.keys(schema.shape) as readonly ShapeKeys<TSchema>[]),
+    plural: options.meta.plural ?? (options.meta.entity ? `${options.meta.entity}s` : ""),
+    displayName: options.meta.displayName ?? (options.meta.entity ?? "").replace(/([a-z])([A-Z])/g, "$1 $2"),
   } as const;
 
   // Final output type
-  type Final = TNormalizeFn extends (...a: any) => any
-    ? ReturnType<NonNullable<TNormalizeFn>>
-    : z.output<TSchema>;
+  type Final = TNormalizeFn extends (...a: any) => any ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>;
 
   // Single-item helpers
   const parse: (input: unknown) => Final = (input) => {
@@ -193,17 +169,13 @@ function zCreateBundle<
     return normalize ? (normalize(parsed) as Final) : (parsed as Final);
   };
   const safeParse: (
-    input: unknown
-  ) =>
-    | { success: true; data: Final }
-    | { success: false; error: ZodError<z.input<TSchema>> } = (input) => {
+    input: unknown,
+  ) => { success: true; data: Final } | { success: false; error: ZodError<z.input<TSchema>> } = (input) => {
     const res = schema.safeParse(input);
     if (!res.success) {
       return { success: false, error: res.error as ZodError<z.input<TSchema>> };
     }
-    const data = normalize
-      ? (normalize(res.data as z.output<TSchema>) as Final)
-      : (res.data as Final);
+    const data = normalize ? (normalize(res.data as z.output<TSchema>) as Final) : (res.data as Final);
     return { success: true, data };
   };
   const assert: (input: unknown) => asserts input is Final = (input) => {
@@ -211,28 +183,19 @@ function zCreateBundle<
   };
 
   // Many-items helpers
-  const parseMany: (input: ReadonlyArray<unknown>) => ReadonlyArray<Final> = (
-    input
-  ) =>
+  const parseMany: (input: ReadonlyArray<unknown>) => ReadonlyArray<Final> = (input) =>
     arraySchema
       .parse(input)
-      .map((val) =>
-        normalize
-          ? (normalize(val as z.output<TSchema>) as Final)
-          : (val as Final)
-      );
+      .map((val) => (normalize ? (normalize(val as z.output<TSchema>) as Final) : (val as Final)));
   const safeParseMany: (
-    input: unknown[] | null | undefined
-  ) => ReadonlyArray<
-    | { success: true; data: Final }
-    | { success: false; error: ZodError<z.input<TSchema>> }
-  > = (input) => {
+    input: unknown[] | null | undefined,
+  ) => ReadonlyArray<{ success: true; data: Final } | { success: false; error: ZodError<z.input<TSchema>> }> = (
+    input,
+  ) => {
     if (!input) return [];
     return input.map((item) => safeParse(item));
   };
-  const assertMany: (
-    input: unknown
-  ) => asserts input is ReadonlyArray<Final> = (input) => {
+  const assertMany: (input: unknown) => asserts input is ReadonlyArray<Final> = (input) => {
     arraySchema.parse(input);
   };
 
@@ -252,9 +215,7 @@ function zCreateBundle<
     assertMany,
     types: undefined as unknown as ZEntityTypes<
       TSchema,
-      TNormalizeFn extends (...a: any) => any
-        ? ReturnType<NonNullable<TNormalizeFn>>
-        : z.output<TSchema>
+      TNormalizeFn extends (...a: any) => any ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>
     >,
     meta,
     toJSON,
@@ -281,11 +242,7 @@ function zCreateBundle<
 //   ) => ReturnType<typeof zCreateBundle<TSchema, TName, TNormalizeFn>>
 // >;
 
-const zHelpers = {
-  zParseHelpers,
-  zCreateBundle,
-  toJSON,
-};
+const zHelpers = { zParseHelpers, zCreateBundle, toJSON };
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

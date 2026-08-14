@@ -1,25 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import type { CriteriaFields } from '../components/features/concurrency/detail/types';
-import { getConcurrencyDetail } from '../adapters/api/concurrencyDetail';
-import type { ConcurrencyDetailData } from '../components/features/concurrency/detail/types';
-import { ConcurrencyDetailOverview } from '../components/features/concurrency/detail/Overview';
-import { ConcurrencyDetailBarGraphWrapper } from '../components/features/concurrency/detail/barGraph/Wrapper';
-import { ConcurrencyDetailResults } from '../components/features/concurrency/detail/Results';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError } from '@suiteworks/suitetools-shared';
-import {
-  APM_UNAVAILABLE_MESSAGE,
-  isApmUnavailableError,
-} from '../lib/netsuite/ApmUnavailableError';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import type { CriteriaFields } from "../components/features/concurrency/detail/types";
+import { getConcurrencyDetail } from "../adapters/api/concurrencyDetail";
+import type { ConcurrencyDetailData } from "../components/features/concurrency/detail/types";
+import { ConcurrencyDetailOverview } from "../components/features/concurrency/detail/Overview";
+import { ConcurrencyDetailBarGraphWrapper } from "../components/features/concurrency/detail/barGraph/Wrapper";
+import { ConcurrencyDetailResults } from "../components/features/concurrency/detail/Results";
+import { useAppSettingsContext } from "../hooks/useAppSettingsContext";
+import { useErrorBoundaryTrigger } from "../hooks/useErrorBoundaryTrigger";
+import { handleError } from "@suiteworks/suitetools-shared";
+import { APM_UNAVAILABLE_MESSAGE, isApmUnavailableError } from "../lib/netsuite/ApmUnavailableError";
 
-type Params = {
-  startDate: string;
-  endDate: string;
-};
+type Params = { startDate: string; endDate: string };
 
 /**
  * Concurrency Detail page — peaks for a selected hour.
@@ -30,16 +24,13 @@ export function ConcurrencyDetailPage(): React.ReactElement {
   const startDate = params.startDate;
   const endDate = params.endDate;
   if (!startDate || !endDate) {
-    throw new Error('Missing required parameters');
+    throw new Error("Missing required parameters");
   }
 
   const { settings } = useAppSettingsContext();
   const triggerError = useErrorBoundaryTrigger();
 
-  const selectedCriteria: CriteriaFields = {
-    startDate: startDate,
-    endDate: endDate,
-  };
+  const selectedCriteria: CriteriaFields = { startDate: startDate, endDate: endDate };
   const [criteria, setCriteria] = useState<CriteriaFields>(selectedCriteria);
   const [results, setResults] = useState<ConcurrencyDetailData>();
   const [loading, setLoading] = useState(true);

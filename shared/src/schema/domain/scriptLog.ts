@@ -22,9 +22,7 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  */
 export const schema = z.object({
   id: z.number(),
-  timestamp: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
-    message: "Invalid ISO timestamp",
-  }),
+  timestamp: z.string().refine((s) => !Number.isNaN(Date.parse(s)), { message: "Invalid ISO timestamp" }),
   type: zNetSuite.stringOrEmpty.schema,
   scriptType: zNetSuite.stringOrEmpty.schema,
   owner: zNetSuite.stringOrEmpty.schema,
@@ -36,10 +34,9 @@ export const schema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const ScriptLogBundle: ZEntityBundle<typeof schema, "ScriptLog"> =
-  zHelpers.zCreateBundle(schema, {
-    meta: { entity: "ScriptLog", plural: "ScriptLogs" },
-  });
+const ScriptLogBundle: ZEntityBundle<typeof schema, "ScriptLog"> = zHelpers.zCreateBundle(schema, {
+  meta: { entity: "ScriptLog", plural: "ScriptLogs" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -54,7 +51,5 @@ export const scriptLogOrNotFoundSchema = orNotFoundSchema(schema);
 export type ScriptLogOrNotFound = OrNotFound<ScriptLog>;
 
 // Convenience union for multiple entities
-export const scriptLogsOrNotFoundSchema = orNotFoundSchema(
-  ScriptLogBundle.schema.array()
-);
+export const scriptLogsOrNotFoundSchema = orNotFoundSchema(ScriptLogBundle.schema.array());
 export type ScriptLogsOrNotFound = OrNotFound<ScriptLogs>;

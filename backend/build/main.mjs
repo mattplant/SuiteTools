@@ -1,10 +1,10 @@
-import { build } from 'esbuild';
-import { resolve } from 'path';
-import { readFile } from 'fs/promises';
-import { existsSync, mkdirSync } from 'fs';
-import { execSync } from 'child_process';
-import { BUILD_CONFIG } from './config.mjs';
-import { analyzeBundles, monitorBundleSizes } from './analyzer.mjs';
+import { build } from "esbuild";
+import { resolve } from "path";
+import { readFile } from "fs/promises";
+import { existsSync, mkdirSync } from "fs";
+import { execSync } from "child_process";
+import { BUILD_CONFIG } from "./config.mjs";
+import { analyzeBundles, monitorBundleSizes } from "./analyzer.mjs";
 import {
   handleBuildError,
   PerformanceTimer,
@@ -12,7 +12,7 @@ import {
   safeWriteFile,
   setupFileWatcher,
   createBuildReport,
-} from './utils.mjs';
+} from "./utils.mjs";
 
 /**
  * Build configuration for creating NetSuite backend deployment bundles
@@ -37,33 +37,33 @@ const REGEX_PATTERNS = {
 // Configuration for all deployment files
 const DEPLOYMENT_FILES = [
   {
-    name: 'idev-suitetools-api',
-    type: 'RESTlet',
-    exports: ['get', 'post', 'put'], // TypeScript function names
-    netsuiteExports: ['doGet', 'doPost', 'doPut'], // NetSuite entry point names
-    sourceFile: 'TypeScripts/SuiteTools/idev-suitetools-api.ts',
-    outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools',
+    name: "idev-suitetools-api",
+    type: "RESTlet",
+    exports: ["get", "post", "put"], // TypeScript function names
+    netsuiteExports: ["doGet", "doPost", "doPut"], // NetSuite entry point names
+    sourceFile: "TypeScripts/SuiteTools/idev-suitetools-api.ts",
+    outputPath: "src/FileCabinet/SuiteScripts/SuiteTools",
   },
   {
-    name: 'idev-suitetools-app',
-    type: 'Suitelet',
-    exports: ['onRequest'],
-    sourceFile: 'TypeScripts/SuiteTools/idev-suitetools-app.ts',
-    outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools',
+    name: "idev-suitetools-app",
+    type: "Suitelet",
+    exports: ["onRequest"],
+    sourceFile: "TypeScripts/SuiteTools/idev-suitetools-app.ts",
+    outputPath: "src/FileCabinet/SuiteScripts/SuiteTools",
   },
   {
-    name: 'idev-suitetools-mr-jobs-run',
-    type: 'Map/Reduce - Jobs',
-    exports: ['getInputData', 'map', 'reduce', 'summarize'],
-    sourceFile: 'TypeScripts/SuiteTools/helpers/idev-suitetools-mr-jobs-run.ts',
-    outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools/helpers',
+    name: "idev-suitetools-mr-jobs-run",
+    type: "Map/Reduce - Jobs",
+    exports: ["getInputData", "map", "reduce", "summarize"],
+    sourceFile: "TypeScripts/SuiteTools/helpers/idev-suitetools-mr-jobs-run.ts",
+    outputPath: "src/FileCabinet/SuiteScripts/SuiteTools/helpers",
   },
   {
-    name: 'idev-suitetools-mr-logins',
-    type: 'Map/Reduce - Logins',
-    exports: ['getInputData', 'map', 'reduce', 'summarize'],
-    sourceFile: 'TypeScripts/SuiteTools/helpers/idev-suitetools-mr-logins.ts',
-    outputPath: 'src/FileCabinet/SuiteScripts/SuiteTools/helpers',
+    name: "idev-suitetools-mr-logins",
+    type: "Map/Reduce - Logins",
+    exports: ["getInputData", "map", "reduce", "summarize"],
+    sourceFile: "TypeScripts/SuiteTools/helpers/idev-suitetools-mr-logins.ts",
+    outputPath: "src/FileCabinet/SuiteScripts/SuiteTools/helpers",
   },
 ];
 
@@ -73,16 +73,16 @@ function getBuildConfig(isProduction) {
 
   return {
     bundle: true, // Bundle all dependencies into single files for NetSuite deployment
-    platform: 'node', // Target Node.js environment (NetSuite SuiteScript runtime)
-    target: 'es2022', // NetSuite SuiteScript 2.1 compatibility
-    format: 'cjs', // Build as CommonJS first, then convert to AMD (ESBuild doesn't support AMD)
-    sourcemap: envConfig.sourcemap ? 'inline' : false, // Environment-aware sourcemaps
+    platform: "node", // Target Node.js environment (NetSuite SuiteScript runtime)
+    target: "es2022", // NetSuite SuiteScript 2.1 compatibility
+    format: "cjs", // Build as CommonJS first, then convert to AMD (ESBuild doesn't support AMD)
+    sourcemap: envConfig.sourcemap ? "inline" : false, // Environment-aware sourcemaps
     minify: envConfig.minify, // Environment-aware minification
     keepNames: envConfig.keepNames, // Use config value directly
     treeShaking: true, // Enable tree shaking to remove unused code from dependencies
     splitting: false, // Disable code splitting for NetSuite single-file deployment
     external: BUILD_CONFIG.netsuite.externalModules, // NetSuite modules should remain as imports
-    logLevel: 'warning', // Show warnings and errors
+    logLevel: "warning", // Show warnings and errors
   };
 }
 
@@ -99,15 +99,15 @@ async function convertToAMD(isProduction) {
     try {
       console.log(`🔄 Converting ${fileName} to AMD format...`);
 
-      const originalContent = await readFile(filePath, 'utf8');
-      const sourceContent = await readFile(sourceFilePath, 'utf8');
+      const originalContent = await readFile(filePath, "utf8");
+      const sourceContent = await readFile(sourceFilePath, "utf8");
 
       // Extract the original header from the source file (first JSDoc comment)
       const headerMatch = sourceContent.match(/^(\/\*\*[\s\S]*?\*\/)/);
-      const header = headerMatch ? headerMatch[1] : '';
+      const header = headerMatch ? headerMatch[1] : "";
 
       // Strip inline sourcemaps before regex work
-      let content = originalContent.replace(/\n\/\/# sourceMappingURL=data:application\/json;base64,[^\n]*$/m, '');
+      let content = originalContent.replace(/\n\/\/# sourceMappingURL=data:application\/json;base64,[^\n]*$/m, "");
 
       // Find N/ modules used in require statements
       const nModules = [];
@@ -158,37 +158,37 @@ async function convertToAMD(isProduction) {
         // Remove the CommonJS export mapping block (file-specific patterns for safety)
         .replace(
           /\/\/ TypeScripts\/SuiteTools\/idev-suitetools-api\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
-          '',
+          "",
         )
         .replace(
           /\/\/ TypeScripts\/SuiteTools\/idev-suitetools-app\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
-          '',
+          "",
         )
         .replace(
           /\/\/ TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-jobs-run\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
-          '',
+          "",
         )
         .replace(
           /\/\/ TypeScripts\/SuiteTools\/helpers\/idev-suitetools-mr-logins\.ts\r?\nvar \w+_exports = \{\};\r?\n__export\(\w+_exports,\s*\{[^}]*\}\);\r?\nmodule\.exports = __toCommonJS\(\w+_exports\);\r?\n+/g,
-          '',
+          "",
         )
         // Remove minified CommonJS exports (e.g., module.exports=ut(ct);)
-        .replace(/module\.exports\s*=\s*\w+\([^)]+\);?/g, '')
+        .replace(/module\.exports\s*=\s*\w+\([^)]+\);?/g, "")
         // Remove CommonJS annotation blocks at the end
         .replace(
           /\/\/ Annotate the CommonJS export names for ESM import in node:\s*0 && \(module\.exports = \{[^}]*\}\);?\s*/g,
-          '',
+          "",
         )
         // Remove trailing CommonJS annotations (e.g., 0&&(module.exports={...}))
-        .replace(/0\s*&&\s*\(module\.exports\s*=\s*\{[^}]*\}\);?/g, '')
+        .replace(/0\s*&&\s*\(module\.exports\s*=\s*\{[^}]*\}\);?/g, "")
         // Convert __toESM(require("N/xxx")) to simple module name
-        .replace(/__toESM\(require\("N\/([^"]+)"\)\)/g, '$1')
+        .replace(/__toESM\(require\("N\/([^"]+)"\)\)/g, "$1")
         // Convert plain require("N/xxx") to simple module name
-        .replace(/require\("N\/([^"]+)"\)/g, '$1')
+        .replace(/require\("N\/([^"]+)"\)/g, "$1")
         // Convert wrapped requires like m(require("log")) to just the parameter name
         .replace(
           /\w+\(require\("(log|error|task|email|file|https|record|query|url|redirect|search|runtime|ui\/serverWidget)"\)\)/g,
-          '$1',
+          "$1",
         )
         .trim();
 
@@ -207,21 +207,18 @@ async function convertToAMD(isProduction) {
       }
 
       // Create AMD structure with proper dependencies
-      const dependencies = nModules.map((mod) => `"${mod}"`).join(', ');
+      const dependencies = nModules.map((mod) => `"${mod}"`).join(", ");
       const paramNames = nModules
         .map((mod) => {
           // Convert N/log -> log, N/error -> error, etc.
-          const parts = mod.split('/');
+          const parts = mod.split("/");
           return parts[parts.length - 1];
         })
-        .join(', ');
+        .join(", ");
 
       // Filter exports to only include those that actually exist in the code
       const validExports = fileConfig.exports
-        .map((exportName, index) => ({
-          exportName,
-          actualName: actualFunctionNames[index],
-        }))
+        .map((exportName, index) => ({ exportName, actualName: actualFunctionNames[index] }))
         .filter(({ actualName, exportName }) => {
           // Check if the function actually exists in the code
           if (actualName === exportName) {
@@ -241,16 +238,16 @@ ${content}
 
     // Return the exported functions
     return {
-        ${validExports.map(({ exportName, actualName }) => `${exportName}: ${actualName}`).join(',\n        ')}
+        ${validExports.map(({ exportName, actualName }) => `${exportName}: ${actualName}`).join(",\n        ")}
     };
 });`;
 
       await safeWriteFile(filePath, amdContent, { backup: false });
       console.log(`✅ Converted ${fileName} to AMD format`);
     } catch (error) {
-      handleBuildError(error, 'AMD Conversion', {
+      handleBuildError(error, "AMD Conversion", {
         file: fileName,
-        step: 'Converting ESBuild output to AMD format',
+        step: "Converting ESBuild output to AMD format",
         timestamp: new Date().toISOString(),
       });
       throw error;
@@ -269,7 +266,7 @@ async function buildSingleDeployment(fileConfig, isProduction) {
   try {
     // Validate configuration before building
     validateFileConfig(fileConfig);
-    timer.step('Configuration validation');
+    timer.step("Configuration validation");
 
     // Ensure output directory exists
     const outputDir = fileConfig.outputPath;
@@ -280,17 +277,15 @@ async function buildSingleDeployment(fileConfig, isProduction) {
 
     // Debug: Log external modules to verify configuration
     if (!isProduction) {
-      console.log(`   External modules: ${getBuildConfig(isProduction).external.join(', ')}`);
+      console.log(`   External modules: ${getBuildConfig(isProduction).external.join(", ")}`);
     }
 
     // Build with ESBuild
     await build({
       ...getBuildConfig(isProduction),
       outdir: fileConfig.outputPath,
-      entryPoints: {
-        [fileConfig.name]: resolve(fileConfig.sourceFile),
-      },
-      legalComments: 'inline',
+      entryPoints: { [fileConfig.name]: resolve(fileConfig.sourceFile) },
+      legalComments: "inline",
     });
     const buildTime = timer.finish();
 
@@ -299,7 +294,7 @@ async function buildSingleDeployment(fileConfig, isProduction) {
   } catch (error) {
     handleBuildError(error, `ESBuild - ${fileConfig.name}`, {
       file: fileConfig.sourceFile,
-      step: 'TypeScript compilation and bundling',
+      step: "TypeScript compilation and bundling",
       timestamp: new Date().toISOString(),
       type: fileConfig.type,
     });
@@ -311,15 +306,15 @@ async function buildSingleDeployment(fileConfig, isProduction) {
  * Clean build artifacts
  */
 async function cleanBuildArtifacts() {
-  console.log('🧹 Cleaning build artifacts...');
+  console.log("🧹 Cleaning build artifacts...");
 
   try {
     // Use the configured clean script for consistency
-    execSync(`yarn ${BUILD_CONFIG.clean.yarnScript}`, { stdio: 'inherit', cwd: process.cwd() });
-    console.log('✅ Build artifacts cleaned');
+    execSync(`yarn ${BUILD_CONFIG.clean.yarnScript}`, { stdio: "inherit", cwd: process.cwd() });
+    console.log("✅ Build artifacts cleaned");
   } catch (error) {
-    console.warn('⚠️  Clean command failed:', error.message);
-    console.warn('   Continuing with build...');
+    console.warn("⚠️  Clean command failed:", error.message);
+    console.warn("   Continuing with build...");
   }
 }
 
@@ -328,11 +323,11 @@ async function cleanBuildArtifacts() {
  * @param {Object} fileConfig - Deployment file configuration to validate
  */
 function validateFileConfig(fileConfig) {
-  const requiredFields = ['name', 'type', 'exports', 'sourceFile', 'outputPath'];
+  const requiredFields = ["name", "type", "exports", "sourceFile", "outputPath"];
   const missing = requiredFields.filter((field) => !fileConfig[field]);
 
   if (missing.length > 0) {
-    throw new Error(`Invalid file configuration for ${fileConfig.name}: missing ${missing.join(', ')}`);
+    throw new Error(`Invalid file configuration for ${fileConfig.name}: missing ${missing.join(", ")}`);
   }
 
   // Validate source file exists (relative to current directory)
@@ -345,9 +340,9 @@ function validateFileConfig(fileConfig) {
  * Watch mode for development
  */
 async function watchMode(isProduction) {
-  console.log('👀 Starting enhanced watch mode for development...');
-  console.log('   Files will be automatically rebuilt when changed');
-  console.log('   Press Ctrl+C to stop\n');
+  console.log("👀 Starting enhanced watch mode for development...");
+  console.log("   Files will be automatically rebuilt when changed");
+  console.log("   Press Ctrl+C to stop\n");
 
   // Initial build
   await buildAllDeployments(isProduction);
@@ -355,28 +350,28 @@ async function watchMode(isProduction) {
   // Setup enhanced file watcher with all source files and dependencies
   const watchPaths = [
     ...DEPLOYMENT_FILES.map((file) => file.sourceFile),
-    'TypeScripts/SuiteTools/**/*.ts', // Watch all TypeScript files in the project
-    'build/config.mjs', // Watch build configuration changes
-    'tsconfig.json', // Watch TypeScript configuration changes
+    "TypeScripts/SuiteTools/**/*.ts", // Watch all TypeScript files in the project
+    "build/config.mjs", // Watch build configuration changes
+    "tsconfig.json", // Watch TypeScript configuration changes
   ];
 
   const rebuildCallback = async (changedFile) => {
     console.log(`\n📝 File changed: ${changedFile}`);
-    console.log('🔄 Rebuilding...\n');
+    console.log("🔄 Rebuilding...\n");
 
-    const rebuildTimer = new PerformanceTimer('Rebuild');
+    const rebuildTimer = new PerformanceTimer("Rebuild");
 
     try {
       await buildAllDeployments(isProduction);
       const rebuildTime = rebuildTimer.finish();
       console.log(`\n✅ Rebuild complete in ${rebuildTime}ms - watching for changes...\n`);
     } catch (error) {
-      handleBuildError(error, 'Watch Mode Rebuild', {
+      handleBuildError(error, "Watch Mode Rebuild", {
         file: changedFile,
-        step: 'Rebuilding after file change',
+        step: "Rebuilding after file change",
         timestamp: new Date().toISOString(),
       });
-      console.log('⏳ Waiting for next change...\n');
+      console.log("⏳ Waiting for next change...\n");
     }
   };
 
@@ -387,8 +382,8 @@ async function watchMode(isProduction) {
   });
 
   // Handle graceful shutdown
-  process.on('SIGINT', () => {
-    console.log('\n👋 Stopping watch mode...');
+  process.on("SIGINT", () => {
+    console.log("\n👋 Stopping watch mode...");
     watcher.close();
     process.exit(0);
   });
@@ -398,25 +393,25 @@ async function watchMode(isProduction) {
  * Build all deployment bundles and convert to AMD format
  */
 async function buildAllDeployments(isProduction) {
-  const timer = new PerformanceTimer('Build All Deployments');
-  console.log('🚀 Building NetSuite deployment bundles...');
+  const timer = new PerformanceTimer("Build All Deployments");
+  console.log("🚀 Building NetSuite deployment bundles...");
 
   try {
     // Validate all configurations before building
-    console.log('🔍 Validating deployment configurations...');
+    console.log("🔍 Validating deployment configurations...");
     DEPLOYMENT_FILES.forEach(validateFileConfig);
-    console.log('✅ All configurations valid');
-    timer.step('Configuration validation');
+    console.log("✅ All configurations valid");
+    timer.step("Configuration validation");
 
     // Build all deployments in parallel for speed
-    console.log('📦 Building TypeScript bundles...');
+    console.log("📦 Building TypeScript bundles...");
     await Promise.all(DEPLOYMENT_FILES.map((fileConfig) => buildSingleDeployment(fileConfig, isProduction)));
-    timer.step('ESBuild bundling');
+    timer.step("ESBuild bundling");
 
     // Convert all bundles to AMD format
-    console.log('🔄 Converting to AMD format for NetSuite...');
+    console.log("🔄 Converting to AMD format for NetSuite...");
     await convertToAMD(isProduction);
-    timer.step('AMD conversion');
+    timer.step("AMD conversion");
 
     const totalTime = timer.finish();
 
@@ -426,13 +421,13 @@ async function buildAllDeployments(isProduction) {
       errorSize: BUILD_CONFIG.analysis.errorThreshold * 1024, // Convert KB to bytes
     };
     const { analysis, hasErrors } = await monitorBundleSizes(DEPLOYMENT_FILES, thresholds);
-    timer.step('Bundle analysis');
+    timer.step("Bundle analysis");
 
     // Create build report
     const buildReport = createBuildReport({
       totalTime,
       bundles: analysis.bundles,
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env.NODE_ENV || "development",
       success: !hasErrors,
     });
 
@@ -442,11 +437,11 @@ async function buildAllDeployments(isProduction) {
     );
 
     if (hasErrors) {
-      console.warn('⚠️  Build completed with soft bundle-size alerts — review output above (build still succeeded)');
+      console.warn("⚠️  Build completed with soft bundle-size alerts — review output above (build still succeeded)");
     }
   } catch (error) {
-    handleBuildError(error, 'Build All Deployments', {
-      step: 'Complete build process',
+    handleBuildError(error, "Build All Deployments", {
+      step: "Complete build process",
       timestamp: new Date().toISOString(),
     });
     throw error;
@@ -505,42 +500,42 @@ function parseArguments() {
 
   for (const arg of args) {
     switch (arg) {
-      case '--watch':
-      case '-w':
+      case "--watch":
+      case "-w":
         options.watch = true;
         break;
-      case '--clean':
-      case '-c':
+      case "--clean":
+      case "-c":
         options.clean = true;
         break;
-      case '--help':
-      case '-h':
+      case "--help":
+      case "-h":
         options.help = true;
         break;
-      case '--prod':
+      case "--prod":
         options.prod = true;
-        process.env.NODE_ENV = 'production';
+        process.env.NODE_ENV = "production";
         break;
-      case '--dev':
+      case "--dev":
         options.dev = true;
-        process.env.NODE_ENV = 'development';
+        process.env.NODE_ENV = "development";
         break;
-      case '--analyze-bundles':
-      case '-a':
+      case "--analyze-bundles":
+      case "-a":
         options.analyzeBundles = true;
         break;
-      case '--validate-only':
-      case '-v':
+      case "--validate-only":
+      case "-v":
         options.validateOnly = true;
         break;
-      case '--verbose':
+      case "--verbose":
         options.verbose = true;
         break;
-      case '--dry-run':
+      case "--dry-run":
         options.dryRun = true;
         break;
       default:
-        if (arg.startsWith('-')) {
+        if (arg.startsWith("-")) {
           console.warn(`⚠️  Unknown option: ${arg}`);
         }
     }
@@ -563,32 +558,34 @@ async function main() {
 
   try {
     // Validate build environment first
-    console.log('🔍 Validating build environment...');
+    console.log("🔍 Validating build environment...");
     const validation = validateBuildEnvironment();
 
     if (!validation.valid) {
-      console.error('❌ Build environment validation failed:');
-      validation.errors.forEach((error) => console.error(`   • ${error}`));
+      console.error("❌ Build environment validation failed:");
+      validation.errors.forEach((error) => {
+        console.error(`   • ${error}`);
+      });
       process.exit(1);
     }
 
-    console.log('✅ Build environment validated');
+    console.log("✅ Build environment validated");
 
     // Handle validate-only option
     if (options.validateOnly) {
-      console.log('✅ Validation completed - no build requested');
+      console.log("✅ Validation completed - no build requested");
       return;
     }
 
     // Clean if requested
     if (options.clean) {
-      console.log('🧹 Cleaning build artifacts...');
+      console.log("🧹 Cleaning build artifacts...");
       await cleanBuildArtifacts();
     }
 
     // Handle analyze-bundles only option (no build)
     if (options.analyzeBundles && !options.watch) {
-      console.log('📊 Analyzing existing bundles...');
+      console.log("📊 Analyzing existing bundles...");
       await analyzeBundles(DEPLOYMENT_FILES);
       return;
     }
@@ -600,14 +597,14 @@ async function main() {
       await buildAllDeployments(options.prod);
 
       // Auto-analyze bundles if requested or environment variable set
-      if (options.analyzeBundles || process.env.BUILD_ANALYZE === 'true') {
-        console.log('\n📊 Analyzing bundle results...');
+      if (options.analyzeBundles || process.env.BUILD_ANALYZE === "true") {
+        console.log("\n📊 Analyzing bundle results...");
         await analyzeBundles(DEPLOYMENT_FILES);
       }
     }
   } catch (error) {
-    handleBuildError(error, 'Main Build Process', {
-      step: 'Complete build workflow',
+    handleBuildError(error, "Main Build Process", {
+      step: "Complete build workflow",
       timestamp: new Date().toISOString(),
     });
     process.exit(1);

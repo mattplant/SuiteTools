@@ -43,8 +43,7 @@ const NormalizedJobSchema = schema.transform((data) => {
 
 const JobBundle = zHelpers.zCreateBundle(schema, {
   meta: { entity: "Job", plural: "Jobs", displayName: "Job Record" },
-  normalize: (data: z.output<typeof schema>) =>
-    NormalizedJobSchema.parse(data),
+  normalize: (data: z.output<typeof schema>) => NormalizedJobSchema.parse(data),
 });
 
 // ───────────────────────────────────────────────────────────

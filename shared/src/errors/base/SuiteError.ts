@@ -36,10 +36,7 @@ export abstract class SuiteError extends Error {
    *   - `context`: structured debugging info (ids, params, environment details)
    *   - `cause`: underlying error or value
    */
-  constructor(
-    message: string,
-    opts?: { context?: Record<string, unknown>; cause?: unknown }
-  ) {
+  constructor(message: string, opts?: { context?: Record<string, unknown>; cause?: unknown }) {
     // Forward cause into the native Error constructor (Node 16+)
     super(message, { cause: opts?.cause });
     this.name = new.target.name;
@@ -81,12 +78,8 @@ export abstract class SuiteError extends Error {
   public toString(): string {
     return (
       `${this.name} [${this.code}] (${this.severity}): ${this.message}\n` +
-      (this.context
-        ? `Context: ${SuiteError.safeStringify(this.context, 2)}\n`
-        : ``) +
-      (this.cause
-        ? `Cause: ${SuiteError.safeStringify(this.cause, 2)}\n`
-        : ``) +
+      (this.context ? `Context: ${SuiteError.safeStringify(this.context, 2)}\n` : ``) +
+      (this.cause ? `Cause: ${SuiteError.safeStringify(this.cause, 2)}\n` : ``) +
       (this.stack ?? ``)
     );
   }
@@ -105,7 +98,7 @@ export abstract class SuiteError extends Error {
         }
         return val;
       },
-      spaces
+      spaces,
     );
   }
 }

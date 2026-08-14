@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import type { ReactNode } from 'react';
-import { getSettings } from '../../../adapters/api/settings';
-import { setErrorDevMode, type Settings } from '@suiteworks/suitetools-shared';
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import { getSettings } from "../../../adapters/api/settings";
+import { setErrorDevMode, type Settings } from "@suiteworks/suitetools-shared";
 
 type AppContextSettingsType = {
   settings: undefined | Settings;
@@ -26,9 +26,7 @@ const initialState: AppContextSettingsType = {
 
 export const AppSettingsContext = createContext<AppContextSettingsType>({ ...initialState });
 
-type Props = {
-  children: ReactNode;
-};
+type Props = { children: ReactNode };
 
 function syncErrorDevMode(devMode: boolean): void {
   // Vite DEV always enables overlays locally; account setting controls Sandbox/prod builds.
@@ -65,7 +63,7 @@ export function AppSettingsProvider({ children }: Props): React.JSX.Element {
           applySettings(data);
         }
       } catch (error) {
-        console.error('Failed to load settings:', error);
+        console.error("Failed to load settings:", error);
       } finally {
         if (!ignore) {
           setLoading(false);

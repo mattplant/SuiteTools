@@ -1,6 +1,6 @@
-import { useLoaderData } from 'react-router-dom';
-import { SoapLogResult } from '../components/features/soapLog/RecordResult';
-import type { SoapLogLoaderData } from '../routes/soapLogLoader';
+import { useLoaderData } from "react-router-dom";
+import { SoapLogResult } from "../components/features/soapLog/RecordResult";
+import type { SoapLogLoaderData } from "../routes/soapLogLoader";
 
 /**
  * Renders the SOAP log detail page.
@@ -9,7 +9,7 @@ import type { SoapLogLoaderData } from '../routes/soapLogLoader';
 export function SoapLogPage(): React.JSX.Element {
   const { soapLog } = useLoaderData() as SoapLogLoaderData;
 
-  if (!soapLog || !('id' in soapLog)) {
+  if (!soapLog || !("id" in soapLog)) {
     return (
       <div className="mx-auto mt-6">
         <h2 className="text-xl font-bold text-slate-900">SOAP Log</h2>

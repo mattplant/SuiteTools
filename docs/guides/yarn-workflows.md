@@ -88,9 +88,9 @@ yarn workspace <workspace-name> remove <package>
 Use `-W` (root install) **only** for dependencies that meet one of these criteria:
 
 - **Truly root‑scoped dev tooling**
-  - Linters/formatters: `eslint`, `prettier`, `eslint-plugin-*`
+  - Linters/formatters: `@biomejs/biome`
   - Repo‑wide build/release tools: `changesets`, `turbo`, `nx`
-  - Common config packages: `@typescript-eslint/*`, `eslint-plugin-jsdoc`
+  - Common config packages shared by more than one workspace
 
 - **Executed from the root** in CI or scripts
 
@@ -100,7 +100,7 @@ Use `-W` (root install) **only** for dependencies that meet one of these criteri
 **Examples:**
 
 ```bash
-yarn add -W -D eslint prettier
+yarn add -W -D @biomejs/biome
 ```
 
 **Do not**:

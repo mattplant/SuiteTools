@@ -35,14 +35,12 @@ export function errorFromResponse(res: ErrorResponse): SuiteError {
   switch (code) {
     case "NOT_FOUND": {
       const resource = typeof ctx.resource === "string" ? ctx.resource : "Resource";
-      const id =
-        typeof ctx.id === "string" || typeof ctx.id === "number" ? ctx.id : "unknown";
+      const id = typeof ctx.id === "string" || typeof ctx.id === "number" ? ctx.id : "unknown";
       return new NotFoundError(resource, id);
     }
 
     case "INVALID_PARAMETER": {
-      const parameterName =
-        typeof ctx.parameterName === "string" ? ctx.parameterName : "unknown";
+      const parameterName = typeof ctx.parameterName === "string" ? ctx.parameterName : "unknown";
       const reason = typeof ctx.reason === "string" ? ctx.reason : res.message;
       return new InvalidParameterError(parameterName, ctx.value, reason);
     }
@@ -60,11 +58,7 @@ export function errorFromResponse(res: ErrorResponse): SuiteError {
       const causeText = res.message.startsWith("Unexpected error in ")
         ? res.message.replace(/^Unexpected error in [^:]+:\s*/, "")
         : res.message;
-      return new UnexpectedError(operation, new Error(causeText), {
-        ...ctx,
-        status: res.status,
-        rehydrated: true,
-      });
+      return new UnexpectedError(operation, new Error(causeText), { ...ctx, status: res.status, rehydrated: true });
     }
 
     default:

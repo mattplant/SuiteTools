@@ -15,10 +15,10 @@ import {
   optionValuesOrNotFoundSchema,
   isNotFound,
   toArray,
-} from '@suiteworks/suitetools-shared';
-import type { OptionValues } from '@suiteworks/suitetools-shared';
-import type { OptionValuesTypes } from '../../components/shared/criteria/types';
-import { getData } from './netSuiteClient';
+} from "@suiteworks/suitetools-shared";
+import type { OptionValues } from "@suiteworks/suitetools-shared";
+import type { OptionValuesTypes } from "../../components/shared/criteria/types";
+import { getData } from "./netSuiteClient";
 
 const optionValuesRequestResponseSchema = makeRequestResponseSchema(optionValuesOrNotFoundSchema);
 
@@ -29,7 +29,7 @@ const optionValuesRequestResponseSchema = makeRequestResponseSchema(optionValues
  * @throws {ZodError} When the response fails schema validation.
  */
 export async function getOptionValues(type: OptionValuesTypes): Promise<OptionValues> {
-  const response = await getData('optionValues', { type });
+  const response = await getData("optionValues", { type });
   const parsed = optionValuesRequestResponseSchema.parse(response);
 
   if (isNotFound(parsed.data)) return [];

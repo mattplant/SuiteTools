@@ -1,27 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import type { CriteriaFields } from '../components/features/concurrency/request/types';
-import { getConcurrencyRequest } from '../adapters/api/concurrencyRequest';
-import type { ConcurrencyRequestData } from '../components/features/concurrency/request/types';
-import { ConcurrencyRequestResults } from '../components/features/concurrency/request/Results';
-import { ConcurrencyRequestBarGraphWrapper } from '../components/features/concurrency/request/barGraph/Wrapper';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError } from '@suiteworks/suitetools-shared';
-import { formatDate, formatMinuteSecond } from '../utils/date';
-import {
-  APM_UNAVAILABLE_MESSAGE,
-  isApmUnavailableError,
-} from '../lib/netsuite/ApmUnavailableError';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import type { CriteriaFields } from "../components/features/concurrency/request/types";
+import { getConcurrencyRequest } from "../adapters/api/concurrencyRequest";
+import type { ConcurrencyRequestData } from "../components/features/concurrency/request/types";
+import { ConcurrencyRequestResults } from "../components/features/concurrency/request/Results";
+import { ConcurrencyRequestBarGraphWrapper } from "../components/features/concurrency/request/barGraph/Wrapper";
+import { useAppSettingsContext } from "../hooks/useAppSettingsContext";
+import { useErrorBoundaryTrigger } from "../hooks/useErrorBoundaryTrigger";
+import { handleError } from "@suiteworks/suitetools-shared";
+import { formatDate, formatMinuteSecond } from "../utils/date";
+import { APM_UNAVAILABLE_MESSAGE, isApmUnavailableError } from "../lib/netsuite/ApmUnavailableError";
 
-type Params = {
-  startDate: string;
-  endDate: string;
-  peakConcurrency: string;
-  peakConcurrencyTime: string;
-};
+type Params = { startDate: string; endDate: string; peakConcurrency: string; peakConcurrencyTime: string };
 
 /**
  * Concurrency Request page — requests in a selected timeframe.
@@ -34,16 +26,13 @@ export function ConcurrencyRequestPage(): React.ReactElement {
   const peakConcurrency = params.peakConcurrency;
   const peakConcurrencyTime = params.peakConcurrencyTime;
   if (!startDate || !endDate) {
-    throw new Error('Missing required parameters');
+    throw new Error("Missing required parameters");
   }
 
   const { settings } = useAppSettingsContext();
   const triggerError = useErrorBoundaryTrigger();
 
-  const selectedCriteria: CriteriaFields = {
-    startDate: startDate,
-    endDate: endDate,
-  };
+  const selectedCriteria: CriteriaFields = { startDate: startDate, endDate: endDate };
   const [criteria, setCriteria] = useState<CriteriaFields>(selectedCriteria);
   const [results, setResults] = useState<ConcurrencyRequestData>();
   const [loading, setLoading] = useState(true);
@@ -97,13 +86,13 @@ export function ConcurrencyRequestPage(): React.ReactElement {
       {results && (
         <>
           <p className="text-sm text-gray-500">
-            Below are the concurrency requests that executed between {formatDate(Number(startDate))} to{' '}
+            Below are the concurrency requests that executed between {formatDate(Number(startDate))} to{" "}
             {formatDate(Number(endDate))}.
           </p>
           <p className="text-sm text-gray-500">
             {peakConcurrency && (
               <>
-                The peak concurrency {peakConcurrencyTime && <> at {formatMinuteSecond(Number(peakConcurrencyTime))}</>}{' '}
+                The peak concurrency {peakConcurrencyTime && <> at {formatMinuteSecond(Number(peakConcurrencyTime))}</>}{" "}
                 was {peakConcurrency}.
               </>
             )}

@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../../shared/criteria/types';
-import { getToken } from '../../../adapters/api/token';
-import { getTokens } from '../../../adapters/api/tokens';
-import { integrationLookupKey } from '../../../adapters/api/integrationsScrape';
-import type { Token, Tokens } from '@suiteworks/suitetools-shared';
-import { Results } from '../../shared/results/Results';
-import { ResultsTypes } from '../../shared/results/types';
-import { useEntityList } from '../../../hooks/useEntityList';
+import type { CriteriaFields } from "../../shared/criteria/types";
+import { getToken } from "../../../adapters/api/token";
+import { getTokens } from "../../../adapters/api/tokens";
+import { integrationLookupKey } from "../../../adapters/api/integrationsScrape";
+import type { Token, Tokens } from "@suiteworks/suitetools-shared";
+import { Results } from "../../shared/results/Results";
+import { ResultsTypes } from "../../shared/results/types";
+import { useEntityList } from "../../../hooks/useEntityList";
 
-type Props = {
-  integrationName: string;
-};
+type Props = { integrationName: string };
 
 /**
  * Keep tokens that belong to the given integration application.
@@ -42,13 +40,13 @@ function tokensForIntegration(tokens: Tokens, integrationName: string): Tokens {
  */
 export function IntegrationTokens({ integrationName }: Props): React.ReactElement {
   const { results } = useEntityList<Tokens[number], CriteriaFields>({
-    defaultCriteria: { active: 'T', integrationName },
+    defaultCriteria: { active: "T", integrationName },
     deps: [integrationName],
     fetchList: async () => {
       if (!integrationName.trim()) {
         return [];
       }
-      const data = await getTokens({ active: 'T', integrationName });
+      const data = await getTokens({ active: "T", integrationName });
       // Enforce integration scope even if the adapter filter is bypassed or names differ.
       return tokensForIntegration(data, integrationName);
     },

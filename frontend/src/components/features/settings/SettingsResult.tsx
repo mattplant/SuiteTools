@@ -1,8 +1,6 @@
-import type { Settings } from '@suiteworks/suitetools-shared';
+import type { Settings } from "@suiteworks/suitetools-shared";
 
-type Props = {
-  settings: Settings;
-};
+type Props = { settings: Settings };
 
 export function SettingsResult({ settings }: Props) {
   return (

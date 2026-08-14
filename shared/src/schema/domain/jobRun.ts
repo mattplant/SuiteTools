@@ -24,9 +24,7 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  */
 export const JobRunSchema = z.object({
   id: zNetSuite.numberFromString.schema,
-  created: z.string().refine((s) => !Number.isNaN(Date.parse(s)), {
-    message: "Invalid ISO timestamp",
-  }),
+  created: z.string().refine((s) => !Number.isNaN(Date.parse(s)), { message: "Invalid ISO timestamp" }),
   jobId: zNetSuite.numberFromString.schema,
   jobName: zNetSuite.stringOrEmpty.schema,
   completed: zNetSuite.booleanFromTF.schema,
@@ -36,10 +34,9 @@ export const JobRunSchema = z.object({
   urlJob: z.string().optional(),
 });
 
-const JobRunBundle: ZEntityBundle<typeof JobRunSchema, "JobRun"> =
-  zHelpers.zCreateBundle(JobRunSchema, {
-    meta: { entity: "JobRun", plural: "JobRuns" },
-  });
+const JobRunBundle: ZEntityBundle<typeof JobRunSchema, "JobRun"> = zHelpers.zCreateBundle(JobRunSchema, {
+  meta: { entity: "JobRun", plural: "JobRuns" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -54,7 +51,5 @@ export const jobRunOrNotFoundSchema = orNotFoundSchema(JobRunSchema);
 export type JobRunOrNotFound = OrNotFound<JobRun>;
 
 // Convenience union for multiple entities
-export const jobRunsOrNotFoundSchema = orNotFoundSchema(
-  z.array(JobRunSchema)
-);
+export const jobRunsOrNotFoundSchema = orNotFoundSchema(z.array(JobRunSchema));
 export type JobRunsOrNotFound = OrNotFound<JobRuns>;

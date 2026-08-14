@@ -22,10 +22,10 @@
  * @NScriptType MapReduceScript
  */
 
-import type { EntryPoints } from 'N/types';
-import * as log from 'N/log';
-import * as runtime from 'N/runtime';
-import { SuiteToolsApp } from '../app/SuiteToolsApp';
+import type { EntryPoints } from "N/types";
+import * as log from "N/log";
+import * as runtime from "N/runtime";
+import { SuiteToolsApp } from "../app/SuiteToolsApp";
 
 /**
  * getInputData() stage function
@@ -35,28 +35,20 @@ import { SuiteToolsApp } from '../app/SuiteToolsApp';
 export function getInputData(
   context: EntryPoints.MapReduce.getInputDataContext,
 ): Array<{ id: number; data?: string; name?: string }> {
-  log.debug('*START*', '<------------------- START ------------------->');
-  log.debug('getInputData() initiated with', JSON.stringify(context));
+  log.debug("*START*", "<------------------- START ------------------->");
+  log.debug("getInputData() initiated with", JSON.stringify(context));
 
   try {
-    const jobId = Number(
-      runtime.getCurrentScript().getParameter({
-        name: 'custscript_idev_st_mr_jobs_id',
-      }),
-    );
-    const jobDataParam = runtime.getCurrentScript().getParameter({
-      name: 'custscript_idev_st_mr_jobs_data',
-    });
+    const jobId = Number(runtime.getCurrentScript().getParameter({ name: "custscript_idev_st_mr_jobs_id" }));
+    const jobDataParam = runtime.getCurrentScript().getParameter({ name: "custscript_idev_st_mr_jobs_data" });
     // Keep as string for the reduce stage; empty/null means no payload.
     const jobData =
-      jobDataParam == null || jobDataParam === '' || jobDataParam === 'null'
-        ? undefined
-        : String(jobDataParam);
+      jobDataParam == null || jobDataParam === "" || jobDataParam === "null" ? undefined : String(jobDataParam);
 
     if (jobId) {
       // Property must be `data` — reduce reads values.data (was incorrectly `name`).
       const inputData = [{ id: jobId, data: jobData }];
-      log.debug('getInputData() running for job #' + jobId, { hasData: Boolean(jobData) });
+      log.debug("getInputData() running for job #" + jobId, { hasData: Boolean(jobData) });
       return inputData;
     }
 
@@ -64,7 +56,7 @@ export function getInputData(
     const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
     return stApp.stCommon.stJobs.getScheduledJobs();
   } catch (e) {
-    log.error('getInputData() error', JSON.stringify(e));
+    log.error("getInputData() error", JSON.stringify(e));
   }
 }
 
@@ -75,7 +67,7 @@ export function getInputData(
  * @returns {void}
  */
 export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
-  log.debug('reduce() initiated', JSON.stringify(context));
+  log.debug("reduce() initiated", JSON.stringify(context));
   let jobId = null;
   let jobData: object | undefined;
   const values = JSON.parse(context.values[0]);
@@ -83,11 +75,11 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
 
   // Payload was historically stored on `name`; prefer `data`, fall back for older runs.
   const rawJobData = values.data ?? values.name;
-  if (rawJobData != null && rawJobData !== '' && rawJobData !== 'null') {
+  if (rawJobData != null && rawJobData !== "" && rawJobData !== "null") {
     try {
-      jobData = typeof rawJobData === 'string' ? JSON.parse(rawJobData) : rawJobData;
+      jobData = typeof rawJobData === "string" ? JSON.parse(rawJobData) : rawJobData;
     } catch (e) {
-      log.error('reduce() jobData data was not a valid object', JSON.stringify(e));
+      log.error("reduce() jobData data was not a valid object", JSON.stringify(e));
     }
   }
 
@@ -95,7 +87,7 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
     const stApp = new SuiteToolsApp(); // bootstrap SuiteTools App as library
     stApp.stCommon.stJobs.runJob(jobId, jobData);
   } else {
-    log.error('reduce() error', 'No job id found in context');
+    log.error("reduce() error", "No job id found in context");
   }
 }
 
@@ -107,7 +99,7 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
  */
 export function summarize(context: EntryPoints.MapReduce.summarizeContext): void {
   try {
-    log.debug('summarize() context = ', JSON.stringify(context));
+    log.debug("summarize() context = ", JSON.stringify(context));
     // generate and log standard summary
     const scriptErrors = [];
     context.mapSummary.errors.iterator().each(function (key, value) {
@@ -119,17 +111,17 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
       return true;
     });
     if (scriptErrors.length > 0) {
-      log.error('summarize() ' + scriptErrors.length + ' error(s) occurred', scriptErrors.join('\n'));
+      log.error("summarize() " + scriptErrors.length + " error(s) occurred", scriptErrors.join("\n"));
     } else {
-      log.debug('summarize()', 'Script completed without errors.');
+      log.debug("summarize()", "Script completed without errors.");
     }
-    log.debug('STATS - Reduce Time Total (seconds)', context.reduceSummary.seconds);
-    log.debug('STATS - Max Reduce Concurrency Utilized', context.reduceSummary.concurrency);
-    log.debug('STATS - Overall Usage Units Consumed', context.usage);
-    log.debug('STATS - Overall Concurrency Utilized', context.concurrency);
-    log.debug('STATS - Overall Number Of Yields', context.yields);
-    log.debug('*END*', '<-------------------- END -------------------->');
+    log.debug("STATS - Reduce Time Total (seconds)", context.reduceSummary.seconds);
+    log.debug("STATS - Max Reduce Concurrency Utilized", context.reduceSummary.concurrency);
+    log.debug("STATS - Overall Usage Units Consumed", context.usage);
+    log.debug("STATS - Overall Concurrency Utilized", context.concurrency);
+    log.debug("STATS - Overall Number Of Yields", context.yields);
+    log.debug("*END*", "<-------------------- END -------------------->");
   } catch (e) {
-    log.error('summarize() error', JSON.stringify(e));
+    log.error("summarize() error", JSON.stringify(e));
   }
 }

@@ -1,6 +1,6 @@
-import { readFile, writeFile } from 'fs/promises';
-import { existsSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { readFile, writeFile } from "fs/promises";
+import { existsSync, mkdirSync } from "fs";
+import { dirname } from "path";
 
 /**
  * Build utilities for enhanced error handling, performance tracking, and development workflows
@@ -22,17 +22,17 @@ export function handleBuildError(error, context, buildInfo = {}) {
   if (buildInfo.step) console.error(`⚙️  Step: ${buildInfo.step}`);
 
   // Stack trace in development
-  if (error.stack && process.env.NODE_ENV !== 'production') {
+  if (error.stack && process.env.NODE_ENV !== "production") {
     console.error(`\n📚 Stack Trace:`);
     error.stack
-      .split('\n')
+      .split("\n")
       .slice(1, 4)
       .forEach((line) => {
         console.error(`   ${line.trim()}`);
       });
   }
 
-  console.error(''); // Empty line for readability
+  console.error(""); // Empty line for readability
 }
 
 /**
@@ -47,11 +47,7 @@ export class PerformanceTimer {
 
   step(stepName) {
     const now = Date.now();
-    this.steps.push({
-      name: stepName,
-      duration: now - this.startTime,
-      timestamp: now,
-    });
+    this.steps.push({ name: stepName, duration: now - this.startTime, timestamp: now });
   }
 
   finish() {
@@ -59,7 +55,7 @@ export class PerformanceTimer {
 
     console.log(`⏱️  ${this.operation} completed in ${totalTime}ms`);
 
-    if (this.steps.length > 0 && process.env.NODE_ENV !== 'production') {
+    if (this.steps.length > 0 && process.env.NODE_ENV !== "production") {
       console.log(`   Step breakdown:`);
       this.steps.forEach((step, i) => {
         const stepTime = i === 0 ? step.duration : step.duration - this.steps[i - 1].duration;
@@ -76,13 +72,10 @@ export class PerformanceTimer {
  * @returns {Object} Validation results
  */
 export function validateBuildEnvironment() {
-  const validation = {
-    valid: true,
-    errors: [],
-  };
+  const validation = { valid: true, errors: [] };
 
   // Validate workspace structure
-  const requiredDirs = ['TypeScripts/SuiteTools', 'src/FileCabinet/SuiteScripts/SuiteTools'];
+  const requiredDirs = ["TypeScripts/SuiteTools", "src/FileCabinet/SuiteScripts/SuiteTools"];
 
   for (const dir of requiredDirs) {
     if (!existsSync(dir)) {
@@ -106,7 +99,7 @@ export function validateBuildEnvironment() {
  * @param {Object} options - Write options
  */
 export async function safeWriteFile(filePath, content, options = {}) {
-  const { backup = false, encoding = 'utf8' } = options;
+  const { backup = false, encoding = "utf8" } = options;
 
   try {
     // Ensure directory exists
@@ -140,17 +133,13 @@ export async function setupFileWatcher(watchPaths, callback, options = {}) {
 
   try {
     // Dynamic import for chokidar (dev dependency)
-    const { watch } = await import('chokidar');
+    const { watch } = await import("chokidar");
 
-    const watcher = watch(watchPaths, {
-      ignored: ignorePattern,
-      persistent: true,
-      ignoreInitial: true,
-    });
+    const watcher = watch(watchPaths, { ignored: ignorePattern, persistent: true, ignoreInitial: true });
 
     let debounceTimer;
 
-    watcher.on('change', (filePath) => {
+    watcher.on("change", (filePath) => {
       console.log(`📝 File changed: ${filePath}`);
 
       // Debounce to avoid multiple rebuilds
@@ -160,18 +149,18 @@ export async function setupFileWatcher(watchPaths, callback, options = {}) {
       }, debounceMs);
     });
 
-    watcher.on('error', (error) => {
-      console.error('🚨 File watcher error:', error);
+    watcher.on("error", (error) => {
+      console.error("🚨 File watcher error:", error);
     });
 
     console.log(`👀 Watching ${watchPaths.length} path(s) for changes...`);
-    console.log('   Press Ctrl+C to stop watching');
+    console.log("   Press Ctrl+C to stop watching");
 
     return watcher;
   } catch (error) {
-    if (error.code === 'MODULE_NOT_FOUND') {
-      console.error('❌ chokidar not found. Install with: yarn add -D chokidar');
-      throw new Error('Missing dependency: chokidar');
+    if (error.code === "MODULE_NOT_FOUND") {
+      console.error("❌ chokidar not found. Install with: yarn add -D chokidar");
+      throw new Error("Missing dependency: chokidar");
     }
     throw error;
   }
@@ -187,13 +176,13 @@ export function createBuildReport(buildResults, options = {}) {
 
   const report = {
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV || "development",
     nodeVersion: process.version,
     ...buildResults,
   };
 
   if (outputFile) {
-    writeFile(outputFile, JSON.stringify(report, null, 2), 'utf8').catch((error) =>
+    writeFile(outputFile, JSON.stringify(report, null, 2), "utf8").catch((error) =>
       console.warn(`Failed to write build report: ${error.message}`),
     );
   }

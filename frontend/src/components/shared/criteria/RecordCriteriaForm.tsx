@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { ReactNode } from 'react';
-import { Button } from 'flowbite-react';
-import { useForm, type Control, type UseFormRegister, type UseFormSetValue } from 'react-hook-form';
-import type { CriteriaFields } from './types';
+import type { ReactNode } from "react";
+import { Button } from "flowbite-react";
+import { useForm, type Control, type UseFormRegister, type UseFormSetValue } from "react-hook-form";
+import type { CriteriaFields } from "./types";
 
 export type RecordCriteriaFormApi = {
   register: UseFormRegister<CriteriaFields>;
@@ -31,9 +31,7 @@ export function RecordCriteriaForm({
   actions,
   children,
 }: Props): React.ReactElement {
-  const { register, handleSubmit, control, setValue } = useForm<CriteriaFields>({
-    defaultValues: defaultCriteria,
-  });
+  const { register, handleSubmit, control, setValue } = useForm<CriteriaFields>({ defaultValues: defaultCriteria });
 
   return (
     <form onSubmit={handleSubmit(setCriteria)}>
