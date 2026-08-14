@@ -76,7 +76,7 @@ This workspace requires the following tools and libraries:
 Installed via `package.json`:
 
 - **TypeScript** — 6.0.x (compile backend code)
-- **@hitc/netsuite-types** — 2024.2.x (NetSuite API type definitions)
+- **@hitc/netsuite-types** — 2026.2.x (NetSuite API type definitions)
 
 ---
 

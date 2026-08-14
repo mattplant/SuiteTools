@@ -1897,10 +1897,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hitc/netsuite-types@npm:2024.2.12":
-  version: 2024.2.12
-  resolution: "@hitc/netsuite-types@npm:2024.2.12"
-  checksum: 10c0/f4692abb89158b8bcb184b17bef87028cc3d5a09d6eddd00e59f65ab468bd1653aa5d8daf35c3f8e7602f428f7118e8564ee6e331cb557c317b8b649530bdcb7
+"@hitc/netsuite-types@npm:2026.2.1":
+  version: 2026.2.1
+  resolution: "@hitc/netsuite-types@npm:2026.2.1"
+  checksum: 10c0/67c01fecfb8909f3d45d3ce8951980c55c040a46c16b3182a1f0f38f22f19ca70a36e35184ab2fde95c8926b0d7c14f2ae53167c909118179b846227cd7aa80d
   languageName: node
   linkType: hard
 
@@ -4139,7 +4139,7 @@ __metadata:
   resolution: "backend@workspace:backend"
   dependencies:
     "@babel/core": "npm:^7.28.0"
-    "@hitc/netsuite-types": "npm:2024.2.12"
+    "@hitc/netsuite-types": "npm:2026.2.1"
     "@oracle/suitecloud-cli": "npm:^3.1.0"
     "@oracle/suitecloud-unit-testing": "npm:^1.6.0"
     "@suiteworks/suitetools-shared": "workspace:*"
