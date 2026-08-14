@@ -40,7 +40,7 @@
     "lint": "yarn run -T biome check .",
     "typecheck": "yarn workspace @suiteworks/suitetools-shared run typecheck && yarn workspace frontend run typecheck && yarn workspace backend run typecheck",
     "test": "yarn workspace @suiteworks/suitetools-shared run build && yarn workspaces foreach -Apt --verbose run test",
-    "postinstall": "node ./scripts/check-node.mjs && echo '✅ Reminder: In VS Code, open Command Palette → TypeScript: Select TypeScript Version → Use Workspace Version'",
+    "postinstall": "node ./scripts/check-node.mjs",
     "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
     "yarn:reset": "./scripts/resetYarn.sh",
     "generate-third-party-licenses": "./scripts/generate-third-party-licenses.sh",
@@ -60,14 +60,8 @@
   "dependencies": {
     "typescript": "6.0.3"
   },
-  "dependenciesMeta": {
-    "@hitc/netsuite-types@2024.2.12": {
-      "unplugged": true
-    }
-  },
   "devDependencies": {
     "@biomejs/biome": "2.5.8",
-    "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.15",
     "esbuild": "^0.25.11",
     "globals": "^16.3.0",
     "remark": "^15.0.1",

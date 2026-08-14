@@ -37,7 +37,7 @@ SuiteTools is a Yarn workspaces monorepo:
 
 ### Node.js 24 (Not Homebrew Current)
 
-As of 2026-08-05, Homebrew’s default `node` formula tracks **Current** (Node **26**). SuiteTools stays on **Node 24 LTS** until 26 becomes LTS (~2026-10-28). Odd-major / Current Node has caused native postinstall pain under Yarn PnP (notably esbuild).
+As of 2026-08-05, Homebrew’s default `node` formula tracks **Current** (Node **26**). SuiteTools stays on **Node 24 LTS** until 26 becomes LTS (~2026-10-28). Odd-major / Current Node has caused native postinstall pain for packages with native binaries (notably esbuild).
 
 Confirm before installing:
 
@@ -174,18 +174,18 @@ If `yarn install` prints that SuiteTools requires Node 24, your shell is on anot
 
 ### Hung Install or `esbuild Must Be Built`
 
-A bad local `.yarn/unplugged` esbuild binary (for example a self-recursive Node wrapper instead of the real Mach-O/ELF) can hang or fork-bomb during postinstall.
+A bad local esbuild binary in `node_modules` (for example a self-recursive Node wrapper instead of the real Mach-O/ELF) can hang or fork-bomb during postinstall.
 
 Recovery:
 
 ```bash
 # From the monorepo root
-rm -rf .yarn/unplugged/esbuild-* .yarn/unplugged/@esbuild-*
+rm -rf node_modules/esbuild node_modules/@esbuild
 yarn install --mode=skip-build   # if a normal install hangs on esbuild
 yarn install                     # once Node 24 is confirmed
 ```
 
-If esbuild is still wrong after a clean install on Node 24, delete the matching entries under `.yarn/unplugged/` again and reinstall. Prefer Node 24 before retrying — Current Node increases risk for native optional deps under PnP.
+If esbuild is still wrong after a clean install on Node 24, run `yarn yarn:reset`, which clears `node_modules` across every workspace and reinstalls. Prefer Node 24 before retrying — Current Node increases risk for native optional deps.
 
 ---
 

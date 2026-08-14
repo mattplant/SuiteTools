@@ -1,7 +1,7 @@
 {
   "task.allowAutomaticTasks": "on",
-  "search.exclude": { "**/.yarn": true, "**/.pnp.*": true },
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "search.exclude": { "**/node_modules": true },
+  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnPaste": true,

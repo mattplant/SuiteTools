@@ -3,7 +3,7 @@
 > **SuiteTools Governance Artifact**
 > Authoritative source: [.yarnrc.yml](../../../../.yarnrc.yml)
 
-Last updated: August 12, 2026
+Last updated: August 13, 2026
 
 ---
 
@@ -21,8 +21,11 @@ This document annotates the `.yarnrc.yml` configuration, explaining the suite‑
 
 ## 🛠️ Package Extensions
 
-<!-- heading-title-case: ignore -->
-### `@oracle/suitecloud-unit-testing` → `@babel/core` Patch
+Package extensions declare dependencies that an upstream package uses but forgets to list. Under Plug'n'Play that omission was fatal — strict resolution rejected the import outright. Under the `node-modules` linker adopted in #74, hoisting resolves it anyway, so each extension has to justify itself on other grounds.
+
+Each was re-evaluated in #74 by removing it, reinstalling, and diffing `yarn explain peer-requirements`. Passing tests are not sufficient evidence, because hoisting makes almost any extension look removable.
+
+### `@oracle/suitecloud-unit-testing` → `@babel/core`
 
 ```yaml
 packageExtensions:
@@ -31,28 +34,14 @@ packageExtensions:
       "@babel/core": "*"
 ```
 
-**Purpose:**
-The SuiteCloud Jest transformer loads Babel presets but does not declare `@babel/core` as a dependency.
-Under Yarn Plug'n'Play strict mode, that omission causes resolution failures when the backend test suite runs.
-This extension declares it explicitly.
+The SuiteCloud Jest transformer loads Babel presets but does not declare `@babel/core`.
 
-<!-- heading-title-case: ignore -->
-### `ts-jest` → `jest-util` Patch
+**Kept.** `backend/package.json` declares `@babel/core` directly, so the backend suite passes either way — but removing the extension makes Yarn report `@babel/core` as an unmet peer of `@babel/preset-env` and 88 other packages. Keeping the peer graph clean is not a PnP-specific job.
 
-```yaml
-packageExtensions:
-  "ts-jest@*":
-    dependencies:
-      jest-util: "*"
-```
+### Removed
 
-**Purpose:**
-`ts-jest` reaches for `jest-util` without declaring it, which PnP strict resolution rejects.
-
-<!-- heading-title-case: ignore -->
-### Removed: `flowbite` → `tailwindcss` Patch
-
-Removed in #73. It declared `tailwindcss` for the `flowbite` package, which stopped being a dependency when #67 upgraded `flowbite-react` to 0.12 — 0.11+ no longer depends on standalone `flowbite`. The extension was patching a package that is no longer installed.
+- **`ts-jest` → `jest-util`** (#74) — `ts-jest` reaches for `jest-util` without declaring it, which PnP rejected. `jest-util` is in the hoisted tree via `jest` itself, and removing the extension introduced no unmet peer requirement. It was inert.
+- **`flowbite` → `tailwindcss`** (#73) — `flowbite` stopped being a dependency when #67 upgraded `flowbite-react` to 0.12, so the extension was patching a package that is no longer installed.
 
 **Governance Notes:**
 
@@ -60,12 +49,12 @@ Removed in #73. It declared `tailwindcss` for the `flowbite` package, which stop
 - Patches should be temporary — track upstream issues and remove once fixed.
 - Avoid using broad `*` version ranges unless necessary for compatibility.
 - Any new package extensions require governance review and approval.
+- A missing dependency that only `node-modules` hoisting saves is still an upstream bug. Prefer declaring it in the workspace that needs it, as `backend` does for `@babel/core`, over reintroducing an extension.
 
 ## 🔐 Migrated Security Settings
 
 Upgrading to Yarn 4.18.0 in #73 triggered Yarn's migration (`YN0087`), which wrote three settings into `.yarnrc.yml` to preserve the behaviour the project had under 4.9.2. Yarn 4.18 hardened all three defaults, so each pin is an explicit opt-out and is recorded here rather than left implicit.
 
-<!-- heading-title-case: ignore -->
 ### `npmMinimalAgeGate` — pinned to `0`
 
 Yarn 4.18 default: `1d`.
@@ -73,7 +62,6 @@ Yarn 4.18 default: `1d`.
 **Purpose:**
 Refuses package versions published within the last day, guarding against freshly published malicious releases. The migration pinned it to `0`, which opts out of that protection entirely. **Candidate for adoption.**
 
-<!-- heading-title-case: ignore -->
 ### `approvedGitRepositories` — pinned to `["**"]`
 
 Yarn 4.18 default: `[]`.
@@ -81,7 +69,6 @@ Yarn 4.18 default: `[]`.
 **Purpose:**
 Restricts which git repository URLs may be fetched. No dependency in `yarn.lock` resolves over git, so `["**"]` is broader than this project needs and carries no benefit. **Candidate for tightening.**
 
-<!-- heading-title-case: ignore -->
 ### `enableScripts` — pinned to `true`
 
 Yarn 4.18 default: `false`.

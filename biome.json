@@ -2,15 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "main" },
   "files": {
-    "includes": [
-      "**",
-      "!**/*.min.js",
-      "!**/dist",
-      "!**/.flowbite-react",
-      "!backend/src/FileCabinet",
-      "!.pnp.cjs",
-      "!**/*.css"
-    ]
+    "includes": ["**", "!**/*.min.js", "!**/dist", "!**/.flowbite-react", "!backend/src/FileCabinet", "!**/*.css"]
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 120, "expand": "never" },
   "assist": { "actions": { "source": { "organizeImports": "off" } } },

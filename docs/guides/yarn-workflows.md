@@ -1,6 +1,6 @@
 # 🛠️ Yarn Workflows
 
-Last updated: 2026-08-06
+Last updated: 2026-08-13
 
 ---
 
@@ -108,7 +108,7 @@ yarn add -W -D @biomejs/biome
 - ❌ Install runtime dependencies at the root
 - ❌ Add workspace‑specific tooling at the root
 - ❌ Install a dependency at the root to “share” it across workspaces instead of declaring it where it’s used
-- ❌ Use `-W` to bypass PnP errors instead of fixing the underlying dependency declaration
+- ❌ Use `-W` to make a missing dependency resolve instead of declaring it in the workspace that imports it
 
 ---
 
@@ -209,7 +209,7 @@ yarn dedupe lodash
 | Version misalignment detected      | Dependency range mismatch across workspaces | Align versions in all `package.json` files, then rerun `yarn dedupe` |
 | `Module not found`                 | Missing dependency declaration              | Add to `dependencies` in the correct workspace and reinstall |
 | Unexpected workspace coupling      | Cross‑workspace import without declaration  | Declare the dependency or refactor to respect workspace boundaries |
-| Tooling fails with PnP             | Tool not PnP‑compatible                     | Use `yarn unplug <package>` |
+| Import works locally, fails in CI  | Undeclared dependency met by hoisting       | Declare it in the importing workspace and reinstall |
 | Lockfile merge conflicts           | Concurrent dependency changes               | Re‑run `yarn install` and commit the updated lockfile |
 | Workspace not found                | Typo in workspace name or missing config    | Check `package.json` and `workspaces` field for correct name and path |
 
