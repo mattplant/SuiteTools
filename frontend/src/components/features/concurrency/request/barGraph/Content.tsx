@@ -1,4 +1,4 @@
-// biome-ignore-all lint/suspicious/noArrayIndexKey: every map here renders a positional d3 chart mark. The arrays are regenerated wholesale on data change and never reordered or spliced, so the index is the identity. Data-derived keys were tried and reverted in #75 because this environment cannot render the concurrency screens (no NetSuite APM), so the change could not be visually verified. See #78.
+// biome-ignore-all lint/suspicious/noArrayIndexKey: every map here renders a positional d3 chart mark. The arrays are regenerated wholesale on data change and never reordered or spliced, so the index is the identity. Data-derived keys were tried and reverted in #75 because this environment cannot render the concurrency screens (no NetSuite APM), so the change could not be visually verified. See #81.
 import * as d3 from "d3";
 import type { ConcurrencyRequestData } from "../types";
 
