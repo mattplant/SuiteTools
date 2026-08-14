@@ -14,7 +14,7 @@ This document annotates the current multiple TypeScript config files.
 
 ## 🔗 Related Governance
 
-- [Linting with SuiteTools](/docs/guides/linting) — strategy and philosophy
+- [Linting with SuiteTools](../../../guides/linting.md) — strategy and philosophy
 - [Biome Config](./biome.md) — lint and format alignment
 
 ---

@@ -96,7 +96,7 @@ For full workspace layout, benefits, enforcement rules, and allowed import relat
 These patterns and enforcement strategies apply across all workspaces to preserve architectural consistency, contributor clarity, and long‑term maintainability.
 
 - **[Validation & types](./validation.md)** — centralized schema strategy with layered transforms and runtime alignment.
-- **[Error Handling and Taxonomy](./error-handling.md)** — shared taxonomy, error codes, and mapping utilities for consistent reporting.
+- **[Error Handling and Taxonomy](./error-handling-architecture.md)** — shared taxonomy, error codes, and mapping utilities for consistent reporting.
 - **[Linting](../governance/standards/linting-standards.md)** — enforced boundaries, type‑safety expectations, and formatting standards.
 - **[Dependency rules](./monorepo-and-workspace-boundaries.md)** — workspace‑level import constraints enforced via tooling (e.g., custom lint rules).
 
@@ -147,7 +147,7 @@ SuiteTools applies a **centralized error strategy** for predictable behavior and
 - Development surfaces overlays; production prefers silent logging and rethrowing.
 - Recovery is intentional — no double‑handling.
 
-For full patterns, utilities, and error taxonomy, see the [Error Handling and Taxonomy](../architecture/error-handling-architecture.md).
+For full patterns, utilities, and error taxonomy, see the [Error Handling and Taxonomy](./error-handling-architecture.md).
 
 ---
 

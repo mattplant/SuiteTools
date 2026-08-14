@@ -101,7 +101,7 @@ For details, see the canonical sources:
 
 - Start small — typo fixes, doc clarifications, or adding examples are great first PRs.
 - Use our **badge clusters** and **visual discoverability cues** when adding new docs.
-- Review the [Installation Guide](./docs/installation.md) and [Customization Guide](./docs/customizing.md) to understand how SuiteTools is set up and extended.
+- Review the [Installation Guide](./docs/guides/installation.md) and [Customization Guide](./docs/guides/customizing.md) to understand how SuiteTools is set up and extended.
 - Ask questions early in the issue thread — we value clarity over assumptions.
 
 ---
