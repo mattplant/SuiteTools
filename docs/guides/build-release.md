@@ -60,7 +60,7 @@ Defined in [`.gitlab-ci.yml`](../../.gitlab-ci.yml). Runs on **merge request** e
 | `lint` | `yarn lint` | Yes | Biome check (lint + format) across all workspaces |
 | `test` | `yarn test` | Yes | Workspace Vitest (shared/frontend) + SuiteCloud Jest (backend) |
 
-- **Image / toolchain** — `node:24-bookworm` (matches [`.node-version`](../../.node-version)); Yarn **4.9.2** via Corepack / `packageManager` and the checked-in `.yarn/releases` binary; Yarn PnP with `.yarn/cache` cached on `yarn.lock`.
+- **Image / toolchain** — `node:24-bookworm` (matches [`.node-version`](../../.node-version)); Yarn **4.18.0** via Corepack / `packageManager` and the checked-in `.yarn/releases` binary; the `node-modules` linker, with `.yarn/cache` cached on `yarn.lock`.
 - **SuiteCloud SDK license** — CI sets `npm_config_acceptsuitecloudsdklicense=true` so `@oracle/suitecloud-cli` postinstall can download the SDK JAR non-interactively (Oracle Free Use Terms and Conditions). Deploy credentials are still out of scope.
 - **Merge policy** — Enable **Pipelines must succeed** under GitLab → Settings → Merge requests so red **required** jobs block merge.
 - **Out of scope** — SuiteCloud `project:deploy` / file upload; keep account credentials out of MR pipelines.

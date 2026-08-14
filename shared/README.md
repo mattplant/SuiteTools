@@ -81,7 +81,7 @@ import { assertValidScriptLog, parseScriptLog } from 'shared'
 
 This workspace requires the following tools and libraries:
 
-- **Yarn (Berry)** — v4.9.2 (workspace and package manager)
+- **Yarn** — v4.18.0 (workspace and package manager)
 
 ### Runtime Dependencies
 

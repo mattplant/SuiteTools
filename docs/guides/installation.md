@@ -31,7 +31,7 @@ SuiteTools is a Yarn workspaces monorepo:
 | Tool | Notes |
 |------|--------|
 | **Node.js** | **24.x** (Active LTS). Pinned by `.node-version` / `.nvmrc`, declared in root `engines.node`, enforced on `yarn install` via `scripts/check-node.mjs`. CI uses `node:24-bookworm` (see [Build & Release](./build-release.md)). |
-| **Yarn Berry** | Yarn **4.9.2** via this project’s `packageManager` / `.yarn/releases`. |
+| **Yarn** | Yarn **4.18.0** via this project’s `packageManager` / `.yarn/releases`. |
 | **Java JDK** | **17+** (21 recommended) for the SuiteCloud CLI (`suitecloud` account setup, validate, deploy, file upload) |
 | **SuiteCloud CLI** | Provided as a workspace dependency (`@oracle/suitecloud-cli`); invoked via Yarn scripts |
 
@@ -96,7 +96,7 @@ yarn install
 
 ### Build the Monorepo
 
-Frontend `prebuild` and backend `prebuild` each build **shared** automatically. For a first install, build both consumers so FileCabinet has SPA assets **and** SuiteScript bundles:
+Frontend and backend `build` each build **shared** first. For a first install, build both consumers so FileCabinet has SPA assets **and** SuiteScript bundles:
 
 ```bash
 yarn build:all
@@ -131,7 +131,7 @@ yarn deploy:all
 
 ### Frontend-only (SPA)
 
-Builds shared (via `prebuild`), builds the SPA into FileCabinet `dist/`, then uploads those files:
+Builds shared first, then the SPA into FileCabinet `dist/`, then uploads those files:
 
 ```bash
 yarn workspace frontend run build-and-deploy
@@ -145,7 +145,7 @@ Reload the SuiteTools Suitelet and confirm the **app-bundle** timestamp if debug
 yarn workspace backend run build-and-deploy
 ```
 
-`prebuild` builds shared first. Prefer `build-and-deploy` over bare `deploy`. Use `build:prod` instead of `build` when you want production bundle settings before deploy.
+`build` builds shared first. Prefer `build-and-deploy` over bare `deploy`. Use `build:prod` instead of `build` when you want production bundle settings before deploy.
 
 ---
 

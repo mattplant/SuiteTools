@@ -74,7 +74,7 @@ Complete in order. One entity (or tight cluster) per MR when possible.
 
 ### 7. Build, deploy, smoke
 
-- [ ] Backend and/or frontend `build-and-deploy` as needed — each runs shared via `prebuild` (no separate shared build required). See [Build & Release Checklist](./build-release-checklist.md).
+- [ ] Backend and/or frontend `build-and-deploy` as needed — each builds shared first (no separate shared build required). See [Build & Release Checklist](./build-release-checklist.md).
 - [ ] Backend when model/Get/shared schema change; FE-only when SPA-only. Cross-cutting / first install: root `deploy:all`.
 - [ ] Smoke list (criteria + empty + rows) and detail (happy + missing id NotFound / overlay per Dev Mode).
 
