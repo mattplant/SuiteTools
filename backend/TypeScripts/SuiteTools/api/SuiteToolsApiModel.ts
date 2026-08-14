@@ -128,7 +128,7 @@ export class SuiteToolsApiModel {
     const scriptTaskId = scriptTask.submit();
     log.debug({
       title: "SuiteToolsApiModel:initiateJob() submitted run job map/reduce script",
-      details: "scriptTaskId = " + scriptTaskId,
+      details: `scriptTaskId = ${scriptTaskId}`,
     });
   }
 
@@ -314,7 +314,7 @@ export class SuiteToolsApiModel {
     return response;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tighten under #76
   private normalizeIntegrationRow(row: any): {
     id: number;
     name: string;
@@ -897,7 +897,7 @@ export class SuiteToolsApiModel {
         // Relative window in minutes (e.g. "15", "60", "240")
         // NetSuite SuiteQL uses fractional days: minutes / 1440
         const minutes = parseInt(dates, 10);
-        if (!isNaN(minutes) && minutes > 0) {
+        if (!Number.isNaN(minutes) && minutes > 0) {
           where.push(`${column} >= (SYSDATE - ${minutes} / 1440)`);
         } else {
           log.debug({ title: `${functionName} addDateFilter`, details: `Unhandled date filter value: ${dates}` });
@@ -917,7 +917,7 @@ export class SuiteToolsApiModel {
       return named[duration];
     }
     const minutes = parseInt(duration, 10);
-    return !isNaN(minutes) && minutes > 0 ? minutes : 0;
+    return !Number.isNaN(minutes) && minutes > 0 ? minutes : 0;
   }
 
   /**
@@ -930,7 +930,7 @@ export class SuiteToolsApiModel {
     }
     if (/^\d+$/.test(value)) {
       const date = new Date(Number(value));
-      if (!isNaN(date.getTime())) {
+      if (!Number.isNaN(date.getTime())) {
         const pad = (n: number) => String(n).padStart(2, "0");
         return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
       }
@@ -1016,7 +1016,7 @@ export class SuiteToolsApiModel {
    * Map a SuiteQL OAuthToken row into the Token schema shape.
    * @param row - Raw SuiteQL row.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tighten under #76
   private normalizeTokenRow(row: any): {
     id: number;
     name: string;

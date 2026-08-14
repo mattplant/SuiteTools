@@ -85,6 +85,7 @@ export function Results({ type, lines, getModalData }: Props): React.JSX.Element
   }, [id, lines, getModalData, modalTitle, triggerError]);
 
   // Close the modal when in-app navigation leaves the current list route.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: location.pathname is the trigger for this effect, not a value it reads
   useEffect(() => {
     setOpenModal(false);
     setId(null);

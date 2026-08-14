@@ -40,7 +40,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
     columns: string[] | search.Column[],
     filters: search.Filter[],
     rows: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: NetSuite search results are loosely typed; tighten under #76
   ): any[] {
     log.debug({
       title: `SuiteToolsCommonLibraryNetSuiteSearch:search() initiated`,
@@ -56,7 +56,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
       rows = "1000";
     }
 
-    const maxResults = parseInt(rows);
+    const maxResults = parseInt(rows, 10);
     const searchResults: search.Result[] = [];
 
     // Use run().each() for better performance - handles up to 4000 results
@@ -82,7 +82,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
    */
   public run(
     id: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: NetSuite search results are loosely typed; tighten under #76
   ): any[] {
     log.debug({ title: `SuiteToolsCommonLibraryNetSuiteSearch:run() initiated`, details: { id: id } });
 
@@ -122,7 +122,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
       const result = searchLookupResults[0].getValue({ name: "internalid" });
       // check if type of result  is string
       if (typeof result === "string") {
-        internalId = parseInt(result);
+        internalId = parseInt(result, 10);
       }
     }
     log.debug({ title: "SuiteToolsCommonLibraryNetSuiteRecord:getSearchInternalId() returning", details: internalId });

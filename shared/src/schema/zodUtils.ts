@@ -13,7 +13,7 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { z, ZodError } from "zod";
+import { z, type ZodError } from "zod";
 
 /**
  * Enhances a Zod schema with runtime parsing and type assertion methods

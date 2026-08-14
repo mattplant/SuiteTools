@@ -1,32 +1,33 @@
+// biome-ignore-all lint/suspicious/noArrayIndexKey: every map here renders a positional d3 chart mark. The arrays are regenerated wholesale on data change and never reordered or spliced, so the index is the identity. Data-derived keys were tried and reverted in #75 because this environment cannot render the concurrency screens (no NetSuite APM), so the change could not be visually verified. See #78.
 import * as d3 from "d3";
 import React, { useMemo } from "react";
 import type { ConcurrencySummaryData } from "../types";
 
-type Props = { data: ConcurrencySummaryData | undefined };
+type Props = { data: ConcurrencySummaryData };
 
 export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const margin = { top: 30, right: 60, bottom: 30, left: 70 };
-  const days = data!.concurrency.yCategories;
+  const days = data.concurrency.yCategories;
   const daysCount = days.length;
   const width = 1024;
   const heightPerDay = 35;
   const height = daysCount * heightPerDay + margin.top + margin.bottom + heightPerDay;
   const boundsHeight = daysCount * heightPerDay;
   const boundsWidth = width - margin.right - margin.left;
-  const peaks = data!.concurrency.series.peak;
+  const peaks = data.concurrency.series.peak;
   const allXGroups = useMemo(() => [...new Set(peaks.map((d) => d[0].toString()))], [peaks]);
   const allYGroups = useMemo(() => [...new Set(peaks.map((d) => d[1].toString()))], [peaks]);
   // Keep proxy deps (peaks/width) so scale rebuild timing stays as before APM verification.
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- peaks covers allXGroups; width is constant layout
+  // biome-ignore lint/correctness/useExhaustiveDependencies: peaks covers allXGroups; width is constant layout
   const xScale = useMemo(() => d3.scaleBand().range([0, boundsWidth]).domain(allXGroups).padding(0.05), [peaks, width]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: peaks covers allYGroups; height tracks day count
   const yScale = useMemo(
     () => d3.scaleBand().range([boundsHeight, 0]).domain(allYGroups).padding(0.05),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- peaks covers allYGroups; height tracks day count
     [peaks, height],
   );
 
   // get violations
-  const violationData = data!.violations.series.violation;
+  const violationData = data.violations.series.violation;
   const violations = useMemo(() => {
     return Object.keys(violationData).map((key) => {
       return { key: Number(key), value: violationData[Number(key)] };
@@ -58,7 +59,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
       return null;
     }
     // lookup corresponding result record for this peak
-    const result = data!.concurrency.results.find((result) => result.startTime === d[3]);
+    const result = data.concurrency.results.find((result) => result.startTime === d[3]);
     let fillColor = colorScale(d[2]);
     if (violations.find((v) => v.key === d[3])) {
       fillColor = "#F56565"; // red for violations (text-red-500)
@@ -83,7 +84,9 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
               dominantBaseline="middle"
               fontSize={10}
               textAnchor="middle"
+              // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
               x={xScale(d[0].toString())! + xScale.bandwidth() / 2}
+              // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
               y={yScale(d[1].toString())! + yScale.bandwidth() / 2}
               fill="black"
             >
@@ -128,18 +131,15 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   });
 
   // added for average concurrency per hour
-  const hourAverages = data!.concurrency.hourAverages || [];
+  const hourAverages = data.concurrency.hourAverages || [];
   // Generate 24 hour labels: '0', '1', ..., '23'
   const allAvgGroups = useMemo(() => Array.from({ length: 24 }, (_, i) => i.toString()), []);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: allAvgGroups is stable (empty-deps memo)
   const xAvgScale = useMemo(
     () => d3.scaleBand().range([0, boundsWidth]).domain(allAvgGroups).padding(0.05),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- allAvgGroups is stable (empty-deps memo)
     [boundsWidth],
   );
-  const yAvgScale = useMemo(
-    () => d3.scaleBand().range([heightPerDay, 0]).domain(["Average"]).padding(0.05),
-    [heightPerDay],
-  );
+  const yAvgScale = useMemo(() => d3.scaleBand().range([heightPerDay, 0]).domain(["Average"]).padding(0.05), []);
 
   // create the heatmap cell for each hour (0-23)
   const allAvgShapes = allAvgGroups.map((hour, i) => {
@@ -149,7 +149,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     if (avg === null || !x || !y) {
       return null;
     }
-    const fillColor = colorScale((avg / data!.concurrency.overview.concurrencyLimit) * 100);
+    const fillColor = colorScale((avg / data.concurrency.overview.concurrencyLimit) * 100);
     return (
       <g key={i}>
         <rect

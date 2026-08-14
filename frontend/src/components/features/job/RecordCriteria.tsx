@@ -21,7 +21,7 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
     try {
       const responseData = await initiateJob({ id: 0 });
       if (responseData.status === 200) {
-        const redirectToPage = getAppBaseUrl() + `#/jobRuns`;
+        const redirectToPage = `${getAppBaseUrl()}#/jobRuns`;
         window.location.href = redirectToPage;
         return;
       }

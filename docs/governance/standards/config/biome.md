@@ -65,10 +65,23 @@ Quote style is deliberately **not** overridden — Biome's default of double quo
 
 ## 🚦 Rule Severity
 
-The `recommended` preset is enabled and every rule in it is an error, with one group of exceptions. Six rules carry pre-existing backlogs and are set to `warn` so they report without failing CI:
+The `recommended` preset is enabled via `preset: "recommended"` and every rule in it is an **error**, with a single exception.
 
-| Rule | Why it is deferred |
-|---|---|
+`noExplicitAny` is set to `warn`. Eliminating explicit `any` is type-design work rather than linting, so it is tracked separately in #76. It reports on every run without failing CI, which keeps the remaining count visible in the tool rather than only in an issue.
+
+Six rules were held at `warn` when Biome landed in #70 and were promoted to `error` in #75 once their backlogs were cleared: `useTemplate`, `useLiteralKeys`, `useNodejsImportProtocol`, `noNonNullAssertion`, `useExhaustiveDependencies` and `noArrayIndexKey`.
+
+Note that `preset` replaces the older `recommended: true`, which Biome reports as deprecated and will remove in its next major.
+
+### Suppressions
+
+Where a rule is wrong about intent rather than about the code, the finding is suppressed inline with a stated reason rather than the rule being weakened globally. The standing examples:
+
+- **`useExhaustiveDependencies`** — `location.pathname` is used as an effect *trigger* in `MessageAutoClear` and `Results`; the body never reads it, so Biome calls it unnecessary, but removing it would stop messages clearing and modals closing on navigation. `useEntityList` deliberately omits `fetchList` and `getStatusMessage` because callers pass inline wrappers whose identity changes every render; its explicit `deps` option is the intended trigger. The heat map keeps proxy dependencies so scale rebuild timing matches what was verified against APM.
+- **`noNonNullAssertion`** — d3 band scales return `undefined` only for values outside the domain, and those domains are built from the same data being mapped; `d3.min`/`d3.max` return `undefined` only for an empty array.
+- **`noExplicitAny`** — 38 of the 59 occurrences carry suppressions inherited from ESLint and reviewed at the time. The 21 that report have not been reviewed, which is the distinction #76 works from.
+
+---|---|
 | `noExplicitAny` | Eliminating these is type-design work, not linting |
 | `useTemplate` | Mechanical, high volume |
 | `useLiteralKeys` | Mechanical, high volume |

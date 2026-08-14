@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zNetSuite } from "../zNetSuite";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
-import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
+import { orNotFoundSchema, type OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for a single User record.

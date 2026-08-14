@@ -14,11 +14,11 @@ declare class SuiteToolsCommon {
   appSettingsRecord: string;
   appJsFile: string;
   appCssFile: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tighten under #76
   runtime: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tighten under #76
   stLib: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tighten under #76
   stJobs: any;
 }
 
@@ -102,7 +102,7 @@ export class SuiteToolsCommonSettings {
       this._recordId = sqlResults[0].id;
       this._cssUrl = sqlResults[0].cssurl;
       this._jsUrl = sqlResults[0].jsurl;
-      this._devMode = sqlResults[0].devmode === "T" ? true : false;
+      this._devMode = sqlResults[0].devmode === "T";
       this._notifyAuthor = sqlResults[0].notifyauthor;
       this._notifyEmail = sqlResults[0].notifyemail;
       this._lastLogins = this.parseLastLogins(sqlResults[0].lastlogins);

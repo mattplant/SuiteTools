@@ -7,9 +7,8 @@
  * @NApiVersion 2.1
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return --
- * SuiteQL / settings bags are loosely typed today; tighten under #28.
- */
+// biome-ignore-all lint/suspicious/noExplicitAny: SuiteQL / settings bags are loosely typed today; tighten under #28
+// Note: the companion no-unsafe-return suppression is gone -- Biome has no type-aware equivalent.
 
 import * as log from "N/log";
 import type { Response } from "./types";
@@ -555,10 +554,10 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getFiles(requestParams: RequestParams): Response {
-    const row = requestParams["rows"];
-    const types = this.convertMultiSelectToArray(requestParams["fileTypes"]);
-    const createdDate = requestParams["dateCreated"];
-    const modifiedDate = requestParams["lastModifiedDate"];
+    const row = requestParams.rows;
+    const types = this.convertMultiSelectToArray(requestParams.fileTypes);
+    const createdDate = requestParams.dateCreated;
+    const modifiedDate = requestParams.lastModifiedDate;
     const result = this.stApiModel.getFiles(row, types, createdDate, modifiedDate);
 
     // List endpoints must return an array (legacy code used `{}` for empty).
@@ -591,7 +590,7 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobs(requestParams: RequestParams): Response {
-    const active = requestParams["active"];
+    const active = requestParams.active;
     const result = this.stApiModel.getJobs(active);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
@@ -624,7 +623,7 @@ export class SuiteToolsApiGet {
    * @returns integrations
    */
   private getIntegrations(requestParams: RequestParams): Response {
-    const active = requestParams["active"];
+    const active = requestParams.active;
     const result = this.stApiModel.getIntegrations(active);
 
     if (!Array.isArray(result.data)) {
@@ -656,8 +655,8 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getJobRuns(requestParams: RequestParams): Response {
-    const job = requestParams["job"];
-    const completed = requestParams["completed"];
+    const job = requestParams.job;
+    const completed = requestParams.completed;
     const result = this.stApiModel.getJobRuns(job, completed);
 
     // Legacy model uses `{}` for empty lists; adapters expect an array or NotFound.
@@ -675,13 +674,13 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getLogins(requestParams: RequestParams): Response {
-    const rows = requestParams["rows"];
-    const active = requestParams["active"];
-    const integrationName = requestParams["integrationName"];
-    const tokenName = requestParams["tokenName"];
-    const users = this.convertMultiSelectToArray(requestParams["users"]);
-    const roles = this.convertMultiSelectToArray(requestParams["roles"]);
-    const dates = requestParams["dates"];
+    const rows = requestParams.rows;
+    const active = requestParams.active;
+    const integrationName = requestParams.integrationName;
+    const tokenName = requestParams.tokenName;
+    const users = this.convertMultiSelectToArray(requestParams.users);
+    const roles = this.convertMultiSelectToArray(requestParams.roles);
+    const dates = requestParams.dates;
     const result = this.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dates);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
@@ -714,7 +713,7 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getRoles(requestParams: RequestParams): Response {
-    const active = requestParams["active"];
+    const active = requestParams.active;
     const result = this.stApiModel.getRoles(active);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
@@ -747,12 +746,12 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScripts(requestParams: RequestParams): Response {
-    const active = requestParams["active"];
-    const versions = this.convertMultiSelectToArray(requestParams["versions"]);
-    const scripttypes = this.convertMultiSelectToArray(requestParams["scriptTypes"]);
-    const scripts = this.convertMultiSelectToArray(requestParams["scriptNames"]);
-    const owners = this.convertMultiSelectToArray(requestParams["owners"]);
-    const files = this.convertMultiSelectToArray(requestParams["files"]);
+    const active = requestParams.active;
+    const versions = this.convertMultiSelectToArray(requestParams.versions);
+    const scripttypes = this.convertMultiSelectToArray(requestParams.scriptTypes);
+    const scripts = this.convertMultiSelectToArray(requestParams.scriptNames);
+    const owners = this.convertMultiSelectToArray(requestParams.owners);
+    const files = this.convertMultiSelectToArray(requestParams.files);
     const result = this.stApiModel.getScripts(active, versions, scripttypes, scripts, owners, files);
 
     // List endpoints must return an array
@@ -788,17 +787,17 @@ export class SuiteToolsApiGet {
    * @returns settings
    */
   private getScriptLogs(requestParams: RequestParams): Response {
-    const row = requestParams["rows"] ? requestParams["rows"] : "50";
-    const levels = this.convertMultiSelectToArray(requestParams["levels"]);
-    const types = this.convertMultiSelectToArray(requestParams["scriptTypes"]);
-    const scripts = this.convertMultiSelectToArray(requestParams["scriptNames"]);
-    const owners = this.convertMultiSelectToArray(requestParams["owners"]);
-    const timemode = requestParams["timeMode"] ? requestParams["timeMode"] : "now";
-    let date = requestParams["dateCreated"] ? requestParams["dateCreated"] : "15";
-    let customdatetime = requestParams["customDateTime"];
-    let customduration = requestParams["customDuration"];
-    const title = requestParams["title"];
-    const detail = requestParams["detail"];
+    const row = requestParams.rows ? requestParams.rows : "50";
+    const levels = this.convertMultiSelectToArray(requestParams.levels);
+    const types = this.convertMultiSelectToArray(requestParams.scriptTypes);
+    const scripts = this.convertMultiSelectToArray(requestParams.scriptNames);
+    const owners = this.convertMultiSelectToArray(requestParams.owners);
+    const timemode = requestParams.timeMode ? requestParams.timeMode : "now";
+    let date = requestParams.dateCreated ? requestParams.dateCreated : "15";
+    let customdatetime = requestParams.customDateTime;
+    let customduration = requestParams.customDuration;
+    const title = requestParams.title;
+    const detail = requestParams.detail;
 
     // verify required parameters
     if (timemode === "now") {
@@ -950,9 +949,9 @@ export class SuiteToolsApiGet {
    * @returns users
    */
   private getUsers(requestParams: RequestParams): Response {
-    const active = requestParams["active"];
-    const roles = this.convertMultiSelectToArray(requestParams["roles"]);
-    const supervisors = this.convertMultiSelectToArray(requestParams["owners"]);
+    const active = requestParams.active;
+    const roles = this.convertMultiSelectToArray(requestParams.roles);
+    const supervisors = this.convertMultiSelectToArray(requestParams.owners);
     const result = this.stApiModel.getUsers(active, roles, supervisors);
 
     // List endpoints must return an array (legacy model used `{}` for empty).

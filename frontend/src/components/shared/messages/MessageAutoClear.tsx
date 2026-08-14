@@ -12,6 +12,7 @@ export function MessageAutoClear(): null {
   const { clearMessage } = useInlineMessage();
   const location = useLocation();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: location.pathname is the trigger for this effect, not a value it reads — clearing on route change is the entire purpose
   useEffect(() => {
     clearMessage();
   }, [location.pathname, clearMessage]);

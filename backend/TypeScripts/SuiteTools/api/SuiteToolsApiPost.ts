@@ -78,7 +78,7 @@ export class SuiteToolsApiPost {
     }
     // initiate the job
     this.stApiModel.initiateJob(id, data);
-    const message = "InitiateJob() initiated with with id of " + id;
+    const message = `InitiateJob() initiated with with id of ${id}`;
 
     return { status: 200, data: {}, message: message };
   }

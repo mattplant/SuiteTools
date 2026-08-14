@@ -1,6 +1,6 @@
 import { build } from "esbuild";
-import { resolve } from "path";
-import { readFile, writeFile } from "fs/promises";
+import { resolve } from "node:path";
+import { readFile, writeFile } from "node:fs/promises";
 
 /**
  * Build configuration for creating NetSuite deployment bundles

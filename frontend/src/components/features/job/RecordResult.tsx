@@ -37,7 +37,7 @@ export function JobResult({ data, modal }: Props) {
     try {
       const responseData = await initiateJob({ id: data.id, data: entityRecords });
       if (responseData.status === 200) {
-        const redirectToPage = getAppBaseUrl() + `#/job/${data.id}`;
+        const redirectToPage = `${getAppBaseUrl()}#/job/${data.id}`;
         window.location.href = redirectToPage;
         return;
       }

@@ -47,13 +47,7 @@ export function addIntegrationLastLogins(
   integrations: readonly Integration[],
   settings: Settings | undefined,
 ): readonly Integration[] {
-  if (
-    settings &&
-    settings.lastLogins &&
-    settings.lastLogins.data &&
-    Array.isArray(settings.lastLogins.data) &&
-    settings.lastLogins.data.length > 0
-  ) {
+  if (settings?.lastLogins?.data && Array.isArray(settings.lastLogins.data) && settings.lastLogins.data.length > 0) {
     const lastLogins = settings.lastLogins.data.filter((lastLogin) => lastLogin.name.type === "integration");
     integrations.forEach((integration) => {
       const lastLogin = lastLogins.find(

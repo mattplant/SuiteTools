@@ -13,7 +13,7 @@ import { SearchCriteriaDateTimePicker } from "./SearchCriteriaDateTimePicker";
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- advanced-* fields are not on CriteriaFields yet
+  // biome-ignore lint/suspicious/noExplicitAny: advanced-* fields are not on CriteriaFields yet
   control: Control<any>;
   setValue: UseFormSetValue<CriteriaFields>;
   dateDefaultValue: Date;

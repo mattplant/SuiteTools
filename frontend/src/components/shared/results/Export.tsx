@@ -1,7 +1,7 @@
 import { Button } from "flowbite-react";
 import { exportToCsv } from "../ui/exportUtils";
 import "react-data-grid/lib/styles.css";
-import { type DataGridHandle } from "react-data-grid";
+import type { DataGridHandle } from "react-data-grid";
 
 type Props = {
   // `useRef<DataGridHandle>(null)` yields `RefObject<DataGridHandle | null>` under @types/react 19,
@@ -12,7 +12,12 @@ type Props = {
 
 export function Export({ gridRef }: Props) {
   const handleExportToCsv = () => {
-    exportToCsv(gridRef.current!.element!, "export.csv");
+    // The grid element is absent until the DataGrid has mounted; exporting before
+    // then is a no-op rather than a TypeError.
+    const gridElement = gridRef.current?.element;
+    if (!gridElement) return;
+
+    exportToCsv(gridElement, "export.csv");
   };
 
   return <Button onClick={() => handleExportToCsv()}>Export to CSV</Button>;

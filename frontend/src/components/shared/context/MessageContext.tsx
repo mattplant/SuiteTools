@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { createContext, useState, useEffect } from "react";
+import { createContext, useCallback, useState, useEffect } from "react";
 
 type MessageType = "success" | "error" | "info" | "warning";
 
@@ -41,7 +41,8 @@ type Props = { children: ReactNode };
 export function InlineMessageProvider({ children }: Props) {
   const [message, setMessage] = useState<InlineMessage | null>(null);
 
-  const clearMessage = () => setMessage(null);
+  // Memoised so the auto-clear effect can depend on it without restarting the timer each render.
+  const clearMessage = useCallback(() => setMessage(null), []);
   const MESSAGE_TIMEOUT_MS = 4000;
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function InlineMessageProvider({ children }: Props) {
       }, MESSAGE_TIMEOUT_MS);
       return (): void => clearTimeout(timer);
     }
-  }, [message]);
+  }, [message, clearMessage]);
 
   return (
     <InlineMessageContext.Provider value={{ message, setMessage, clearMessage }}>
