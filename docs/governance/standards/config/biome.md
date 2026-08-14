@@ -65,13 +65,13 @@ Quote style is deliberately **not** overridden — Biome's default of double quo
 
 ## 🚦 Rule Severity
 
-The `recommended` preset is enabled via `preset: "recommended"` and every rule in it is an **error**, with a single exception.
+The `recommended` preset is enabled via `preset: "recommended"` and **every rule in it is an error**. There are no severity overrides in `biome.json`.
 
-`noExplicitAny` is set to `warn`. Eliminating explicit `any` is type-design work rather than linting, so it is tracked separately in #76. It reports on every run without failing CI, which keeps the remaining count visible in the tool rather than only in an issue.
-
-Six rules were held at `warn` when Biome landed in #70 and were promoted to `error` in #75 once their backlogs were cleared: `useTemplate`, `useLiteralKeys`, `useNodejsImportProtocol`, `noNonNullAssertion`, `useExhaustiveDependencies` and `noArrayIndexKey`.
+Getting there took three steps: #70 landed Biome with seven rules held at `warn` because they carried pre-existing backlogs; #75 cleared six of them; #76 cleared `noExplicitAny`.
 
 Note that `preset` replaces the older `recommended: true`, which Biome reports as deprecated and will remove in its next major.
+
+Where a rule must not apply, the exception is an inline `biome-ignore` with a stated reason rather than a weakened global severity. That keeps the exception visible at the code it applies to, and keeps `yarn lint` a binary signal.
 
 ### Suppressions
 
@@ -79,7 +79,7 @@ Where a rule is wrong about intent rather than about the code, the finding is su
 
 - **`useExhaustiveDependencies`** — `location.pathname` is used as an effect *trigger* in `MessageAutoClear` and `Results`; the body never reads it, so Biome calls it unnecessary, but removing it would stop messages clearing and modals closing on navigation. `useEntityList` deliberately omits `fetchList` and `getStatusMessage` because callers pass inline wrappers whose identity changes every render; its explicit `deps` option is the intended trigger. The heat map keeps proxy dependencies so scale rebuild timing matches what was verified against APM.
 - **`noNonNullAssertion`** — d3 band scales return `undefined` only for values outside the domain, and those domains are built from the same data being mapped; `d3.min`/`d3.max` return `undefined` only for an empty array.
-- **`noExplicitAny`** — 38 of the 59 occurrences carry suppressions inherited from ESLint and reviewed at the time. The 21 that report have not been reviewed, which is the distinction #76 works from.
+- **`noExplicitAny`** — eliminated from `frontend` and `shared` entirely in #76. The 34 that remain are all in `backend` and all suppressed: forward declarations that exist to avoid a circular dependency, SuiteQL row shapes, and NetSuite search results. Removing them means breaking that dependency and modelling NetSuite result surfaces, which is architecture rather than annotation, so they are tracked in #28.
 
 ---|---|
 | `noExplicitAny` | Eliminating these is type-design work, not linting |

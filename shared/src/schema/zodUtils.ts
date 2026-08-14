@@ -70,9 +70,9 @@ function toJSON<T>(data: T): Record<string, unknown> {
 // Type Definitions
 // ───────────────────────────────────────────────────────────
 
-type ShapeKeys<TSchema extends z.ZodObject<any>> = keyof TSchema["shape"];
+type ShapeKeys<TSchema extends z.ZodObject<z.ZodRawShape>> = keyof TSchema["shape"];
 
-type ZEntityMeta<TSchema extends z.ZodObject<any>, TName extends string = string> = {
+type ZEntityMeta<TSchema extends z.ZodObject<z.ZodRawShape>, TName extends string = string> = {
   entity?: TName; // Singular name of the entity
   version?: string; // Version of the schema
   plural: string; // Plural name of the entity
@@ -82,9 +82,9 @@ type ZEntityMeta<TSchema extends z.ZodObject<any>, TName extends string = string
 };
 
 type Final<
-  TSchema extends z.ZodObject<any>,
-  TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined,
-> = TNormalizeFn extends (...a: any) => any ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>;
+  TSchema extends z.ZodObject<z.ZodRawShape>,
+  TNormalizeFn extends ((data: z.output<TSchema>) => unknown) | undefined,
+> = TNormalizeFn extends (...a: never[]) => unknown ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>;
 
 type ZEntityTypes<TSchema extends z.ZodTypeAny, TNormalized> = {
   /** Pre-transform input type */
@@ -98,9 +98,9 @@ type ZEntityTypes<TSchema extends z.ZodTypeAny, TNormalized> = {
 };
 
 type ZEntityBundle<
-  TSchema extends z.ZodObject<any>,
+  TSchema extends z.ZodObject<z.ZodRawShape>,
   TName extends string,
-  TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined = undefined,
+  TNormalizeFn extends ((data: z.output<TSchema>) => unknown) | undefined = undefined,
 > = {
   schema: TSchema;
   arraySchema: z.ZodArray<TSchema>;
@@ -142,9 +142,9 @@ type ZEntityBundle<
  * @returns A typed entity bundle with parsing, assertion, and metadata utilities
  */
 function zCreateBundle<
-  const TSchema extends z.ZodObject<any>,
+  const TSchema extends z.ZodObject<z.ZodRawShape>,
   const TName extends string,
-  TNormalizeFn extends ((data: z.output<TSchema>) => any) | undefined = undefined,
+  TNormalizeFn extends ((data: z.output<TSchema>) => unknown) | undefined = undefined,
 >(
   schema: TSchema,
   options: { normalize?: TNormalizeFn; meta: ZEntityMeta<TSchema, TName> },
@@ -161,7 +161,9 @@ function zCreateBundle<
   } as const;
 
   // Final output type
-  type Final = TNormalizeFn extends (...a: any) => any ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>;
+  type Final = TNormalizeFn extends (...a: never[]) => unknown
+    ? ReturnType<NonNullable<TNormalizeFn>>
+    : z.output<TSchema>;
 
   // Single-item helpers
   const parse: (input: unknown) => Final = (input) => {
@@ -215,7 +217,7 @@ function zCreateBundle<
     assertMany,
     types: undefined as unknown as ZEntityTypes<
       TSchema,
-      TNormalizeFn extends (...a: any) => any ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>
+      TNormalizeFn extends (...a: never[]) => unknown ? ReturnType<NonNullable<TNormalizeFn>> : z.output<TSchema>
     >,
     meta,
     toJSON,

@@ -1,11 +1,10 @@
-import type { Control } from "react-hook-form";
+import type { Control, FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Datepicker } from "flowbite-react";
 import TimePicker from "../ui/TimePicker";
 
 interface Props {
-  // biome-ignore lint/suspicious/noExplicitAny: RHF Control is form-generic across criteria pages
-  control: Control<any>;
+  control: Control<FieldValues>;
   title: string;
   dateName: string;
   dateDefaultValue?: Date;

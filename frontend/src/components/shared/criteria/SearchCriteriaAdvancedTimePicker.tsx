@@ -5,7 +5,7 @@
  */
 
 import React from "react";
-import type { UseFormRegister, Control, UseFormSetValue } from "react-hook-form";
+import type { UseFormRegister, Control, FieldValues, UseFormSetValue } from "react-hook-form";
 import { useWatch } from "react-hook-form";
 import type { CriteriaFields } from "./types";
 import { SearchCriteriaDateCreated } from "./SearchCriteriaDateCreated";
@@ -13,8 +13,7 @@ import { SearchCriteriaDateTimePicker } from "./SearchCriteriaDateTimePicker";
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
-  // biome-ignore lint/suspicious/noExplicitAny: advanced-* fields are not on CriteriaFields yet
-  control: Control<any>;
+  control: Control<FieldValues>;
   setValue: UseFormSetValue<CriteriaFields>;
   dateDefaultValue: Date;
   timeDefaultValue?: string;

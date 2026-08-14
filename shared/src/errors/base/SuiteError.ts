@@ -47,8 +47,11 @@ export abstract class SuiteError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
 
     // Capture stack trace in V8/Node environments (no-op in NetSuite)
-    if (typeof (Error as any).captureStackTrace === "function") {
-      (Error as any).captureStackTrace(this, new.target);
+    const errorCtor = Error as ErrorConstructor & {
+      captureStackTrace?: (targetObject: object, constructorOpt?: abstract new (...args: never[]) => unknown) => void;
+    };
+    if (typeof errorCtor.captureStackTrace === "function") {
+      errorCtor.captureStackTrace(this, new.target);
     }
   }
 

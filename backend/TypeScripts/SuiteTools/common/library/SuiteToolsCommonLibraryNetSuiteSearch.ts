@@ -40,7 +40,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
     columns: string[] | search.Column[],
     filters: search.Filter[],
     rows: string,
-    // biome-ignore lint/suspicious/noExplicitAny: NetSuite search results are loosely typed; tighten under #76
+    // biome-ignore lint/suspicious/noExplicitAny: NetSuite search results are loosely typed; tracked in #28
   ): any[] {
     log.debug({
       title: `SuiteToolsCommonLibraryNetSuiteSearch:search() initiated`,
@@ -82,7 +82,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
    */
   public run(
     id: string,
-    // biome-ignore lint/suspicious/noExplicitAny: NetSuite search results are loosely typed; tighten under #76
+    // biome-ignore lint/suspicious/noExplicitAny: NetSuite search results are loosely typed; tracked in #28
   ): any[] {
     log.debug({ title: `SuiteToolsCommonLibraryNetSuiteSearch:run() initiated`, details: { id: id } });
 

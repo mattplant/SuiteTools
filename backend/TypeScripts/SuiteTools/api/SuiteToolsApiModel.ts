@@ -314,7 +314,7 @@ export class SuiteToolsApiModel {
     return response;
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tracked in #28
   private normalizeIntegrationRow(row: any): {
     id: number;
     name: string;
@@ -1016,7 +1016,7 @@ export class SuiteToolsApiModel {
    * Map a SuiteQL OAuthToken row into the Token schema shape.
    * @param row - Raw SuiteQL row.
    */
-  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tracked in #28
   private normalizeTokenRow(row: any): {
     id: number;
     name: string;
