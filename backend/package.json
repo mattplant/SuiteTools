@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
-    "@hitc/netsuite-types": "2024.2.12",
+    "@hitc/netsuite-types": "2026.2.1",
     "@oracle/suitecloud-cli": "^3.1.0",
     "@oracle/suitecloud-unit-testing": "^1.6.0",
     "@types/jest": "^29.5.14",
