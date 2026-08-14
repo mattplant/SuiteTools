@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-13
 
 ---
 
@@ -37,6 +37,8 @@ It does **not** cover:
 
 SuiteTools enforces strict dependency boundaries to ensure reproducibility, clarity, and maintainability across all workspaces.
 
+> **These rules are conventions, not guarantees.** Until #74 the Plug’n’Play linker failed any undeclared import outright. Under `node-modules`, hoisting can resolve one silently, so the rules below are upheld by contributors and review rather than by the resolver. See [Yarn Foundations — What the Linker Change Gave Up](../../guides/yarn.md#what-the-linker-change-gave-up).
+
 ### Core Rules
 
 - **Declare all dependencies** — no implicit transitives.
@@ -56,9 +58,9 @@ This section defines the rules that govern dependency usage across the SuiteTool
 
 | Rule / Check                           | Tool / Command         | Mechanism(s)                                   | Rationale |
 |----------------------------------------|------------------------|------------------------------------------------|-----------|
-| Missing dependency detection           | `yarn constraints`     | Plug’n’Play (`.pnp.cjs`), `dependencies:` hygiene | Prevents undeclared dependencies from being used at runtime |
+| Missing dependency detection           | `yarn constraints`     | `dependencies:` hygiene, review                | Prevents undeclared dependencies from being used at runtime |
 | Cross‑workspace import boundary        | `yarn constraints`     | `yarn constraints.pro`                         | Stops unintended coupling between workspaces |
-| Duplicate dependency version detection | `yarn dedupe --check` (local / dependency MRs) | Plug’n’Play                              | Reduces bundle size and avoids version conflicts |
+| Duplicate dependency version detection | `yarn dedupe --check` (local / dependency MRs) | `yarn.lock` resolution                   | Reduces bundle size and avoids version conflicts |
 | Peer dependency alignment              | `yarn constraints`     | `peerDependencies:` rules                      | Ensures shared contracts (e.g., React) are consistent across workspaces |
 | Disallowed dependency list             | `yarn constraints`     | `yarn constraints.pro`                         | Blocks known‑bad or unapproved packages |
 
@@ -66,7 +68,7 @@ This section defines the rules that govern dependency usage across the SuiteTool
 
 | Mechanism                 | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
-| Plug’n’Play (`.pnp.cjs`)  | Enforces resolution only through declared dependencies                 |
+| `node-modules` linker     | Installs the resolved tree; hoisting leaves declarations unenforced    |
 | `dependencies:` hygiene   | Contributors must declare all runtime deps in their own `package.json` |
 | `peerDependencies:` rules | Used for shared interfaces or plugin-style relationships               |
 | `devDependencies:` scope  | Dev-only tools must not leak into runtime or other workspaces          |
@@ -111,7 +113,7 @@ SuiteTools requires that dependencies be deduplicated to maintain a clean, predi
 **Rationale:**
 Deduplication reduces bundle size, prevents resolution drift, and ensures consistent behavior across environments.
 
-> For step‑by‑step commands, examples, and debugging tips, see [Yarn Workflows – Deduplication](../../guides/yarn-workflows.md#deduplication-workflow).
+> For step‑by‑step commands, examples, and debugging tips, see [Yarn Workflows – Deduplication](../../guides/yarn-workflows.md#-deduplication-workflow).
 
 ---
 

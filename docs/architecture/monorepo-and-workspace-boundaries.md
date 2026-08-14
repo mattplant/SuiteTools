@@ -65,7 +65,7 @@ These mechanisms are implemented in tooling and CI checks, and must be followed 
 
 | Mechanism                  | Description                                                             |
 |----------------------------|-------------------------------------------------------------------------|
-| Plug’n’Play (`.pnp.cjs`)   | Enforces resolution only through declared dependencies                  |
+| `node-modules` linker      | Installs the resolved tree; hoisting leaves declarations unenforced     |
 | `dependencies:` hygiene    | Contributors must declare all runtime deps in their own `package.json`  |
 | `peerDependencies:` rules  | Used for shared interfaces or plugin‑style relationships                |
 | `devDependencies:` scope   | Dev‑only tools must not leak into runtime or other workspaces           |
@@ -92,7 +92,7 @@ Maintaining these boundaries protects layering, reduces cognitive load for contr
 
 ## 🧩 Workspace Management
 
-SuiteTools uses **Yarn Berry** (v3+) with **Plug’n’Play** and **workspaces** to manage its modular monorepo and streamline development workflows.
+SuiteTools uses **Yarn 4** with the **`node-modules` linker** and **workspaces** to manage its modular monorepo and streamline development workflows.
 For detailed Yarn usage and configuration, see [Yarn Foundations](../guides/yarn.md) and [Yarn Workflows](../guides/yarn-workflows.md).
 
 ---

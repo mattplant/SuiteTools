@@ -94,7 +94,6 @@ Installed via `package.json`:
 Installed via `package.json`:
 
 - **TypeScript** — provided at the monorepo root (used for builds and type checking)
-- **@yarnpkg/pnpify** — ^4.1.x (TypeScript + Yarn PnP integration for builds and watch mode)
 
 ---
 

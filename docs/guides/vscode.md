@@ -19,6 +19,9 @@ It ensures contributors have a consistent, productive environment with TypeScrip
 
 - [Visual Studio Code](https://code.visualstudio.com/) installed
 - [SuiteCloud Extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Oracle.suitecloud-vscode-extension)
+- [Biome Extension for VS Code](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) — the single linter and formatter for this repo
+
+Both are listed in `.vscode/extensions.json`, so VS Code offers to install them when you first open the workspace.
 
 ---
 
@@ -28,13 +31,19 @@ SuiteTools includes a `.vscode` folder with recommended settings:
 
 - Automatically builds backend code on save
 - Provides NPM script integration for build and deploy tasks
+- Formats and applies safe lint fixes on save via Biome
 
-### Use Workspace TypeScript Version
+### Workspace TypeScript Version
 
-1. Open any `.ts` or `.tsx` file
-2. Open the Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Windows/Linux)
-3. Search for **“TypeScript: Select TypeScript Version...”**
-4. Select **“Use Workspace Version”**
+`.vscode/settings.json` points `typescript.tsdk` at `node_modules/typescript/lib`, so the compiler VS Code
+uses is the one this repo pins — no SDK generation and nothing to run after `yarn install`.
+
+VS Code still asks before switching away from its own bundled TypeScript. Accept the **"Use Workspace
+Version"** prompt the first time you open a `.ts` or `.tsx` file. If you dismissed it, run
+**"TypeScript: Select TypeScript Version…"** from the Command Palette and pick **Use Workspace Version**.
+
+Declining leaves you on VS Code's bundled TypeScript, which is a different version from the repo's — the
+editor will disagree with `yarn typecheck` and CI.
 
 ---
 
@@ -46,7 +55,7 @@ Instead of running commands manually in the terminal, you can use the **NPM Scri
 - Expand **NPM Scripts**
 - Click the ▶️ play icon next to `build-and-deploy`
 
-> 🔗 For full deploy instructions, see the [Customizing Guide](../customizing.md#-deploying-changes).
+> 🔗 For full deploy instructions, see the [Customizing Guide](./customizing.md#-deploying-changes).
 
 ---
 

@@ -12,7 +12,8 @@ default:
   interruptible: true
 
 variables:
-  # Keep the Yarn cache under the project dir (matches .yarnrc.yml / local PnP portability).
+  # Keep the Yarn cache under the project dir (matches enableGlobalCache: false in
+  # .yarnrc.yml) so the cache: key below actually hits between pipelines.
   YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn/cache"
   YARN_ENABLE_GLOBAL_CACHE: "false"
   # Required for @oracle/suitecloud-cli postinstall (reads npm_config_*).

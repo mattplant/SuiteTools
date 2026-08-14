@@ -14,13 +14,10 @@
 !.vscode/tasks.json
 
 # Yarn
-.pnp.*
-!.pnp.cjs
 .yarn/builds/
 .yarn/cache/
 .yarn/install-state.gz
 .yarn/patches/
-.yarn/unplugged/
 node_modules
 
 # TypeScript build info
