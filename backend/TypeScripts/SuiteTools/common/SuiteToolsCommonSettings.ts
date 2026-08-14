@@ -14,11 +14,11 @@ declare class SuiteToolsCommon {
   appSettingsRecord: string;
   appJsFile: string;
   appCssFile: string;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #28
   runtime: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #28
   stLib: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #28
   stJobs: any;
 }
 

@@ -11,9 +11,9 @@ import * as log from "N/log";
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {
-  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tracked in #28
   stLib: any;
-  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tracked in #28
   stSettings: any;
 }
 
@@ -220,12 +220,12 @@ export class SuiteToolsCommonJobs {
    * @param lastRun - last run timestamp
    * @returns recent script errors
    */
-  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
+  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tracked in #28
   public getRecentScriptErrorsJob(lastRun: string): any[] {
     log.debug({ title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`, details: { lastRun } });
     // get the errors from the script execution log
     let levels = ["ERROR", "EMERGENCY", "SYSTEM"];
-    // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
+    // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tracked in #28
     let result: any[] = [];
     let sql = `SELECT
       ScriptNote.internalid AS id,

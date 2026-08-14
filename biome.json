@@ -15,5 +15,5 @@
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 120, "expand": "never" },
   "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "overrides": [{ "includes": ["**/package.json"], "formatter": { "enabled": false } }],
-  "linter": { "enabled": true, "rules": { "preset": "recommended", "suspicious": { "noExplicitAny": "warn" } } }
+  "linter": { "enabled": true, "rules": { "preset": "recommended" } }
 }

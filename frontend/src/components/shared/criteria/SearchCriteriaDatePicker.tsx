@@ -1,11 +1,10 @@
-import type { Control } from "react-hook-form";
+import type { Control, FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Datepicker } from "flowbite-react";
 
 interface Props {
-  // Page forms use different shapes; CriteriaFields is not universal here.
-  // biome-ignore lint/suspicious/noExplicitAny: RHF Control is form-generic across criteria pages
-  control: Control<any>;
+  // Page forms use different shapes; FieldValues is RHF's own permissive form type.
+  control: Control<FieldValues>;
   name: string;
   title: string;
   defaultValue?: Date;

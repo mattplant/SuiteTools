@@ -53,14 +53,12 @@ type HandleErrorOpts = {
  */
 export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
   // --- Normalize ---
-  let normalized: SuiteError | NormalizedError;
-  if (err instanceof SuiteError) {
-    normalized = err;
-  } else if (err instanceof Error) {
-    normalized = err as NormalizedError;
-  } else {
-    normalized = Object.assign(new Error(String(err), { cause: err }), { original: err });
-  }
+  const normalized: SuiteError | NormalizedError =
+    err instanceof SuiteError
+      ? err
+      : err instanceof Error
+        ? (err as NormalizedError)
+        : Object.assign(new Error(String(err), { cause: err }), { original: err });
 
   // --- Log ---
   const prefix = "[SuiteTools]";
@@ -69,10 +67,11 @@ export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
   console.error(`${prefix} ${normalized.toString()}`);
 
   // Structured log (better for telemetry/analysis)
+  const isSuiteError = normalized instanceof SuiteError;
   console.error({
-    code: (normalized as any).code ?? "UNKNOWN",
-    severity: (normalized as any).severity ?? "error",
-    context: (normalized as any).context,
+    code: isSuiteError ? normalized.code : "UNKNOWN",
+    severity: isSuiteError ? normalized.severity : "error",
+    context: isSuiteError ? normalized.context : undefined,
     stack: normalized.stack,
   });
 
