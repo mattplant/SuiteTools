@@ -1,8 +1,8 @@
 import { build } from "esbuild";
-import { resolve } from "path";
-import { readFile } from "fs/promises";
-import { existsSync, mkdirSync } from "fs";
-import { execSync } from "child_process";
+import { resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { existsSync, mkdirSync } from "node:fs";
+import { execSync } from "node:child_process";
 import { BUILD_CONFIG } from "./config.mjs";
 import { analyzeBundles, monitorBundleSizes } from "./analyzer.mjs";
 import {
@@ -20,7 +20,7 @@ import {
  */
 
 // Regex patterns for AMD conversion
-const REGEX_PATTERNS = {
+const _REGEX_PATTERNS = {
   // Remove the CommonJS export mapping block (causes NetSuite arrow function errors)
   // This matches: var xxx_exports = {}; __export(xxx_exports, {...}); module.exports = __toCommonJS(xxx_exports);
   COMMONJS_EXPORT:
@@ -90,7 +90,7 @@ function getBuildConfig(isProduction) {
  * Convert CommonJS output to AMD format for NetSuite
  * Using the EXACT working logic from commit 08e3d23
  */
-async function convertToAMD(isProduction) {
+async function convertToAMD(_isProduction) {
   for (const fileConfig of DEPLOYMENT_FILES) {
     const fileName = `${fileConfig.name}.js`;
     const filePath = resolve(fileConfig.outputPath, fileName);
@@ -424,7 +424,7 @@ async function buildAllDeployments(isProduction) {
     timer.step("Bundle analysis");
 
     // Create build report
-    const buildReport = createBuildReport({
+    const _buildReport = createBuildReport({
       totalTime,
       bundles: analysis.bundles,
       environment: process.env.NODE_ENV || "development",

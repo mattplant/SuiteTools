@@ -1,6 +1,6 @@
-import { readFile } from "fs/promises";
-import { existsSync, statSync } from "fs";
-import { resolve } from "path";
+import { readFile } from "node:fs/promises";
+import { existsSync, statSync } from "node:fs";
+import { resolve } from "node:path";
 
 /**
  * Bundle analysis utilities for monitoring build output sizes and performance
@@ -112,10 +112,10 @@ export async function analyzeBundles(deploymentFiles) {
  * @param {string} content - File content to analyze
  * @returns {Object} Content analysis breakdown
  */
-function analyzeFileContent(content) {
+function _analyzeFileContent(content) {
   // Use efficient counting methods to avoid regex catastrophic backtracking
   let comments = 0;
-  let strings = 0;
+  const strings = 0;
 
   // Simple line-by-line analysis for comments (much faster than complex regex)
   const lines = content.split("\n");
@@ -143,7 +143,7 @@ function analyzeFileContent(content) {
  * @param {string} content - Bundle file content
  * @returns {Array} Array of detected dependencies
  */
-function extractDependencies(content) {
+function _extractDependencies(content) {
   const dependencies = [];
 
   // Extract AMD dependencies

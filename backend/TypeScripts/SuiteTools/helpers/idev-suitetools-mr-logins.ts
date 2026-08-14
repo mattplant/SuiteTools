@@ -115,7 +115,7 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
     log.debug("summarize() context = ", JSON.stringify(context));
 
     const entityRecords = [];
-    context.output.iterator().each(function (key, value) {
+    context.output.iterator().each((key, value) => {
       const keyObj = JSON.parse(key);
       entityRecords.push({ name: keyObj, lastLogin: value });
       return true;
@@ -136,16 +136,16 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
 
     // generate and log standard summary
     const scriptErrors = [];
-    context.mapSummary.errors.iterator().each(function (key, value) {
+    context.mapSummary.errors.iterator().each((_key, value) => {
       scriptErrors.push(JSON.stringify(JSON.parse(value).cause));
       return true;
     });
-    context.reduceSummary.errors.iterator().each(function (key, value) {
+    context.reduceSummary.errors.iterator().each((_key, value) => {
       scriptErrors.push(JSON.stringify(JSON.parse(value).cause));
       return true;
     });
     if (scriptErrors.length > 0) {
-      log.error("summarize() " + scriptErrors.length + " error(s) occurred", scriptErrors.join("\n"));
+      log.error(`summarize() ${scriptErrors.length} error(s) occurred`, scriptErrors.join("\n"));
     } else {
       log.debug("summarize()", "Script completed without errors.");
     }

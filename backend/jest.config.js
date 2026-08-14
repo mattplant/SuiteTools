@@ -9,7 +9,7 @@
  * Tests target `TypeScripts/` (authoring sources), not generated FileCabinet JS.
  */
 
-const path = require("path");
+const path = require("node:path");
 const SuiteCloudJestConfiguration = require("@oracle/suitecloud-unit-testing/jest-configuration/SuiteCloudJestConfiguration");
 const cliConfig = require("./suitecloud.config");
 

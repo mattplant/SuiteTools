@@ -37,7 +37,7 @@ export class SuiteToolsCommonLibraryNetSuiteHttp {
     try {
       response = await https.get
         .promise({ url: url })
-        .then(function (response) {
+        .then((response) => {
           log.debug({ title: "getRequest() response", details: response });
           log.debug("getRequest() response body", response.body);
 

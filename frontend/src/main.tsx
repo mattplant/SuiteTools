@@ -9,7 +9,12 @@ import "./index.css";
 setErrorDevMode(import.meta.env.DEV);
 
 try {
-  createRoot(document.getElementById("root")!).render(
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    throw new Error('Cannot mount SuiteTools: no element with id "root" in the document.');
+  }
+
+  createRoot(rootElement).render(
     <StrictMode>
       <AppErrorBoundary>
         <App />

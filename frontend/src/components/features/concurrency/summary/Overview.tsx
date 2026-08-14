@@ -10,7 +10,7 @@ export function ConcurrencySummaryOverview({ data }: Props) {
 
   // calculate error rate percentage
   const errorRate = (data.violations.overview.totalViolations / data.violations.overview.totalRequests) * 100;
-  const errorRateRounded = Math.round(errorRate * 100) / 100 + "%";
+  const errorRateRounded = `${Math.round(errorRate * 100) / 100}%`;
 
   return (
     <div className="mx-auto text-center">
@@ -33,7 +33,7 @@ export function ConcurrencySummaryOverview({ data }: Props) {
         <div className="flex-1 p-5">
           <h3 className="text-lg font-bold text-slate-900">Close to the Limit</h3>
           <h1 id="closeToLimitRate" className="text-3xl text-gray-500 p-2">
-            {data.concurrency.overview.timeCloseToLimit.value + "%"}
+            {`${data.concurrency.overview.timeCloseToLimit.value}%`}
           </h1>
           <span id="closeToLimitRange" className="text-sm text-gray-500">
             {"Requests between " +
@@ -45,10 +45,10 @@ export function ConcurrencySummaryOverview({ data }: Props) {
         <div className="flex-1 p-5">
           <h3 className="text-lg font-bold text-slate-900">Over the Limit</h3>
           <h1 id="overLimitRate" className="text-3xl text-gray-500 p-2">
-            {data.concurrency.overview.timeOverLimit.value + "%"}
+            {`${data.concurrency.overview.timeOverLimit.value}%`}
           </h1>
           <span id="overLimitRange" className="text-sm text-gray-500">
-            {"Requests over " + data.concurrency.overview.timeOverLimit.range}
+            {`Requests over ${data.concurrency.overview.timeOverLimit.range}`}
           </span>
         </div>
         <div className="flex-1 p-5">

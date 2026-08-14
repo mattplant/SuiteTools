@@ -48,7 +48,7 @@ export function getInputData(
     if (jobId) {
       // Property must be `data` — reduce reads values.data (was incorrectly `name`).
       const inputData = [{ id: jobId, data: jobData }];
-      log.debug("getInputData() running for job #" + jobId, { hasData: Boolean(jobData) });
+      log.debug(`getInputData() running for job #${jobId}`, { hasData: Boolean(jobData) });
       return inputData;
     }
 
@@ -102,16 +102,16 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
     log.debug("summarize() context = ", JSON.stringify(context));
     // generate and log standard summary
     const scriptErrors = [];
-    context.mapSummary.errors.iterator().each(function (key, value) {
+    context.mapSummary.errors.iterator().each((_key, value) => {
       scriptErrors.push(JSON.stringify(JSON.parse(value).cause));
       return true;
     });
-    context.reduceSummary.errors.iterator().each(function (key, value) {
+    context.reduceSummary.errors.iterator().each((_key, value) => {
       scriptErrors.push(JSON.stringify(JSON.parse(value).cause));
       return true;
     });
     if (scriptErrors.length > 0) {
-      log.error("summarize() " + scriptErrors.length + " error(s) occurred", scriptErrors.join("\n"));
+      log.error(`summarize() ${scriptErrors.length} error(s) occurred`, scriptErrors.join("\n"));
     } else {
       log.debug("summarize()", "Script completed without errors.");
     }

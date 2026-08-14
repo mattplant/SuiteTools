@@ -11,9 +11,9 @@ import * as log from "N/log";
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
   stLib: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
   stSettings: any;
 }
 
@@ -220,12 +220,12 @@ export class SuiteToolsCommonJobs {
    * @param lastRun - last run timestamp
    * @returns recent script errors
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
   public getRecentScriptErrorsJob(lastRun: string): any[] {
     log.debug({ title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`, details: { lastRun } });
     // get the errors from the script execution log
     let levels = ["ERROR", "EMERGENCY", "SYSTEM"];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: SuiteQL rows and forward-declared members are loosely typed today; tighten under #76
     let result: any[] = [];
     let sql = `SELECT
       ScriptNote.internalid AS id,
@@ -313,7 +313,7 @@ export class SuiteToolsCommonJobs {
         "customdeploy_idev_suitetools_mr_logins",
         params,
       );
-      message = "Last logins script initiated with task id of " + scriptTaskId;
+      message = `Last logins script initiated with task id of ${scriptTaskId}`;
       // NOTE: the results are saved in the summary step of the last logins script
     } else {
       message = "No active entity records found";

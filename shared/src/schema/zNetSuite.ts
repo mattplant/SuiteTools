@@ -50,7 +50,7 @@ const zDateFromString = z.preprocess((val) => {
   }
   if (typeof val === "string") {
     const date = new Date(val);
-    return isNaN(date.getTime()) ? undefined : date;
+    return Number.isNaN(date.getTime()) ? undefined : date;
   }
   return val;
 }, z.date());

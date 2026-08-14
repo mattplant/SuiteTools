@@ -1,6 +1,6 @@
-import { readFile, writeFile } from "fs/promises";
-import { existsSync, mkdirSync } from "fs";
-import { dirname } from "path";
+import { readFile, writeFile } from "node:fs/promises";
+import { existsSync, mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 
 /**
  * Build utilities for enhanced error handling, performance tracking, and development workflows

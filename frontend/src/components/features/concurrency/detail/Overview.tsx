@@ -9,14 +9,14 @@ export function ConcurrencyDetailOverview({ data }: Props) {
   }
   // calculate error rate percentage
   const errorRate = (data.violations.overview.totalViolations / data.violations.overview.totalRequests) * 100;
-  const errorRateRounded = Math.round(errorRate * 100) / 100 + "%";
+  const errorRateRounded = `${Math.round(errorRate * 100) / 100}%`;
   // get top integrations
   const topIntegrations = data.violations.overview.topIntegrations;
   const topIntegrationsArray = [];
   if (topIntegrations && topIntegrations.length > 0) {
     for (let i = 0; i < topIntegrations.length; i++) {
       const topIntegration = topIntegrations[i];
-      topIntegrationsArray.push(topIntegration.name + " - " + topIntegration.value + " requests");
+      topIntegrationsArray.push(`${topIntegration.name} - ${topIntegration.value} requests`);
     }
   }
 
@@ -54,7 +54,7 @@ export function ConcurrencyDetailOverview({ data }: Props) {
           <h3 className="text-lg font-bold text-slate-900">Top Unallocated Integrations</h3>
           <span id="topIntegrations" className="text-sm text-gray-500">
             {topIntegrationsArray.map((item, idx) => (
-              <span key={idx}>
+              <span key={item}>
                 {item}
                 {idx < topIntegrationsArray.length - 1 && <br />}
               </span>

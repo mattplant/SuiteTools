@@ -15,14 +15,5 @@
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 120, "expand": "never" },
   "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "overrides": [{ "includes": ["**/package.json"], "formatter": { "enabled": false } }],
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "complexity": { "useLiteralKeys": "warn" },
-      "correctness": { "useExhaustiveDependencies": "warn" },
-      "style": { "noNonNullAssertion": "warn", "useNodejsImportProtocol": "warn", "useTemplate": "warn" },
-      "suspicious": { "noArrayIndexKey": "warn", "noExplicitAny": "warn" }
-    }
-  }
+  "linter": { "enabled": true, "rules": { "preset": "recommended", "suspicious": { "noExplicitAny": "warn" } } }
 }

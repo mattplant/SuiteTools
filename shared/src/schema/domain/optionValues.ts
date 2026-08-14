@@ -2,7 +2,7 @@ import { z } from "zod";
 import { zHelpers } from "../zodUtils";
 import type { ZEntityBundle } from "../zodUtils";
 
-import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
+import { orNotFoundSchema, type OrNotFound } from "./utils/schemaHelpers";
 
 /**
  * Zod schema for an Option Value record.

@@ -1,7 +1,8 @@
+// biome-ignore-all lint/suspicious/noArrayIndexKey: every map here renders a positional d3 chart mark. The arrays are regenerated wholesale on data change and never reordered or spliced, so the index is the identity. Data-derived keys were tried and reverted in #75 because this environment cannot render the concurrency screens (no NetSuite APM), so the change could not be visually verified. See #78.
 import * as d3 from "d3";
 import type { ConcurrencyDetailData } from "../types";
 
-type Props = { data: ConcurrencyDetailData | undefined };
+type Props = { data: ConcurrencyDetailData };
 
 export function ConcurrencyDetailBarGraphContent({ data }: Props) {
   if (!data) {
@@ -19,42 +20,37 @@ export function ConcurrencyDetailBarGraphContent({ data }: Props) {
     .padding(0.3);
 
   return (
-    <>
-      <svg width={width + margin.left + margin.right} height={height + margin.top + margin.bottom}>
-        <title>Concurrency by minute</title>
-        <g transform={`translate(${margin.left}, ${margin.top})`}>
-          {data!.concurrency.concurrency.map((d, i) => (
-            <g key={i} transform={`translate(${scaleX(d[0].toString())!}, 0)`}>
-              {(() => {
-                const yFactor = height / data!.concurrency.overview.peakConcurrency.value;
-                const lineHeight = d[1] * yFactor;
-                return (
-                  <>
-                    {" "}
-                    <a href={`#/concurrencyRequest/${d[0]}/${d[0] + 60 * 1000}`} target="_blank" rel="noreferrer">
-                      <rect x={0} y={height - lineHeight} width={scaleX.bandwidth()} height={lineHeight} />
-                      {d[1] > 0 && (
-                        <text x={scaleX.bandwidth() / 2} y={height - lineHeight - 5} textAnchor="middle" fontSize={12}>
-                          {d[1]}
-                        </text>
-                      )}
-                    </a>
-                    <text x={scaleX.bandwidth() / 2} y={height + 15} textAnchor="middle" fontSize={12} fill="black">
-                      {new Date(d[0]).getMinutes() % 5 === 0 || new Date(d[0]).getMinutes() === 59
-                        ? new Date(d[0]).toLocaleTimeString("en-US", {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          })
-                        : ""}
-                    </text>
-                  </>
-                );
-              })()}
-            </g>
-          ))}
-        </g>
-      </svg>
-    </>
+    <svg width={width + margin.left + margin.right} height={height + margin.top + margin.bottom}>
+      <title>Concurrency by minute</title>
+      <g transform={`translate(${margin.left}, ${margin.top})`}>
+        {data.concurrency.concurrency.map((d, i) => (
+          // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
+          <g key={i} transform={`translate(${scaleX(d[0].toString())!}, 0)`}>
+            {(() => {
+              const yFactor = height / data.concurrency.overview.peakConcurrency.value;
+              const lineHeight = d[1] * yFactor;
+              return (
+                <>
+                  {" "}
+                  <a href={`#/concurrencyRequest/${d[0]}/${d[0] + 60 * 1000}`} target="_blank" rel="noreferrer">
+                    <rect x={0} y={height - lineHeight} width={scaleX.bandwidth()} height={lineHeight} />
+                    {d[1] > 0 && (
+                      <text x={scaleX.bandwidth() / 2} y={height - lineHeight - 5} textAnchor="middle" fontSize={12}>
+                        {d[1]}
+                      </text>
+                    )}
+                  </a>
+                  <text x={scaleX.bandwidth() / 2} y={height + 15} textAnchor="middle" fontSize={12} fill="black">
+                    {new Date(d[0]).getMinutes() % 5 === 0 || new Date(d[0]).getMinutes() === 59
+                      ? new Date(d[0]).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+                      : ""}
+                  </text>
+                </>
+              );
+            })()}
+          </g>
+        ))}
+      </g>
+    </svg>
   );
 }

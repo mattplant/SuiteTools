@@ -9,6 +9,8 @@ type Props = { data: Integration; modal?: boolean };
 
 export function IntegrationResult({ data, modal }: Props) {
   const { settings } = useAppSettingsContext();
+  // Bound here so the click handler keeps the narrowing from the guard below.
+  const { urlNs } = data;
   addIntegrationLastLogin(data, settings);
 
   return (
@@ -33,7 +35,7 @@ export function IntegrationResult({ data, modal }: Props) {
       </p>
       {modal && (
         <ButtonGroup>
-          {data.urlNs ? <Button onClick={() => openNetSuitePage(data.urlNs!)}>View Integration Record</Button> : null}
+          {urlNs ? <Button onClick={() => openNetSuitePage(urlNs)}>View Integration Record</Button> : null}
           <Button
             onClick={() => {
               if (!data.urlDetail) {

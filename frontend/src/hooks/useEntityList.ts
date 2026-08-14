@@ -49,6 +49,8 @@ export function useEntityList<TItem, TCriteria>(
   const [results, setResults] = useState<TItem[]>([]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
+  // fetchList / getStatusMessage intentionally omitted — pages pass inline wrappers; deps covers extras.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: callers pass inline wrappers whose identity changes every render; the explicit `deps` option is the intended refetch trigger
   useEffect(() => {
     let ignore = false;
 
@@ -76,8 +78,6 @@ export function useEntityList<TItem, TCriteria>(
     return (): void => {
       ignore = true;
     };
-    // fetchList / getStatusMessage intentionally omitted — pages pass inline wrappers; deps covers extras.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- criteria + triggerError + deps
   }, [criteria, triggerError, ...deps]);
 
   return { criteria, setCriteria, results, statusMessage };

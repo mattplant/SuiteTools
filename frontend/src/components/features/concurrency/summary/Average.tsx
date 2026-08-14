@@ -28,10 +28,10 @@ export function ConcurrencySummaryAverage({ data }: Props) {
             rows.push(rowCol);
             rowCol = {};
           }
-          rowCol["date"] = new Date(startDate).toLocaleDateString();
+          rowCol.date = new Date(startDate).toLocaleDateString();
         }
         rowCol[String(colPosition)] = String(concurrency);
-        rowCol["link" + String(colPosition)] = url + "&startDate=" + startDate + "&endDate=" + endDate;
+        rowCol[`link${String(colPosition)}`] = `${url}&startDate=${startDate}&endDate=${endDate}`;
       }
       // if last row is not full, add it
       if (rowCol && Object.keys(rowCol).length > 0) {

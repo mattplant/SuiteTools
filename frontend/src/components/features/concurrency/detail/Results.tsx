@@ -51,10 +51,10 @@ export function ConcurrencyDetailResults({ data }: Props) {
           defaultColumnOptions={{ sortable: true, resizable: true }}
           className="fill-grid"
           onCellClick={(cell) => {
-            const startDate = cell.row[`startTimeMS`];
-            const endDate = cell.row[`endTimeMS`];
-            const peakConcurrency = cell.row[`peakConcurrency`];
-            let peakConcurrencyTime = String(cell.row[`peakConcurrencyTime`]);
+            const startDate = cell.row.startTimeMS;
+            const endDate = cell.row.endTimeMS;
+            const peakConcurrency = cell.row.peakConcurrency;
+            let peakConcurrencyTime = String(cell.row.peakConcurrencyTime);
             if (peakConcurrencyTime === "undefined") {
               peakConcurrencyTime = "";
             } else {
