@@ -1,12 +1,9 @@
-import { Button, ButtonGroup } from 'flowbite-react';
-import { useNavigate } from 'react-router-dom';
-import type { Script } from '@suiteworks/suitetools-shared';
-import { openNetSuitePage } from '../../../utils/navigation';
+import { Button, ButtonGroup } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
+import type { Script } from "@suiteworks/suitetools-shared";
+import { openNetSuitePage } from "../../../utils/navigation";
 
-type Props = {
-  data: Script;
-  modal?: boolean;
-};
+type Props = { data: Script; modal?: boolean };
 
 export function ScriptResult({ data, modal }: Props) {
   const navigate = useNavigate();
@@ -17,7 +14,7 @@ export function ScriptResult({ data, modal }: Props) {
         <b>API Version:</b> {data.apiVersion}
       </p>
       <p>
-        <b>Active:</b> {data.isInactive ? 'No' : 'Yes'}
+        <b>Active:</b> {data.isInactive ? "No" : "Yes"}
       </p>
       <p>
         <b>Script Type:</b> {data.scriptType}

@@ -64,7 +64,7 @@ GitLab CI (`.gitlab-ci.yml`) on MRs and the default branch:
 ```bash
 yarn install --immutable   # before_script — lockfile must match
 yarn typecheck             # merge-blocking — shared types + FE/BE tsc
-yarn lint                  # merge-blocking — shared types emit, then ESLint (--max-warnings 0)
+yarn lint                  # merge-blocking — Biome check (lint + format)
 yarn test                  # merge-blocking
 ```
 

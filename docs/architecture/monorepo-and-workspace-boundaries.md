@@ -86,7 +86,7 @@ Maintaining these boundaries protects layering, reduces cognitive load for contr
 | `backend/`  | `shared/`         | `frontend/`             |
 | `shared/`   | (none internally) | `frontend/`, `backend/` |
 
-> **Roadmap:** Strict import boundaries will be enforced via TypeScript path aliases and ESLint rules that surface violations during development.
+> **Roadmap:** Strict import boundaries will be enforced via TypeScript path aliases. Biome does not use type information, so cross-workspace import rules remain a convention reinforced by review.
 
 ---
 

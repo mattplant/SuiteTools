@@ -1,10 +1,10 @@
-import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getLoginFromResults } from '../adapters/api/login';
-import { getLogins } from '../adapters/api/logins';
-import { RecordCriteria } from '../components/features/login/RecordCriteria';
-import { Results } from '../components/shared/results/Results';
-import { ResultsTypes } from '../components/shared/results/types';
-import { useEntityList } from '../hooks/useEntityList';
+import type { CriteriaFields } from "../components/shared/criteria/types";
+import { getLoginFromResults } from "../adapters/api/login";
+import { getLogins } from "../adapters/api/logins";
+import { RecordCriteria } from "../components/features/login/RecordCriteria";
+import { Results } from "../components/shared/results/Results";
+import { ResultsTypes } from "../components/shared/results/types";
+import { useEntityList } from "../hooks/useEntityList";
 
 /**
  * Logins page — list login audit rows with criteria filters.
@@ -13,17 +13,14 @@ import { useEntityList } from '../hooks/useEntityList';
 export function LoginsPage(): React.ReactElement {
   const defaultCriteria: CriteriaFields = {
     rows: 250,
-    active: '',
-    integrationName: '',
-    tokenName: '',
-    users: [''],
-    roles: [''],
+    active: "",
+    integrationName: "",
+    tokenName: "",
+    users: [""],
+    roles: [""],
   };
 
-  const { setCriteria, results } = useEntityList({
-    defaultCriteria,
-    fetchList: getLogins,
-  });
+  const { setCriteria, results } = useEntityList({ defaultCriteria, fetchList: getLogins });
 
   return (
     <div className="mt-4">

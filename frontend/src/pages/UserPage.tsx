@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useLoaderData } from 'react-router-dom';
-import { UserResult } from '../components/features/user/RecordResult';
-import { UserLogins } from '../components/features/user/UserLogins';
-import { UserTokens } from '../components/features/user/UserTokens';
-import type { UserLoaderData } from '../routes/userLoader';
+import { useLoaderData } from "react-router-dom";
+import { UserResult } from "../components/features/user/RecordResult";
+import { UserLogins } from "../components/features/user/UserLogins";
+import { UserTokens } from "../components/features/user/UserTokens";
+import type { UserLoaderData } from "../routes/userLoader";
 
 /**
  * Renders the user page with user details, logins, and tokens.

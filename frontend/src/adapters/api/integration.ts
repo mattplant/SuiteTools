@@ -11,19 +11,15 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { IntegrationBundle } from '@suiteworks/suitetools-shared';
-import type { Integration } from '@suiteworks/suitetools-shared';
-import { handleNotFound } from './adapterUtils';
-import { adaptIntegration, isSyntheticIntegrationId } from './integrationAdapt';
-import {
-  findScrapedIntegration,
-  scrapeIntegrationApplicationId,
-  scrapeIntegrations,
-} from './integrationsScrape';
+import { IntegrationBundle } from "@suiteworks/suitetools-shared";
+import type { Integration } from "@suiteworks/suitetools-shared";
+import { handleNotFound } from "./adapterUtils";
+import { adaptIntegration, isSyntheticIntegrationId } from "./integrationAdapt";
+import { findScrapedIntegration, scrapeIntegrationApplicationId, scrapeIntegrations } from "./integrationsScrape";
 
-export { adaptIntegration } from './integrationAdapt';
+export { adaptIntegration } from "./integrationAdapt";
 
-const INTEGRATION_DETAIL_STORAGE_PREFIX = 'suitetools:integration:';
+const INTEGRATION_DETAIL_STORAGE_PREFIX = "suitetools:integration:";
 
 /**
  * Cache integration row data for the detail route loader (same-tab navigation via openAppPage).
@@ -65,18 +61,18 @@ export async function getIntegration(id: number): Promise<Integration> {
  */
 export async function getIntegrationEnriched(id: number): Promise<Integration> {
   if (!Number.isFinite(id) || id <= 0) {
-    return handleNotFound('integration', id);
+    return handleNotFound("integration", id);
   }
 
   if (isSyntheticIntegrationId(id)) {
-    return handleNotFound('integration', id);
+    return handleNotFound("integration", id);
   }
 
   let scrapeRows: readonly Integration[] = [];
   try {
-    scrapeRows = await scrapeIntegrations({ active: '' });
+    scrapeRows = await scrapeIntegrations({ active: "" });
   } catch (error) {
-    console.warn('[integration:getIntegrationEnriched] scrape failed', error);
+    console.warn("[integration:getIntegrationEnriched] scrape failed", error);
   }
 
   const fromScrapeById = scrapeRows.find((row) => row.id === id);
@@ -89,7 +85,7 @@ export async function getIntegrationEnriched(id: number): Promise<Integration> {
           integration = { ...integration, applicationId };
         }
       } catch (error) {
-        console.warn('[integration:getIntegrationEnriched] applicationId enrich failed', error);
+        console.warn("[integration:getIntegrationEnriched] applicationId enrich failed", error);
       }
     }
     return integration;
@@ -100,7 +96,7 @@ export async function getIntegrationEnriched(id: number): Promise<Integration> {
     return adaptIntegration(fromScrape);
   }
 
-  return handleNotFound('integration', id);
+  return handleNotFound("integration", id);
 }
 
 /**
@@ -112,7 +108,7 @@ export async function getIntegrationEnriched(id: number): Promise<Integration> {
 export async function getIntegrationModalData(id: number, lines?: readonly unknown[]): Promise<Integration> {
   if (lines?.length) {
     const match = lines.find((line) => {
-      if (!line || typeof line !== 'object' || !('id' in line)) return false;
+      if (!line || typeof line !== "object" || !("id" in line)) return false;
       return Number((line as Integration).id) === id;
     }) as Integration | undefined;
 

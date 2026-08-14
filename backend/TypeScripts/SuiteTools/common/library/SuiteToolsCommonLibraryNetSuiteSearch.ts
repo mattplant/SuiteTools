@@ -5,9 +5,9 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import * as search from 'N/search';
-import type { SuiteToolsCommon } from '../SuiteToolsCommon';
+import * as log from "N/log";
+import * as search from "N/search";
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite Search Library
@@ -53,7 +53,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
 
     // default number of required values if not specified
     if (!rows) {
-      rows = '1000';
+      rows = "1000";
     }
 
     const maxResults = parseInt(rows);
@@ -69,7 +69,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
       return false; // stop processing
     });
 
-    log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSearch:search() returning', details: searchResults });
+    log.debug({ title: "SuiteToolsCommonLibraryNetSuiteSearch:search() returning", details: searchResults });
 
     return searchResults;
   }
@@ -84,10 +84,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
     id: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): any[] {
-    log.debug({
-      title: `SuiteToolsCommonLibraryNetSuiteSearch:run() initiated`,
-      details: { id: id },
-    });
+    log.debug({ title: `SuiteToolsCommonLibraryNetSuiteSearch:run() initiated`, details: { id: id } });
 
     const stSearch = search.load({ id: id });
     const searchResults: search.Result[] = [];
@@ -101,7 +98,7 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
       return false; // stop processing
     });
 
-    log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSearch:run() returning', details: searchResults });
+    log.debug({ title: "SuiteToolsCommonLibraryNetSuiteSearch:run() returning", details: searchResults });
 
     return searchResults;
   }
@@ -113,22 +110,22 @@ export class SuiteToolsCommonLibraryNetSuiteSearch {
    * @returns the internal id
    */
   public getSearchInternalId(id: string): number {
-    log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteRecord:getSearchInternalId() initiated', details: { id: id } });
+    log.debug({ title: "SuiteToolsCommonLibraryNetSuiteRecord:getSearchInternalId() initiated", details: { id: id } });
 
     // get the internal id of the "Saved Search Lookup" (id: customsearch_idev_search_lookup) search
     let internalId = 0;
     // need to leverage an existing search since not all saved searches are accessible via the API
-    const searchLookupObj = search.load({ id: 'customsearch_idev_search_lookup', type: search.Type.SAVED_SEARCH });
-    searchLookupObj.filters.push(search.createFilter({ name: 'ID', operator: search.Operator.IS, values: id }));
+    const searchLookupObj = search.load({ id: "customsearch_idev_search_lookup", type: search.Type.SAVED_SEARCH });
+    searchLookupObj.filters.push(search.createFilter({ name: "ID", operator: search.Operator.IS, values: id }));
     const searchLookupResults = searchLookupObj.run().getRange({ start: 0, end: 1 });
     if (searchLookupResults.length > 0) {
-      const result = searchLookupResults[0].getValue({ name: 'internalid' });
+      const result = searchLookupResults[0].getValue({ name: "internalid" });
       // check if type of result  is string
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         internalId = parseInt(result);
       }
     }
-    log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteRecord:getSearchInternalId() returning', details: internalId });
+    log.debug({ title: "SuiteToolsCommonLibraryNetSuiteRecord:getSearchInternalId() returning", details: internalId });
 
     return internalId;
   }

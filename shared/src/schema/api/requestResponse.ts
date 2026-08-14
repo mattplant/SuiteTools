@@ -58,11 +58,7 @@ export { _zRequestResponse as requestResponse };
  */
 export type RequestResponse = z.infer<typeof _zRequestResponse>;
 
-export type Envelope<Payload> = {
-  status?: number;
-  message?: string;
-  data: Payload;
-};
+export type Envelope<Payload> = { status?: number; message?: string; data: Payload };
 
 /**
  * Wrap a payload Zod schema in an API envelope and expose a BaseSchema<T> so consumers remain Zod‑free.
@@ -72,30 +68,16 @@ export type Envelope<Payload> = {
  * @param payloadSchema - The Zod schema describing the payload.
  * @returns A BaseSchema<T> with a `.parse()` method that validates the envelope.
  */
-export function makeRequestResponseSchema<S extends z.ZodTypeAny>(
-  payloadSchema: S
-): BaseSchema<z.output<S>> {
-  const envelope = z.object({
-    status: z.number().optional(),
-    message: z.string().optional(),
-    data: payloadSchema,
-  });
+export function makeRequestResponseSchema<S extends z.ZodTypeAny>(payloadSchema: S): BaseSchema<z.output<S>> {
+  const envelope = z.object({ status: z.number().optional(), message: z.string().optional(), data: payloadSchema });
 
   return {
     parse: (input: unknown) => {
       // Parse with Zod, then project into the exact BaseSchema shape.
       // Single, contained cast to stabilize the inferred object type.
-      const r = envelope.parse(input) as {
-        status?: number;
-        message?: string;
-        data: z.output<S>;
-      };
+      const r = envelope.parse(input) as { status?: number; message?: string; data: z.output<S> };
 
-      const out: {
-        data: z.output<S>;
-        status?: number;
-        message?: string;
-      } = { data: r.data };
+      const out: { data: z.output<S>; status?: number; message?: string } = { data: r.data };
 
       if (r.status !== undefined) out.status = r.status;
       if (r.message !== undefined) out.message = r.message;

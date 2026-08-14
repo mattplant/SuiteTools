@@ -8,15 +8,13 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getJob } from '../adapters/api/job';
-import { makeEntityLoader } from './loaderUtils';
+import { getJob } from "../adapters/api/job";
+import { makeEntityLoader } from "./loaderUtils";
 
 /**
  * Loader for the `/job/:id` route.
  * Rejects non-finite / ≤0 ids before fetch (e.g. `/job/undefined` from stale wire keys).
  */
-export const jobLoader = makeEntityLoader('job', 'Job', getJob, {
-  requirePositiveId: true,
-});
+export const jobLoader = makeEntityLoader("job", "Job", getJob, { requirePositiveId: true });
 
 export type JobLoaderData = Awaited<ReturnType<typeof jobLoader>>;

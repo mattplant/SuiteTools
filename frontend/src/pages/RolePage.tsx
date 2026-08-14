@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useLoaderData } from 'react-router-dom';
-import { RoleBundle } from '@suiteworks/suitetools-shared';
-import { RoleResult } from '../components/features/role/RecordResult';
-import type { RoleLoaderData } from '../routes/roleLoader';
+import { useLoaderData } from "react-router-dom";
+import { RoleBundle } from "@suiteworks/suitetools-shared";
+import { RoleResult } from "../components/features/role/RecordResult";
+import type { RoleLoaderData } from "../routes/roleLoader";
 
 /**
  * Renders the role page with role details.

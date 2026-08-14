@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useLoaderData } from 'react-router-dom';
-import { JobResult } from '../components/features/job/RecordResult';
-import { JobRuns } from '../components/features/job/JobRuns';
-import type { JobLoaderData } from '../routes/jobLoader';
+import { useLoaderData } from "react-router-dom";
+import { JobResult } from "../components/features/job/RecordResult";
+import { JobRuns } from "../components/features/job/JobRuns";
+import type { JobLoaderData } from "../routes/jobLoader";
 
 /**
  * Renders the job page with job details and related job runs.

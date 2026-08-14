@@ -14,15 +14,7 @@ import type { ZEntityBundle } from "../zodUtils";
 const LastLoginsSchema = z
   .object({
     finished: z.string(),
-    data: z.array(
-      z.object({
-        name: z.object({
-          type: z.string(),
-          name: z.string(),
-        }),
-        lastLogin: z.string(),
-      }),
-    ),
+    data: z.array(z.object({ name: z.object({ type: z.string(), name: z.string() }), lastLogin: z.string() })),
   })
   .nullable()
   .optional();
@@ -63,10 +55,9 @@ const NewSettingsSchema = z.object({
   devMode: z.boolean(),
 });
 
-const SettingsBundle: ZEntityBundle<typeof SettingsSchema, "Settings"> =
-  zHelpers.zCreateBundle(SettingsSchema, {
-    meta: { entity: "Settings", plural: "Settings" },
-  });
+const SettingsBundle: ZEntityBundle<typeof SettingsSchema, "Settings"> = zHelpers.zCreateBundle(SettingsSchema, {
+  meta: { entity: "Settings", plural: "Settings" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

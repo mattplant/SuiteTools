@@ -7,10 +7,10 @@
  * The Sync Status list (`syncstatus.nl`) is the source of truth.
  */
 
-import { SoapLogBundle } from '@suiteworks/suitetools-shared';
-import type { SoapLog, SoapLogs } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { adaptSoapLog } from './soapLogAdapt';
+import { SoapLogBundle } from "@suiteworks/suitetools-shared";
+import type { SoapLog, SoapLogs } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { adaptSoapLog } from "./soapLogAdapt";
 
 const JOBID_RE = /(?:jobid|id)=([^&"'#\s]+)/i;
 
@@ -28,7 +28,7 @@ function formatNsListDate(date: Date): string {
  * @param cell - Raw table cell value.
  */
 export function extractSoapJobId(cell: string): number | null {
-  const stripped = cell.replace(/<[^>]*>/g, '').trim();
+  const stripped = cell.replace(/<[^>]*>/g, "").trim();
   const fromText = Number(stripped);
   if (Number.isFinite(fromText) && fromText > 0) {
     return fromText;
@@ -52,8 +52,8 @@ export function extractSoapJobId(cell: string): number | null {
 export function buildSoapLogsUrls(fromDate: Date): string[] {
   const dateFrom = encodeURIComponent(formatNsListDate(fromDate));
   const dateTo = encodeURIComponent(formatNsListDate(new Date()));
-  const dateFromTime = encodeURIComponent('12:00 am');
-  const dateToTime = encodeURIComponent('11:59 pm');
+  const dateFromTime = encodeURIComponent("12:00 am");
+  const dateToTime = encodeURIComponent("11:59 pm");
   const customRange =
     `daterange=CUSTOM&datemodi=WITHIN&datefrom=${dateFrom}&datefromtime=${dateFromTime}` +
     `&dateto=${dateTo}&datetotime=${dateToTime}&date=CUSTOM`;
@@ -62,8 +62,8 @@ export function buildSoapLogsUrls(fromDate: Date): string[] {
     `/app/webservices/syncstatus.nl?frame=B&sortcol=jobid&sortdir=DESC&${customRange}&segment=0`,
     // Legacy-style URL (from-date only) used before the adapter migration.
     `/app/webservices/syncstatus.nl?frame=B&sortcol=jobid&sortdir=DESC&daterange=CUSTOM&datemodi=WITHIN&datefrom=${dateFrom}&datefromtime=${dateFromTime}&date=CUSTOM&segment=0`,
-    '/app/webservices/syncstatus.nl?frame=B&sortcol=jobid&sortdir=DESC',
-    '/app/webservices/syncstatus.nl',
+    "/app/webservices/syncstatus.nl?frame=B&sortcol=jobid&sortdir=DESC",
+    "/app/webservices/syncstatus.nl",
   ];
 }
 
@@ -84,10 +84,10 @@ type RawSoapRow = {
   response: string;
 };
 
-const stripHtml = (value: string): string => value.replace(/<[^>]*>/g, '').trim();
+const stripHtml = (value: string): string => value.replace(/<[^>]*>/g, "").trim();
 
 const toNumber = (value: string | undefined): number => {
-  const n = Number(stripHtml(value ?? ''));
+  const n = Number(stripHtml(value ?? ""));
   return Number.isFinite(n) ? n : 0;
 };
 
@@ -100,7 +100,7 @@ export function parseSoapLogCells(record: string[]): RawSoapRow | null {
   let id: number | null = null;
   let idIdx = -1;
   for (let i = 0; i < record.length; i++) {
-    const found = extractSoapJobId(record[i] ?? '');
+    const found = extractSoapJobId(record[i] ?? "");
     if (found) {
       id = found;
       idIdx = i;
@@ -116,24 +116,24 @@ export function parseSoapLogCells(record: string[]): RawSoapRow | null {
 
   return {
     id,
-    startDate: stripHtml(after[0] ?? ''),
+    startDate: stripHtml(after[0] ?? ""),
     duration: toNumber(after[1]),
-    integration: after[2] ?? '',
-    action: stripHtml(after[3] ?? ''),
-    recordType: stripHtml(after[4] ?? ''),
-    user: stripHtml(after[5] ?? ''),
-    status: stripHtml(after[6] ?? ''),
+    integration: after[2] ?? "",
+    action: stripHtml(after[3] ?? ""),
+    recordType: stripHtml(after[4] ?? ""),
+    user: stripHtml(after[5] ?? ""),
+    status: stripHtml(after[6] ?? ""),
     records: toNumber(after[7]),
     recordsFinished: toNumber(after[8]),
     recordsFailed: toNumber(after[9]),
     recordsReturned: toNumber(after[10]),
-    request: after[11] ?? '',
-    response: after[12] ?? '',
+    request: after[11] ?? "",
+    response: after[12] ?? "",
   };
 }
 
 function filterByIntegrations(rows: SoapLogs, integrations: string[] | undefined): SoapLogs {
-  const ids = (integrations ?? []).map(String).filter((value) => value !== '');
+  const ids = (integrations ?? []).map(String).filter((value) => value !== "");
   if (ids.length === 0) {
     return rows;
   }
@@ -146,42 +146,42 @@ function filterByIntegrations(rows: SoapLogs, integrations: string[] | undefined
  */
 export function parseSoapLogsHtml(html: string): RawSoapRow[] {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+  const doc = parser.parseFromString(html, "text/html");
 
   const looksLikeLogin =
     Boolean(doc.querySelector('form[name="login"], input#userName, input[name="email"]')) &&
     !doc.querySelector('table.listtable, table.uir-list-table, table[id*="div__body"], #div__body');
   if (looksLikeLogin) {
-    throw new Error('NetSuite returned a login page for syncstatus.nl. Refresh SuiteTools and try again.');
+    throw new Error("NetSuite returned a login page for syncstatus.nl. Refresh SuiteTools and try again.");
   }
 
   const table =
-    doc.getElementById('div__body') ||
-    doc.querySelector('table#div__body') ||
-    doc.querySelector('table.listtable') ||
-    doc.querySelector('table.uir-list-table') ||
+    doc.getElementById("div__body") ||
+    doc.querySelector("table#div__body") ||
+    doc.querySelector("table.listtable") ||
+    doc.querySelector("table.uir-list-table") ||
     doc.querySelector('table[id*="div__body"]');
 
   if (!table) {
-    throw new Error('SOAP Sync Status list table was not found. NetSuite may have changed the page markup.');
+    throw new Error("SOAP Sync Status list table was not found. NetSuite may have changed the page markup.");
   }
 
-  const rows = Array.from(table.querySelectorAll('tr'));
+  const rows = Array.from(table.querySelectorAll("tr"));
   const parsed: RawSoapRow[] = [];
 
   for (const row of rows) {
-    const cells = Array.from(row.querySelectorAll('td')).map((td) => {
+    const cells = Array.from(row.querySelectorAll("td")).map((td) => {
       const anchor = td.querySelector('a[href*="jobid"], a[href*="wslog"], a[href*="integrapp"]');
       if (anchor) {
         // Keep href + text so id / integration extraction can use either.
-        return `${anchor.getAttribute('href') || ''} ${anchor.textContent || ''} ${td.textContent || ''}`;
+        return `${anchor.getAttribute("href") || ""} ${anchor.textContent || ""} ${td.textContent || ""}`;
       }
-      return (td.textContent || '').replace(/\s+/g, ' ').trim();
+      return (td.textContent || "").replace(/\s+/g, " ").trim();
     });
     if (cells.length === 0) {
       continue;
     }
-    if (cells.some((cell) => cell.includes('No records to show'))) {
+    if (cells.some((cell) => cell.includes("No records to show"))) {
       return [];
     }
     const mapped = parseSoapLogCells(cells);
@@ -194,7 +194,7 @@ export function parseSoapLogsHtml(html: string): RawSoapRow[] {
 }
 
 async function fetchSoapLogsHtml(url: string): Promise<string> {
-  const response = await fetch(url, { credentials: 'same-origin' });
+  const response = await fetch(url, { credentials: "same-origin" });
   if (!response.ok) {
     throw new Error(`Failed to load SOAP Sync Status (${response.status}) from ${url}`);
   }
@@ -206,23 +206,23 @@ async function fetchSoapLogsHtml(url: string): Promise<string> {
  * @param fields - Optional integration id filter.
  */
 export async function scrapeSoapLogs(fields: CriteriaFields): Promise<SoapLogs> {
-  if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
+  if (typeof window !== "undefined" && window.location.href.includes("localhost")) {
     return SoapLogBundle.parseMany([
       {
         id: 12345,
-        startDate: '12/22/2024 8:53:01 pm',
+        startDate: "12/22/2024 8:53:01 pm",
         duration: 0.123,
         integration: '<a href="/app/common/integration/integrapp.nl?id=123">Application URL 1</a>',
-        action: 'search',
-        recordType: '',
-        user: 'idev@systems.com',
-        status: 'FINISHED',
+        action: "search",
+        recordType: "",
+        user: "idev@systems.com",
+        status: "FINISHED",
         records: 0,
         recordsFinished: 0,
         recordsFailed: 0,
         recordsReturned: 0,
-        request: 'jobid=12345',
-        response: 'jobid=12345',
+        request: "jobid=12345",
+        response: "jobid=12345",
       },
     ]).map(adaptSoapLog);
   }
@@ -243,7 +243,7 @@ export async function scrapeSoapLogs(fields: CriteriaFields): Promise<SoapLogs> 
       }
     } catch (err) {
       lastError = err;
-      console.warn('[soapLogsScrape] URL failed', { url, err });
+      console.warn("[soapLogsScrape] URL failed", { url, err });
     }
   }
 
@@ -259,9 +259,8 @@ export async function scrapeSoapLogs(fields: CriteriaFields): Promise<SoapLogs> 
     }
   }
 
-
   if (rawRows.length > 0 && parsed.length === 0) {
-    throw new Error('SOAP Sync Status rows were found but failed schema validation. Check the browser console.');
+    throw new Error("SOAP Sync Status rows were found but failed schema validation. Check the browser console.");
   }
 
   return filterByIntegrations(parsed, fields.integrations);

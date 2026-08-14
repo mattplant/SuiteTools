@@ -23,10 +23,10 @@
  * @NApiVersion 2.1
  */
 
-import * as runtime from 'N/runtime';
-import { SuiteToolsCommonJobs } from './SuiteToolsCommonJobs';
-import { SuiteToolsCommonSettings } from './SuiteToolsCommonSettings';
-import { SuiteToolsCommonLibrary } from './library/SuiteToolsCommonLibrary';
+import * as runtime from "N/runtime";
+import { SuiteToolsCommonJobs } from "./SuiteToolsCommonJobs";
+import { SuiteToolsCommonSettings } from "./SuiteToolsCommonSettings";
+import { SuiteToolsCommonLibrary } from "./library/SuiteToolsCommonLibrary";
 
 /**
  * Common functionality between SuiteTools App and SuiteTools API
@@ -39,12 +39,12 @@ export class SuiteToolsCommon {
   private _stSettings: SuiteToolsCommonSettings;
   private _stLib: SuiteToolsCommonLibrary;
   // the application directory in the /SuiteScripts folder
-  private _appDir = 'SuiteTools';
+  private _appDir = "SuiteTools";
   // application files
-  private _appCssFile = 'dist/output.css';
-  private _appJsFile = 'dist/app-bundle.js';
+  private _appCssFile = "dist/output.css";
+  private _appJsFile = "dist/app-bundle.js";
   // application settings record
-  private _appSettingsRecord = 'customrecord_idev_suitetools_settings'; // the application settings custom record
+  private _appSettingsRecord = "customrecord_idev_suitetools_settings"; // the application settings custom record
 
   get stJobs(): SuiteToolsCommonJobs {
     return this._stJobs;
@@ -72,10 +72,10 @@ export class SuiteToolsCommon {
     return runtime;
   }
   get isAdmin(): boolean {
-    return runtime.getCurrentUser().roleId == 'administrator';
+    return runtime.getCurrentUser().roleId === "administrator";
   }
   get isProduction(): boolean {
-    return String(runtime.EnvType[runtime.envType]) === 'PRODUCTION';
+    return String(runtime.EnvType[runtime.envType]) === "PRODUCTION";
   }
 
   /**

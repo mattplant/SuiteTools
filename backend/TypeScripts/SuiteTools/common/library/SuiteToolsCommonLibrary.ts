@@ -7,9 +7,9 @@
  * @NApiVersion 2.1
  */
 
-import { SuiteToolsCommonLibraryGeneral } from './SuiteToolsCommonLibraryGeneral';
-import { SuiteToolsCommonLibraryNetSuite } from './SuiteToolsCommonLibraryNetSuite';
-import type { SuiteToolsCommon } from '../SuiteToolsCommon';
+import { SuiteToolsCommonLibraryGeneral } from "./SuiteToolsCommonLibraryGeneral";
+import { SuiteToolsCommonLibraryNetSuite } from "./SuiteToolsCommonLibraryNetSuite";
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools Library

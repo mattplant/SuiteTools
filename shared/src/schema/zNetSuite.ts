@@ -58,19 +58,13 @@ const zDateFromString = z.preprocess((val) => {
 /**
  * Converts number-like string or number to number
  */
-const zNumberFromString = z.preprocess(
-  (val) => (typeof val === "string" ? Number(val) : val),
-  z.number()
-);
+const zNumberFromString = z.preprocess((val) => (typeof val === "string" ? Number(val) : val), z.number());
 
 /**
  * Coerces any non-string (null, undefined, number, etc.) to an empty string.
  * Useful for NetSuite fields with inconsistent optional behavior.
  */
-const zStringOrEmpty = z.preprocess(
-  (val) => (typeof val === "string" ? val : ""),
-  z.string()
-);
+const zStringOrEmpty = z.preprocess((val) => (typeof val === "string" ? val : ""), z.string());
 
 // Semantic Namespaces
 
@@ -78,22 +72,10 @@ const zStringOrEmpty = z.preprocess(
  * Bundled schema helpers for NetSuite-specific field formats.
  */
 const zNetSuite = {
-  booleanFromTF: {
-    schema: zBooleanFromTF,
-    ...zHelpers.zParseHelpers(zBooleanFromTF),
-  },
-  dateFromString: {
-    schema: zDateFromString,
-    ...zHelpers.zParseHelpers(zDateFromString),
-  },
-  numberFromString: {
-    schema: zNumberFromString,
-    ...zHelpers.zParseHelpers(zNumberFromString),
-  },
-  stringOrEmpty: {
-    schema: zStringOrEmpty,
-    ...zHelpers.zParseHelpers(zStringOrEmpty),
-  },
+  booleanFromTF: { schema: zBooleanFromTF, ...zHelpers.zParseHelpers(zBooleanFromTF) },
+  dateFromString: { schema: zDateFromString, ...zHelpers.zParseHelpers(zDateFromString) },
+  numberFromString: { schema: zNumberFromString, ...zHelpers.zParseHelpers(zNumberFromString) },
+  stringOrEmpty: { schema: zStringOrEmpty, ...zHelpers.zParseHelpers(zStringOrEmpty) },
   zCreateBundle: zHelpers.zCreateBundle,
 };
 

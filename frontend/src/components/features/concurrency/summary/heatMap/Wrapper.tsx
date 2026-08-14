@@ -1,9 +1,7 @@
-import { ConcurrencySummaryHeatMapContent } from './Content';
-import type { ConcurrencySummaryData } from '../types';
+import { ConcurrencySummaryHeatMapContent } from "./Content";
+import type { ConcurrencySummaryData } from "../types";
 
-type Props = {
-  data: ConcurrencySummaryData | undefined;
-};
+type Props = { data: ConcurrencySummaryData | undefined };
 
 export function ConcurrencySummaryHeatMapWrapper({ data }: Props) {
   return (
@@ -22,7 +20,7 @@ export function ConcurrencySummaryHeatMapWrapper({ data }: Props) {
             The darker shade of blue, the higher number of concurrency requests for that hour. Yellow indicates that the
             concurrency limit was exceeded. Red indicates that there were concurrency violations.
           </p>
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: "relative" }}>
             <ConcurrencySummaryHeatMapContent data={data} />
           </div>
           <style>
@@ -59,16 +57,16 @@ export function ConcurrencySummaryHeatMapWrapper({ data }: Props) {
             `}
           </style>
           <div className="legend">
-            <div style={{ fontWeight: 'bold' }}>Estimated Rounded Rate Percentages</div>
+            <div style={{ fontWeight: "bold" }}>Estimated Rounded Rate Percentages</div>
             <div className="legend-content">
               <div className="legend-row">
-                <div className="legend-box" style={{ backgroundColor: '#FFFFFF' }}></div>
-                <div className="legend-box" style={{ backgroundColor: '#E8F1F9' }}></div>
-                <div className="legend-box" style={{ backgroundColor: '#D1E4F4' }}></div>
-                <div className="legend-box" style={{ backgroundColor: '#BAD6EE' }}></div>
-                <div className="legend-box" style={{ backgroundColor: '#A3C8E8' }}></div>
-                <div className="legend-box" style={{ backgroundColor: '#FBD38D' }}></div>
-                <div className="legend-box" style={{ backgroundColor: '#F56565' }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#FFFFFF" }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#E8F1F9" }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#D1E4F4" }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#BAD6EE" }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#A3C8E8" }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#FBD38D" }}></div>
+                <div className="legend-box" style={{ backgroundColor: "#F56565" }}></div>
               </div>
               <div className="legend-row">
                 <div className="legend-box legend-label">0</div>

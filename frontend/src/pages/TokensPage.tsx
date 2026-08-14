@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getToken } from '../adapters/api/token';
-import { getTokens, addTokenLastLogins } from '../adapters/api/tokens';
-import type { Tokens } from '@suiteworks/suitetools-shared';
-import { toArray } from '@suiteworks/suitetools-shared';
-import { RecordCriteria } from '../components/features/token/RecordCriteria';
-import { Results } from '../components/shared/results/Results';
-import { ResultsTypes } from '../components/shared/results/types';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
-import { useEntityList } from '../hooks/useEntityList';
+import type { CriteriaFields } from "../components/shared/criteria/types";
+import { getToken } from "../adapters/api/token";
+import { getTokens, addTokenLastLogins } from "../adapters/api/tokens";
+import type { Tokens } from "@suiteworks/suitetools-shared";
+import { toArray } from "@suiteworks/suitetools-shared";
+import { RecordCriteria } from "../components/features/token/RecordCriteria";
+import { Results } from "../components/shared/results/Results";
+import { ResultsTypes } from "../components/shared/results/types";
+import { useAppSettingsContext } from "../hooks/useAppSettingsContext";
+import { useEntityList } from "../hooks/useEntityList";
 
 /**
  * Tokens page — list TBA tokens with criteria filters.
@@ -18,12 +18,7 @@ import { useEntityList } from '../hooks/useEntityList';
 export function TokensPage(): React.ReactElement {
   const { settings } = useAppSettingsContext();
 
-  const defaultCriteria: CriteriaFields = {
-    active: 'T',
-    integrationName: '',
-    userName: '',
-    roleName: '',
-  };
+  const defaultCriteria: CriteriaFields = { active: "T", integrationName: "", userName: "", roleName: "" };
 
   const { setCriteria, results } = useEntityList({
     defaultCriteria,

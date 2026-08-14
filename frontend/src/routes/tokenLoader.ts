@@ -8,10 +8,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getToken } from '../adapters/api/token';
-import { makeEntityLoader } from './loaderUtils';
+import { getToken } from "../adapters/api/token";
+import { makeEntityLoader } from "./loaderUtils";
 
 /** Loader for the `/token/:id` route. */
-export const tokenLoader = makeEntityLoader('token', 'Token', getToken);
+export const tokenLoader = makeEntityLoader("token", "Token", getToken);
 
 export type TokenLoaderData = Awaited<ReturnType<typeof tokenLoader>>;

@@ -5,8 +5,8 @@
  * Login Audit has no stable RESTlet singular endpoint; the modal reads from the loaded list.
  */
 
-import { LoginBundle } from '@suiteworks/suitetools-shared';
-import type { Login, NotFound } from '@suiteworks/suitetools-shared';
+import { LoginBundle } from "@suiteworks/suitetools-shared";
+import type { Login, NotFound } from "@suiteworks/suitetools-shared";
 
 /**
  * Resolve a login row by synthetic list id from already-loaded results.
@@ -15,10 +15,10 @@ import type { Login, NotFound } from '@suiteworks/suitetools-shared';
  */
 export async function getLoginFromResults(id: number, lines?: readonly unknown[]): Promise<Login | NotFound> {
   if (!lines) {
-    return { message: 'No login records found', code: 'NOT_FOUND' };
+    return { message: "No login records found", code: "NOT_FOUND" };
   }
 
   LoginBundle.assertMany(lines);
   const record = lines.find((line) => line.id === id);
-  return record ?? { message: `Login record with id ${id} not found`, code: 'NOT_FOUND' };
+  return record ?? { message: `Login record with id ${id} not found`, code: "NOT_FOUND" };
 }

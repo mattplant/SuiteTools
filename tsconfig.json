@@ -2,15 +2,7 @@
 {
   "composite": true,
   "files": [],
-  "references": [
-    { "path": "./shared" },
-    { "path": "./frontend" },
-    { "path": "./backend" }
-  ],
-  "compilerOptions": {
-    "paths": {
-      "@types/*": ["./types/*"]
-    }
-  },
+  "references": [{ "path": "./shared" }, { "path": "./frontend" }, { "path": "./backend" }],
+  "compilerOptions": { "paths": { "@types/*": ["./types/*"] } },
   "include": []
 }

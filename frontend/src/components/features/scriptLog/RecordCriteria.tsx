@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../../shared/criteria/types';
-import { RecordCriteriaForm } from '../../shared/criteria/RecordCriteriaForm';
-import { SearchCriteriaAdvancedTimePicker } from '../../shared/criteria/SearchCriteriaAdvancedTimePicker';
-import { SearchCriteriaContent } from '../../shared/criteria/SearchCriteriaContent';
-import { SearchCriteriaLevels } from '../../shared/criteria/SearchCriteriaLevels';
-import { SearchCriteriaOwners } from '../../shared/criteria/SearchCriteriaOwners';
-import { SearchCriteriaRows } from '../../shared/criteria/SearchCriteriaRows';
-import { SearchCriteriaScripts } from '../../shared/criteria/SearchCriteriaScripts';
-import { SearchCriteriaScriptTypes } from '../../shared/criteria/SearchCriteriaScriptTypes';
+import type { CriteriaFields } from "../../shared/criteria/types";
+import { RecordCriteriaForm } from "../../shared/criteria/RecordCriteriaForm";
+import { SearchCriteriaAdvancedTimePicker } from "../../shared/criteria/SearchCriteriaAdvancedTimePicker";
+import { SearchCriteriaContent } from "../../shared/criteria/SearchCriteriaContent";
+import { SearchCriteriaLevels } from "../../shared/criteria/SearchCriteriaLevels";
+import { SearchCriteriaOwners } from "../../shared/criteria/SearchCriteriaOwners";
+import { SearchCriteriaRows } from "../../shared/criteria/SearchCriteriaRows";
+import { SearchCriteriaScripts } from "../../shared/criteria/SearchCriteriaScripts";
+import { SearchCriteriaScriptTypes } from "../../shared/criteria/SearchCriteriaScriptTypes";
 
 interface Props {
   defaultCriteria: CriteriaFields;
@@ -34,7 +34,7 @@ export function RecordCriteria({ defaultCriteria, setCriteria }: Props) {
             control={control}
             setValue={setValue}
             dateDefaultValue={new Date(Date.now())}
-            timeDefaultValue={new Date().toLocaleTimeString('en-US', { hour12: false })}
+            timeDefaultValue={new Date().toLocaleTimeString("en-US", { hour12: false })}
           />
           <SearchCriteriaContent register={register} />
         </>

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useLoaderData } from 'react-router-dom';
-import type { NewSettings } from '@suiteworks/suitetools-shared';
-import { SettingsResult } from '../components/features/settings/SettingsResult';
-import { getSettings, saveSettings } from '../adapters/api/settings';
-import { NewSettingsForm } from '../components/features/settings/NewSettingsForm';
-import type { SettingsLoaderData } from '../routes/settingsLoader';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
+import { useLoaderData } from "react-router-dom";
+import type { NewSettings } from "@suiteworks/suitetools-shared";
+import { SettingsResult } from "../components/features/settings/SettingsResult";
+import { getSettings, saveSettings } from "../adapters/api/settings";
+import { NewSettingsForm } from "../components/features/settings/NewSettingsForm";
+import type { SettingsLoaderData } from "../routes/settingsLoader";
+import { useAppSettingsContext } from "../hooks/useAppSettingsContext";
 
 /**
  * Renders the settings page with the current settings payload and save form.
@@ -42,7 +42,7 @@ export function SettingsPage(): React.JSX.Element {
       };
       applySettings(next);
     } catch (error) {
-      console.error('Failed to refresh settings after save:', error);
+      console.error("Failed to refresh settings after save:", error);
     }
   }
 
@@ -51,11 +51,7 @@ export function SettingsPage(): React.JSX.Element {
       <h2 className="text-xl font-bold text-slate-900">Settings</h2>
       <NewSettingsForm
         key={`settings-form-${settings.devMode}-${settings.cssUrl}-${settings.jsUrl}`}
-        defaultValues={{
-          devMode: settings.devMode,
-          cssUrl: settings.cssUrl,
-          jsUrl: settings.jsUrl,
-        }}
+        defaultValues={{ devMode: settings.devMode, cssUrl: settings.cssUrl, jsUrl: settings.jsUrl }}
         onSave={handleSave}
       />
       <SettingsResult settings={settings} />

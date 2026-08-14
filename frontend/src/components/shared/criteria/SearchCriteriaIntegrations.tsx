@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import type { UseFormRegister } from 'react-hook-form';
-import { getOptionValues } from '../../features/integration/getOptionValues';
-import type { OptionValues } from './types';
-import type { CriteriaFields } from './types';
+import { useEffect, useState } from "react";
+import type { UseFormRegister } from "react-hook-form";
+import { getOptionValues } from "../../features/integration/getOptionValues";
+import type { OptionValues } from "./types";
+import type { CriteriaFields } from "./types";
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
@@ -28,7 +28,7 @@ export function SearchCriteriaIntegrations({ register }: Props) {
         size={6}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         id="integrations"
-        {...register('integrations')}
+        {...register("integrations")}
       >
         <option value="">All</option>
         {values.map((option) => (

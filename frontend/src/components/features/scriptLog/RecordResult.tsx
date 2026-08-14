@@ -1,7 +1,7 @@
-import { Button, ButtonGroup } from 'flowbite-react';
-import type { ScriptLog } from '@suiteworks/suitetools-shared';
-import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
-import { EntityFields, type EntityField } from '../../shared/ui/EntityFields';
+import { Button, ButtonGroup } from "flowbite-react";
+import type { ScriptLog } from "@suiteworks/suitetools-shared";
+import { openAppPage, openNetSuitePage } from "../../../utils/navigation";
+import { EntityFields, type EntityField } from "../../shared/ui/EntityFields";
 
 type Props = {
   data: ScriptLog;
@@ -18,14 +18,14 @@ type Props = {
  */
 export function ScriptLogResult({ data, modal }: Props): React.JSX.Element {
   const fields: EntityField[] = [
-    { label: 'ID', value: data.id },
-    { label: 'Timestamp', value: data.timestamp },
-    { label: 'Type', value: data.type },
-    { label: 'Script Type', value: data.scriptType },
-    { label: 'Owner', value: data.owner },
-    { label: 'Name', value: data.scriptName },
-    { label: 'Title', value: data.title },
-    { label: 'Detail', value: data.detail },
+    { label: "ID", value: data.id },
+    { label: "Timestamp", value: data.timestamp },
+    { label: "Type", value: data.type },
+    { label: "Script Type", value: data.scriptType },
+    { label: "Owner", value: data.owner },
+    { label: "Name", value: data.scriptName },
+    { label: "Title", value: data.title },
+    { label: "Detail", value: data.detail },
   ];
 
   return (

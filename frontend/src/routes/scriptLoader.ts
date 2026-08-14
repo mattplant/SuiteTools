@@ -8,10 +8,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getScript } from '../adapters/api/script';
-import { makeEntityLoader } from './loaderUtils';
+import { getScript } from "../adapters/api/script";
+import { makeEntityLoader } from "./loaderUtils";
 
 /** Loader for the `/script/:id` route. */
-export const scriptLoader = makeEntityLoader('script', 'Script', getScript);
+export const scriptLoader = makeEntityLoader("script", "Script", getScript);
 
 export type ScriptLoaderData = Awaited<ReturnType<typeof scriptLoader>>;

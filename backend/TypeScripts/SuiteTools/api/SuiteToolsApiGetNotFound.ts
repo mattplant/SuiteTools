@@ -12,8 +12,8 @@
  * @NApiVersion 2.1
  */
 
-import type { NotFound } from '@suiteworks/suitetools-shared';
-import type { Response } from './types';
+import type { NotFound } from "@suiteworks/suitetools-shared";
+import type { Response } from "./types";
 
 /**
  * Legacy model soft-miss: empty object (or null) without an entity `id`
@@ -23,24 +23,20 @@ export function isLegacyEmptySoftMiss(data: unknown): boolean {
   if (data == null) {
     return true;
   }
-  if (typeof data !== 'object' || Array.isArray(data)) {
+  if (typeof data !== "object" || Array.isArray(data)) {
     return false;
   }
   const record = data as Record<string, unknown>;
-  if (record.code === 'NOT_FOUND') {
+  if (record.code === "NOT_FOUND") {
     return false;
   }
-  return !('id' in record);
+  return !("id" in record);
 }
 
 /** Build the canonical soft-NotFound GET response. */
 export function softNotFoundResponse(message: string): Response {
-  const data: NotFound = { code: 'NOT_FOUND', message };
-  return {
-    status: 404,
-    data,
-    message,
-  };
+  const data: NotFound = { code: "NOT_FOUND", message };
+  return { status: 404, data, message };
 }
 
 /**
@@ -51,10 +47,7 @@ export function ensureEntityOrSoftNotFound(result: Response, fallbackMessage: st
   if (isLegacyEmptySoftMiss(result?.data)) {
     return softNotFoundResponse(result.message || fallbackMessage);
   }
-  const out: Response = {
-    status: 200,
-    data: result.data,
-  };
+  const out: Response = { status: 200, data: result.data };
   if (result.message !== undefined) {
     out.message = result.message;
   }

@@ -36,12 +36,9 @@ const schema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const UserBundle: ZEntityBundle<typeof schema, "User"> = zHelpers.zCreateBundle(
-  schema,
-  {
-    meta: { entity: "User", plural: "Users" },
-  }
-);
+const UserBundle: ZEntityBundle<typeof schema, "User"> = zHelpers.zCreateBundle(schema, {
+  meta: { entity: "User", plural: "Users" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -56,7 +53,5 @@ export const userOrNotFoundSchema = orNotFoundSchema(schema);
 export type UserOrNotFound = OrNotFound<User>;
 
 // Convenience union for multiple entities
-export const usersOrNotFoundSchema = orNotFoundSchema(
-  UserBundle.schema.array()
-);
+export const usersOrNotFoundSchema = orNotFoundSchema(UserBundle.schema.array());
 export type UsersOrNotFound = OrNotFound<Users>;

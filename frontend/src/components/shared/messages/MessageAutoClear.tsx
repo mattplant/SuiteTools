@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useInlineMessage } from '../../../hooks/useInlineMessage';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useInlineMessage } from "../../../hooks/useInlineMessage";
 
 /**
  * Clears inline messages on route changes.

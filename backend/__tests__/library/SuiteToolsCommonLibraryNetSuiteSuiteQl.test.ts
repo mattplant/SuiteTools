@@ -21,17 +21,13 @@ describe("SuiteToolsCommonLibraryNetSuiteSuiteQl.query", () => {
 
     const rows = suiteQl.query("SELECT id\nFROM employee");
 
-    expect(query.runSuiteQL).toHaveBeenCalledWith({
-      query: "SELECT id FROM employee",
-    });
+    expect(query.runSuiteQL).toHaveBeenCalledWith({ query: "SELECT id FROM employee" });
     expect(rows).toEqual([{ id: 1 }]);
     expect(log.debug).toHaveBeenCalled();
   });
 
   it("returns an empty array for successful empty result sets", () => {
-    jest.mocked(query.runSuiteQL).mockReturnValue({
-      asMappedResults: () => [],
-    } as never);
+    jest.mocked(query.runSuiteQL).mockReturnValue({ asMappedResults: () => [] } as never);
 
     expect(suiteQl.query("SELECT id FROM employee WHERE id = -1")).toEqual([]);
   });
@@ -41,9 +37,7 @@ describe("SuiteToolsCommonLibraryNetSuiteSuiteQl.query", () => {
       throw new Error("SSS_SEARCH_ERROR");
     });
 
-    expect(() => suiteQl.query("SELECT bad FROM nowhere")).toThrow(
-      UnexpectedError,
-    );
+    expect(() => suiteQl.query("SELECT bad FROM nowhere")).toThrow(UnexpectedError);
     expect(log.error).toHaveBeenCalled();
   });
 });

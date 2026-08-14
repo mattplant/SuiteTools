@@ -1,11 +1,8 @@
-import { Button, ButtonGroup } from 'flowbite-react';
-import type { File } from '@suiteworks/suitetools-shared';
-import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
+import { Button, ButtonGroup } from "flowbite-react";
+import type { File } from "@suiteworks/suitetools-shared";
+import { openAppPage, openNetSuitePage } from "../../../utils/navigation";
 
-type Props = {
-  data: File;
-  modal?: boolean;
-};
+type Props = { data: File; modal?: boolean };
 
 export function FileResult({ data, modal }: Props) {
   return (

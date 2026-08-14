@@ -11,9 +11,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import type { Integration, Integrations, Settings } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { integrationLookupKey, scrapeIntegrations } from './integrationsScrape';
+import type { Integration, Integrations, Settings } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { integrationLookupKey, scrapeIntegrations } from "./integrationsScrape";
 
 /**
  * Fetch Integration records.
@@ -32,10 +32,7 @@ export async function getIntegrations(fields: CriteriaFields): Promise<Integrati
  * @param settings - App settings containing lastLogins cache.
  * @returns The same integration with lastLogin set when available.
  */
-export function addIntegrationLastLogin(
-  integration: Integration,
-  settings: Settings | undefined,
-): Integration {
+export function addIntegrationLastLogin(integration: Integration, settings: Settings | undefined): Integration {
   addIntegrationLastLogins([integration], settings);
   return integration;
 }
@@ -57,7 +54,7 @@ export function addIntegrationLastLogins(
     Array.isArray(settings.lastLogins.data) &&
     settings.lastLogins.data.length > 0
   ) {
-    const lastLogins = settings.lastLogins.data.filter((lastLogin) => lastLogin.name.type === 'integration');
+    const lastLogins = settings.lastLogins.data.filter((lastLogin) => lastLogin.name.type === "integration");
     integrations.forEach((integration) => {
       const lastLogin = lastLogins.find(
         (entry) => integrationLookupKey(entry.name.name) === integrationLookupKey(integration.name),

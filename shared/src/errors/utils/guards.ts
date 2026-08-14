@@ -28,9 +28,7 @@ import { UnexpectedError } from "../domain/unexpected.error";
  *   // err is narrowed to SuiteError
  * }
  */
-function makeErrorGuard<T extends Error>(
-  ctor: abstract new (...args: any[]) => T
-): (err: unknown) => err is T {
+function makeErrorGuard<T extends Error>(ctor: abstract new (...args: any[]) => T): (err: unknown) => err is T {
   return (err: unknown): err is T => err instanceof ctor;
 }
 

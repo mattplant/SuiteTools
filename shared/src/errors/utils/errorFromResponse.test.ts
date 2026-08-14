@@ -27,12 +27,7 @@ describe("errorFromResponse", () => {
 
   it("rehydrates SCHEMA_VALIDATION_ERROR with issues", () => {
     const issues: ZodIssue[] = [
-      {
-        code: "invalid_type",
-        expected: "number",
-        path: ["id"],
-        message: "Expected number, received string",
-      },
+      { code: "invalid_type", expected: "number", path: ["id"], message: "Expected number, received string" },
     ];
     const err = errorFromResponse({
       status: 500,

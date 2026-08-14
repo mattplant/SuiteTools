@@ -41,10 +41,9 @@ const ScriptSchema = z.object({
   urlScriptLogs: z.string().optional(),
 });
 
-const ScriptBundle: ZEntityBundle<typeof ScriptSchema, "Script"> =
-  zHelpers.zCreateBundle(ScriptSchema, {
-    meta: { entity: "Script", plural: "Scripts" },
-  });
+const ScriptBundle: ZEntityBundle<typeof ScriptSchema, "Script"> = zHelpers.zCreateBundle(ScriptSchema, {
+  meta: { entity: "Script", plural: "Scripts" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -59,7 +58,5 @@ export const scriptOrNotFoundSchema = orNotFoundSchema(ScriptSchema);
 export type ScriptOrNotFound = OrNotFound<Script>;
 
 // Convenience union for multiple entities
-export const scriptsOrNotFoundSchema = orNotFoundSchema(
-  ScriptBundle.schema.array()
-);
+export const scriptsOrNotFoundSchema = orNotFoundSchema(ScriptBundle.schema.array());
 export type ScriptsOrNotFound = OrNotFound<Scripts>;

@@ -1,9 +1,7 @@
-import type { ConcurrencyDetailData } from './types';
-import { formatDate } from '../../../../utils/date';
+import type { ConcurrencyDetailData } from "./types";
+import { formatDate } from "../../../../utils/date";
 
-type Props = {
-  data: ConcurrencyDetailData | undefined;
-};
+type Props = { data: ConcurrencyDetailData | undefined };
 
 export function ConcurrencyDetailOverview({ data }: Props) {
   if (!data) {
@@ -11,14 +9,14 @@ export function ConcurrencyDetailOverview({ data }: Props) {
   }
   // calculate error rate percentage
   const errorRate = (data.violations.overview.totalViolations / data.violations.overview.totalRequests) * 100;
-  const errorRateRounded = Math.round(errorRate * 100) / 100 + '%';
+  const errorRateRounded = Math.round(errorRate * 100) / 100 + "%";
   // get top integrations
   const topIntegrations = data.violations.overview.topIntegrations;
   const topIntegrationsArray = [];
   if (topIntegrations && topIntegrations.length > 0) {
     for (let i = 0; i < topIntegrations.length; i++) {
       const topIntegration = topIntegrations[i];
-      topIntegrationsArray.push(topIntegration.name + ' - ' + topIntegration.value + ' requests');
+      topIntegrationsArray.push(topIntegration.name + " - " + topIntegration.value + " requests");
     }
   }
 
@@ -47,9 +45,9 @@ export function ConcurrencyDetailOverview({ data }: Props) {
           </h1>
           <span id="errorRateDetail" className="text-sm text-gray-500">
             {data.violations.overview.totalViolations +
-              ' violations in ' +
+              " violations in " +
               data.violations.overview.totalRequests +
-              ' requests'}
+              " requests"}
           </span>
         </div>
         <div className="flex-1 p-5">

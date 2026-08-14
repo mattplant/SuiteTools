@@ -1,6 +1,6 @@
-import { Component } from 'react';
-import type { ReactNode } from 'react';
-import { DefaultFallback } from './DefaultFallback';
+import { Component } from "react";
+import type { ReactNode } from "react";
+import { DefaultFallback } from "./DefaultFallback";
 
 type Props = { children: ReactNode };
 type State = { error: Error | null };
@@ -14,7 +14,7 @@ export class AppErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
     // Unified logging/reporting
-    console.error('[SuiteTools] Uncaught error in AppErrorBoundary:', error, info);
+    console.error("[SuiteTools] Uncaught error in AppErrorBoundary:", error, info);
     // In dev, this could trigger DevSuiteErrorOverlay
   }
 

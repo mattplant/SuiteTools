@@ -12,9 +12,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, jobRunOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { JobRun } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, jobRunOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { JobRun } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
 
 /**
  * Transform a validated `JobRun` payload into the enriched view model used by the frontend.
@@ -22,11 +22,7 @@ import { makeSingularAdapter } from './adapterUtils';
  * @returns The enriched JobRun object with navigation URLs.
  */
 function adaptJobRun(jobRun: JobRun): JobRun {
-  return {
-    ...jobRun,
-    urlDetail: `#/jobRun/${jobRun.id}`,
-    urlJob: `#/job/${jobRun.jobId}`,
-  };
+  return { ...jobRun, urlDetail: `#/jobRun/${jobRun.id}`, urlJob: `#/job/${jobRun.jobId}` };
 }
 
 const jobRunRequestResponseSchema = makeRequestResponseSchema(jobRunOrNotFoundSchema);
@@ -38,4 +34,4 @@ const jobRunRequestResponseSchema = makeRequestResponseSchema(jobRunOrNotFoundSc
  * @param id - The ID of the job run to retrieve.
  * @returns A Promise resolving to a JobRun object.
  */
-export const getJobRun = makeSingularAdapter<JobRun>('jobRun', jobRunRequestResponseSchema, adaptJobRun);
+export const getJobRun = makeSingularAdapter<JobRun>("jobRun", jobRunRequestResponseSchema, adaptJobRun);

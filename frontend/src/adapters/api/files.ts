@@ -10,10 +10,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, filesOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Files } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, filesOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Files } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
 
 const filesRequestResponseSchema = makeRequestResponseSchema(filesOrNotFoundSchema);
 
@@ -24,5 +24,5 @@ const filesRequestResponseSchema = makeRequestResponseSchema(filesOrNotFoundSche
 export const getFiles = makeListAdapter<
   Files[number],
   CriteriaFields,
-  'rows' | 'fileTypes' | 'dateCreated' | 'lastModifiedDate'
->('files', filesRequestResponseSchema, ['rows', 'fileTypes', 'dateCreated', 'lastModifiedDate'] as const);
+  "rows" | "fileTypes" | "dateCreated" | "lastModifiedDate"
+>("files", filesRequestResponseSchema, ["rows", "fileTypes", "dateCreated", "lastModifiedDate"] as const);

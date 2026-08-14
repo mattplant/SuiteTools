@@ -53,9 +53,6 @@ describe("SuiteToolsApiGetNotFound", () => {
         url: "/core/media/media.nl",
       },
     };
-    expect(ensureEntityOrSoftNotFound(entity, "fallback")).toEqual({
-      status: 200,
-      data: entity.data,
-    });
+    expect(ensureEntityOrSoftNotFound(entity, "fallback")).toEqual({ status: 200, data: entity.data });
   });
 });

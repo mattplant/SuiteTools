@@ -7,10 +7,10 @@
  * @NApiVersion 2.1
  */
 
-import * as log from 'N/log';
-import * as query from 'N/query';
-import { UnexpectedError } from '@suiteworks/suitetools-shared/errors';
-import type { SuiteQLResults } from '../types';
+import * as log from "N/log";
+import * as query from "N/query";
+import { UnexpectedError } from "@suiteworks/suitetools-shared/errors";
+import type { SuiteQLResults } from "../types";
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {}
@@ -44,18 +44,18 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
   public query(sql: string): SuiteQLResults {
     if (sql) {
       // remove line endings
-      sql = sql.toString().replace(/(\r\n|\n|\r)/gm, ' ');
+      sql = sql.toString().replace(/(\r\n|\n|\r)/gm, " ");
     }
-    log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() initiated with ', details: { sql: sql } });
+    log.debug({ title: "SuiteToolsCommonLibraryNetSuiteSuiteQl:query() initiated with ", details: { sql: sql } });
 
     try {
       return query.runSuiteQL({ query: sql }).asMappedResults() as SuiteQLResults;
     } catch (error) {
-      log.error({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:query() error', details: error });
-      const sqlSnippet = String(sql || '')
-        .replace(/\s+/g, ' ')
+      log.error({ title: "SuiteToolsCommonLibraryNetSuiteSuiteQl:query() error", details: error });
+      const sqlSnippet = String(sql || "")
+        .replace(/\s+/g, " ")
         .slice(0, 240);
-      throw new UnexpectedError('SuiteQL.query()', error, { sqlSnippet });
+      throw new UnexpectedError("SuiteQL.query()", error, { sqlSnippet });
     }
   }
 
@@ -67,7 +67,7 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
    * @returns the field value or empty string if not found
    */
   public getSqlValue(sql: string, field: string): string {
-    let resultField = ''; // default to empty string
+    let resultField = ""; // default to empty string
     const resultSet = this.query(sql);
     // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:getSqlValue() resultSet =', details: resultSet });
     // grab the first row if it exists
@@ -80,7 +80,7 @@ export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
         resultField = resultObject[field];
       }
     }
-    log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteSuiteQl:getSqlValue() returning', details: resultField });
+    log.debug({ title: "SuiteToolsCommonLibraryNetSuiteSuiteQl:getSqlValue() returning", details: resultField });
 
     return String(resultField);
   }

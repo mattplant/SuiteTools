@@ -8,10 +8,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getUser } from '../adapters/api/user';
-import { makeEntityLoader } from './loaderUtils';
+import { getUser } from "../adapters/api/user";
+import { makeEntityLoader } from "./loaderUtils";
 
 /** Loader for the `/users/:id` route. */
-export const userLoader = makeEntityLoader('user', 'User', getUser);
+export const userLoader = makeEntityLoader("user", "User", getUser);
 
 export type UserLoaderData = Awaited<ReturnType<typeof userLoader>>;

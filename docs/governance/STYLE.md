@@ -114,7 +114,7 @@ See [Documentation Standard](./standards/documentation.md) for structure and gov
 | Aspect               | Rule |
 |----------------------|------|
 | Language             | TypeScript |
-| Formatting & Linting | Prettier, ESLint (SuiteTools config) |
+| Formatting & Linting | Biome (single root config) |
 | Commenting           | JSDoc for public APIs, inline for complex logic |
 
 ### Language-Specific Rules
@@ -123,8 +123,7 @@ See [Documentation Standard](./standards/documentation.md) for structure and gov
 
 ### Formatting & Linting
 
-- Use **Prettier** for consistent code formatting.
-- Use **ESLint** with the shared SuiteTools config for linting.
+- Use **Biome** for both formatting and linting. One `biome.json` at the repo root applies to every workspace.
 
 See [Linting Standard](../governance/standards/linting-standards.md) for details.
 

@@ -8,17 +8,11 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import React from 'react';
+import React from "react";
 
-export type EntityField = {
-  label: string;
-  value: React.ReactNode;
-};
+export type EntityField = { label: string; value: React.ReactNode };
 
-type EntityFieldsProps = {
-  fields: EntityField[];
-  className?: string;
-};
+type EntityFieldsProps = { fields: EntityField[]; className?: string };
 
 /**
  * Accessible field/value list using <dl>.
@@ -28,15 +22,15 @@ type EntityFieldsProps = {
  * @param [props.className] - Optional additional class names.
  * @returns The rendered field/value list.
  */
-export function EntityFields({ fields, className = '' }: EntityFieldsProps): React.JSX.Element {
+export function EntityFields({ fields, className = "" }: EntityFieldsProps): React.JSX.Element {
   return (
-    <dl className={['grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1', className].filter(Boolean).join(' ')}>
+    <dl className={["grid grid-cols-[max-content_1fr] gap-x-2 gap-y-1", className].filter(Boolean).join(" ")}>
       {fields.map(({ label, value }) => (
         <React.Fragment key={label}>
           <dt key={`${label}-field`} className="font-bold">
             {label}
           </dt>
-          <dd key={`${label}-value`}>{value ?? '—'}</dd>
+          <dd key={`${label}-value`}>{value ?? "—"}</dd>
         </React.Fragment>
       ))}
     </dl>

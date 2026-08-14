@@ -1,8 +1,8 @@
-import { useLoaderData } from 'react-router-dom';
-import { IntegrationResult } from '../components/features/integration/RecordResult';
-import { IntegrationSoapLogs } from '../components/features/integration/IntegrationSoapLogs';
-import { IntegrationTokens } from '../components/features/integration/IntegrationTokens';
-import type { IntegrationLoaderData } from '../routes/integrationLoader';
+import { useLoaderData } from "react-router-dom";
+import { IntegrationResult } from "../components/features/integration/RecordResult";
+import { IntegrationSoapLogs } from "../components/features/integration/IntegrationSoapLogs";
+import { IntegrationTokens } from "../components/features/integration/IntegrationTokens";
+import type { IntegrationLoaderData } from "../routes/integrationLoader";
 
 /**
  * Renders the integration detail page.

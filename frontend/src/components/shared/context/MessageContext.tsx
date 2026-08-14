@@ -1,12 +1,9 @@
-import type { ReactNode } from 'react';
-import { createContext, useState, useEffect } from 'react';
+import type { ReactNode } from "react";
+import { createContext, useState, useEffect } from "react";
 
-type MessageType = 'success' | 'error' | 'info' | 'warning';
+type MessageType = "success" | "error" | "info" | "warning";
 
-type InlineMessage = {
-  text: string;
-  type?: MessageType;
-};
+type InlineMessage = { text: string; type?: MessageType };
 
 export type InlineMessageContextType = {
   message: InlineMessage | null;
@@ -39,9 +36,7 @@ export const messageTypeIcon: Record<MessageType, React.ReactNode> = {
   ),
 };
 
-type Props = {
-  children: ReactNode;
-};
+type Props = { children: ReactNode };
 
 export function InlineMessageProvider({ children }: Props) {
   const [message, setMessage] = useState<InlineMessage | null>(null);

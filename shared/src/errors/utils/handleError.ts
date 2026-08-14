@@ -59,9 +59,7 @@ export function handleError(err: unknown, opts: HandleErrorOpts = {}): never {
   } else if (err instanceof Error) {
     normalized = err as NormalizedError;
   } else {
-    normalized = Object.assign(new Error(String(err), { cause: err }), {
-      original: err,
-    });
+    normalized = Object.assign(new Error(String(err), { cause: err }), { original: err });
   }
 
   // --- Log ---

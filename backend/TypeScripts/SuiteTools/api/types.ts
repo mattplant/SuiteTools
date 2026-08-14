@@ -8,7 +8,7 @@
  */
 
 // Import types from shared workspace (type-only, no runtime code)
-import type { RequestBody as SharedRequestBody, RequestResponse } from '@suiteworks/suitetools-shared';
+import type { RequestBody as SharedRequestBody, RequestResponse } from "@suiteworks/suitetools-shared";
 
 // Re-export shared types for local convenience
 export type RequestBody = SharedRequestBody;
@@ -21,21 +21,21 @@ export type Response = RequestResponse;
  * @throws {Error} If data is not a valid RequestBody
  */
 export function assertIsRequestBody(data: unknown): asserts data is RequestBody {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Request body data is not an object');
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Request body data is not an object");
   }
   // endpoint
-  if (!('endpoint' in data)) {
+  if (!("endpoint" in data)) {
     throw new Error('Request params data is missing the "endpoint" field');
   }
-  if (typeof data.endpoint !== 'string') {
+  if (typeof data.endpoint !== "string") {
     throw new Error('Request params data "endpoint" field is not a string');
   }
   // data
-  if (!('data' in data)) {
+  if (!("data" in data)) {
     throw new Error('Request params data is missing the "data" field');
   }
-  if (typeof data.data !== 'object') {
+  if (typeof data.data !== "object") {
     throw new Error('Request params data "data" field is not a object');
   }
 }
@@ -46,7 +46,7 @@ export function assertIsRequestBody(data: unknown): asserts data is RequestBody 
  * @throws {Error} If data is not a valid RequestBodyData
  */
 export function assertIsRequestBodyData(data: unknown): asserts data is RequestBodyData {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Request body data is not an object');
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Request body data is not an object");
   }
 }

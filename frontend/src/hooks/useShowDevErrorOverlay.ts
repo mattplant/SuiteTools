@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useAppSettingsContext } from './useAppSettingsContext';
+import { useAppSettingsContext } from "./useAppSettingsContext";
 
 /**
  * Whether the floating developer error overlay should be shown.

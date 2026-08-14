@@ -9,9 +9,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { requestResponse, zRequestBody } from '@suiteworks/suitetools-shared';
-import type { RequestResponse, RequestBody, PostEndpoint, PutEndpoint } from '@suiteworks/suitetools-shared';
-import type { EndpointName } from '@suiteworks/suitetools-shared';
+import { requestResponse, zRequestBody } from "@suiteworks/suitetools-shared";
+import type { RequestResponse, RequestBody, PostEndpoint, PutEndpoint } from "@suiteworks/suitetools-shared";
+import type { EndpointName } from "@suiteworks/suitetools-shared";
 import {
   errorFromResponse,
   InvalidParameterError,
@@ -19,15 +19,15 @@ import {
   makeSchemaValidationError,
   parseErrorResponse,
   ZodError,
-} from '@suiteworks/suitetools-shared';
+} from "@suiteworks/suitetools-shared";
 
 enum HttpMethod {
-  PUT = 'PUT',
-  POST = 'POST',
+  PUT = "PUT",
+  POST = "POST",
 }
 
-const script = 'customscript_idev_suitetools_api';
-const deploy = 'customdeploy_idev_suitetools_api';
+const script = "customscript_idev_suitetools_api";
+const deploy = "customdeploy_idev_suitetools_api";
 const apiBaseUrl = `/app/site/hosting/restlet.nl?script=${script}&deploy=${deploy}`;
 
 /**
@@ -42,7 +42,7 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
   let result: RequestResponse; // = { status: 500, data: {} }; // default to error
 
   // Guard against reserved keys in the params object - first 3 used by NetSuite and last by SuiteTools
-  const reservedParamKeys = ['script', 'deploy', 'compid', 'endpoint'];
+  const reservedParamKeys = ["script", "deploy", "compid", "endpoint"];
   const conflicts = reservedParamKeys.filter((param) => param in params);
   if (conflicts.length > 0) {
     const parameterName = conflicts[0];
@@ -50,7 +50,7 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
       parameterName,
       params[parameterName],
       `Reserved NetSuite/SuiteTools query keys cannot be passed in getData params` +
-        (conflicts.length > 1 ? ` (also: ${conflicts.slice(1).join(', ')})` : ''),
+        (conflicts.length > 1 ? ` (also: ${conflicts.slice(1).join(", ")})` : ""),
     );
   }
 
@@ -58,11 +58,11 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
   // Skip nullish / empty-string / empty-placeholder arrays (e.g. roles: ['']); keep 0 / false.
   const searchParams = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
-    if (value == null || value === '') {
+    if (value == null || value === "") {
       continue;
     }
     if (Array.isArray(value)) {
-      const joined = value.filter((entry) => entry !== '' && entry != null).join(',');
+      const joined = value.filter((entry) => entry !== "" && entry != null).join(",");
       if (!joined) {
         continue;
       }
@@ -72,13 +72,11 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
     searchParams.set(key, String(value));
   }
   const paramString = searchParams.toString();
-  const url = paramString
-    ? `${apiBaseUrl}&endpoint=${endpoint}&${paramString}`
-    : `${apiBaseUrl}&endpoint=${endpoint}`;
+  const url = paramString ? `${apiBaseUrl}&endpoint=${endpoint}&${paramString}` : `${apiBaseUrl}&endpoint=${endpoint}`;
   const res = await fetch(url);
 
   // Read the body once
-  let raw = '';
+  let raw = "";
   try {
     raw = await res.text();
   } catch {
@@ -132,9 +130,7 @@ export async function getData(endpoint: EndpointName, params: Record<string, unk
       result = payload;
       break;
     default:
-      throw makeNetSuiteApiError(endpoint, payload.message || 'NetSuite API error', {
-        status: payload.status,
-      });
+      throw makeNetSuiteApiError(endpoint, payload.message || "NetSuite API error", { status: payload.status });
   }
   return result;
 }
@@ -172,9 +168,9 @@ async function saveData(
   endpoint: PostEndpoint | PutEndpoint,
   data: object,
 ): Promise<RequestResponse> {
-  if (window.location.href.includes('localhost')) {
+  if (window.location.href.includes("localhost")) {
     // use dummy data for local development
-    return requestResponse.parse({ status: 200, data: {}, message: 'Mock response' });
+    return requestResponse.parse({ status: 200, data: {}, message: "Mock response" });
   }
 
   // save data to NetSuite
@@ -183,7 +179,7 @@ async function saveData(
   const response = await fetch(apiUrl, {
     method: httpMethod,
     body: JSON.stringify(zRequestBody.parse(requestBody)),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   });
   const parsedResponse = requestResponse.parse(await response.json());
 

@@ -1,6 +1,6 @@
-import { useLoaderData } from 'react-router-dom';
-import { TokenResult } from '../components/features/token/RecordResult';
-import type { TokenLoaderData } from '../routes/tokenLoader';
+import { useLoaderData } from "react-router-dom";
+import { TokenResult } from "../components/features/token/RecordResult";
+import type { TokenLoaderData } from "../routes/tokenLoader";
 
 /**
  * Renders the token detail page.

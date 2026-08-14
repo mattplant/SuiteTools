@@ -7,15 +7,15 @@
  * @NApiVersion 2.1
  */
 
-import { SuiteToolsCommonLibraryNetSuiteEmail } from './SuiteToolsCommonLibraryNetSuiteEmail';
-import { SuiteToolsCommonLibraryNetSuiteFile } from './SuiteToolsCommonLibraryNetSuiteFile';
-import { SuiteToolsCommonLibraryNetSuiteHttp } from './SuiteToolsCommonLibraryNetSuiteHttp';
-import { SuiteToolsCommonLibraryNetSuiteRecord } from './SuiteToolsCommonLibraryNetSuiteRecord';
-import { SuiteToolsCommonLibraryNetSuiteScript } from './SuiteToolsCommonLibraryNetSuiteScript';
-import { SuiteToolsCommonLibraryNetSuiteSearch } from './SuiteToolsCommonLibraryNetSuiteSearch';
-import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from './SuiteToolsCommonLibraryNetSuiteSuiteQl';
-import { SuiteToolsCommonLibraryNetSuiteTask } from './SuiteToolsCommonLibraryNetSuiteTask';
-import type { SuiteToolsCommon } from '../SuiteToolsCommon';
+import { SuiteToolsCommonLibraryNetSuiteEmail } from "./SuiteToolsCommonLibraryNetSuiteEmail";
+import { SuiteToolsCommonLibraryNetSuiteFile } from "./SuiteToolsCommonLibraryNetSuiteFile";
+import { SuiteToolsCommonLibraryNetSuiteHttp } from "./SuiteToolsCommonLibraryNetSuiteHttp";
+import { SuiteToolsCommonLibraryNetSuiteRecord } from "./SuiteToolsCommonLibraryNetSuiteRecord";
+import { SuiteToolsCommonLibraryNetSuiteScript } from "./SuiteToolsCommonLibraryNetSuiteScript";
+import { SuiteToolsCommonLibraryNetSuiteSearch } from "./SuiteToolsCommonLibraryNetSuiteSearch";
+import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from "./SuiteToolsCommonLibraryNetSuiteSuiteQl";
+import { SuiteToolsCommonLibraryNetSuiteTask } from "./SuiteToolsCommonLibraryNetSuiteTask";
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite Library

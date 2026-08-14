@@ -1,6 +1,6 @@
-import { useLoaderData } from 'react-router-dom';
-import { ScriptResult } from '../components/features/script/RecordResult';
-import type { ScriptLoaderData } from '../routes/scriptLoader';
+import { useLoaderData } from "react-router-dom";
+import { ScriptResult } from "../components/features/script/RecordResult";
+import type { ScriptLoaderData } from "../routes/scriptLoader";
 
 /**
  * Renders the script page with script details.

@@ -4,21 +4,21 @@
  * @file API adapter for retrieving TBA access tokens.
  */
 
-import { makeRequestResponseSchema, tokensOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Settings, Tokens } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
-import { adaptToken } from './tokenAdapt';
-import { integrationLookupKey } from './integrationsScrape';
+import { makeRequestResponseSchema, tokensOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Settings, Tokens } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
+import { adaptToken } from "./tokenAdapt";
+import { integrationLookupKey } from "./integrationsScrape";
 
-export { adaptToken } from './tokenAdapt';
+export { adaptToken } from "./tokenAdapt";
 
 const tokensRequestResponseSchema = makeRequestResponseSchema(tokensOrNotFoundSchema);
 
-const fetchTokensBase = makeListAdapter<Tokens[number], CriteriaFields, 'active'>(
-  'tokens',
+const fetchTokensBase = makeListAdapter<Tokens[number], CriteriaFields, "active">(
+  "tokens",
   tokensRequestResponseSchema,
-  ['active'] as const,
+  ["active"] as const,
   { adaptItem: adaptToken },
 );
 
@@ -50,12 +50,8 @@ export async function getTokens(fields: CriteriaFields): Promise<Tokens> {
  * @param settings - SuiteTools settings.
  */
 export function addTokenLastLogins(tokens: Tokens, settings: Settings | undefined): Tokens {
-  if (
-    settings?.lastLogins?.data &&
-    Array.isArray(settings.lastLogins.data) &&
-    settings.lastLogins.data.length > 0
-  ) {
-    const lastLogins = settings.lastLogins.data.filter((entry) => entry.name.type === 'token');
+  if (settings?.lastLogins?.data && Array.isArray(settings.lastLogins.data) && settings.lastLogins.data.length > 0) {
+    const lastLogins = settings.lastLogins.data.filter((entry) => entry.name.type === "token");
 
     tokens.forEach((token) => {
       const lastLogin = lastLogins.find((entry) => entry.name.name === token.name);

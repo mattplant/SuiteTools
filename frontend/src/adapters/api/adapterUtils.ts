@@ -13,9 +13,9 @@
  * and re-export from an index barrel.
  */
 
-import { handleError, isNotFound, NotFoundError, toArray } from '@suiteworks/suitetools-shared';
-import type { BaseSchema, EndpointName, NotFound, SingularEntityName } from '@suiteworks/suitetools-shared';
-import { getData } from './netSuiteClient';
+import { handleError, isNotFound, NotFoundError, toArray } from "@suiteworks/suitetools-shared";
+import type { BaseSchema, EndpointName, NotFound, SingularEntityName } from "@suiteworks/suitetools-shared";
+import { getData } from "./netSuiteClient";
 
 /* -------------------------------------------------------------------------- */
 /* handleNotFound                                                             */
@@ -48,7 +48,7 @@ export function handleNotFound(resource: string, id: string | number): never {
  */
 export function makeSingularAdapter<TEntity>(
   entity: SingularEntityName,
-  schema: BaseSchema<TEntity | { message: string; code: 'NOT_FOUND' }>,
+  schema: BaseSchema<TEntity | { message: string; code: "NOT_FOUND" }>,
   adapt: (record: TEntity) => TEntity,
 ) {
   return async (id: number): Promise<TEntity> => {

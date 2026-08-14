@@ -4,11 +4,8 @@
  * @file API adapter for concurrency summary (APM scrape).
  */
 
-import { getConcurrencySummaryData } from '../../utils/concurrency';
-import type {
-  ConcurrencySummaryData,
-  CriteriaFields,
-} from '../../components/features/concurrency/summary/types';
+import { getConcurrencySummaryData } from "../../utils/concurrency";
+import type { ConcurrencySummaryData, CriteriaFields } from "../../components/features/concurrency/summary/types";
 
 /**
  * Fetch concurrency summary for a date range.
@@ -19,15 +16,14 @@ export async function getConcurrencySummary(
   fields: CriteriaFields,
   accountId?: string,
 ): Promise<ConcurrencySummaryData> {
-
-  if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
+  if (typeof window !== "undefined" && window.location.href.includes("localhost")) {
     return {
       concurrency: {
         overview: {
           concurrencyLimit: 20,
           peakConcurrency: { value: 17, dateMS: 1735866000000 },
-          timeCloseToLimit: { value: '1.23', lowerRange: 18, upperRange: 20 },
-          timeOverLimit: { value: '2.46', range: 20 },
+          timeCloseToLimit: { value: "1.23", lowerRange: 18, upperRange: 20 },
+          timeOverLimit: { value: "2.46", range: 20 },
         },
         config: {
           concurrencyLimit: 20,
@@ -49,17 +45,10 @@ export async function getConcurrencySummary(
           ],
         },
         allocations: {},
-        results: [
-          {
-            startTime: 1733385600000,
-            endTime: 1733389200000,
-            averageConcurrency: 0,
-            peakConcurrency: 0,
-          },
-        ],
+        results: [{ startTime: 1733385600000, endTime: 1733389200000, averageConcurrency: 0, peakConcurrency: 0 }],
       },
       violations: {
-        mode: 'noallocation',
+        mode: "noallocation",
         integrations: [],
         overview: { totalViolations: 1, totalRequests: 123 },
         config: { resolutionMS: 3600000 },
@@ -69,7 +58,7 @@ export async function getConcurrencySummary(
   }
 
   if (!accountId || !fields.startDate || !fields.endDate) {
-    throw new Error('getConcurrencySummary() requires accountId, startDate, and endDate');
+    throw new Error("getConcurrencySummary() requires accountId, startDate, and endDate");
   }
 
   return getConcurrencySummaryData(accountId, fields.startDate, fields.endDate);

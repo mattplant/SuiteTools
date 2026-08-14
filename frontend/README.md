@@ -161,11 +161,8 @@ Installed via `package.json`:
 - **PostCSS** — 8.5.x (CSS transformations)
   - `postcss-import`, `postcss-nested`, `postcss-nesting` (CSS preprocessing)
 - **Autoprefixer** — 10.4.x (CSS vendor prefixing)
-- **ESLint + plugins** — linting rules (`eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-import`, `eslint-plugin-react-refresh`)
-- **Prettier** — 3.3.x (code formatting)
-- **@typescript-eslint/eslint-plugin / parser** — TypeScript linting support
+- **Biome** — 2.5.x (linting and formatting, configured once at the repo root)
 - **@types/react / @types/react-dom / @types/d3** — type definitions
-- **Globals** — ^16.x (ESLint globals config)
 
 ---
 

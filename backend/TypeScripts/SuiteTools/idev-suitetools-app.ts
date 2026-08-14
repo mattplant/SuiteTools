@@ -23,9 +23,9 @@
  * @NApiVersion 2.1
  */
 
-import type { EntryPoints } from 'N/types';
-import * as log from 'N/log';
-import { SuiteToolsApp } from './app/SuiteToolsApp';
+import type { EntryPoints } from "N/types";
+import * as log from "N/log";
+import { SuiteToolsApp } from "./app/SuiteToolsApp";
 
 /**
  * Suitelet onRequest event handler
@@ -35,7 +35,7 @@ import { SuiteToolsApp } from './app/SuiteToolsApp';
  * @param context - this Suitelet's context object
  */
 export function onRequest(context: EntryPoints.Suitelet.onRequestContext): void {
-  log.debug({ title: 'SuiteToolsApp:onRequest()', details: context });
+  log.debug({ title: "SuiteToolsApp:onRequest()", details: context });
 
   // initialize the SuiteTools application
   new SuiteToolsApp(context);

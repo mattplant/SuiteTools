@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../../shared/criteria/types';
-import { getLogins } from '../../../adapters/api/logins';
-import { getLoginFromResults } from '../../../adapters/api/login';
-import type { Login } from '@suiteworks/suitetools-shared';
-import { Results } from '../../shared/results/Results';
-import { ResultsTypes } from '../../shared/results/types';
-import { useEntityList } from '../../../hooks/useEntityList';
+import type { CriteriaFields } from "../../shared/criteria/types";
+import { getLogins } from "../../../adapters/api/logins";
+import { getLoginFromResults } from "../../../adapters/api/login";
+import type { Login } from "@suiteworks/suitetools-shared";
+import { Results } from "../../shared/results/Results";
+import { ResultsTypes } from "../../shared/results/types";
+import { useEntityList } from "../../../hooks/useEntityList";
 
-type Props = {
-  userId: string;
-};
+type Props = { userId: string };
 
 /**
  * Nested logins list for a user detail page.

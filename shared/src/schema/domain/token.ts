@@ -35,10 +35,9 @@ const TokenSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const TokenBundle: ZEntityBundle<typeof TokenSchema, "Token"> =
-  zHelpers.zCreateBundle(TokenSchema, {
-    meta: { entity: "Token", plural: "Tokens" },
-  });
+const TokenBundle: ZEntityBundle<typeof TokenSchema, "Token"> = zHelpers.zCreateBundle(TokenSchema, {
+  meta: { entity: "Token", plural: "Tokens" },
+});
 
 export { TokenBundle };
 export type Token = typeof TokenBundle.types.single;
@@ -47,7 +46,5 @@ export type Tokens = typeof TokenBundle.types.array;
 export const tokenOrNotFoundSchema = orNotFoundSchema(TokenSchema);
 export type TokenOrNotFound = OrNotFound<Token>;
 
-export const tokensOrNotFoundSchema = orNotFoundSchema(
-  TokenBundle.schema.array()
-);
+export const tokensOrNotFoundSchema = orNotFoundSchema(TokenBundle.schema.array());
 export type TokensOrNotFound = OrNotFound<Tokens>;

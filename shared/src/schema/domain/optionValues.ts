@@ -11,15 +11,11 @@ import { orNotFoundSchema, OrNotFound } from "./utils/schemaHelpers";
  * - `value`: the internal value of the option
  * - `text`: the display text of the option
  */
-const schema = z.object({
-  value: z.string(),
-  text: z.string(),
-});
+const schema = z.object({ value: z.string(), text: z.string() });
 
-const OptionValueBundle: ZEntityBundle<typeof schema, "OptionValue"> =
-  zHelpers.zCreateBundle(schema, {
-    meta: { entity: "OptionValue", plural: "OptionValues" },
-  });
+const OptionValueBundle: ZEntityBundle<typeof schema, "OptionValue"> = zHelpers.zCreateBundle(schema, {
+  meta: { entity: "OptionValue", plural: "OptionValues" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports
@@ -34,7 +30,5 @@ export const optionValueOrNotFoundSchema = orNotFoundSchema(schema);
 export type OptionValueOrNotFound = OrNotFound<OptionValue>;
 
 // ----- Convenience union for multiple OptionValues -----
-export const optionValuesOrNotFoundSchema = orNotFoundSchema(
-  OptionValueBundle.schema.array()
-);
+export const optionValuesOrNotFoundSchema = orNotFoundSchema(OptionValueBundle.schema.array());
 export type OptionValuesOrNotFound = OrNotFound<OptionValues>;

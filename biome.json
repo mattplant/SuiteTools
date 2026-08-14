@@ -1,0 +1,28 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "main" },
+  "files": {
+    "includes": [
+      "**",
+      "!**/*.min.js",
+      "!**/dist",
+      "!**/.flowbite-react",
+      "!backend/src/FileCabinet",
+      "!.pnp.cjs",
+      "!**/*.css"
+    ]
+  },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 120, "expand": "never" },
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
+  "overrides": [{ "includes": ["**/package.json"], "formatter": { "enabled": false } }],
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "complexity": { "useLiteralKeys": "warn" },
+      "correctness": { "useExhaustiveDependencies": "warn" },
+      "style": { "noNonNullAssertion": "warn", "useNodejsImportProtocol": "warn", "useTemplate": "warn" },
+      "suspicious": { "noArrayIndexKey": "warn", "noExplicitAny": "warn" }
+    }
+  }
+}

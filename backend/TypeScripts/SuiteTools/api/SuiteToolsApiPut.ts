@@ -5,13 +5,13 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import * as error from 'N/error';
-import type { Response } from './types';
-import { assertIsRequestBody, assertIsRequestBodyData } from './types';
-import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
-import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
-import { validateMutationResponse } from './SuiteToolsApiMutationValidate';
+import * as log from "N/log";
+import * as error from "N/error";
+import type { Response } from "./types";
+import { assertIsRequestBody, assertIsRequestBodyData } from "./types";
+import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
+import type { SuiteToolsApiModel } from "./SuiteToolsApiModel";
+import { validateMutationResponse } from "./SuiteToolsApiMutationValidate";
 
 /**
  * SuiteTools API PUT Class
@@ -35,24 +35,24 @@ export class SuiteToolsApiPut {
   }
 
   public process(requestBody: unknown): Response {
-    log.debug({ title: 'SuiteToolsApiPut:process() initiated', details: requestBody });
+    log.debug({ title: "SuiteToolsApiPut:process() initiated", details: requestBody });
     assertIsRequestBody(requestBody);
 
     let response: Response;
     const endpoint = requestBody.endpoint;
     switch (endpoint) {
-      case 'settings':
+      case "settings":
         response = this.putSettings(requestBody.data);
         break;
       default:
         throw error.create({
-          name: 'SUITE_TOOLS_INVALID_PARAMETER',
+          name: "SUITE_TOOLS_INVALID_PARAMETER",
           message: `Invalid parameter: endpoint=${endpoint}`,
           notifyOff: true,
         });
     }
 
-    return validateMutationResponse('put', endpoint, response);
+    return validateMutationResponse("put", endpoint, response);
   }
 
   public putSettings(requestBodyData: object): Response {
@@ -68,10 +68,6 @@ export class SuiteToolsApiPut {
     );
     log.debug({ title: `SuiteToolsApiPut:putSettings() saved successfully?`, details: success });
 
-    return {
-      status: 200,
-      data: {},
-      message: 'Settings updated',
-    };
+    return { status: 200, data: {}, message: "Settings updated" };
   }
 }

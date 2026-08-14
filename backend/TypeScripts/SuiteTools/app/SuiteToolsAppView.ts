@@ -5,10 +5,10 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import type * as error from 'N/error';
-import type { EntryPoints } from 'N/types';
-import type { SuiteToolsApp } from './SuiteToolsApp';
+import * as log from "N/log";
+import type * as error from "N/error";
+import type { EntryPoints } from "N/types";
+import type { SuiteToolsApp } from "./SuiteToolsApp";
 
 /**
  * SuiteTools App View
@@ -62,7 +62,7 @@ export class SuiteToolsAppView {
     if (!assetUrl) {
       return assetUrl;
     }
-    const separator = assetUrl.includes('?') ? '&' : '?';
+    const separator = assetUrl.includes("?") ? "&" : "?";
     return `${assetUrl}${separator}v=${version}`;
   }
 
@@ -73,12 +73,12 @@ export class SuiteToolsAppView {
    */
   public renderAppErrorForm(e: error.SuiteScriptError): void {
     // build stack lines string for content from error if in dev mode
-    let stackString = '';
+    let stackString = "";
     if (Array.isArray(e.stack) && e.stack.length > 0) {
       const stackLines = e.stack[0];
-      log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLines', details: stackLines });
-      const stackLinesArray = stackLines.split('at');
-      log.debug({ title: 'SuiteToolsController:renderAppErrorForm() stackLinesArray', details: stackLinesArray });
+      log.debug({ title: "SuiteToolsController:renderAppErrorForm() stackLines", details: stackLines });
+      const stackLinesArray = stackLines.split("at");
+      log.debug({ title: "SuiteToolsController:renderAppErrorForm() stackLinesArray", details: stackLinesArray });
       if (stackLinesArray.length > 1) {
         stackString = `<h3 class="text-xl">Stack:</h3>
     <ul>`;
@@ -111,7 +111,7 @@ export class SuiteToolsAppView {
    * @param issues - issues with the application that prevent it from running properly
    */
   public renderAppIssuesForm(issues: string[]): void {
-    let issueString = '';
+    let issueString = "";
     for (const issue of issues) {
       issueString += `<li>${issue}</li>`;
     }
@@ -131,12 +131,12 @@ export class SuiteToolsAppView {
   }
 
   private getPageFooterComments(): string {
-    log.debug({ title: 'SuiteToolsAppView:getPageFooterComments() initiated', details: null });
+    log.debug({ title: "SuiteToolsAppView:getPageFooterComments() initiated", details: null });
     const lines = [];
-    lines.push('<!-- SuiteTools Application -->');
-    lines.push('<!-- appUrl: ' + this.stApp.appUrl + ' -->');
-    lines.push('<!-- apiUrl: ' + this.stApp.apiUrl + ' -->');
-    lines.push('<!-- NetSuite -->');
-    return lines.join('\n');
+    lines.push("<!-- SuiteTools Application -->");
+    lines.push("<!-- appUrl: " + this.stApp.appUrl + " -->");
+    lines.push("<!-- apiUrl: " + this.stApp.apiUrl + " -->");
+    lines.push("<!-- NetSuite -->");
+    return lines.join("\n");
   }
 }

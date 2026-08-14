@@ -10,9 +10,6 @@ export class NotFoundError extends SuiteError {
   public readonly severity = "warning";
 
   constructor(resource: string, id: string | number, cause?: unknown) {
-    super(`${resource} with ID ${id} was not found`, {
-      context: { resource, id },
-      cause,
-    });
+    super(`${resource} with ID ${id} was not found`, { context: { resource, id }, cause });
   }
 }

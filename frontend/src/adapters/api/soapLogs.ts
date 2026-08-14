@@ -4,11 +4,11 @@
  * @file API adapter for SOAP web services status rows (scrape-based).
  */
 
-import type { SoapLogs } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { scrapeSoapLogs } from './soapLogsScrape';
+import type { SoapLogs } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { scrapeSoapLogs } from "./soapLogsScrape";
 
-export { adaptSoapLog } from './soapLogAdapt';
+export { adaptSoapLog } from "./soapLogAdapt";
 
 /**
  * Fetch SOAP web services status rows from NetSuite's Sync Status page.

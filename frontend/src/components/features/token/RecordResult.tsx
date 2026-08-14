@@ -1,13 +1,10 @@
-import { Button, ButtonGroup } from 'flowbite-react';
-import type { Token } from '@suiteworks/suitetools-shared';
-import { useAppSettingsContext } from '../../../hooks/useAppSettingsContext';
-import { addTokenLastLogin } from '../../../adapters/api/token';
-import { openAppPage, openNetSuitePage } from '../../../utils/navigation';
+import { Button, ButtonGroup } from "flowbite-react";
+import type { Token } from "@suiteworks/suitetools-shared";
+import { useAppSettingsContext } from "../../../hooks/useAppSettingsContext";
+import { addTokenLastLogin } from "../../../adapters/api/token";
+import { openAppPage, openNetSuitePage } from "../../../utils/navigation";
 
-type Props = {
-  data: Token;
-  modal?: boolean;
-};
+type Props = { data: Token; modal?: boolean };
 
 export function TokenResult({ data, modal }: Props) {
   const { settings } = useAppSettingsContext();

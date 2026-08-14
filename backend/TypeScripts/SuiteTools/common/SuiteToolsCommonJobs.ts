@@ -7,7 +7,7 @@
  * @NApiVersion 2.1
  */
 
-import * as log from 'N/log';
+import * as log from "N/log";
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {
@@ -24,8 +24,8 @@ declare class SuiteToolsCommon {
  */
 export class SuiteToolsCommonJobs {
   private _stCommon: SuiteToolsCommon;
-  private _appJobRecord = 'customrecord_idev_suitetools_job';
-  private _appJobRunRecord = 'customrecord_idev_suitetools_job_run';
+  private _appJobRecord = "customrecord_idev_suitetools_job";
+  private _appJobRunRecord = "customrecord_idev_suitetools_job_run";
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
@@ -41,22 +41,22 @@ export class SuiteToolsCommonJobs {
    * Add the jobs when we first install the SuiteTools app.
    */
   public initializeJobs(): void {
-    log.debug({ title: `SuiteToolsCommonJobs:initializeJobs() initiated`, details: '' });
+    log.debug({ title: `SuiteToolsCommonJobs:initializeJobs() initiated`, details: "" });
 
     // ADD THE DEFAULT JOBS
     // recent script errors job
     const recentScriptErrorsJob = {
-      name: 'Recent Script Errors',
+      name: "Recent Script Errors",
       custrecord_idev_st_mr_job_desc:
-        'The job notifies user of recent errors (Error, Emergency, System) across all script execution logs.',
+        "The job notifies user of recent errors (Error, Emergency, System) across all script execution logs.",
       custrecord_idev_st_mr_job_scheduled: true,
       custrecord_idev_st_mr_job_notify: true,
     };
     this.stCommon.stLib.stLibNs.stLibNsRecord.createCustomRecordEntry(this._appJobRecord, recentScriptErrorsJob);
     // last logins job
     const lastLoginsJob = {
-      name: 'Last Logins',
-      custrecord_idev_st_mr_job_desc: 'This job get the last logins for the users, tokens and integrations.',
+      name: "Last Logins",
+      custrecord_idev_st_mr_job_desc: "This job get the last logins for the users, tokens and integrations.",
       custrecord_idev_st_mr_job_scheduled: false, // script can not be scheduled since it needs to be run in UI
       custrecord_idev_st_mr_job_notify: false, // no need to notify user since not able to be scheduled
     };
@@ -70,9 +70,9 @@ export class SuiteToolsCommonJobs {
    * @returns array of scheduled jobs
    */
   public getScheduledJobs(): Array<{ id: number; name: string }> {
-    log.debug('SuiteToolsCommonJobs:getScheduledJobs() initiated', null);
+    log.debug("SuiteToolsCommonJobs:getScheduledJobs() initiated", null);
 
-    const customRecord = 'customrecord_idev_suitetools_job';
+    const customRecord = "customrecord_idev_suitetools_job";
     const sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
@@ -83,14 +83,11 @@ export class SuiteToolsCommonJobs {
       AND custrecord_idev_st_mr_job_scheduled = 'T'
     ORDER BY
       ${customRecord}.id ASC`;
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as Array<{
-      id: number;
-      name: string;
-    }>;
+    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as Array<{ id: number; name: string }>;
     if (sqlResults.length === 0) {
       log.audit(`getJobs() - No active scheduled job records found`, null);
     } else {
-      log.debug({ title: 'SuiteToolsCommonJobs:getScheduledJobs() returning', details: sqlResults });
+      log.debug({ title: "SuiteToolsCommonJobs:getScheduledJobs() returning", details: sqlResults });
     }
 
     return sqlResults;
@@ -103,7 +100,7 @@ export class SuiteToolsCommonJobs {
    * @returns job run record id
    */
   public createJobRunRecord(id: string): number {
-    log.debug('SuiteToolsCommonJobs:createJobRunRecord() initiated', { id });
+    log.debug("SuiteToolsCommonJobs:createJobRunRecord() initiated", { id });
 
     // save new job run record
     const jobRunRecordId = Number(
@@ -111,7 +108,7 @@ export class SuiteToolsCommonJobs {
         custrecord_idev_st_mr_job_run_job_id: id,
       }),
     );
-    log.debug({ title: 'SuiteToolsCommonJobs:createJobRunRecord() created job run record', details: jobRunRecordId });
+    log.debug({ title: "SuiteToolsCommonJobs:createJobRunRecord() created job run record", details: jobRunRecordId });
 
     return jobRunRecordId;
   }
@@ -124,7 +121,7 @@ export class SuiteToolsCommonJobs {
    * @param results - job results
    */
   public updateJobRunRecord(id: string, completed: boolean, results: string): void {
-    log.debug('SuiteToolsCommonJobs:updateJobRunRecord() initiated', { id, completed, results });
+    log.debug("SuiteToolsCommonJobs:updateJobRunRecord() initiated", { id, completed, results });
     // update job run record
     this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(this._appJobRunRecord, id, {
       custrecord_idev_st_mr_job_run_completed: completed,
@@ -142,7 +139,7 @@ export class SuiteToolsCommonJobs {
    */
   public getJobLastRun(id: string): string {
     log.debug({ title: `SuiteToolsCommonJobs:getJobLastRun() initiated`, details: { id: id } });
-    let result = '';
+    let result = "";
     const customRecord = this._appJobRunRecord;
     const sql = `SELECT TOP 1
         TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS lastrun
@@ -168,36 +165,36 @@ export class SuiteToolsCommonJobs {
    * @returns void
    */
   public async runJob(jobId: string, jobData?: object): Promise<void> {
-    log.debug('SuiteToolsCommonJobs:runJob() initiated', { jobId, jobData });
+    log.debug("SuiteToolsCommonJobs:runJob() initiated", { jobId, jobData });
     let result: object;
     let completed = false;
     if (jobId) {
       // load job details
       const jobDetails = this.stCommon.stLib.stLibNs.stLibNsRecord.getCustomRecord(this._appJobRecord, Number(jobId));
       if (jobDetails) {
-        log.debug('SuiteToolsCommonJobs:runJob() job details', jobDetails);
+        log.debug("SuiteToolsCommonJobs:runJob() job details", jobDetails);
         const lastRun = this.getJobLastRun(jobId);
         // create new job run record
         const jobRunId = this.createJobRunRecord(jobId);
         // execute the job
-        log.debug('SuiteToolsCommonJobs:runJob() executing job', jobId);
+        log.debug("SuiteToolsCommonJobs:runJob() executing job", jobId);
         switch (String(jobId)) {
-          case '1': // Recent Script Errors
+          case "1": // Recent Script Errors
             result = this.getRecentScriptErrorsJob(lastRun);
             completed = true;
             break;
-          case '2': // Last Logins
+          case "2": // Last Logins
             result = this.initiateLastLoginsJob(jobData ?? []);
             completed = true;
             break;
           default:
-            log.error('SuiteToolsCommonJobs:runJob() error', `Unknown job id: ${jobId}`);
+            log.error("SuiteToolsCommonJobs:runJob() error", `Unknown job id: ${jobId}`);
         }
-        log.debug('SuiteToolsCommonJobs:runJob() job processed', { jobId, completed, result });
+        log.debug("SuiteToolsCommonJobs:runJob() job processed", { jobId, completed, result });
         // update job run record after execution
         this.updateJobRunRecord(String(jobRunId), completed, JSON.stringify(result));
         // send notification email if job is set to notify
-        const notify = jobDetails.getValue('custrecord_idev_st_mr_job_notify');
+        const notify = jobDetails.getValue("custrecord_idev_st_mr_job_notify");
         if (notify) {
           const notifyAuthor = this.stCommon.stSettings.notifyAuthor;
           const notifyEmail = this.stCommon.stSettings.notifyEmail;
@@ -205,15 +202,15 @@ export class SuiteToolsCommonJobs {
             notifyAuthor,
             [notifyEmail],
             notifyEmail,
-            'SuiteTools Job Notification',
+            "SuiteTools Job Notification",
             JSON.stringify(result),
           );
         }
       } else {
-        log.error('SuiteToolsCommonJobs:runJob() error', `Job details not found for job id: ${jobId}`);
+        log.error("SuiteToolsCommonJobs:runJob() error", `Job details not found for job id: ${jobId}`);
       }
     } else {
-      log.error('SuiteToolsCommonJobs:runJob() error', 'No job id provided');
+      log.error("SuiteToolsCommonJobs:runJob() error", "No job id provided");
     }
   }
 
@@ -225,12 +222,9 @@ export class SuiteToolsCommonJobs {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public getRecentScriptErrorsJob(lastRun: string): any[] {
-    log.debug({
-      title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`,
-      details: { lastRun },
-    });
+    log.debug({ title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`, details: { lastRun } });
     // get the errors from the script execution log
-    let levels = ['ERROR', 'EMERGENCY', 'SYSTEM'];
+    let levels = ["ERROR", "EMERGENCY", "SYSTEM"];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any[] = [];
     let sql = `SELECT
@@ -251,7 +245,7 @@ export class SuiteToolsCommonJobs {
         levels = levels.map((type) => {
           return `'${type.toUpperCase()}'`;
         });
-        where.push(`ScriptNote.type IN (${levels.join(',')})`);
+        where.push(`ScriptNote.type IN (${levels.join(",")})`);
       }
     }
     // add in time filter
@@ -262,7 +256,7 @@ export class SuiteToolsCommonJobs {
     }
     // add where clause
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     // add order by
     sql += ` ORDER BY ScriptNote.internalId DESC`;
@@ -281,17 +275,17 @@ export class SuiteToolsCommonJobs {
    * @returns object
    */
   public initiateLastLoginsJob(requestBodyData: object): object {
-    log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() initiated', details: requestBodyData });
-    let message = '';
+    log.debug({ title: "SuiteToolsCommonJobs:initiateLastLoginsJob() initiated", details: requestBodyData });
+    let message = "";
     let entityRecords: { type: string; name: string }[] = [];
 
     // Prefer entity records supplied by the caller (frontend scrape).
     if (Array.isArray(requestBodyData) && requestBodyData.length > 0) {
       entityRecords = requestBodyData.filter(
-        (item) => item && typeof item === 'object' && typeof item.type === 'string' && typeof item.name === 'string',
+        (item) => item && typeof item === "object" && typeof item.type === "string" && typeof item.name === "string",
       );
       log.debug({
-        title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() set entity records from request',
+        title: "SuiteToolsCommonJobs:initiateLastLoginsJob() set entity records from request",
         details: { count: entityRecords.length },
       });
     }
@@ -301,7 +295,7 @@ export class SuiteToolsCommonJobs {
     if (entityRecords.length === 0) {
       entityRecords = this.getLastLoginEntitiesFromAudit();
       log.debug({
-        title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() entity records from LoginAudit',
+        title: "SuiteToolsCommonJobs:initiateLastLoginsJob() entity records from LoginAudit",
         details: { count: entityRecords.length },
       });
     }
@@ -314,22 +308,19 @@ export class SuiteToolsCommonJobs {
         custscript_idev_st_mr_logins_set_id: this.stCommon.stSettings.recordId,
       };
       const scriptTaskId = this.stCommon.stLib.stLibNs.stLibNsTask.submit(
-        'MAP_REDUCE',
-        'customscript_idev_suitetools_mr_logins',
-        'customdeploy_idev_suitetools_mr_logins',
+        "MAP_REDUCE",
+        "customscript_idev_suitetools_mr_logins",
+        "customdeploy_idev_suitetools_mr_logins",
         params,
       );
-      message = 'Last logins script initiated with task id of ' + scriptTaskId;
+      message = "Last logins script initiated with task id of " + scriptTaskId;
       // NOTE: the results are saved in the summary step of the last logins script
     } else {
-      message = 'No active entity records found';
+      message = "No active entity records found";
     }
-    log.debug({ title: 'SuiteToolsCommonJobs:initiateLastLoginsJob() returning', details: message });
+    log.debug({ title: "SuiteToolsCommonJobs:initiateLastLoginsJob() returning", details: message });
 
-    return {
-      data: { entityCount: entityRecords.length },
-      message: message,
-    };
+    return { data: { entityCount: entityRecords.length }, message: message };
   }
 
   /**
@@ -340,18 +331,18 @@ export class SuiteToolsCommonJobs {
     const entities: { type: string; name: string }[] = [];
     const queries: { type: string; sql: string; field: string }[] = [
       {
-        type: 'integration',
-        field: 'oauthappname',
+        type: "integration",
+        field: "oauthappname",
         sql: `SELECT DISTINCT oAuthAppName AS oauthappname FROM LoginAudit WHERE oAuthAppName IS NOT NULL`,
       },
       {
-        type: 'token',
-        field: 'oauthaccesstokenname',
+        type: "token",
+        field: "oauthaccesstokenname",
         sql: `SELECT DISTINCT oAuthAccessTokenName AS oauthaccesstokenname FROM LoginAudit WHERE oAuthAccessTokenName IS NOT NULL`,
       },
       {
-        type: 'user',
-        field: 'emailaddress',
+        type: "user",
+        field: "emailaddress",
         sql: `SELECT DISTINCT emailAddress AS emailaddress FROM LoginAudit WHERE emailAddress IS NOT NULL`,
       },
     ];
@@ -369,7 +360,7 @@ export class SuiteToolsCommonJobs {
         }
       } catch (e) {
         log.error({
-          title: 'SuiteToolsCommonJobs:getLastLoginEntitiesFromAudit() query failed',
+          title: "SuiteToolsCommonJobs:getLastLoginEntitiesFromAudit() query failed",
           details: { type: query.type, error: e },
         });
       }

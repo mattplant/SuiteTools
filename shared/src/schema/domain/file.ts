@@ -53,14 +53,9 @@ const FileSchema = z.object({
   urlDetail: z.string().optional(),
 });
 
-const FileBundle: ZEntityBundle<typeof FileSchema, "File"> =
-  zHelpers.zCreateBundle(FileSchema, {
-    meta: {
-      entity: "File",
-      plural: "Files",
-      displayName: "File Record",
-    },
-  });
+const FileBundle: ZEntityBundle<typeof FileSchema, "File"> = zHelpers.zCreateBundle(FileSchema, {
+  meta: { entity: "File", plural: "Files", displayName: "File Record" },
+});
 
 // ───────────────────────────────────────────────────────────
 // Public Exports

@@ -36,44 +36,22 @@ describe("validateGetResponse", () => {
   });
 
   it("accepts a valid envelope for an unvalidated endpoint", () => {
-    const response = validateGetResponse("_envelopeOnly", {
-      status: 200,
-      data: [{ id: 1 }],
-      message: "ok",
-    });
-    expect(response).toEqual({
-      status: 200,
-      data: [{ id: 1 }],
-      message: "ok",
-    });
+    const response = validateGetResponse("_envelopeOnly", { status: 200, data: [{ id: 1 }], message: "ok" });
+    expect(response).toEqual({ status: 200, data: [{ id: 1 }], message: "ok" });
   });
 
   it("rejects a broken envelope", () => {
-    expect(() =>
-      validateGetResponse("_envelopeOnly", { status: 99, data: null }),
-    ).toThrow(SchemaValidationError);
+    expect(() => validateGetResponse("_envelopeOnly", { status: 99, data: null })).toThrow(SchemaValidationError);
   });
 
   it("validates an integrations list payload", () => {
     const response = validateGetResponse("integrations", {
       status: 200,
-      data: [
-        {
-          id: 900000001,
-          name: "LoginAudit App",
-          applicationId: "",
-          state: "Enabled",
-          dateCreated: "",
-        },
-      ],
+      data: [{ id: 900000001, name: "LoginAudit App", applicationId: "", state: "Enabled", dateCreated: "" }],
     });
     expect(response.status).toBe(200);
     expect(response.data).toEqual([
-      expect.objectContaining({
-        id: 900000001,
-        name: "LoginAudit App",
-        state: "Enabled",
-      }),
+      expect.objectContaining({ id: 900000001, name: "LoginAudit App", state: "Enabled" }),
     ]);
   });
 
@@ -83,44 +61,27 @@ describe("validateGetResponse", () => {
       data: { code: "NOT_FOUND", message: "No integration found with id of 9" },
       message: "No integration found with id of 9",
     });
-    expect(response.data).toEqual({
-      code: "NOT_FOUND",
-      message: "No integration found with id of 9",
-    });
+    expect(response.data).toEqual({ code: "NOT_FOUND", message: "No integration found with id of 9" });
   });
 
   it("throws SchemaValidationError for an invalid integration payload", () => {
-    expect(() =>
-      validateGetResponse("integration", {
-        status: 200,
-        data: { id: "not-a-number", name: "x" },
-      }),
-    ).toThrow(SchemaValidationError);
+    expect(() => validateGetResponse("integration", { status: 200, data: { id: "not-a-number", name: "x" } })).toThrow(
+      SchemaValidationError,
+    );
   });
 
   it("validates an optionValues list payload", () => {
-    const response = validateGetResponse("optionValues", {
-      status: 200,
-      data: [{ value: "PDF", text: "PDF" }],
-    });
-    expect(response).toEqual({
-      status: 200,
-      data: [{ value: "PDF", text: "PDF" }],
-    });
+    const response = validateGetResponse("optionValues", { status: 200, data: [{ value: "PDF", text: "PDF" }] });
+    expect(response).toEqual({ status: 200, data: [{ value: "PDF", text: "PDF" }] });
   });
 
   it("accepts an empty optionValues array", () => {
-    const response = validateGetResponse("optionValues", {
-      status: 200,
-      data: [],
-    });
+    const response = validateGetResponse("optionValues", { status: 200, data: [] });
     expect(response).toEqual({ status: 200, data: [] });
   });
 
   it("throws SchemaValidationError for legacy empty-object optionValues", () => {
-    expect(() =>
-      validateGetResponse("optionValues", { status: 200, data: {} }),
-    ).toThrow(SchemaValidationError);
+    expect(() => validateGetResponse("optionValues", { status: 200, data: {} })).toThrow(SchemaValidationError);
   });
 
   it("validates a settings payload", () => {
@@ -147,17 +108,11 @@ describe("validateGetResponse", () => {
     };
     const response = validateGetResponse("settings", { status: 200, data });
     expect(response.status).toBe(200);
-    expect(response.data).toMatchObject({
-      devMode: true,
-      userId: 7,
-      processorCount: 2,
-    });
+    expect(response.data).toMatchObject({ devMode: true, userId: 7, processorCount: 2 });
   });
 
   it("throws SchemaValidationError for empty-object payloads on validated endpoints", () => {
-    expect(() => validateGetResponse("user", { status: 200, data: {} })).toThrow(
-      SchemaValidationError,
-    );
+    expect(() => validateGetResponse("user", { status: 200, data: {} })).toThrow(SchemaValidationError);
   });
 
   it("accepts canonical soft NotFound on validated singular endpoints", () => {
@@ -179,23 +134,14 @@ describe("validateGetResponse", () => {
       data: { code: "NOT_FOUND", message: "No role found with id of 9" },
       message: "No role found with id of 9",
     });
-    expect(response.data).toEqual({
-      code: "NOT_FOUND",
-      message: "No role found with id of 9",
-    });
+    expect(response.data).toEqual({ code: "NOT_FOUND", message: "No role found with id of 9" });
   });
 
   it("throws SchemaValidationError for an invalid user payload", () => {
     expect(() =>
       validateGetResponse("user", {
         status: 200,
-        data: {
-          id: -1,
-          isInactive: false,
-          email: "a@example.com",
-          name: "Ada",
-          title: "Engineer",
-        },
+        data: { id: -1, isInactive: false, email: "a@example.com", name: "Ada", title: "Engineer" },
       }),
     ).toThrow(SchemaValidationError);
   });
@@ -204,33 +150,16 @@ describe("validateGetResponse", () => {
     const response = validateGetResponse("jobRuns", {
       status: 200,
       data: [
-        {
-          id: 9,
-          created: "2026-08-05T12:00:00.000Z",
-          jobId: 3,
-          jobName: "Cleanup",
-          completed: "T",
-          results: "ok",
-        },
+        { id: 9, created: "2026-08-05T12:00:00.000Z", jobId: 3, jobName: "Cleanup", completed: "T", results: "ok" },
       ],
     });
     expect(response.status).toBe(200);
-    expect(response.data).toEqual([
-      expect.objectContaining({
-        id: 9,
-        jobId: 3,
-        jobName: "Cleanup",
-        completed: true,
-      }),
-    ]);
+    expect(response.data).toEqual([expect.objectContaining({ id: 9, jobId: 3, jobName: "Cleanup", completed: true })]);
   });
 
   it("throws SchemaValidationError for an invalid jobRuns payload", () => {
-    expect(() =>
-      validateGetResponse("jobRuns", {
-        status: 200,
-        data: [{ id: 9, created: "not-a-date" }],
-      }),
-    ).toThrow(SchemaValidationError);
+    expect(() => validateGetResponse("jobRuns", { status: 200, data: [{ id: 9, created: "not-a-date" }] })).toThrow(
+      SchemaValidationError,
+    );
   });
 });

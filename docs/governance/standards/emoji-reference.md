@@ -125,7 +125,7 @@ Visual signals for technical processes, tools, and resources that support develo
 | | Emoji Name | Signal Type | Purpose | Intended Use Case | Example Heading |
 |---|-----------|-------------|---------|-------------------|-----------------|
 | 🛫 | Airplane Departure | Onboarding | Onboarding | Onboarding guides, **initial setup** | `🛫 Getting Started` |
-| ⚙️ | Gear | Config | Setup | Configuration guides, setup instructions | `⚙️ ESLint Config` |
+| ⚙️ | Gear | Config | Setup | Configuration guides, setup instructions | `⚙️ Biome Config` |
 | 🛠️ | Hammer & Wrench | Tools | Tooling | Build scripts, utililites, CLI commands | `🛠️ Run Build Script` |
 | 💻 | Laptop | Local Dev | Local Dev | Local dev setup, IDE config, CLI tools | `💻 Local Dev Setup` |
 | 📦 | Package | Dependencies | Pkg mgmt | Dependency lists, install guides, updates | `📦 Dependencies` |

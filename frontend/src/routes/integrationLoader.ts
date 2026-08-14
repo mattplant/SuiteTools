@@ -9,10 +9,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import type { LoaderFunctionArgs } from 'react-router-dom';
-import { getIntegrationEnriched, readStashedIntegrationDetail } from '../adapters/api/integration';
-import type { Integration } from '@suiteworks/suitetools-shared';
-import { mapLoaderError } from './loaderUtils';
+import type { LoaderFunctionArgs } from "react-router-dom";
+import { getIntegrationEnriched, readStashedIntegrationDetail } from "../adapters/api/integration";
+import type { Integration } from "@suiteworks/suitetools-shared";
+import { mapLoaderError } from "./loaderUtils";
 
 /**
  * Loader for the `/integration/:id` route.
@@ -32,7 +32,7 @@ export async function integrationLoader(args: LoaderFunctionArgs): Promise<{ int
     const integration = await getIntegrationEnriched(id);
     return { integration };
   } catch (err) {
-    mapLoaderError(err, 'Integration');
+    mapLoaderError(err, "Integration");
   }
 }
 

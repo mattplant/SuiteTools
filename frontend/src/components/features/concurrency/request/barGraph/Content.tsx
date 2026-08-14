@@ -1,9 +1,7 @@
-import * as d3 from 'd3';
-import type { ConcurrencyRequestData } from '../types';
+import * as d3 from "d3";
+import type { ConcurrencyRequestData } from "../types";
 
-type Props = {
-  data: ConcurrencyRequestData | undefined;
-};
+type Props = { data: ConcurrencyRequestData | undefined };
 
 export function ConcurrencyRequestBarGraphContent({ data }: Props) {
   if (!data) {
@@ -30,6 +28,7 @@ export function ConcurrencyRequestBarGraphContent({ data }: Props) {
   return (
     <>
       <svg width={width + margin.left + margin.right} height={height + margin.top + margin.bottom}>
+        <title>Concurrency requests over time</title>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
           {data!.map((d, i) => (
             <g key={i}>
@@ -41,7 +40,7 @@ export function ConcurrencyRequestBarGraphContent({ data }: Props) {
                     <g key={idx} transform={`translate(${x(tick)}, 0)`}>
                       <line y2={6} stroke="#333" />
                       <text y={20} textAnchor="middle" fontSize={12} fill="#333">
-                        {d3.timeFormat('%H:%M:%S')(tick as Date)}
+                        {d3.timeFormat("%H:%M:%S")(tick as Date)}
                       </text>
                     </g>
                   ))}

@@ -1,50 +1,45 @@
-import { ResultsTypes } from './types';
+import { ResultsTypes } from "./types";
 // file
-import { FileBundle } from '@suiteworks/suitetools-shared';
-import { FileResult } from '../../features/file/RecordResult';
+import { FileBundle } from "@suiteworks/suitetools-shared";
+import { FileResult } from "../../features/file/RecordResult";
 // integration
-import { IntegrationBundle } from '@suiteworks/suitetools-shared';
-import { IntegrationResult } from '../../features/integration/RecordResult';
+import { IntegrationBundle } from "@suiteworks/suitetools-shared";
+import { IntegrationResult } from "../../features/integration/RecordResult";
 // job
-import { JobBundle } from '@suiteworks/suitetools-shared';
-import { JobResult } from '../../features/job/RecordResult';
+import { JobBundle } from "@suiteworks/suitetools-shared";
+import { JobResult } from "../../features/job/RecordResult";
 // jobRun
-import { JobRunBundle } from '@suiteworks/suitetools-shared';
-import { JobRunResult } from '../../features/job/run/RecordResult';
+import { JobRunBundle } from "@suiteworks/suitetools-shared";
+import { JobRunResult } from "../../features/job/run/RecordResult";
 // login
-import { LoginBundle } from '@suiteworks/suitetools-shared';
-import { LoginResult } from '../../features/login/RecordResult';
+import { LoginBundle } from "@suiteworks/suitetools-shared";
+import { LoginResult } from "../../features/login/RecordResult";
 // role
-import { RoleBundle } from '@suiteworks/suitetools-shared';
-import { RoleResult } from '../../features/role/RecordResult';
+import { RoleBundle } from "@suiteworks/suitetools-shared";
+import { RoleResult } from "../../features/role/RecordResult";
 // script
-import { ScriptBundle } from '@suiteworks/suitetools-shared';
-import { ScriptResult } from '../../features/script/RecordResult';
+import { ScriptBundle } from "@suiteworks/suitetools-shared";
+import { ScriptResult } from "../../features/script/RecordResult";
 // scriptLog
-import { ScriptLogBundle } from '@suiteworks/suitetools-shared';
-import { ScriptLogResult } from '../../features/scriptLog/RecordResult';
+import { ScriptLogBundle } from "@suiteworks/suitetools-shared";
+import { ScriptLogResult } from "../../features/scriptLog/RecordResult";
 // soapLog
-import { SoapLogBundle } from '@suiteworks/suitetools-shared';
-import { SoapLogResult } from '../../features/soapLog/RecordResult';
+import { SoapLogBundle } from "@suiteworks/suitetools-shared";
+import { SoapLogResult } from "../../features/soapLog/RecordResult";
 // token
-import { TokenBundle } from '@suiteworks/suitetools-shared';
-import { TokenResult } from '../../features/token/RecordResult';
+import { TokenBundle } from "@suiteworks/suitetools-shared";
+import { TokenResult } from "../../features/token/RecordResult";
 // user
-import { UserBundle } from '@suiteworks/suitetools-shared';
-import { UserResult } from '../../features/user/RecordResult';
+import { UserBundle } from "@suiteworks/suitetools-shared";
+import { UserResult } from "../../features/user/RecordResult";
 
-type Props = {
-  type: ResultsTypes;
-  loading: boolean;
-  data: unknown;
-};
+type Props = { type: ResultsTypes; loading: boolean; data: unknown };
 
 export function ResultsModal({ type, loading, data }: Props) {
-
   if (loading) {
-    return 'Loading...';
+    return "Loading...";
   } else if (!data) {
-    return 'No records found.';
+    return "No records found.";
   } else {
     // display the modal
     switch (type) {
@@ -82,7 +77,7 @@ export function ResultsModal({ type, loading, data }: Props) {
         UserBundle.assert(data);
         return <UserResult data={data} modal={true} />;
       default:
-        console.error('ResultsModal type not found:', type);
+        console.error("ResultsModal type not found:", type);
         break;
     }
   }

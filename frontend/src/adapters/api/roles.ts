@@ -10,10 +10,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, rolesOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Roles } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, rolesOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Roles } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
 
 const rolesRequestResponseSchema = makeRequestResponseSchema(rolesOrNotFoundSchema);
 
@@ -21,8 +21,6 @@ const rolesRequestResponseSchema = makeRequestResponseSchema(rolesOrNotFoundSche
  * Fetch and validate a list of `Role` records using optional criteria.
  * Always returns a `Roles` array, empty if none found.
  */
-export const getRoles = makeListAdapter<Roles[number], CriteriaFields, 'active'>(
-  'roles',
-  rolesRequestResponseSchema,
-  ['active'] as const,
-);
+export const getRoles = makeListAdapter<Roles[number], CriteriaFields, "active">("roles", rolesRequestResponseSchema, [
+  "active",
+] as const);

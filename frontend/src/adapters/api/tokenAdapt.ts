@@ -4,7 +4,7 @@
  * @file Shared Token view-model helpers.
  */
 
-import type { Token } from '@suiteworks/suitetools-shared';
+import type { Token } from "@suiteworks/suitetools-shared";
 
 /**
  * Enrich a validated Token with navigation URLs.

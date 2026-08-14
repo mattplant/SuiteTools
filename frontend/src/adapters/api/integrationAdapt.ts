@@ -4,7 +4,7 @@
  * @file Shared Integration view-model helpers.
  */
 
-import type { Integration } from '@suiteworks/suitetools-shared';
+import type { Integration } from "@suiteworks/suitetools-shared";
 
 /** LoginAudit-only RESTlet ids — not valid integrapp.nl record ids. */
 export const SYNTHETIC_INTEGRATION_ID_MIN = 900_000_000;
@@ -30,9 +30,7 @@ export function adaptIntegration(integration: Integration): Integration {
 
   return {
     ...integration,
-    urlNs:
-      integration.urlNs ??
-      (hasRealId ? `/app/common/integration/integrapp.nl?id=${integration.id}` : undefined),
+    urlNs: integration.urlNs ?? (hasRealId ? `/app/common/integration/integrapp.nl?id=${integration.id}` : undefined),
     urlDetail: hasRealId ? `#/integration/${integration.id}` : undefined,
   };
 }

@@ -10,10 +10,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, SettingsSchema, PutEndpoint } from '@suiteworks/suitetools-shared';
-import type { NewSettings, Settings } from '@suiteworks/suitetools-shared';
-import type { RequestResponse } from '@suiteworks/suitetools-shared';
-import { getData, putData } from './netSuiteClient';
+import { makeRequestResponseSchema, SettingsSchema, PutEndpoint } from "@suiteworks/suitetools-shared";
+import type { NewSettings, Settings } from "@suiteworks/suitetools-shared";
+import type { RequestResponse } from "@suiteworks/suitetools-shared";
+import { getData, putData } from "./netSuiteClient";
 
 const settingsRequestResponseSchema = makeRequestResponseSchema(SettingsSchema);
 
@@ -22,7 +22,7 @@ const settingsRequestResponseSchema = makeRequestResponseSchema(SettingsSchema);
  * @returns A Promise resolving to a Settings object.
  */
 export async function getSettings(): Promise<Settings> {
-  const response = await getData('settings');
+  const response = await getData("settings");
   const parsed = settingsRequestResponseSchema.parse(response);
   return parsed.data;
 }

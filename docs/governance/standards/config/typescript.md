@@ -15,8 +15,7 @@ This document annotates the current multiple TypeScript config files.
 ## 🔗 Related Governance
 
 - [Linting with SuiteTools](/docs/guides/linting) — strategy and philosophy
-- [ESLint Config](./eslint.md) — linting alignment
-- [Prettier Config](./prettier.md) — formatting alignment
+- [Biome Config](./biome.md) — lint and format alignment
 
 ---
 
@@ -140,5 +139,5 @@ This document annotates the current multiple TypeScript config files.
 
 ## 🧭 Stewardship Callout
 
-- Keep Prettier, ESLint, and STYLE.md aligned to avoid conflicting rules.
+- Keep Biome and STYLE.md aligned to avoid conflicting rules.
 - Treat formatting changes as **suite‑wide** — update all affected files in a single commit to avoid noisy diffs.

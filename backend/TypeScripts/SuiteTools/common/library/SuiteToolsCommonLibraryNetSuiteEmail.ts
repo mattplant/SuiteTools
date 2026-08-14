@@ -7,8 +7,8 @@
  * @NApiVersion 2.1
  */
 
-import * as email from 'N/email';
-import * as log from 'N/log';
+import * as email from "N/email";
+import * as log from "N/log";
 
 // Forward declaration to avoid circular dependency
 declare class SuiteToolsCommon {}
@@ -43,12 +43,12 @@ export class SuiteToolsCommonLibraryNetSuiteEmail {
     body: string,
   ): void {
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() initiated',
+      title: "SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() initiated",
       details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body },
     });
 
     log.debug({
-      title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() sending email',
+      title: "SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() sending email",
       details: { author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body },
     });
     // send email
@@ -56,7 +56,7 @@ export class SuiteToolsCommonLibraryNetSuiteEmail {
       email.send({ author: author, recipients: recipients, replyTo: replyTo, subject: subject, body: body });
     } catch (error) {
       log.error({
-        title: 'SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() error sending email',
+        title: "SuiteToolsCommonLibraryNetSuiteEmail:sendNotification() error sending email",
         details: { error: error },
       });
     }

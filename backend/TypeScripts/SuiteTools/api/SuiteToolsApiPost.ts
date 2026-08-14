@@ -5,13 +5,13 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import * as error from 'N/error';
-import type { Response } from './types';
-import { assertIsRequestBody } from './types';
-import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
-import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
-import { validateMutationResponse } from './SuiteToolsApiMutationValidate';
+import * as log from "N/log";
+import * as error from "N/error";
+import type { Response } from "./types";
+import { assertIsRequestBody } from "./types";
+import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
+import type { SuiteToolsApiModel } from "./SuiteToolsApiModel";
+import { validateMutationResponse } from "./SuiteToolsApiMutationValidate";
 
 type RequestParams = { [key: string]: string };
 
@@ -37,24 +37,24 @@ export class SuiteToolsApiPost {
   }
 
   public process(requestBody: unknown): Response {
-    log.debug({ title: 'SuiteToolsApiPost:process() initiated', details: requestBody });
+    log.debug({ title: "SuiteToolsApiPost:process() initiated", details: requestBody });
     assertIsRequestBody(requestBody);
     let response: Response;
     const endpoint = requestBody.endpoint;
     switch (endpoint) {
-      case 'initiateJob':
+      case "initiateJob":
         response = this.initiateJob(requestBody.data as RequestParams);
         break;
       default:
         throw error.create({
-          name: 'SUITE_TOOLS_INVALID_PARAMETER',
+          name: "SUITE_TOOLS_INVALID_PARAMETER",
           message: `Invalid parameter: endpoint=${endpoint}`,
           notifyOff: true,
         });
     }
-    log.debug({ title: 'SuiteToolsApiPost:process() returning', details: response });
+    log.debug({ title: "SuiteToolsApiPost:process() returning", details: response });
 
-    return validateMutationResponse('post', endpoint, response);
+    return validateMutationResponse("post", endpoint, response);
   }
 
   /**
@@ -64,26 +64,22 @@ export class SuiteToolsApiPost {
    * @returns message that the job was initiated
    */
   private initiateJob(requestParams: RequestParams): Response {
-    log.debug({ title: 'SuiteToolsApiPost:initiateJob() initiated', details: requestParams });
+    log.debug({ title: "SuiteToolsApiPost:initiateJob() initiated", details: requestParams });
     let id = requestParams.id;
     let data: object;
     if (!id) {
       // set to 0 to run all active jobs
-      id = '0';
+      id = "0";
     }
     // check to see if requestParams.data exists
-    if (requestParams.data && typeof requestParams.data === 'object') {
+    if (requestParams.data && typeof requestParams.data === "object") {
       data = requestParams.data;
-      log.debug({ title: 'SuiteToolsApiPost:initiateJob() includes data object', details: data });
+      log.debug({ title: "SuiteToolsApiPost:initiateJob() includes data object", details: data });
     }
     // initiate the job
     this.stApiModel.initiateJob(id, data);
-    const message = 'InitiateJob() initiated with with id of ' + id;
+    const message = "InitiateJob() initiated with with id of " + id;
 
-    return {
-      status: 200,
-      data: {},
-      message: message,
-    };
+    return { status: 200, data: {}, message: message };
   }
 }

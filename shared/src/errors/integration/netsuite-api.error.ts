@@ -42,7 +42,7 @@ export class NetSuiteApiError extends SuiteError {
       cause?: unknown;
       /** Extra wire context merged into the error context (e.g. Zod issues). */
       context?: Record<string, unknown>;
-    }
+    },
   ) {
     super(message, {
       cause: opts.cause,

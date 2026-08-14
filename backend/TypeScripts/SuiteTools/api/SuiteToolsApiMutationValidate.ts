@@ -11,9 +11,9 @@
  * @NApiVersion 2.1
  */
 
-import { requestResponse } from '@suiteworks/suitetools-shared';
-import { SchemaValidationError } from '@suiteworks/suitetools-shared/errors';
-import type { Response } from './types';
+import { requestResponse } from "@suiteworks/suitetools-shared";
+import { SchemaValidationError } from "@suiteworks/suitetools-shared/errors";
+import type { Response } from "./types";
 
 /**
  * Validate a POST/PUT success response envelope.
@@ -21,11 +21,7 @@ import type { Response } from './types';
  * @param endpoint - Mutation endpoint name.
  * @param response - Candidate success envelope.
  */
-export function validateMutationResponse(
-  method: 'post' | 'put',
-  endpoint: string,
-  response: unknown,
-): Response {
+export function validateMutationResponse(method: "post" | "put", endpoint: string, response: unknown): Response {
   const envelope = requestResponse.safeParse(response);
   if (!envelope.success) {
     throw new SchemaValidationError(`${method}:${endpoint}:envelope`, envelope.error.issues);

@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import type { CriteriaFields } from '../components/shared/criteria/types';
-import { getIntegrationModalData } from '../adapters/api/integration';
-import { getIntegrations, addIntegrationLastLogins } from '../adapters/api/integrations';
-import type { Integrations } from '@suiteworks/suitetools-shared';
-import { RecordCriteria } from '../components/features/integration/RecordCriteria';
-import { Results } from '../components/shared/results/Results';
-import { ResultsTypes } from '../components/shared/results/types';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
-import { useEntityList } from '../hooks/useEntityList';
+import type { CriteriaFields } from "../components/shared/criteria/types";
+import { getIntegrationModalData } from "../adapters/api/integration";
+import { getIntegrations, addIntegrationLastLogins } from "../adapters/api/integrations";
+import type { Integrations } from "@suiteworks/suitetools-shared";
+import { RecordCriteria } from "../components/features/integration/RecordCriteria";
+import { Results } from "../components/shared/results/Results";
+import { ResultsTypes } from "../components/shared/results/types";
+import { useAppSettingsContext } from "../hooks/useAppSettingsContext";
+import { useEntityList } from "../hooks/useEntityList";
 
 /**
  * Integrations list page (Manage Integrations scrape + last-login enrich).
@@ -16,9 +16,7 @@ import { useEntityList } from '../hooks/useEntityList';
  */
 export function IntegrationsPage(): React.ReactElement {
   const { settings } = useAppSettingsContext();
-  const defaultCriteria: CriteriaFields = {
-    active: '',
-  };
+  const defaultCriteria: CriteriaFields = { active: "" };
 
   const { setCriteria, results, statusMessage } = useEntityList<Integrations[number], CriteriaFields>({
     defaultCriteria,
@@ -26,10 +24,10 @@ export function IntegrationsPage(): React.ReactElement {
     fetchList: async (criteria) => addIntegrationLastLogins(await getIntegrations(criteria), settings),
     getStatusMessage: (rows) => {
       if (rows.length === 0) {
-        return 'No integrations matched the current filter. Try State = All.';
+        return "No integrations matched the current filter. Try State = All.";
       }
       if (rows.some((row) => !row.dateCreated)) {
-        return 'Date Created could not be read for some integrations from the NetSuite list page.';
+        return "Date Created could not be read for some integrations from the NetSuite list page.";
       }
       return null;
     },

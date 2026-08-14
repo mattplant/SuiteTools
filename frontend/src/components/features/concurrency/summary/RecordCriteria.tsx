@@ -1,7 +1,7 @@
-import { useForm } from 'react-hook-form';
-import { Button } from 'flowbite-react';
-import type { CriteriaFields } from './types';
-import { RecordCriteriaFieldDateRange } from './RecordCriteriaFieldDateRange';
+import { useForm } from "react-hook-form";
+import { Button } from "flowbite-react";
+import type { CriteriaFields } from "./types";
+import { RecordCriteriaFieldDateRange } from "./RecordCriteriaFieldDateRange";
 
 interface Props {
   defaultCriteria: CriteriaFields;

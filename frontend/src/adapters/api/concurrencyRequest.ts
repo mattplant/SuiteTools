@@ -4,11 +4,8 @@
  * @file API adapter for concurrency request rows (APM scrape).
  */
 
-import { getConcurrencyRequestData } from '../../utils/concurrency';
-import type {
-  ConcurrencyRequestData,
-  CriteriaFields,
-} from '../../components/features/concurrency/request/types';
+import { getConcurrencyRequestData } from "../../utils/concurrency";
+import type { ConcurrencyRequestData, CriteriaFields } from "../../components/features/concurrency/request/types";
 
 /**
  * Fetch concurrency request rows for a date range.
@@ -19,26 +16,25 @@ export async function getConcurrencyRequest(
   fields: CriteriaFields,
   accountId: string,
 ): Promise<ConcurrencyRequestData> {
-
-  if (typeof window !== 'undefined' && window.location.href.includes('localhost')) {
+  if (typeof window !== "undefined" && window.location.href.includes("localhost")) {
     return [
       {
         startDate: 1748941035512,
-        type: 'RESTLET',
+        type: "RESTLET",
         integrationId: 12345,
-        operation: 'RESTLET',
+        operation: "RESTLET",
         endDate: 1748941035984,
         scriptId: 123,
-        integration: 'integration1',
-        scriptName: 'My test integration',
-        status: 'FINISHED',
+        integration: "integration1",
+        scriptName: "My test integration",
+        status: "FINISHED",
         wouldBeRejected: false,
       },
     ] as ConcurrencyRequestData;
   }
 
   if (!accountId || !fields.startDate || !fields.endDate) {
-    throw new Error('getConcurrencyRequest() requires accountId, startDate, and endDate');
+    throw new Error("getConcurrencyRequest() requires accountId, startDate, and endDate");
   }
 
   return getConcurrencyRequestData(accountId, fields.startDate, fields.endDate);

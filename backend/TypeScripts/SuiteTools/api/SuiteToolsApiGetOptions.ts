@@ -5,11 +5,11 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import * as error from 'N/error';
-import type { Response } from './types';
-import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
-import type { SuiteToolsApiModel } from './SuiteToolsApiModel';
+import * as log from "N/log";
+import * as error from "N/error";
+import type { Response } from "./types";
+import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
+import type { SuiteToolsApiModel } from "./SuiteToolsApiModel";
 
 interface OptionValuesResponse {
   id: number;
@@ -48,33 +48,33 @@ export class SuiteToolsApiGetOptions {
     let data: unknown;
     const type = requestParams.type;
     switch (type) {
-      case 'file':
+      case "file":
         data = this.getFileList(true);
         break;
-      case 'fileType':
+      case "fileType":
         data = this.getFileTypeList();
         break;
-      case 'job':
+      case "job":
         data = this.getJobList();
         break;
-      case 'owner':
+      case "owner":
         data = this.getEmployeeList(true);
         break;
-      case 'role':
+      case "role":
         data = this.getRoleList(true);
         break;
-      case 'script':
+      case "script":
         data = this.getScriptList();
         break;
-      case 'scriptType':
+      case "scriptType":
         data = this.getScriptTypeList();
         break;
-      case 'user':
+      case "user":
         data = this.getEmployeeList(true);
         break;
       default:
         throw error.create({
-          name: 'SUITE_TOOLS_INVALID_PARAMETER',
+          name: "SUITE_TOOLS_INVALID_PARAMETER",
           message: `Invalid parameter: type=${type}`,
           notifyOff: true,
         });
@@ -83,7 +83,7 @@ export class SuiteToolsApiGetOptions {
     // Always return an array on the wire (never legacy `{}`) for payload validation.
     const optionValues = this.convertOptionValuesResponse(data);
     if (optionValues.length === 0) {
-      log.debug({ title: 'SuiteToolsApiGetOptions:process() no results', details: { type } });
+      log.debug({ title: "SuiteToolsApiGetOptions:process() no results", details: { type } });
     }
 
     return { status: 200, data: optionValues };
@@ -91,7 +91,7 @@ export class SuiteToolsApiGetOptions {
 
   private assertIsOptionValuesResponse(data: unknown): asserts data is OptionValuesResponse[] {
     if (!Array.isArray(data)) {
-      throw new Error('OptionValuesResponse is not an array');
+      throw new Error("OptionValuesResponse is not an array");
     }
     // Empty SuiteQL results are valid — emit `[]` on the wire.
     if (data.length === 0) {
@@ -99,14 +99,14 @@ export class SuiteToolsApiGetOptions {
     }
     // check the data for the required fields
     // id
-    if (!('id' in data[0])) {
+    if (!("id" in data[0])) {
       throw new Error('OptionValuesResponse is missing the "id" field');
     }
     // name
-    if (!('name' in data[0])) {
+    if (!("name" in data[0])) {
       throw new Error('OptionValuesResponse is missing the "name" field');
     }
-    if (typeof data[0].name !== 'string') {
+    if (typeof data[0].name !== "string") {
       throw new Error('OptionValuesResponse "name" field is not a string');
     }
   }
@@ -115,10 +115,7 @@ export class SuiteToolsApiGetOptions {
     const options: OptionValues[] = [];
     if (values && Array.isArray(values) && values.length > 0) {
       values.forEach((option) => {
-        options.push({
-          value: String(option.id),
-          text: option.name,
-        });
+        options.push({ value: String(option.id), text: option.name });
       });
     }
 
@@ -185,7 +182,7 @@ export class SuiteToolsApiGetOptions {
   }
 
   private getJobList(activeOnly?: boolean): OptionValuesResponse[] {
-    const customRecord = 'customrecord_idev_suitetools_job';
+    const customRecord = "customrecord_idev_suitetools_job";
     let sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
@@ -228,7 +225,7 @@ export class SuiteToolsApiGetOptions {
   }
 
   private getScriptTypeList(): OptionValuesResponse[] {
-    const sql = 'SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name';
+    const sql = "SELECT scriptType.id, scriptType.name FROM scriptType ORDER BY name";
 
     return this.queryOptionValues(sql);
   }

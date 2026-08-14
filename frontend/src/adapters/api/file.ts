@@ -12,9 +12,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, fileOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { File } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, fileOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { File } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
 
 /**
  * Transform a validated `File` payload into the enriched view model used by the frontend.
@@ -22,11 +22,7 @@ import { makeSingularAdapter } from './adapterUtils';
  * @returns The enriched File object with navigation URLs.
  */
 function adaptFile(file: File): File {
-  return {
-    ...file,
-    urlNs: `/app/common/media/mediaitem.nl?id=${file.id}`,
-    urlDetail: `#/file/${file.id}`,
-  };
+  return { ...file, urlNs: `/app/common/media/mediaitem.nl?id=${file.id}`, urlDetail: `#/file/${file.id}` };
 }
 
 const fileRequestResponseSchema = makeRequestResponseSchema(fileOrNotFoundSchema);
@@ -38,4 +34,4 @@ const fileRequestResponseSchema = makeRequestResponseSchema(fileOrNotFoundSchema
  * @param id - The ID of the file to retrieve.
  * @returns A Promise resolving to a File object.
  */
-export const getFile = makeSingularAdapter<File>('file', fileRequestResponseSchema, adaptFile);
+export const getFile = makeSingularAdapter<File>("file", fileRequestResponseSchema, adaptFile);

@@ -1,20 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect, useState } from 'react';
-import type { CriteriaFields } from '../components/features/concurrency/summary/types';
-import { getConcurrencySummary } from '../adapters/api/concurrencySummary';
-import { RecordCriteria } from '../components/features/concurrency/summary/RecordCriteria';
-import type { ConcurrencySummaryData } from '../components/features/concurrency/summary/types';
-import { ConcurrencySummaryOverview } from '../components/features/concurrency/summary/Overview';
-import { ConcurrencySummaryHeatMapWrapper } from '../components/features/concurrency/summary/heatMap/Wrapper';
-import { ConcurrencySummaryViolations } from '../components/features/concurrency/summary/Violations';
-import { useAppSettingsContext } from '../hooks/useAppSettingsContext';
-import { useErrorBoundaryTrigger } from '../hooks/useErrorBoundaryTrigger';
-import { handleError } from '@suiteworks/suitetools-shared';
-import {
-  APM_UNAVAILABLE_MESSAGE,
-  isApmUnavailableError,
-} from '../lib/netsuite/ApmUnavailableError';
+import { useEffect, useState } from "react";
+import type { CriteriaFields } from "../components/features/concurrency/summary/types";
+import { getConcurrencySummary } from "../adapters/api/concurrencySummary";
+import { RecordCriteria } from "../components/features/concurrency/summary/RecordCriteria";
+import type { ConcurrencySummaryData } from "../components/features/concurrency/summary/types";
+import { ConcurrencySummaryOverview } from "../components/features/concurrency/summary/Overview";
+import { ConcurrencySummaryHeatMapWrapper } from "../components/features/concurrency/summary/heatMap/Wrapper";
+import { ConcurrencySummaryViolations } from "../components/features/concurrency/summary/Violations";
+import { useAppSettingsContext } from "../hooks/useAppSettingsContext";
+import { useErrorBoundaryTrigger } from "../hooks/useErrorBoundaryTrigger";
+import { handleError } from "@suiteworks/suitetools-shared";
+import { APM_UNAVAILABLE_MESSAGE, isApmUnavailableError } from "../lib/netsuite/ApmUnavailableError";
 
 /**
  * Concurrency Summary page — APM concurrency overview for a date range.
@@ -24,10 +21,7 @@ export function ConcurrencySummaryPage(): React.ReactElement {
   const { settings } = useAppSettingsContext();
   const triggerError = useErrorBoundaryTrigger();
 
-  const defaultCriteria: CriteriaFields = {
-    startDate: new Date(),
-    endDate: new Date(),
-  };
+  const defaultCriteria: CriteriaFields = { startDate: new Date(), endDate: new Date() };
   const [criteria, setCriteria] = useState<CriteriaFields>(defaultCriteria);
   const [results, setResults] = useState<ConcurrencySummaryData>();
   const [loading, setLoading] = useState(true);

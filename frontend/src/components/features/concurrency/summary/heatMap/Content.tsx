@@ -1,10 +1,8 @@
-import * as d3 from 'd3';
-import React, { useMemo } from 'react';
-import type { ConcurrencySummaryData } from '../types';
+import * as d3 from "d3";
+import React, { useMemo } from "react";
+import type { ConcurrencySummaryData } from "../types";
 
-type Props = {
-  data: ConcurrencySummaryData | undefined;
-};
+type Props = { data: ConcurrencySummaryData | undefined };
 
 export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const margin = { top: 30, right: 60, bottom: 30, left: 70 };
@@ -31,26 +29,23 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const violationData = data!.violations.series.violation;
   const violations = useMemo(() => {
     return Object.keys(violationData).map((key) => {
-      return {
-        key: Number(key),
-        value: violationData[Number(key)],
-      };
+      return { key: Number(key), value: violationData[Number(key)] };
     });
   }, [violationData]);
 
   const colorScale = (value: number) => {
     if (value > 100) {
-      return '#FBD38D'; // yellow brown for over the limit
+      return "#FBD38D"; // yellow brown for over the limit
     } else if (value > 75) {
-      return '#A3C8E8'; // dark blue
+      return "#A3C8E8"; // dark blue
     } else if (value > 50) {
-      return '#BAD6EE'; // medium blue
+      return "#BAD6EE"; // medium blue
     } else if (value > 25) {
-      return '#D1E4F4'; // light blue
+      return "#D1E4F4"; // light blue
     } else if (value > 0) {
-      return '#E8F1F9'; // very light blue
+      return "#E8F1F9"; // very light blue
     } else {
-      return '#FFFFFF'; // white for null
+      return "#FFFFFF"; // white for null
     }
   };
 
@@ -60,13 +55,13 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     const y = yScale(d[1].toString());
     // skip if any of x, y or count is null
     if (d[2] === null || !x || !y) {
-      return;
+      return null;
     }
     // lookup corresponding result record for this peak
     const result = data!.concurrency.results.find((result) => result.startTime === d[3]);
     let fillColor = colorScale(d[2]);
     if (violations.find((v) => v.key === d[3])) {
-      fillColor = '#F56565'; // red for violations (text-red-500)
+      fillColor = "#F56565"; // red for violations (text-red-500)
     }
     return (
       <g key={i}>
@@ -105,7 +100,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
       return null;
     }
     const hour = new Date(d[3]);
-    const label = hour.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+    const label = hour.toLocaleTimeString("en-US", { hour: "numeric", hour12: true });
     return (
       <text
         key={i}
@@ -142,7 +137,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
     [boundsWidth],
   );
   const yAvgScale = useMemo(
-    () => d3.scaleBand().range([heightPerDay, 0]).domain(['Average']).padding(0.05),
+    () => d3.scaleBand().range([heightPerDay, 0]).domain(["Average"]).padding(0.05),
     [heightPerDay],
   );
 
@@ -150,7 +145,7 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const allAvgShapes = allAvgGroups.map((hour, i) => {
     const avg = hourAverages[i] ?? null;
     const x = xAvgScale(hour);
-    const y = yAvgScale('Average');
+    const y = yAvgScale("Average");
     if (avg === null || !x || !y) {
       return null;
     }
@@ -187,7 +182,8 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
 
   return (
     <svg height={height} width={width}>
-      <g height={boundsHeight} transform={`translate(${[margin.left, margin.top].join(',')})`} width={boundsWidth}>
+      <title>Peak concurrency by day and hour</title>
+      <g height={boundsHeight} transform={`translate(${[margin.left, margin.top].join(",")})`} width={boundsWidth}>
         {xLabels.map((label, i) =>
           label
             ? React.cloneElement(label, {

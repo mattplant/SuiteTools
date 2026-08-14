@@ -22,17 +22,14 @@
  * @NScriptType MapReduceScript
  */
 
-import type { EntryPoints } from 'N/types';
-import * as error from 'N/error';
-import * as log from 'N/log';
-import * as runtime from 'N/runtime';
-import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from '../common/library/SuiteToolsCommonLibraryNetSuiteSuiteQl';
-import { SuiteToolsCommonLibraryNetSuiteRecord } from '../common/library/SuiteToolsCommonLibraryNetSuiteRecord';
+import type { EntryPoints } from "N/types";
+import * as error from "N/error";
+import * as log from "N/log";
+import * as runtime from "N/runtime";
+import { SuiteToolsCommonLibraryNetSuiteSuiteQl } from "../common/library/SuiteToolsCommonLibraryNetSuiteSuiteQl";
+import { SuiteToolsCommonLibraryNetSuiteRecord } from "../common/library/SuiteToolsCommonLibraryNetSuiteRecord";
 
-type MapReduceKey = {
-  type: string;
-  name: string;
-};
+type MapReduceKey = { type: string; name: string };
 
 /**
  * getInputData() stage function
@@ -40,19 +37,19 @@ type MapReduceKey = {
  * @param context: EntryPoints.MapReduce.getInputDataContext
  */
 export function getInputData(context: EntryPoints.MapReduce.getInputDataContext): EntryPoints.MapReduce.getInputData {
-  log.debug('*START*', '<------------------- START ------------------->');
-  log.debug('getInputData() initiated with', JSON.stringify(context));
+  log.debug("*START*", "<------------------- START ------------------->");
+  log.debug("getInputData() initiated with", JSON.stringify(context));
 
   let entityRecords: EntryPoints.MapReduce.getInputData;
   try {
     entityRecords = JSON.parse(
-      String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_logins_entity' })),
+      String(runtime.getCurrentScript().getParameter({ name: "custscript_idev_st_mr_logins_entity" })),
     );
-    log.debug('getInputData() identity records =', entityRecords);
+    log.debug("getInputData() identity records =", entityRecords);
 
     return entityRecords;
   } catch (e) {
-    log.error('getInputData() error', JSON.stringify(e));
+    log.error("getInputData() error", JSON.stringify(e));
     return null;
   }
 }
@@ -64,7 +61,7 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
  * @returns {void}
  */
 export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
-  log.debug('reduce() initiated', context);
+  log.debug("reduce() initiated", context);
   let entityRecordName = null;
   let entityRecordType = null;
 
@@ -76,43 +73,34 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
     // determine last login
     let whereClause = null;
     switch (entityRecordType) {
-      case 'integration':
+      case "integration":
         whereClause = `WHERE oAuthAppName = '${entityRecordName}'`;
         break;
-      case 'token':
+      case "token":
         whereClause = `WHERE oAuthAccessTokenName = '${entityRecordName}'`;
         break;
-      case 'user':
+      case "user":
         whereClause = `WHERE emailAddress = '${entityRecordName}'`;
         break;
       default:
-        log.error('reduce() error', `Unknown identity record type: ${entityRecordType}`);
+        log.error("reduce() error", `Unknown identity record type: ${entityRecordType}`);
     }
     if (whereClause) {
-      const key: MapReduceKey = {
-        type: entityRecordType,
-        name: entityRecordName,
-      };
+      const key: MapReduceKey = { type: entityRecordType, name: entityRecordName };
       const lastLoginSQL = `SELECT MAX(TO_CHAR(LoginAudit.date, 'YYYY-MM-DD HH24:MI:SS')) AS logindate
       FROM LoginAudit ${whereClause}`;
       const stLibNsSuiteQl = new SuiteToolsCommonLibraryNetSuiteSuiteQl(null);
-      const lastLogin = stLibNsSuiteQl.getSqlValue(lastLoginSQL, 'logindate');
+      const lastLogin = stLibNsSuiteQl.getSqlValue(lastLoginSQL, "logindate");
       // save only the valid results
       if (lastLogin) {
-        context.write({
-          key: key,
-          value: lastLogin,
-        });
+        context.write({ key: key, value: lastLogin });
       }
     }
   } catch (e) {
-    log.error('reduce() error', e);
+    log.error("reduce() error", e);
     const msg = `Error in looking up last login for "${entityRecordName}" ${entityRecordType}`;
-    log.audit('FAILURE', msg);
-    throw error.create({
-      name: 'SUITE_TOOLS_MR_LAST_LOGINS_ERROR',
-      message: msg,
-    });
+    log.audit("FAILURE", msg);
+    throw error.create({ name: "SUITE_TOOLS_MR_LAST_LOGINS_ERROR", message: msg });
   }
 }
 
@@ -124,7 +112,7 @@ export function reduce(context: EntryPoints.MapReduce.reduceContext): void {
  */
 export function summarize(context: EntryPoints.MapReduce.summarizeContext): void {
   try {
-    log.debug('summarize() context = ', JSON.stringify(context));
+    log.debug("summarize() context = ", JSON.stringify(context));
 
     const entityRecords = [];
     context.output.iterator().each(function (key, value) {
@@ -132,18 +120,15 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
       entityRecords.push({ name: keyObj, lastLogin: value });
       return true;
     });
-    const results = {
-      finished: new Date().toLocaleString(),
-      data: entityRecords,
-    };
-    log.debug('summarize() results = ', JSON.stringify(results));
+    const results = { finished: new Date().toLocaleString(), data: entityRecords };
+    log.debug("summarize() results = ", JSON.stringify(results));
     const updateSettings = { custrecord_idev_st_config_last_logins: JSON.stringify(results) };
     const appSettingsRecordId = JSON.parse(
-      String(runtime.getCurrentScript().getParameter({ name: 'custscript_idev_st_mr_logins_set_id' })),
+      String(runtime.getCurrentScript().getParameter({ name: "custscript_idev_st_mr_logins_set_id" })),
     );
     const stLibNsRecord = new SuiteToolsCommonLibraryNetSuiteRecord(null);
     const success = stLibNsRecord.updateCustomRecordEntry(
-      'customrecord_idev_suitetools_settings',
+      "customrecord_idev_suitetools_settings",
       appSettingsRecordId,
       updateSettings,
     );
@@ -160,18 +145,18 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
       return true;
     });
     if (scriptErrors.length > 0) {
-      log.error('summarize() ' + scriptErrors.length + ' error(s) occurred', scriptErrors.join('\n'));
+      log.error("summarize() " + scriptErrors.length + " error(s) occurred", scriptErrors.join("\n"));
     } else {
-      log.debug('summarize()', 'Script completed without errors.');
+      log.debug("summarize()", "Script completed without errors.");
     }
     // log.debug('STATS - Map Time Total (seconds)', context.mapSummary.seconds);
-    log.debug('STATS - Reduce Time Total (seconds)', context.reduceSummary.seconds);
-    log.debug('STATS - Max Reduce Concurrency Utilized', context.reduceSummary.concurrency);
-    log.debug('STATS - Overall Usage Units Consumed', context.usage);
-    log.debug('STATS - Overall Concurrency Utilized', context.concurrency);
-    log.debug('STATS - Overall Number Of Yields', context.yields);
-    log.debug('*END*', '<-------------------- END -------------------->');
+    log.debug("STATS - Reduce Time Total (seconds)", context.reduceSummary.seconds);
+    log.debug("STATS - Max Reduce Concurrency Utilized", context.reduceSummary.concurrency);
+    log.debug("STATS - Overall Usage Units Consumed", context.usage);
+    log.debug("STATS - Overall Concurrency Utilized", context.concurrency);
+    log.debug("STATS - Overall Number Of Yields", context.yields);
+    log.debug("*END*", "<-------------------- END -------------------->");
   } catch (e) {
-    log.error('summarize() error', JSON.stringify(e));
+    log.error("summarize() error", JSON.stringify(e));
   }
 }

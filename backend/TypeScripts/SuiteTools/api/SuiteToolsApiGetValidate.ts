@@ -10,7 +10,7 @@
  * @NApiVersion 2.1
  */
 
-import type { z, ZodIssue } from 'zod';
+import type { z, ZodIssue } from "zod";
 import {
   makeRequestResponseSchema,
   requestResponse,
@@ -35,20 +35,15 @@ import {
   optionValuesOrNotFoundSchema,
   integrationOrNotFoundSchema,
   integrationsOrNotFoundSchema,
-} from '@suiteworks/suitetools-shared';
+} from "@suiteworks/suitetools-shared";
 // Error classes from `/errors` so `instanceof SuiteError` matches SuiteToolsApiGet
 // (main package vs `/errors` are separate Rollup bundles — do not mix).
-import { SchemaValidationError } from '@suiteworks/suitetools-shared/errors';
-import type { Response } from './types';
+import { SchemaValidationError } from "@suiteworks/suitetools-shared/errors";
+import type { Response } from "./types";
 
 /** Zod failures from shared schemas — avoid brittle cross-bundle `instanceof ZodError`. */
 function zodIssues(err: unknown): ZodIssue[] | null {
-  if (
-    err &&
-    typeof err === 'object' &&
-    'issues' in err &&
-    Array.isArray((err as { issues: unknown }).issues)
-  ) {
+  if (err && typeof err === "object" && "issues" in err && Array.isArray((err as { issues: unknown }).issues)) {
     return (err as { issues: ZodIssue[] }).issues;
   }
   return null;
@@ -59,27 +54,27 @@ function zodIssues(err: unknown): ZodIssue[] | null {
  * Expand incrementally as cleaners/models align with schemas (#27, #44, #47, #48).
  */
 export const GET_PAYLOAD_VALIDATED_ENDPOINTS = [
-  'settings',
-  'user',
-  'users',
-  'role',
-  'roles',
-  'job',
-  'jobs',
-  'file',
-  'files',
-  'script',
-  'scripts',
-  'scriptLog',
-  'scriptLogs',
-  'jobRun',
-  'jobRuns',
-  'logins',
-  'token',
-  'tokens',
-  'optionValues',
-  'integration',
-  'integrations',
+  "settings",
+  "user",
+  "users",
+  "role",
+  "roles",
+  "job",
+  "jobs",
+  "file",
+  "files",
+  "script",
+  "scripts",
+  "scriptLog",
+  "scriptLogs",
+  "jobRun",
+  "jobRuns",
+  "logins",
+  "token",
+  "tokens",
+  "optionValues",
+  "integration",
+  "integrations",
 ] as const;
 
 type PayloadValidatedEndpoint = (typeof GET_PAYLOAD_VALIDATED_ENDPOINTS)[number];
@@ -140,10 +135,7 @@ export function validateGetResponse(endpoint: string, response: unknown): Respon
 
   try {
     const parsed = makeRequestResponseSchema(payloadSchema).parse(envelope.data);
-    const out: Response = {
-      status: envelope.data.status,
-      data: parsed.data,
-    };
+    const out: Response = { status: envelope.data.status, data: parsed.data };
     const message = parsed.message ?? envelope.data.message;
     if (message !== undefined) {
       out.message = message;

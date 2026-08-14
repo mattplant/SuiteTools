@@ -1,21 +1,19 @@
-import { useRef } from 'react';
-import { DataGrid, type DataGridHandle } from 'react-data-grid';
-import 'react-data-grid/lib/styles.css';
-import { Export } from '../../../shared/results/Export';
-import type { ConcurrencyDetailData, ConcurrencyDetailRows } from './types';
-import { formatDate } from '../../../../utils/date';
-import { getAppBaseUrl } from '../../../../utils/navigation';
+import { useRef } from "react";
+import { DataGrid, type DataGridHandle } from "react-data-grid";
+import "react-data-grid/lib/styles.css";
+import { Export } from "../../../shared/results/Export";
+import type { ConcurrencyDetailData, ConcurrencyDetailRows } from "./types";
+import { formatDate } from "../../../../utils/date";
+import { getAppBaseUrl } from "../../../../utils/navigation";
 
-type Props = {
-  data: ConcurrencyDetailData | undefined;
-};
+type Props = { data: ConcurrencyDetailData | undefined };
 
 const columns = [
-  { key: 'startTime', name: 'Start Time' },
-  { key: 'endTime', name: 'End Time' },
+  { key: "startTime", name: "Start Time" },
+  { key: "endTime", name: "End Time" },
   // { key: 'averageConcurrency', name: 'Average' },
-  { key: 'peakConcurrency', name: 'Peak' },
-  { key: 'peakConcurrencyTime', name: 'Peak Time' },
+  { key: "peakConcurrency", name: "Peak" },
+  { key: "peakConcurrencyTime", name: "Peak Time" },
 ];
 
 export function ConcurrencyDetailResults({ data }: Props) {
@@ -33,7 +31,7 @@ export function ConcurrencyDetailResults({ data }: Props) {
           endTime: formatDate(result.endTime),
           // averageConcurrency: result.averageConcurrency,
           peakConcurrency: result.peakConcurrency,
-          peakConcurrencyTime: result.peakConcurrencyTime !== undefined ? String(result.peakConcurrencyTime) : '',
+          peakConcurrencyTime: result.peakConcurrencyTime !== undefined ? String(result.peakConcurrencyTime) : "",
         };
         formattedResults.push(formattedResult);
       }
@@ -45,29 +43,26 @@ export function ConcurrencyDetailResults({ data }: Props) {
       <h3 className="text-lg font-bold text-slate-900">Concurrency Details Table</h3>
       <p className="text-sm text-gray-500">Click the row of the desired minute to view the incoming requests.</p>
       <Export gridRef={gridRef} />
-      <div style={{ height: '600px', overflowY: 'auto' }}>
+      <div style={{ height: "600px", overflowY: "auto" }}>
         <DataGrid
           ref={gridRef}
           columns={columns}
           rows={formattedResults}
-          defaultColumnOptions={{
-            sortable: true,
-            resizable: true,
-          }}
+          defaultColumnOptions={{ sortable: true, resizable: true }}
           className="fill-grid"
           onCellClick={(cell) => {
             const startDate = cell.row[`startTimeMS`];
             const endDate = cell.row[`endTimeMS`];
             const peakConcurrency = cell.row[`peakConcurrency`];
             let peakConcurrencyTime = String(cell.row[`peakConcurrencyTime`]);
-            if (peakConcurrencyTime === 'undefined') {
-              peakConcurrencyTime = '';
+            if (peakConcurrencyTime === "undefined") {
+              peakConcurrencyTime = "";
             } else {
               // convert date string (e.g. 2025-07-05 08:25:41) to a number
               peakConcurrencyTime = String(new Date(peakConcurrencyTime).getTime());
             }
             const link = `${getAppBaseUrl()}#/concurrencyRequest/${startDate}/${endDate}/${peakConcurrency}/${peakConcurrencyTime}`;
-            window.open(link, '_blank');
+            window.open(link, "_blank");
           }}
         />
       </div>

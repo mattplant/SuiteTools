@@ -8,10 +8,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getRole } from '../adapters/api/role';
-import { makeEntityLoader } from './loaderUtils';
+import { getRole } from "../adapters/api/role";
+import { makeEntityLoader } from "./loaderUtils";
 
 /** Loader for the `/roles/:id` route. */
-export const roleLoader = makeEntityLoader('role', 'Role', getRole);
+export const roleLoader = makeEntityLoader("role", "Role", getRole);
 
 export type RoleLoaderData = Awaited<ReturnType<typeof roleLoader>>;

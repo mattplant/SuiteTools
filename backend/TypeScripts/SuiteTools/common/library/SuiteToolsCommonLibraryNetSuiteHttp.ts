@@ -5,9 +5,9 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import * as https from 'N/https';
-import type { SuiteToolsCommon } from '../SuiteToolsCommon';
+import * as log from "N/log";
+import * as https from "N/https";
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite HTTP Library
@@ -32,33 +32,27 @@ export class SuiteToolsCommonLibraryNetSuiteHttp {
    * @returns the get request reponse body
    */
   public async getRequest(url: string): Promise<string> {
-    log.debug('getRequest() initiated', { url });
-    let response;
+    log.debug("getRequest() initiated", { url });
+    let response: string | undefined;
     try {
       response = await https.get
-        .promise({
-          url: url,
-        })
+        .promise({ url: url })
         .then(function (response) {
-          log.debug({
-            title: 'getRequest() response',
-            details: response,
-          });
-          log.debug('getRequest() response body', response.body);
+          log.debug({ title: "getRequest() response", details: response });
+          log.debug("getRequest() response body", response.body);
 
           return response.body;
         })
         .catch(function onRejected(reason) {
-          log.debug({
-            title: 'getRequest() invalid request',
-            details: reason,
-          });
+          log.debug({ title: "getRequest() invalid request", details: reason });
+
+          return undefined;
         });
     } catch (e) {
-      log.error('getRequest() error', e);
+      log.error("getRequest() error", e);
       // throw (e);
     }
-    log.debug('getRequest() returning', response);
+    log.debug("getRequest() returning", response);
 
     return response as string;
   }

@@ -1,11 +1,8 @@
-import { Button, ButtonGroup } from 'flowbite-react';
-import type { SoapLog } from '@suiteworks/suitetools-shared';
-import { openAppPage } from '../../../utils/navigation';
+import { Button, ButtonGroup } from "flowbite-react";
+import type { SoapLog } from "@suiteworks/suitetools-shared";
+import { openAppPage } from "../../../utils/navigation";
 
-type Props = {
-  data: SoapLog;
-  modal?: boolean;
-};
+type Props = { data: SoapLog; modal?: boolean };
 
 export function SoapLogResult({ data, modal }: Props) {
   return (

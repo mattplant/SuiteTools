@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useLoaderData } from 'react-router-dom';
-import { FileResult } from '../components/features/file/RecordResult';
-import type { FileLoaderData } from '../routes/fileLoader';
+import { useLoaderData } from "react-router-dom";
+import { FileResult } from "../components/features/file/RecordResult";
+import type { FileLoaderData } from "../routes/fileLoader";
 
 /**
  * Renders the file page with file details.

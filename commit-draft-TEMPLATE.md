@@ -45,7 +45,7 @@ Describe the **nature of the change**.
 | refactor | Internal restructuring without functional changes    | `#14 refactor(backend): isolate parsing logic issue`   |
 | perf     | Performance improvements                             | `#15 perf(backend): optimize data processing loop`     |
 | style    | Code style changes that do not affect functionality  | `#16 style(shared): apply formatting rules`            |
-| chore    | Routine tasks, tooling updates, dependency changes   | `#17 chore(build): bump eslint to latest version`      |
+| chore    | Routine tasks, tooling updates, dependency changes   | `#17 chore(build): bump biome to latest version`       |
 
 **Why Types?** They drive changelog automation, semantic versioning, and help reviewers instantly understand the nature of a change.
 
@@ -61,7 +61,7 @@ Specify the **affected area of the suite**.
 | backend    | Server-side SuiteScript, metadata loading, record access      |
 | shared     | Common types, utilities, or schema logic used across layers   |
 | validation | Zod schemas, custom rules, inference utilities                |
-| linting    | ESLint config, rulesets, boundary enforcement logic           |
+| linting    | Biome config, rulesets, boundary enforcement logic            |
 | build      | Bundling, release tasks, build config and tooling             |
 | infra      | CI/CD pipelines, environment setup, deployment configs        |
 | docs       | Contributor guides, onboarding materials, markdown updates    |

@@ -36,13 +36,13 @@ export interface OptionValues {
 
 // the option values types that we get from the server
 export enum OptionValuesTypes {
-  FILE = 'file',
-  FILETYPE = 'fileType',
-  INTEGRATION = 'integration',
-  JOB = 'job',
-  OWNER = 'owner',
-  ROLE = 'role',
-  SCRIPT = 'script',
-  SCRIPTTYPE = 'scriptType',
-  USER = 'user',
+  FILE = "file",
+  FILETYPE = "fileType",
+  INTEGRATION = "integration",
+  JOB = "job",
+  OWNER = "owner",
+  ROLE = "role",
+  SCRIPT = "script",
+  SCRIPTTYPE = "scriptType",
+  USER = "user",
 }

@@ -34,8 +34,10 @@ stages:
   stage: validate
   before_script:
     - node --version
+    # No pinned version here: `packageManager` in package.json and `yarnPath` in
+    # .yarnrc.yml are the single source of truth. Pinning a second copy here went
+    # stale when #73 moved 4.9.2 -> 4.18.0.
     - corepack enable
-    - corepack prepare yarn@4.9.2 --activate
     - yarn --version
     - yarn install --immutable
   # Enable "Pipelines must succeed" in GitLab → Settings → Merge requests

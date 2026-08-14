@@ -9,8 +9,8 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { getSettings } from '../adapters/api/settings';
-import type { Settings } from '@suiteworks/suitetools-shared';
+import { getSettings } from "../adapters/api/settings";
+import type { Settings } from "@suiteworks/suitetools-shared";
 
 /**
  * Loader for the `/settings` route.
@@ -22,7 +22,7 @@ export async function settingsLoader(): Promise<{ settings: Settings }> {
     const settings = await getSettings();
     return { settings };
   } catch (err) {
-    console.error('router:getSettings() failed', err);
+    console.error("router:getSettings() failed", err);
     throw err;
   }
 }

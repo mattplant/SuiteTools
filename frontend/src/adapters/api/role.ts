@@ -13,9 +13,9 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, roleOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Role } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, roleOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Role } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
 
 /**
  * Transform a validated `Role` payload into the enriched view model used by the frontend.
@@ -23,11 +23,7 @@ import { makeSingularAdapter } from './adapterUtils';
  * @returns The enriched Role object with navigation URLs.
  */
 function adaptRole(role: Role): Role {
-  return {
-    ...role,
-    urlNs: `/app/setup/role.nl?id=${role.id}`,
-    urlDetail: `#/role/${role.id}`,
-  };
+  return { ...role, urlNs: `/app/setup/role.nl?id=${role.id}`, urlDetail: `#/role/${role.id}` };
 }
 
 const roleRequestResponseSchema = makeRequestResponseSchema(roleOrNotFoundSchema);
@@ -39,4 +35,4 @@ const roleRequestResponseSchema = makeRequestResponseSchema(roleOrNotFoundSchema
  * @param id - The ID of the role to retrieve.
  * @returns A Promise resolving to a Role object or NotFound payload.
  */
-export const getRole = makeSingularAdapter<Role>('role', roleRequestResponseSchema, adaptRole);
+export const getRole = makeSingularAdapter<Role>("role", roleRequestResponseSchema, adaptRole);

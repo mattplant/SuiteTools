@@ -24,16 +24,16 @@
  * @NScriptType Restlet
  */
 
-import type { EntryPoints } from 'N/types';
-import { SuiteToolsApi } from './api/SuiteToolsApi';
-import type { ErrorResponse } from '@suiteworks/suitetools-shared/errors';
+import type { EntryPoints } from "N/types";
+import { SuiteToolsApi } from "./api/SuiteToolsApi";
+import type { ErrorResponse } from "@suiteworks/suitetools-shared/errors";
 import {
   SuiteError,
   NotFoundError,
   InvalidParameterError,
   UnexpectedError,
   SchemaValidationError,
-} from '@suiteworks/suitetools-shared/errors';
+} from "@suiteworks/suitetools-shared/errors";
 
 /**
  * Map a SuiteError to an HTTP-style business status for ErrorResponse.
@@ -53,7 +53,7 @@ function statusForSuiteError(err: SuiteError): number {
     return 400;
   }
   // Remaining SuiteErrors: treat fatal/error severity as server faults.
-  if (err.severity === 'error' || err.severity === 'fatal') {
+  if (err.severity === "error" || err.severity === "fatal") {
     return 500;
   }
   return 400;
@@ -79,9 +79,9 @@ function errorResponseJson(err: unknown): string {
 
   const errorResponse: ErrorResponse = {
     status: 500,
-    code: 'UNEXPECTED_ERROR',
-    message: 'Internal server error',
-    severity: 'error',
+    code: "UNEXPECTED_ERROR",
+    message: "Internal server error",
+    severity: "error",
   };
   return JSON.stringify(errorResponse);
 }

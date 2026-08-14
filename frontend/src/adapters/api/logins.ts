@@ -4,10 +4,10 @@
  * @file API adapter for retrieving Login Audit records.
  */
 
-import { makeRequestResponseSchema, loginsOrNotFoundSchema } from '@suiteworks/suitetools-shared';
-import type { Logins } from '@suiteworks/suitetools-shared';
-import type { CriteriaFields } from '../../components/shared/criteria/types';
-import { makeListAdapter } from './adapterUtils';
+import { makeRequestResponseSchema, loginsOrNotFoundSchema } from "@suiteworks/suitetools-shared";
+import type { Logins } from "@suiteworks/suitetools-shared";
+import type { CriteriaFields } from "../../components/shared/criteria/types";
+import { makeListAdapter } from "./adapterUtils";
 
 const loginsRequestResponseSchema = makeRequestResponseSchema(loginsOrNotFoundSchema);
 
@@ -19,8 +19,8 @@ function multiSelectParam(values: string[] | string | undefined): string | undef
   if (values == null) {
     return undefined;
   }
-  const list = (Array.isArray(values) ? values : [values]).filter((value) => value !== '' && value != null);
-  return list.length > 0 ? list.join(',') : undefined;
+  const list = (Array.isArray(values) ? values : [values]).filter((value) => value !== "" && value != null);
+  return list.length > 0 ? list.join(",") : undefined;
 }
 
 /**
@@ -59,10 +59,10 @@ function toLoginUrlParams(fields: Partial<CriteriaFields>): Record<string, unkno
 export const getLogins = makeListAdapter<
   Logins[number],
   CriteriaFields,
-  'rows' | 'active' | 'integrationName' | 'tokenName' | 'users' | 'roles'
+  "rows" | "active" | "integrationName" | "tokenName" | "users" | "roles"
 >(
-  'logins',
+  "logins",
   loginsRequestResponseSchema,
-  ['rows', 'active', 'integrationName', 'tokenName', 'users', 'roles'] as const,
+  ["rows", "active", "integrationName", "tokenName", "users", "roles"] as const,
   { mapParams: toLoginUrlParams },
 );

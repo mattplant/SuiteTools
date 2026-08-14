@@ -145,7 +145,7 @@ Contains Yarn plugins that extend functionality.
 
 Contains packages that have been "unplugged" from PnP for manual patching, inspection, or compatibility reasons. These are extracted from the cache and stored here temporarily.
 
-Since our linting and formatting tools (ESLint and Prettier) do not fully support Yarn's Plug’n’Play out of the box, we needed to unplug them for compatibility.
+Historically ESLint and Prettier were unplugged here because they did not fully support Yarn's Plug’n’Play. Both were removed in #70; Biome runs under PnP without any accommodation, as Yarn unplugs its platform binary automatically.
 
 #### `.yarn.lock`
 

@@ -30,17 +30,10 @@ export class UnexpectedError extends SuiteError {
    *   throw new UnexpectedError("process()", err, { endpoint: "users" });
    * }
    */
-  constructor(
-    operation: string,
-    cause: unknown,
-    context?: Record<string, unknown>
-  ) {
+  constructor(operation: string, cause: unknown, context?: Record<string, unknown>) {
     const causeMessage = cause instanceof Error ? cause.message : String(cause);
     const message = `Unexpected error in ${operation}: ${causeMessage}`;
 
-    super(message, {
-      context: { operation, ...context },
-      cause,
-    });
+    super(message, { context: { operation, ...context }, cause });
   }
 }

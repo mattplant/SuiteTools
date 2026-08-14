@@ -12,10 +12,10 @@
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
-import { makeRequestResponseSchema, jobOrNotFoundSchema, PostEndpoint } from '@suiteworks/suitetools-shared';
-import type { Job, RequestResponse } from '@suiteworks/suitetools-shared';
-import { makeSingularAdapter } from './adapterUtils';
-import { postData } from './netSuiteClient';
+import { makeRequestResponseSchema, jobOrNotFoundSchema, PostEndpoint } from "@suiteworks/suitetools-shared";
+import type { Job, RequestResponse } from "@suiteworks/suitetools-shared";
+import { makeSingularAdapter } from "./adapterUtils";
+import { postData } from "./netSuiteClient";
 
 /**
  * Transform a validated `Job` payload into the enriched view model used by the frontend.
@@ -23,10 +23,7 @@ import { postData } from './netSuiteClient';
  * @returns The enriched Job object with navigation URLs.
  */
 function adaptJob(job: Job): Job {
-  return {
-    ...job,
-    urlDetail: `#/job/${job.id}`,
-  };
+  return { ...job, urlDetail: `#/job/${job.id}` };
 }
 
 const jobRequestResponseSchema = makeRequestResponseSchema(jobOrNotFoundSchema);
@@ -38,12 +35,9 @@ const jobRequestResponseSchema = makeRequestResponseSchema(jobOrNotFoundSchema);
  * @param id - The ID of the job to retrieve.
  * @returns A Promise resolving to a Job object.
  */
-export const getJob = makeSingularAdapter<Job>('job', jobRequestResponseSchema, adaptJob);
+export const getJob = makeSingularAdapter<Job>("job", jobRequestResponseSchema, adaptJob);
 
-type InitiateJobPayload = {
-  id: number;
-  data?: unknown;
-};
+type InitiateJobPayload = { id: number; data?: unknown };
 
 /**
  * Initiate a SuiteTools job (or all jobs when id is 0).

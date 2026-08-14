@@ -5,13 +5,13 @@
  * @license GPL-3.0-or-later
  */
 
-import * as log from 'N/log';
-import * as task from 'N/task';
-import type { SuiteToolsCommon } from '../common/SuiteToolsCommon';
-import type { SuiteQLResults } from '../common/types';
+import * as log from "N/log";
+import * as task from "N/task";
+import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
+import type { SuiteQLResults } from "../common/types";
 
-import { queryMany, queryOne } from './SuiteToolsApiModelQuery';
-import type { Response } from './types';
+import { queryMany, queryOne } from "./SuiteToolsApiModelQuery";
+import type { Response } from "./types";
 
 /**
  * SuiteTools API Model Class
@@ -53,11 +53,8 @@ export class SuiteToolsApiModel {
       file
     WHERE
       file.id = ${id}`;
-    const response = queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No file found with id of ${id}`,
-    );
-    log.debug({ title: 'SuiteToolsApiModel:getFile() returning', details: response });
+    const response = queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No file found with id of ${id}`);
+    log.debug({ title: "SuiteToolsApiModel:getFile() returning", details: response });
 
     return response;
   }
@@ -93,23 +90,20 @@ export class SuiteToolsApiModel {
     }
     if (types) {
       if (Array.isArray(types)) {
-        const filteredTypes = types.filter((type) => type && type.trim() !== '');
+        const filteredTypes = types.filter((type) => type && type.trim() !== "");
         if (filteredTypes.length > 0) {
           const typeList = filteredTypes.map((type) => `'${type.toUpperCase()}'`);
-          where.push(`filetype IN (${typeList.join(',')})`);
+          where.push(`filetype IN (${typeList.join(",")})`);
         }
       }
     }
-    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'file', 'createddate', createdDate);
-    this.addDateFilter(where, 'SuiteToolsApiModel:getFiles()', 'file', 'lastmodifieddate', modifiedDate);
+    this.addDateFilter(where, "SuiteToolsApiModel:getFiles()", "file", "createddate", createdDate);
+    this.addDateFilter(where, "SuiteToolsApiModel:getFiles()", "file", "lastmodifieddate", modifiedDate);
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     sql += ` ORDER BY name ASC`;
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No file records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No file records found`);
   }
 
   /*
@@ -124,8 +118,8 @@ export class SuiteToolsApiModel {
     log.debug({ title: `SuiteToolsApiModel:initiateJob() initiated`, details: { id: id, data: data } });
     const scriptTask = task.create({
       taskType: task.TaskType.MAP_REDUCE,
-      scriptId: 'customscript_idev_suitetools_mr_jobs_run',
-      deploymentId: 'customdeploy_idev_suitetools_mr_jobs_run',
+      scriptId: "customscript_idev_suitetools_mr_jobs_run",
+      deploymentId: "customdeploy_idev_suitetools_mr_jobs_run",
       params: {
         custscript_idev_st_mr_jobs_id: id,
         custscript_idev_st_mr_jobs_data: data ? JSON.stringify(data) : null,
@@ -133,8 +127,8 @@ export class SuiteToolsApiModel {
     });
     const scriptTaskId = scriptTask.submit();
     log.debug({
-      title: 'SuiteToolsApiModel:initiateJob() submitted run job map/reduce script',
-      details: 'scriptTaskId = ' + scriptTaskId,
+      title: "SuiteToolsApiModel:initiateJob() submitted run job map/reduce script",
+      details: "scriptTaskId = " + scriptTaskId,
     });
   }
 
@@ -145,7 +139,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJob(id: string): Response {
-    const customRecord = 'customrecord_idev_suitetools_job';
+    const customRecord = "customrecord_idev_suitetools_job";
     const sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
@@ -158,10 +152,7 @@ export class SuiteToolsApiModel {
       ${customRecord}
     WHERE
       ${customRecord}.id = ${id}`;
-    return queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No job found with id of ${id}`,
-    );
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No job found with id of ${id}`);
   }
 
   /**
@@ -171,7 +162,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobs(active: string): Response {
-    const customRecord = 'customrecord_idev_suitetools_job';
+    const customRecord = "customrecord_idev_suitetools_job";
     let sql = `SELECT
       ${customRecord}.id,
       ${customRecord}.name,
@@ -186,20 +177,17 @@ export class SuiteToolsApiModel {
     // add where clause
     const where = [];
     if (active) {
-      if (active === 'T') {
+      if (active === "T") {
         where.push(`isinactive = 'F'`);
       } else {
         where.push(`isinactive = 'T'`);
       }
     }
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     sql += ` ORDER BY ${customRecord}.id ASC`;
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No job records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No job records found`);
   }
 
   /**
@@ -223,10 +211,7 @@ export class SuiteToolsApiModel {
       role
     WHERE
       role.id = ${id}`;
-    return queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No role found with id of ${id}`,
-    );
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No role found with id of ${id}`);
   }
 
   /**
@@ -251,21 +236,18 @@ export class SuiteToolsApiModel {
     // add where clause
     const where = [];
     if (active) {
-      if (active === 'T') {
+      if (active === "T") {
         where.push(`role.isinactive = 'F'`);
       } else {
         where.push(`role.isinactive = 'T'`);
       }
     }
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     sql += ` ORDER BY role.name`;
 
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No role records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No role records found`);
   }
 
   /**
@@ -318,10 +300,7 @@ export class SuiteToolsApiModel {
     const response: Response = { status: 200, data: [] };
 
     // N/search type "integration" is invalid in SuiteScript — use SuiteQL + LoginAudit only.
-    const rows = this.mergeIntegrationRows(
-      this.queryIntegrationRowsSuiteQl(),
-      this.integrationNamesFromLoginAudit(),
-    );
+    const rows = this.mergeIntegrationRows(this.queryIntegrationRowsSuiteQl(), this.integrationNamesFromLoginAudit());
 
     response.data = this.filterIntegrationsByActive(rows, active);
 
@@ -343,16 +322,16 @@ export class SuiteToolsApiModel {
     state: string;
     dateCreated: string;
   } {
-    let name = String(row.name ?? row.Name ?? '');
-    if (name === 'SuiteCloud IDE & CLI') {
-      name = 'SuiteCloud Development Integration';
+    let name = String(row.name ?? row.Name ?? "");
+    if (name === "SuiteCloud IDE & CLI") {
+      name = "SuiteCloud Development Integration";
     }
     return {
       id: Number(row.id ?? row.ID),
       name,
-      applicationId: String(row.applicationid ?? row.applicationId ?? row.APPLICATIONID ?? ''),
-      state: String(row.state ?? row.State ?? ''),
-      dateCreated: String(row.datecreated ?? row.dateCreated ?? row.DATECREATED ?? ''),
+      applicationId: String(row.applicationid ?? row.applicationId ?? row.APPLICATIONID ?? ""),
+      state: String(row.state ?? row.State ?? ""),
+      dateCreated: String(row.datecreated ?? row.dateCreated ?? row.DATECREATED ?? ""),
     };
   }
 
@@ -387,44 +366,32 @@ export class SuiteToolsApiModel {
    * @param active - Enabled (T) / Blocked (F) / All
    */
   private filterIntegrationsByActive(
-    rows: {
-      id: number;
-      name: string;
-      applicationId: string;
-      state: string;
-      dateCreated: string;
-    }[],
+    rows: { id: number; name: string; applicationId: string; state: string; dateCreated: string }[],
     active: string,
-  ): {
-    id: number;
-    name: string;
-    applicationId: string;
-    state: string;
-    dateCreated: string;
-  }[] {
+  ): { id: number; name: string; applicationId: string; state: string; dateCreated: string }[] {
     if (!active) {
       return rows;
     }
-    if (active === 'T') {
+    if (active === "T") {
       return rows.filter((row) => this.isIntegrationEnabled(row.state));
     }
-    if (active === 'F') {
+    if (active === "F") {
       return rows.filter((row) => this.isIntegrationBlocked(row.state));
     }
     return rows;
   }
 
   private isIntegrationEnabled(state: string): boolean {
-    const normalized = String(state || '').toLowerCase();
+    const normalized = String(state || "").toLowerCase();
     if (!normalized) {
       return true;
     }
-    return normalized === 'enabled' || normalized === 't';
+    return normalized === "enabled" || normalized === "t";
   }
 
   private isIntegrationBlocked(state: string): boolean {
-    const normalized = String(state || '').toLowerCase();
-    return normalized === 'blocked' || normalized === 'f';
+    const normalized = String(state || "").toLowerCase();
+    return normalized === "blocked" || normalized === "f";
   }
 
   /**
@@ -445,14 +412,14 @@ export class SuiteToolsApiModel {
     const seen = new Set<string>();
 
     for (const auditRow of auditRows || []) {
-      const raw = auditRow.oauthappname ?? auditRow.name ?? auditRow.OAUTHAPPNAME ?? '';
+      const raw = auditRow.oauthappname ?? auditRow.name ?? auditRow.OAUTHAPPNAME ?? "";
       let name = String(raw).trim();
       if (!name || seen.has(name.toLowerCase())) {
         continue;
       }
       seen.add(name.toLowerCase());
-      if (name === 'SuiteCloud IDE & CLI') {
-        name = 'SuiteCloud Development Integration';
+      if (name === "SuiteCloud IDE & CLI") {
+        name = "SuiteCloud Development Integration";
       }
       names.push(name);
     }
@@ -466,22 +433,13 @@ export class SuiteToolsApiModel {
    * @param auditNames - Distinct oAuthAppName values from LoginAudit.
    */
   private mergeIntegrationRows(
-    primary: {
-      id: number;
-      name: string;
-      applicationId: string;
-      state: string;
-      dateCreated: string;
-    }[],
+    primary: { id: number; name: string; applicationId: string; state: string; dateCreated: string }[],
     auditNames: string[],
-  ): {
-    id: number;
-    name: string;
-    applicationId: string;
-    state: string;
-    dateCreated: string;
-  }[] {
-    const byName = new Map<string, { id: number; name: string; applicationId: string; state: string; dateCreated: string }>();
+  ): { id: number; name: string; applicationId: string; state: string; dateCreated: string }[] {
+    const byName = new Map<
+      string,
+      { id: number; name: string; applicationId: string; state: string; dateCreated: string }
+    >();
 
     for (const row of primary) {
       if (!row.name || !Number.isFinite(row.id)) {
@@ -506,9 +464,9 @@ export class SuiteToolsApiModel {
       byName.set(key, {
         id: this.stableIntegrationIdFromName(name),
         name,
-        applicationId: '',
-        state: 'Enabled',
-        dateCreated: '',
+        applicationId: "",
+        state: "Enabled",
+        dateCreated: "",
       });
     }
 
@@ -531,13 +489,9 @@ export class SuiteToolsApiModel {
    * Resolve LoginAudit-only integration rows by synthetic id.
    * @param id - Integration internal or synthetic id.
    */
-  private getIntegrationFromSyntheticId(id: string): {
-    id: number;
-    name: string;
-    applicationId: string;
-    state: string;
-    dateCreated: string;
-  } | null {
+  private getIntegrationFromSyntheticId(
+    id: string,
+  ): { id: number; name: string; applicationId: string; state: string; dateCreated: string } | null {
     const numericId = Number(id);
     if (!Number.isFinite(numericId) || numericId < 900000000) {
       return null;
@@ -545,13 +499,7 @@ export class SuiteToolsApiModel {
 
     for (const name of this.integrationNamesFromLoginAudit()) {
       if (this.stableIntegrationIdFromName(name) === numericId) {
-        return {
-          id: numericId,
-          name,
-          applicationId: '',
-          state: 'Enabled',
-          dateCreated: '',
-        };
+        return { id: numericId, name, applicationId: "", state: "Enabled", dateCreated: "" };
       }
     }
 
@@ -562,16 +510,12 @@ export class SuiteToolsApiModel {
    * Resolve a full integration record by display name.
    * @param name - Integration name from LoginAudit or UI.
    */
-  private resolveIntegrationByName(name: string): {
-    id: number;
-    name: string;
-    applicationId: string;
-    state: string;
-    dateCreated: string;
-  } | null {
+  private resolveIntegrationByName(
+    name: string,
+  ): { id: number; name: string; applicationId: string; state: string; dateCreated: string } | null {
     const namesToTry = [name];
-    if (name === 'SuiteCloud Development Integration') {
-      namesToTry.push('SuiteCloud IDE & CLI');
+    if (name === "SuiteCloud Development Integration") {
+      namesToTry.push("SuiteCloud IDE & CLI");
     }
 
     for (const candidate of namesToTry) {
@@ -620,10 +564,7 @@ export class SuiteToolsApiModel {
       ON script.scriptfile = file.id
     WHERE
       script.id = ${id}`;
-    return queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No script found with id of ${id}`,
-    );
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No script found with id of ${id}`);
   }
 
   /**
@@ -664,40 +605,37 @@ export class SuiteToolsApiModel {
     // add where clause
     const where = [];
     if (active) {
-      if (active === 'T') {
+      if (active === "T") {
         where.push(`script.isinactive = 'F'`);
       } else {
         where.push(`script.isinactive = 'T'`);
       }
     }
     if (versions && Array.isArray(versions)) {
-      where.push(`apiversion IN (${versions.join(',')})`);
+      where.push(`apiversion IN (${versions.join(",")})`);
     }
     if (types && Array.isArray(types)) {
       const typeList = types.map((type) => `'${type.toUpperCase()}'`);
-      where.push(`scripttype IN (${typeList.join(',')})`);
+      where.push(`scripttype IN (${typeList.join(",")})`);
     }
     if (scripts && Array.isArray(scripts)) {
       const scriptList = scripts.map((script) => `'${script.toUpperCase()}'`);
-      where.push(`script.id IN (${scriptList.join(',')})`);
+      where.push(`script.id IN (${scriptList.join(",")})`);
     }
     if (owners && Array.isArray(owners)) {
       const ownerList = owners.map((owner) => `'${owner.toUpperCase()}'`);
-      where.push(`owner IN (${ownerList.join(',')})`);
+      where.push(`owner IN (${ownerList.join(",")})`);
     }
     if (files && Array.isArray(files)) {
       const fileList = files.map((file) => `'${file.toUpperCase()}'`);
-      where.push(`file.id IN (${fileList.join(',')})`);
+      where.push(`file.id IN (${fileList.join(",")})`);
     }
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     sql += ` ORDER BY name ASC`;
 
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No script records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No script records found`);
   }
 
   /**
@@ -727,10 +665,7 @@ export class SuiteToolsApiModel {
       BUILTIN.DF( employee.supervisor ),
       employee.title`;
     // Soft miss via message + null (Get layer → ensureEntityOrSoftNotFound); was hard 404.
-    return queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No user found with id of ${id}`,
-    );
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No user found with id of ${id}`);
   }
 
   /**
@@ -752,14 +687,14 @@ export class SuiteToolsApiModel {
 
     const where = [];
     switch (active) {
-      case 'U':
+      case "U":
         where.push(`employee.giveaccess = 'T'`);
         where.push(`employee.isinactive = 'F'`);
         break;
-      case 'T':
+      case "T":
         where.push(`employee.isinactive = 'F'`);
         break;
-      case 'F':
+      case "F":
         where.push(`employee.isinactive = 'T'`);
         break;
       default:
@@ -768,15 +703,15 @@ export class SuiteToolsApiModel {
     }
     if (roles && Array.isArray(roles)) {
       const roleList = roles.map((role) => role);
-      where.push(`role.id IN (${roleList.join(',')})`);
+      where.push(`role.id IN (${roleList.join(",")})`);
     }
     if (supervisors && Array.isArray(supervisors)) {
       const supervisorList = supervisors.map((supervisor) => supervisor);
-      where.push(`employee.supervisor IN (${supervisorList.join(',')})`);
+      where.push(`employee.supervisor IN (${supervisorList.join(",")})`);
     }
 
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
 
     sql += ` GROUP BY
@@ -787,10 +722,7 @@ export class SuiteToolsApiModel {
       employee.title
     ORDER BY employee.entityid`;
 
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No user records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No user records found`);
   }
 
   /**
@@ -860,23 +792,23 @@ export class SuiteToolsApiModel {
       ON ScriptNote.scripttype = script.id`;
 
     const where: string[] = [];
-    if (row && row !== '0') {
+    if (row && row !== "0") {
       where.push(`RowNum <= ${row}`);
     }
     if (levels && Array.isArray(levels)) {
       const levelList = levels.map((type) => `'${type.toUpperCase()}'`);
-      where.push(`ScriptNote.type IN (${levelList.join(',')})`);
+      where.push(`ScriptNote.type IN (${levelList.join(",")})`);
     }
     if (types && Array.isArray(types)) {
       const typeList = types.map((type) => `'${type.toUpperCase()}'`);
-      where.push(`script.scripttype IN (${typeList.join(',')})`);
+      where.push(`script.scripttype IN (${typeList.join(",")})`);
     }
     if (scripts && Array.isArray(scripts)) {
-      where.push(`ScriptNote.scriptType IN (${scripts.join(',')})`);
+      where.push(`ScriptNote.scriptType IN (${scripts.join(",")})`);
     }
     if (owners && Array.isArray(owners)) {
       const ownerList = owners.map((owner) => `'${owner.toUpperCase()}'`);
-      where.push(`owner IN (${ownerList.join(',')})`);
+      where.push(`owner IN (${ownerList.join(",")})`);
     }
     if (title) {
       where.push(`ScriptNote.title LIKE '%${title}%'`);
@@ -886,10 +818,10 @@ export class SuiteToolsApiModel {
     }
 
     // Add date/time filtering
-    if (timemode === 'now' && date) {
+    if (timemode === "now" && date) {
       // Named windows (today/yesterday/…) and minute offsets via addDateFilter
-      this.addDateFilter(where, 'SuiteToolsApiModel:getScriptLogsViaSuiteQL()', 'ScriptNote', 'date', date);
-    } else if (timemode === 'custom' && customdatetime && customduration) {
+      this.addDateFilter(where, "SuiteToolsApiModel:getScriptLogsViaSuiteQL()", "ScriptNote", "date", date);
+    } else if (timemode === "custom" && customdatetime && customduration) {
       // End datetime (YYYY-MM-DD HH24:MI:SS or epoch ms) + lookback in minutes
       const durationMinutes = this.resolveDurationMinutes(customduration);
       const endDateTime = this.resolveSuiteQlDateTime(customdatetime);
@@ -902,14 +834,11 @@ export class SuiteToolsApiModel {
     }
 
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     sql += ` ORDER BY ScriptNote.date DESC`;
 
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No script log records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No script log records found`);
   }
 
   // Additional methods exist in the original implementation:
@@ -939,12 +868,12 @@ export class SuiteToolsApiModel {
     field: string,
     dates: string | string[],
   ): void {
-    if (!dates || dates === '' || dates === '0') {
+    if (!dates || dates === "" || dates === "0") {
       return;
     }
 
     // Files UI only sends a single select value today.
-    if (typeof dates !== 'string') {
+    if (typeof dates !== "string") {
       log.debug({ title: `${functionName} addDateFilter`, details: { skippedNonStringDates: dates } });
       return;
     }
@@ -952,16 +881,16 @@ export class SuiteToolsApiModel {
     const column = table ? `${table}.${field}` : field;
 
     switch (dates) {
-      case 'today':
+      case "today":
         where.push(`TO_CHAR(${column}, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')`);
         break;
-      case 'yesterday':
+      case "yesterday":
         where.push(`TO_CHAR(${column}, 'YYYY-MM-DD') = TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')`);
         break;
-      case 'lastweek':
+      case "lastweek":
         where.push(`${column} >= (SYSDATE - 7)`);
         break;
-      case 'lastmonth':
+      case "lastmonth":
         where.push(`${column} >= (SYSDATE - 31)`);
         break;
       default: {
@@ -983,12 +912,7 @@ export class SuiteToolsApiModel {
    * Accepts numeric minutes or legacy named tokens (`hour`, `day`, `week`, `month`).
    */
   private resolveDurationMinutes(duration: string): number {
-    const named: Record<string, number> = {
-      hour: 60,
-      day: 1440,
-      week: 10080,
-      month: 43200,
-    };
+    const named: Record<string, number> = { hour: 60, day: 1440, week: 10080, month: 43200 };
     if (named[duration] != null) {
       return named[duration];
     }
@@ -1007,15 +931,15 @@ export class SuiteToolsApiModel {
     if (/^\d+$/.test(value)) {
       const date = new Date(Number(value));
       if (!isNaN(date.getTime())) {
-        const pad = (n: number) => String(n).padStart(2, '0');
+        const pad = (n: number) => String(n).padStart(2, "0");
         return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}:${pad(date.getUTCSeconds())}`;
       }
     }
     log.debug({
-      title: 'SuiteToolsApiModel:resolveSuiteQlDateTime',
+      title: "SuiteToolsApiModel:resolveSuiteQlDateTime",
       details: `Unhandled customDateTime value: ${value}`,
     });
-    return '';
+    return "";
   }
 
   /**
@@ -1025,7 +949,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRun(id: string): Response {
-    const customRecord = 'customrecord_idev_suitetools_job_run';
+    const customRecord = "customrecord_idev_suitetools_job_run";
     const sql = `SELECT
       ${customRecord}.id,
       TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS created,
@@ -1039,10 +963,7 @@ export class SuiteToolsApiModel {
       ON customrecord_idev_suitetools_job_run.custrecord_idev_st_mr_job_run_job_id = customrecord_idev_suitetools_job.id
     WHERE
       ${customRecord}.id = ${id}`;
-    return queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No job execution found with id of ${id}`,
-    );
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No job execution found with id of ${id}`);
   }
 
   /**
@@ -1053,7 +974,7 @@ export class SuiteToolsApiModel {
    * @returns results
    */
   public getJobRuns(job: string, completed: string): Response {
-    const customRecord = 'customrecord_idev_suitetools_job_run';
+    const customRecord = "customrecord_idev_suitetools_job_run";
     let sql = `SELECT
       ${customRecord}.id,
       TO_CHAR ( ${customRecord}.created, 'YYYY-MM-DD HH24:MI:SS' ) AS created,
@@ -1074,13 +995,10 @@ export class SuiteToolsApiModel {
       where.push(`${customRecord}.custrecord_idev_st_mr_job_run_completed = '${completed}'`);
     }
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     sql += ` ORDER BY ${customRecord}.id DESC`;
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No job execution records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No job execution records found`);
   }
 
   /**
@@ -1088,8 +1006,8 @@ export class SuiteToolsApiModel {
    * @param name - Raw application name from SuiteQL or UI criteria.
    */
   private normalizeTokenIntegrationName(name: string): string {
-    if (name === 'SuiteCloud IDE & CLI') {
-      return 'SuiteCloud Development Integration';
+    if (name === "SuiteCloud IDE & CLI") {
+      return "SuiteCloud Development Integration";
     }
     return name;
   }
@@ -1111,15 +1029,13 @@ export class SuiteToolsApiModel {
   } {
     return {
       id: Number(row.id),
-      name: row.name ?? '',
-      userName: row.username ?? row.userName ?? '',
-      roleName: row.rolename ?? row.roleName ?? '',
-      integrationName: this.normalizeTokenIntegrationName(
-        row.integrationname ?? row.integrationName ?? '',
-      ),
-      state: row.state ?? '',
-      dateCreated: row.datecreated ?? row.dateCreated ?? '',
-      createdBy: row.createdby ?? row.createdBy ?? '',
+      name: row.name ?? "",
+      userName: row.username ?? row.userName ?? "",
+      roleName: row.rolename ?? row.roleName ?? "",
+      integrationName: this.normalizeTokenIntegrationName(row.integrationname ?? row.integrationName ?? ""),
+      state: row.state ?? "",
+      dateCreated: row.datecreated ?? row.dateCreated ?? "",
+      createdBy: row.createdby ?? row.createdBy ?? "",
     };
   }
 
@@ -1143,10 +1059,8 @@ export class SuiteToolsApiModel {
     WHERE
       OAuthToken.id = ${id}`;
 
-    return queryOne(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No token found with id of ${id}`,
-      (row) => this.normalizeTokenRow(row),
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No token found with id of ${id}`, (row) =>
+      this.normalizeTokenRow(row),
     );
   }
 
@@ -1160,12 +1074,7 @@ export class SuiteToolsApiModel {
    * @param _roleName - Unused; kept for API compatibility
    * @returns Token list response.
    */
-  public getTokens(
-    active: string,
-    _integrationName: string,
-    _userName: string,
-    _roleName: string,
-  ): Response {
+  public getTokens(active: string, _integrationName: string, _userName: string, _roleName: string): Response {
     let sql = `SELECT
       OAuthToken.id,
       OAuthToken.TBA_Token_Name AS name,
@@ -1179,18 +1088,16 @@ export class SuiteToolsApiModel {
       OAuthToken`;
 
     const where: string[] = [`OAuthToken.BINACTIVE = 'F'`];
-    if (active === 'T') {
+    if (active === "T") {
       where.push(`OAuthToken.BREVOKED = 'F'`);
-    } else if (active === 'F') {
+    } else if (active === "F") {
       where.push(`OAuthToken.BREVOKED = 'T'`);
     }
 
-    sql += ` WHERE ${where.join(' AND ')} ORDER BY OAuthToken.TBA_Token_Name`;
+    sql += ` WHERE ${where.join(" AND ")} ORDER BY OAuthToken.TBA_Token_Name`;
 
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No token records found`,
-      (rows) => rows.map((row) => this.normalizeTokenRow(row)),
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No token records found`, (rows) =>
+      rows.map((row) => this.normalizeTokenRow(row)),
     );
   }
 
@@ -1252,7 +1159,7 @@ export class SuiteToolsApiModel {
       where.push(`RowNum <= ${rows}`);
     }
     if (active) {
-      if (active === 'T') {
+      if (active === "T") {
         where.push(`loginAudit.status = 'Success'`);
       } else {
         where.push(`loginAudit.status = 'Failure'`);
@@ -1266,29 +1173,26 @@ export class SuiteToolsApiModel {
     }
     if (users) {
       if (Array.isArray(users)) {
-        const userIds = users.filter((user) => user !== '' && user != null);
+        const userIds = users.filter((user) => user !== "" && user != null);
         if (userIds.length > 0) {
-          where.push(`loginAudit.user IN (${userIds.join(',')})`);
+          where.push(`loginAudit.user IN (${userIds.join(",")})`);
         }
       }
     }
     if (roles) {
       if (Array.isArray(roles)) {
-        const roleIds = roles.filter((role) => role !== '' && role != null);
+        const roleIds = roles.filter((role) => role !== "" && role != null);
         if (roleIds.length > 0) {
-          where.push(`loginAudit.role IN (${roleIds.join(',')})`);
+          where.push(`loginAudit.role IN (${roleIds.join(",")})`);
         }
       }
     }
     if (where.length > 0) {
-      sql += ` WHERE ${where.join(' AND ')}`;
+      sql += ` WHERE ${where.join(" AND ")}`;
     }
     // add order by
     sql += ` ORDER BY loginAudit.date DESC`;
 
-    return queryMany(
-      this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql),
-      `No login audit records found`,
-    );
+    return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No login audit records found`);
   }
 }
