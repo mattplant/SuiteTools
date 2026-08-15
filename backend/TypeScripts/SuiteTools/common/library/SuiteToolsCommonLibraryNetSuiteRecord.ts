@@ -18,13 +18,14 @@ import type { SuiteToolsCommon } from "../SuiteToolsCommon";
  * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibraryNetSuiteRecord {
-  private _stCommon: SuiteToolsCommon;
+  private _stCommon: SuiteToolsCommon | null;
 
-  get stCommon(): SuiteToolsCommon {
+  get stCommon(): SuiteToolsCommon | null {
     return this._stCommon;
   }
 
-  constructor(stCommon: SuiteToolsCommon) {
+  // Map/Reduce helpers construct this standalone, without the app bootstrapped, and pass null.
+  constructor(stCommon: SuiteToolsCommon | null) {
     this._stCommon = stCommon;
   }
 
@@ -155,6 +156,12 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    * @returns the internal id
    */
   public getCustomRecordInternalId(customRecord: string): number {
+    // Unlike the create/update methods, this one needs the bootstrapped app for SuiteQL, so it
+    // is not usable from the standalone Map/Reduce construction that passes null. Previously
+    // this threw an opaque TypeError on the property access below.
+    if (!this.stCommon) {
+      throw new Error("SuiteToolsCommonLibraryNetSuiteRecord:getCustomRecordInternalId() requires SuiteToolsCommon");
+    }
     let result = 0;
     const sql = `
         SELECT

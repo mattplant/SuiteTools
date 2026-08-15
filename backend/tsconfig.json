@@ -11,9 +11,9 @@
     "moduleResolution": "bundler",
 
     /* Type System - Gradually increasing strictness (#28) */
-    "strict": false, // TODO: Enable once strictNullChecks lands, then drop the opt-outs below
+    "strict": false, // TODO: #28 phase 4 -- enable, then drop the now-redundant opt-outs below
     "noImplicitAny": true,
-    "strictNullChecks": false, // TODO: 18 errors across 8 files -- the remaining phase of #28
+    "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 

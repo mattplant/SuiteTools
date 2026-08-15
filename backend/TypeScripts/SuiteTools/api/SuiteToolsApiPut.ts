@@ -59,7 +59,9 @@ export class SuiteToolsApiPut {
     assertIsRequestBodyData(requestBodyData);
 
     const devMode = (requestBodyData as { devMode?: boolean }).devMode;
-    const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode };
+    // The checkbox field cannot take undefined; an absent devMode means "off". The frontend
+    // always sends Boolean(...), so this coalesce is a guard rather than a live code path.
+    const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode ?? false };
     this.stCommon.stSettings.getSettings();
     const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(
       this.stCommon.appSettingsRecord,
