@@ -53,8 +53,6 @@
     "@vitejs/plugin-react": "6.0.5",
     "globals": "^16.3.0",
     "jsdom": "^30.0.1",
-    "postcss": "^8.5.6",
-    "postcss-nested": "^7.0.2",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "vite": "8.2.1",
