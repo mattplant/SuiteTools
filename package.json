@@ -43,7 +43,7 @@
     "postinstall": "node ./scripts/check-node.mjs",
     "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
     "yarn:reset": "./scripts/resetYarn.sh",
-    "generate-third-party-licenses": "./scripts/generate-third-party-licenses.sh",
+    "generate-third-party-licenses": "./scripts/third-party-licenses/generate.sh",
     "lint:fix": "yarn run -T biome check --write .",
     "format": "yarn run -T biome format --write .",
     "check-format": "yarn run -T biome format ."
