@@ -1,8 +1,2 @@
 // monorepo tsconfig.json
-{
-  "composite": true,
-  "files": [],
-  "references": [{ "path": "./shared" }, { "path": "./frontend" }, { "path": "./backend" }],
-  "compilerOptions": { "paths": { "@types/*": ["./types/*"] } },
-  "include": []
-}
+{ "files": [], "references": [{ "path": "./shared" }, { "path": "./frontend" }, { "path": "./backend" }] }
