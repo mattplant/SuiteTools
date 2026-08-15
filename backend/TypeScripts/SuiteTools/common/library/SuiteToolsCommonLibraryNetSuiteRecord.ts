@@ -35,7 +35,7 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    * @param values
    * @returns record id of newly created record if successful else 0
    */
-  public createCustomRecordEntry(recordType: string, values: object): number {
+  public createCustomRecordEntry(recordType: string, values: Record<string, record.FieldValue>): number {
     log.debug({
       title: "SuiteToolsCommonLibraryNetSuiteRecord:createCustomRecordEntry() initiated",
       details: { recordType: recordType, values: values },
@@ -91,7 +91,11 @@ export class SuiteToolsCommonLibraryNetSuiteRecord {
    * @param recordId
    * @returns true if successful else false
    */
-  public updateCustomRecordEntry(recordType: string, recordId: string, values: object): boolean {
+  public updateCustomRecordEntry(
+    recordType: string,
+    recordId: string,
+    values: Record<string, record.FieldValue>,
+  ): boolean {
     log.debug({
       title: "SuiteToolsCommonLibraryNetSuiteRecord:updateCustomRecord() initiated",
       details: { recordType: recordType, recordId: recordId, values: values },

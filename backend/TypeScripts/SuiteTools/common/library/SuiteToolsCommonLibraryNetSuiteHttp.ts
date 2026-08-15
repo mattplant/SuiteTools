@@ -43,7 +43,7 @@ export class SuiteToolsCommonLibraryNetSuiteHttp {
 
           return response.body;
         })
-        .catch(function onRejected(reason) {
+        .catch(function onRejected(reason: unknown): undefined {
           log.debug({ title: "getRequest() invalid request", details: reason });
 
           return undefined;
