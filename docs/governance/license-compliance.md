@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](./README.md) for related policies and standards.
 
-Last updated: September 22, 2025
+Last updated: August 14, 2026
 
 ---
 
@@ -44,6 +44,20 @@ SuiteTools applies a dual-license model to balance strong copyleft protections w
 If you reuse, remix, or reference SuiteTools—whether in code, documentation, onboarding flows, or architectural patterns-please follow the attribution guidelines in [ATTRIBUTION.md](../../ATTRIBUTION.md) and preserve all required license markers.
 
 > 📘 Attribution is not just legal—it’s architectural. It preserves traceability, honors stewardship, and supports reproducible governance.
+
+---
+
+### 📜 Third-Party Notices
+
+The notices SuiteTools is obliged to carry for the packages it distributes are recorded in [`THIRD_PARTY_LICENSES.md`](../../THIRD_PARTY_LICENSES.md).
+
+That file is **generated, never hand-edited**, and covers **transitive** runtime dependencies — not only direct ones — because transitive code is present in the shipped bundle. It must be regenerated as part of any change to runtime dependencies:
+
+```sh
+yarn generate-third-party-licenses
+```
+
+See the [Third-Party Licenses Guide](../guides/third-party-licenses.md) for scope, the rules for packages that ship no licence file, and how to verify a regeneration.
 
 ---
 
