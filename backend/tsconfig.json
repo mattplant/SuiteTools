@@ -10,12 +10,12 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
 
-    /* Type System - Gradually increasing strictness */
-    "strict": false, // TODO: Enable after fixing existing type issues
-    "noImplicitAny": false, // TODO: Enable after adding proper types
-    "strictNullChecks": false, // TODO: Enable after null handling fixes
-    "noUnusedLocals": false, // TODO: Re-enable after cleanup
-    "noUnusedParameters": false, // TODO: Re-enable after cleanup
+    /* Type System - Gradually increasing strictness (#28) */
+    "strict": false, // TODO: Enable once strictNullChecks lands, then drop the opt-outs below
+    "noImplicitAny": true,
+    "strictNullChecks": false, // TODO: 18 errors across 8 files -- the remaining phase of #28
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
 
     /* Module Resolution & Interop */
     "esModuleInterop": true,

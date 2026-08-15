@@ -101,7 +101,7 @@ export function summarize(context: EntryPoints.MapReduce.summarizeContext): void
   try {
     log.debug("summarize() context = ", JSON.stringify(context));
     // generate and log standard summary
-    const scriptErrors = [];
+    const scriptErrors: string[] = [];
     context.mapSummary.errors.iterator().each((_key, value) => {
       scriptErrors.push(JSON.stringify(JSON.parse(value).cause));
       return true;
