@@ -68,7 +68,7 @@ export class SuiteToolsApiModel {
    * @param modifiedDate - the last modified date
    * @returns results
    */
-  public getFiles(row: string, types: string | string[], createdDate: string, modifiedDate: string): Response {
+  public getFiles(row: string, types: string | string[] | null, createdDate: string, modifiedDate: string): Response {
     let sql = `SELECT
       file.id,
       file.folder,
@@ -580,11 +580,11 @@ export class SuiteToolsApiModel {
    */
   public getScripts(
     active: string,
-    versions: string[],
-    types: string[],
-    scripts: string[],
-    owners: string[],
-    files: string[],
+    versions: string[] | null,
+    types: string[] | null,
+    scripts: string[] | null,
+    owners: string[] | null,
+    files: string[] | null,
   ): Response {
     let sql = `SELECT
       script.id,
@@ -673,7 +673,7 @@ export class SuiteToolsApiModel {
    *
    * @returns results
    */
-  public getUsers(active: string, roles?: string[], supervisors?: string[]): Response {
+  public getUsers(active: string, roles?: string[] | null, supervisors?: string[] | null): Response {
     let sql = `SELECT
       employee.id,
       employee.isinactive AS isInactive,
@@ -768,14 +768,14 @@ export class SuiteToolsApiModel {
    */
   public getScriptLogsViaSuiteQL(
     row: string,
-    levels: string[],
-    types: string[],
-    scripts: string[],
-    owners: string[],
+    levels: string[] | null,
+    types: string[] | null,
+    scripts: string[] | null,
+    owners: string[] | null,
     timemode: string,
     date: string,
-    customdatetime: string,
-    customduration: string,
+    customdatetime: string | null,
+    customduration: string | null,
     title: string,
     detail: string,
   ): Response {
@@ -1118,8 +1118,8 @@ export class SuiteToolsApiModel {
     active: string,
     integrationName: string,
     tokenName: string,
-    users: string[],
-    roles: string[],
+    users: string[] | null,
+    roles: string[] | null,
     dates: string,
   ): Response {
     log.debug({

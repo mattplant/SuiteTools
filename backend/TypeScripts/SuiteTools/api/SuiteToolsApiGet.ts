@@ -794,8 +794,8 @@ export class SuiteToolsApiGet {
     const owners = this.convertMultiSelectToArray(requestParams.owners);
     const timemode = requestParams.timeMode ? requestParams.timeMode : "now";
     let date = requestParams.dateCreated ? requestParams.dateCreated : "15";
-    let customdatetime = requestParams.customDateTime;
-    let customduration = requestParams.customDuration;
+    let customdatetime: string | null = requestParams.customDateTime;
+    let customduration: string | null = requestParams.customDuration;
     const title = requestParams.title;
     const detail = requestParams.detail;
 

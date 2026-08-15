@@ -53,7 +53,8 @@ export class SuiteToolsApp {
     }
   }
 
-  private bootstrapLibrary(context: EntryPoints.Suitelet.onRequestContext): void {
+  // Only ever called when there is no Suitelet context -- see the constructor.
+  private bootstrapLibrary(context: EntryPoints.Suitelet.onRequestContext | null): void {
     log.debug({ title: "SuiteToolsApp:bootstrapLibrary() initiated", details: context });
 
     // verify integrity of app settings before proceeding

@@ -21,13 +21,14 @@ declare class SuiteToolsCommon {}
  * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibraryNetSuiteSuiteQl {
-  private _stCommon: SuiteToolsCommon;
+  private _stCommon: SuiteToolsCommon | null;
 
-  get stCommon(): SuiteToolsCommon {
+  get stCommon(): SuiteToolsCommon | null {
     return this._stCommon;
   }
 
-  constructor(stCommon: SuiteToolsCommon) {
+  // Map/Reduce helpers construct this standalone, without the app bootstrapped, and pass null.
+  constructor(stCommon: SuiteToolsCommon | null) {
     this._stCommon = stCommon;
   }
 

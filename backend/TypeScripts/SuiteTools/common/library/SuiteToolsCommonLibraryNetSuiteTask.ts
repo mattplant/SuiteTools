@@ -45,7 +45,7 @@ export class SuiteToolsCommonLibraryNetSuiteTask {
     });
 
     let scriptTaskId = "";
-    let taskTypeEnum: task.TaskType = null;
+    let taskTypeEnum: task.TaskType | null = null;
     // set the task type to the task.TaskType enum
     if (taskType === "SCHEDULED_SCRIPT") {
       taskTypeEnum = task.TaskType.SCHEDULED_SCRIPT;

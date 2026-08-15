@@ -36,11 +36,15 @@ type MapReduceKey = { type: string; name: string };
  *
  * @param context: EntryPoints.MapReduce.getInputDataContext
  */
-export function getInputData(context: EntryPoints.MapReduce.getInputDataContext): EntryPoints.MapReduce.getInputData {
+// `getInputData` is the *function* type for the entry point; the value returned is a
+// `GetInputDataResponse`. The mismatch only compiled while null was assignable to anything.
+export function getInputData(
+  context: EntryPoints.MapReduce.getInputDataContext,
+): EntryPoints.MapReduce.GetInputDataResponse {
   log.debug("*START*", "<------------------- START ------------------->");
   log.debug("getInputData() initiated with", JSON.stringify(context));
 
-  let entityRecords: EntryPoints.MapReduce.getInputData;
+  let entityRecords: EntryPoints.MapReduce.GetInputDataResponse;
   try {
     entityRecords = JSON.parse(
       String(runtime.getCurrentScript().getParameter({ name: "custscript_idev_st_mr_logins_entity" })),
@@ -50,7 +54,9 @@ export function getInputData(context: EntryPoints.MapReduce.getInputDataContext)
     return entityRecords;
   } catch (e) {
     log.error("getInputData() error", JSON.stringify(e));
-    return null;
+    // Returning null previously handed the Map/Reduce framework a value it cannot consume.
+    // An empty list is the correct "no work" input.
+    return [];
   }
 }
 

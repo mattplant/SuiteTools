@@ -166,7 +166,9 @@ export class SuiteToolsCommonJobs {
    */
   public async runJob(jobId: string, jobData?: object): Promise<void> {
     log.debug("SuiteToolsCommonJobs:runJob() initiated", { jobId, jobData });
-    let result: object;
+    // Initialised so the `default:` branch below -- an unrecognised job id -- still has a
+    // value to log and persist, rather than reading an unassigned variable.
+    let result: object = {};
     let completed = false;
     if (jobId) {
       // load job details

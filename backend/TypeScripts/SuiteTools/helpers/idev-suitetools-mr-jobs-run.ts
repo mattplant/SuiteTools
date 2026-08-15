@@ -58,6 +58,10 @@ export function getInputData(
   } catch (e) {
     log.error("getInputData() error", JSON.stringify(e));
   }
+
+  // Falling out of the try without returning previously yielded undefined, which the
+  // Map/Reduce framework cannot consume. An empty list is the correct "no work" input.
+  return [];
 }
 
 /**

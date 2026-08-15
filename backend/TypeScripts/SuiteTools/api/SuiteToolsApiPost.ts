@@ -66,7 +66,8 @@ export class SuiteToolsApiPost {
   private initiateJob(requestParams: RequestParams): Response {
     log.debug({ title: "SuiteToolsApiPost:initiateJob() initiated", details: requestParams });
     let id = requestParams.id;
-    let data: object;
+    // Left undefined when the request carries no payload; initiateJob's `data` is optional.
+    let data: object | undefined;
     if (!id) {
       // set to 0 to run all active jobs
       id = "0";
