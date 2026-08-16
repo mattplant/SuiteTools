@@ -855,6 +855,25 @@ export class SuiteToolsApiGet {
   }
 
   /**
+   * Media URL for a file the SPA build emits, or `undefined` when it is not deployed.
+   *
+   * `file.load()` throws when the path does not exist, and this runs inside the settings endpoint
+   * the SPA bootstraps from -- so an unguarded lookup would turn a missing asset into a dead app
+   * rather than one missing link.
+   *
+   * @param path - app-relative file path, e.g. `dist/third-party-notices.json`
+   * @returns the file's URL, or undefined if it could not be resolved
+   */
+  private getAppFileUrl(path: string): string | undefined {
+    try {
+      return this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(path);
+    } catch (err) {
+      log.error({ title: `SuiteToolsApiGet:getAppFileUrl() could not resolve ${path}`, details: err });
+      return undefined;
+    }
+  }
+
+  /**
    * Get Settings.
    *
    * @returns settings
@@ -878,6 +897,11 @@ export class SuiteToolsApiGet {
       notifyEmail: settings?.notifyEmail,
       // storage settings
       lastLogins: settings?.lastLogins,
+      // The SPA fetches the third-party notices rather than bundling them, so it needs the file's
+      // media URL. Resolved here rather than stored on the settings record like cssUrl/jsUrl:
+      // those are written once by initializeApp(), which only runs when no settings record exists,
+      // so a new stored field would stay empty forever on every existing install.
+      noticesUrl: this.getAppFileUrl(this.stCommon.appNoticesFile),
       // system (these are all from the runtime object)
       accountId: this.stCommon.runtime.accountId,
       envType: this.stCommon.runtime.envType,

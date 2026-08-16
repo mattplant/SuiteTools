@@ -28,6 +28,10 @@ const SettingsSchema = z.object({
   notifyEmail: zNetSuite.stringOrEmpty.schema,
   // storage settings
   lastLogins: LastLoginsSchema,
+  // Media URL of the generated third-party notices payload. Optional because it is resolved from
+  // the File Cabinet at read time, and an install whose SPA assets have not deployed yet should
+  // lose one link rather than fail settings validation outright.
+  noticesUrl: z.string().optional(),
   // system
   accountId: z.string(),
   envType: z.string(),
