@@ -49,15 +49,15 @@ If you reuse, remix, or reference SuiteTools—whether in code, documentation, o
 
 ### 📜 Third-Party Notices
 
-The notices SuiteTools is obliged to carry for the packages it distributes are recorded in [`THIRD_PARTY_LICENSES.md`](../../THIRD_PARTY_LICENSES.md).
+The notices SuiteTools is obliged to carry for the packages it distributes are recorded in [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md).
 
 That file is **generated, never hand-edited**, and covers **transitive** runtime dependencies — not only direct ones — because transitive code is present in the shipped bundle. It must be regenerated as part of any change to runtime dependencies:
 
 ```sh
-yarn generate-third-party-licenses
+yarn generate-third-party-notices
 ```
 
-See the [Third-Party Licenses Guide](../guides/third-party-licenses.md) for scope, the rules for packages that ship no licence file, and how to verify a regeneration.
+See the [Third-Party Notices Guide](../guides/third-party-notices.md) for scope, the rules for packages that ship no licence file, and how to verify a regeneration.
 
 ---
 

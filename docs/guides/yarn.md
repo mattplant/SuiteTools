@@ -146,7 +146,7 @@ Contains Yarn plugins that extend functionality.
 
 **Notable plugins:**
 
-- `@yarnpkg/plugin-licenses`: Generates `THIRD_PARTY_LICENSES.md` listing third‑party packages and their licenses.
+- `@yarnpkg/plugin-licenses`: Generates `THIRD_PARTY_NOTICES.md` listing third‑party packages and their licenses.
 
 `@yarnpkg/plugin-typescript` is **not** used. TypeScript support comes from workspace `tsconfig`s, the pinned `typescript` in `node_modules`, and root `yarn typecheck` — not from auto-adding `@types/*` via that plugin.
 

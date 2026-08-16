@@ -17,4 +17,4 @@ because upstream did not ship them — asserting either would put unverified tex
 document whose only purpose is to state licence terms accurately.
 
 This entry exists to make the gap visible rather than to close it. Closing it requires
-upstream to ship a licence file; see `docs/guides/third-party-licenses.md`.
+upstream to ship a licence file; see `docs/guides/third-party-notices.md`.

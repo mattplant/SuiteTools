@@ -63,12 +63,12 @@ SuiteTools monorepo
 ├── GOVERNANCE.md      # Governance overview and principles
 ├── LICENSE            # The GPL-3.0-or-later license file
 ├── LICENSE-DOCS.md    # The CC BY 4.0 license file for documentation
-├── NOTICE             # Notices for third-party code and attributions
+├── NOTICE             # Licensing overview and stewardship pointer for SuiteTools itself
 ├── package.json       # Yarn workspace definition & top-level scripts
 ├── README.md          # This README file
 ├── SECURITY.md        # Security policy and vulnerability reporting guidelines
 ├── STYLE.md           # Coding and documentation style guide
-└── THIRD_PARTY_NOTICES.md # Third-party code and asset notices
+└── THIRD_PARTY_NOTICES.md # Generated per-package third-party compliance record
 ```
 
 #### ⚙️ `backend/`

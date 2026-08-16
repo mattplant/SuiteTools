@@ -6,8 +6,8 @@
 Last updated: September 14, 2025
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
-[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
-[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
+[![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
 
 ---
 
@@ -108,13 +108,13 @@ SuiteTools applies a consistent dual-license model across the entire monorepo to
 
 | Component      | License                       | Purpose                                        |
 |----------------|-------------------------------|------------------------------------------------|
-| Source Code    | [GPL-3.0-or-later](LICENSE)   | Ensures strong copyleft protections            |
-| Documentation  | [CC BY 4.0](LICENSE-DOCS.md)  | Encourages reuse and remixing with attribution |
+| Source Code    | [GPL-3.0-or-later](../../LICENSE)   | Ensures strong copyleft protections            |
+| Documentation  | [CC BY 4.0](../../LICENSE-DOCS.md)  | Encourages reuse and remixing with attribution |
 
 - **Mixed files** — Governed by the primary content type; split when possible for clarity
 - **Third‑party assets** — Governed by their original license; attribution required
 
-If you're referencing SuiteTools in your own work—whether code, documentation, or architectural patterns—please follow the attribution guidelines in [ATTRIBUTION.md](ATTRIBUTION.md) and preserve SPDX headers and NOTICE references where applicable.
+If you're referencing SuiteTools in your own work—whether code, documentation, or architectural patterns—please follow the attribution guidelines in [ATTRIBUTION.md](../../ATTRIBUTION.md) and preserve SPDX headers and NOTICE references where applicable.
 
 ---
 

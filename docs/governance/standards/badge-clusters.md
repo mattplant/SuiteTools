@@ -32,6 +32,22 @@ See [Governance Document Definition](governance-docs.md) for the complete scope 
 [![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
 ```
 
+## 🧭 Adjust the paths to the file's depth
+
+`LICENSE-DOCS.md`, `LICENSE` and `ATTRIBUTION.md` live at the repository root, so the template above is
+correct **only for root-level files**. When copying it into a subdirectory, prefix those three link
+targets to match the depth:
+
+| File location | Prefix | Example |
+| --- | --- | --- |
+| Repository root | none | `ATTRIBUTION.md` |
+| One level down — `docs/`, `backend/` | `../` | `../ATTRIBUTION.md` |
+| Two levels down — `docs/guides/` | `../../` | `../../ATTRIBUTION.md` |
+
+Only the link targets change; the badge image URLs are absolute and stay as they are.
+
+Write the prefix out plainly — `../ATTRIBUTION.md`, not `./../ATTRIBUTION.md`.
+
 ## 📋 Placement
 
 Place the badge cluster **immediately after** the last updated date and **before** the horizontal rule.

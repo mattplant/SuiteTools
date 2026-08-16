@@ -76,7 +76,7 @@ This is a human‑readable summary of (and not a substitute for) the full [CC BY
 
 ```
 
-For more formats (Markdown, plain text, visual asset captions), see [`docs/ATTRIBUTION.md`](ATTRIBUTION.md).
+For more formats (Markdown, plain text, visual asset captions), see [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
 ---
 
@@ -88,7 +88,7 @@ Licensed documentation is discoverable via:
 - References to `LICENSE-DOCS.md` and `ATTRIBUTION.md` in documentation headers
 - Inclusion in curated onboarding flows and developer guides
 
-If unsure whether a file is covered, check for a CC badge or consult [`docs/ATTRIBUTION.md`](ATTRIBUTION.md).
+If unsure whether a file is covered, check for a CC badge or consult [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
 ---
 
