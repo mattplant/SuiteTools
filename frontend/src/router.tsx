@@ -26,6 +26,7 @@ import { JobRunPage } from "./pages/JobRunPage";
 import { JobRunsPage } from "./pages/JobRunsPage";
 // license
 import License from "./pages/License";
+import { ThirdPartyNotices } from "./pages/ThirdPartyNotices";
 // logins
 import { LoginsPage } from "./pages/LoginsPage";
 // roles
@@ -76,6 +77,7 @@ export const router = createHashRouter([
           { path: "file/:id", element: <FilePage />, loader: fileLoader },
           { path: "files", element: <FilesPage /> },
           { path: "licenses", element: <License /> },
+          { path: "licenses/third-party", element: <ThirdPartyNotices /> },
           { path: "integration/:id", element: <IntegrationPage />, loader: integrationLoader },
           { path: "integrations", element: <IntegrationsPage /> },
           { path: "job/:id", element: <JobPage />, loader: jobLoader },

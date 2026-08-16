@@ -1,10 +1,17 @@
 export default function Footer(): React.JSX.Element {
   return (
-    <footer style={{ padding: "1rem", textAlign: "center", fontSize: "0.9rem", color: "#555" }}>
-      <span>© {new Date().getFullYear()} Matthew Plant</span>
+    <footer className="p-4 text-center text-sm text-slate-600">
+      <span>© 2025 Matthew Plant</span>
       <span> &nbsp;|&nbsp; </span>
       <span>
-        Licensed under the GNU GPL v3.0 - <a href="#/licenses">View Licenses</a>
+        Licensed under GPL-3.0-or-later -{" "}
+        <a className="underline hover:text-slate-900" href="#/licenses">
+          License
+        </a>
+        {" · "}
+        <a className="underline hover:text-slate-900" href="#/licenses/third-party">
+          Third-Party Notices
+        </a>
       </span>
     </footer>
   );
