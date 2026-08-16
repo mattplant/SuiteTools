@@ -2,7 +2,12 @@ export default function License() {
   return (
     <div className="p-4">
       <div className="mx-auto max-w-4xl text-center">
-        <h1 className="text-2xl text-slate-900">LICENSES</h1>
+        <h1 className="text-2xl text-slate-900">SUITETOOLS LICENSE</h1>
+        <p className="text-slate-600 mt-2 text-sm">
+          <a className="underline hover:text-slate-900" href="#/licenses/third-party">
+            Third-party notices for the packages SuiteTools distributes
+          </a>
+        </p>
         <pre className="text-slate-600 mt-4 text-left whitespace-pre-wrap">
           {`
 SuiteTools — the missing NetSuite tools
