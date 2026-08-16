@@ -217,18 +217,26 @@ export class SuiteToolsCommonJobs {
   }
 
   /**
-   * Gets recent script errors
+   * Gets recent script errors.
    *
-   * @param lastRun - last run timestamp
-   * @returns recent script errors
+   * Rows come from SuiteQL `asMappedResults()`, whose keys are the **lowercased** aliases:
+   * `id`, `timestamp`, `type`, `scripttype`, `owner`, `scriptname`, `title`, `detail`.
+   *
+   * Typed `unknown[]` rather than a declared row interface on purpose. The query is issued
+   * through `stCommon.stLib`, which is still `any` (see #83), so an interface here would be an
+   * unchecked assertion rather than a verified shape — and a casing slip (`scriptName` vs
+   * `scriptname`) would go unnoticed. `unknown[]` removes the `any` without claiming a guarantee
+   * that does not exist; the only consumer JSON-stringifies the result, so no caller needs the
+   * fields narrowed today. Worth revisiting once #83 gives `stLib` a real type.
+   *
+   * @param lastRun - last run timestamp; when absent, the query covers the last 60 minutes
+   * @returns the raw SuiteQL rows
    */
-  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tracked in #28
-  public getRecentScriptErrorsJob(lastRun: string): any[] {
+  public getRecentScriptErrorsJob(lastRun: string): unknown[] {
     log.debug({ title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`, details: { lastRun } });
     // get the errors from the script execution log
     let levels = ["ERROR", "EMERGENCY", "SYSTEM"];
-    // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tracked in #28
-    let result: any[] = [];
+    let result: unknown[] = [];
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
