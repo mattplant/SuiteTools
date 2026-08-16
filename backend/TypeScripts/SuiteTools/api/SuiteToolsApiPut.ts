@@ -62,13 +62,28 @@ export class SuiteToolsApiPut {
     // The checkbox field cannot take undefined; an absent devMode means "off". The frontend
     // always sends Boolean(...), so this coalesce is a guard rather than a live code path.
     const updateSettings = { custrecord_idev_st_setting_dev_mode: devMode ?? false };
-    this.stCommon.stSettings.getSettings();
+
+    // Without a settings record there is nothing to update. This used to read an optional field
+    // straight into `String(...)`, which accepts anything -- so a save before the app had ever
+    // been opened, or after the record was deleted, targeted record id "undefined".
+    const settings = this.stCommon.stSettings.getSettings();
+    if (!settings) {
+      log.error({ title: `SuiteToolsApiPut:putSettings() no settings record`, details: null });
+      return { status: 409, data: {}, message: "Settings record not found. Open the app to initialise it." };
+    }
+
     const success = this.stCommon.stLib.stLibNs.stLibNsRecord.updateCustomRecordEntry(
       this.stCommon.appSettingsRecord,
-      String(this.stCommon.stSettings.recordId),
+      String(settings.recordId),
       updateSettings,
     );
     log.debug({ title: `SuiteToolsApiPut:putSettings() saved successfully?`, details: success });
+
+    // Report what actually happened; this previously returned 200 "Settings updated" even when
+    // the update failed.
+    if (!success) {
+      return { status: 500, data: {}, message: "Settings update failed" };
+    }
 
     return { status: 200, data: {}, message: "Settings updated" };
   }

@@ -194,12 +194,16 @@ export class SuiteToolsCommonJobs {
         // send notification email if job is set to notify
         const notify = jobDetails.getValue("custrecord_idev_st_mr_job_notify");
         if (notify) {
-          const notifyAuthor = this.stCommon.stSettings.notifyAuthor;
-          const notifyEmail = this.stCommon.stSettings.notifyEmail;
-          // Both are absent until a *successful* getSettings() -- it assigns nothing and returns
-          // false when the settings record is missing or inactive. Until the forward declaration
-          // was removed these reads went through `any`, so calling email.send() with an undefined
-          // author and recipient typechecked. Log and skip instead of sending a broken email.
+          // Load here rather than relying on SuiteToolsApp:bootstrapLibrary() having run first.
+          // That temporal coupling was invisible and only held because the MR entry point happens
+          // to construct SuiteToolsApp without a context.
+          const settings = this.stCommon.stSettings.getSettings();
+          const notifyAuthor = settings?.notifyAuthor;
+          const notifyEmail = settings?.notifyEmail;
+          // Both columns are user-editable and legitimately empty on a partially configured
+          // install. Until the forward declaration was removed these reads went through `any`, so
+          // calling email.send() with an undefined author and recipient typechecked. Log and skip
+          // instead of sending a broken email.
           if (notifyAuthor === undefined || !notifyEmail) {
             log.error("SuiteToolsCommonJobs:runJob() cannot send job notification", {
               jobId,
@@ -320,23 +324,34 @@ export class SuiteToolsCommonJobs {
       });
     }
 
-    if (entityRecords.length > 0) {
-      // Ensure settings are loaded so recordId is available for the MR script.
-      this.stCommon.stSettings.getSettings();
-      const params = {
-        custscript_idev_st_mr_logins_entity: JSON.stringify(entityRecords),
-        custscript_idev_st_mr_logins_set_id: this.stCommon.stSettings.recordId,
-      };
-      const scriptTaskId = this.stCommon.stLib.stLibNs.stLibNsTask.submit(
-        "MAP_REDUCE",
-        "customscript_idev_suitetools_mr_logins",
-        "customdeploy_idev_suitetools_mr_logins",
-        params,
-      );
-      message = `Last logins script initiated with task id of ${scriptTaskId}`;
-      // NOTE: the results are saved in the summary step of the last logins script
-    } else {
+    if (entityRecords.length === 0) {
       message = "No active entity records found";
+    } else {
+      // Load settings for the recordId the MR script writes its results back to.
+      const settings = this.stCommon.stSettings.getSettings();
+      if (!settings) {
+        // Previously this launched the script with `set_id: undefined`, so the run completed and
+        // silently failed to persist. Skipping is the honest outcome, matching how runJob()
+        // handles an unconfigured notification.
+        log.error({
+          title: "SuiteToolsCommonJobs:initiateLastLoginsJob() no settings record",
+          details: "Cannot initiate the last logins job without a settings record to save results to",
+        });
+        message = "Settings record not found — last logins job not initiated";
+      } else {
+        const params = {
+          custscript_idev_st_mr_logins_entity: JSON.stringify(entityRecords),
+          custscript_idev_st_mr_logins_set_id: settings.recordId,
+        };
+        const scriptTaskId = this.stCommon.stLib.stLibNs.stLibNsTask.submit(
+          "MAP_REDUCE",
+          "customscript_idev_suitetools_mr_logins",
+          "customdeploy_idev_suitetools_mr_logins",
+          params,
+        );
+        message = `Last logins script initiated with task id of ${scriptTaskId}`;
+        // NOTE: the results are saved in the summary step of the last logins script
+      }
     }
     log.debug({ title: "SuiteToolsCommonJobs:initiateLastLoginsJob() returning", details: message });
 
