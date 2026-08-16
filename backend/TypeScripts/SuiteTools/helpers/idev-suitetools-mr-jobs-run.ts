@@ -47,7 +47,10 @@ export function getInputData(
 
     if (jobId) {
       // Property must be `data` — reduce reads values.data (was incorrectly `name`).
-      const inputData = [{ id: jobId, data: jobData }];
+      // Omit `data` entirely when there is no payload rather than setting it to undefined: the
+      // Map/Reduce framework JSON-serializes this and JSON.stringify drops undefined values, so
+      // an absent key is already what reduce() sees. Same bytes, honest type.
+      const inputData = jobData === undefined ? [{ id: jobId }] : [{ id: jobId, data: jobData }];
       log.debug(`getInputData() running for job #${jobId}`, { hasData: Boolean(jobData) });
       return inputData;
     }
