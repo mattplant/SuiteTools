@@ -40,9 +40,13 @@ export class SuiteToolsCommon {
   private _stLib: SuiteToolsCommonLibrary;
   // the application directory in the /SuiteScripts folder
   private _appDir = "SuiteTools";
-  // application files
-  private _appCssFile = "dist/output.css";
-  private _appJsFile = "dist/app-bundle.js";
+  // Application files the SPA build emits, all relative to the app directory. One map so adding a
+  // file is a single edit here rather than a new constant plus a new getter.
+  private _appFiles = {
+    css: "dist/output.css",
+    js: "dist/app-bundle.js",
+    notices: "dist/third-party-notices.json",
+  } as const;
   // application settings record
   private _appSettingsRecord = "customrecord_idev_suitetools_settings"; // the application settings custom record
 
@@ -60,10 +64,13 @@ export class SuiteToolsCommon {
     return this._appDir;
   }
   get appCssFile(): string {
-    return this._appCssFile;
+    return this._appFiles.css;
   }
   get appJsFile(): string {
-    return this._appJsFile;
+    return this._appFiles.js;
+  }
+  get appNoticesFile(): string {
+    return this._appFiles.notices;
   }
   get appSettingsRecord(): string {
     return this._appSettingsRecord;

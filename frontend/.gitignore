@@ -2,3 +2,6 @@
 
 # Vite
 vite.config.ts.timestamp-*.mjs
+
+# Derived from the committed THIRD_PARTY_NOTICES.md by the build; never edited by hand.
+public/third-party-notices.json
