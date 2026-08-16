@@ -17,13 +17,16 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const peaks = data.concurrency.series.peak;
   const allXGroups = useMemo(() => [...new Set(peaks.map((d) => d[0].toString()))], [peaks]);
   const allYGroups = useMemo(() => [...new Set(peaks.map((d) => d[1].toString()))], [peaks]);
-  // Keep proxy deps (peaks/width) so scale rebuild timing stays as before APM verification.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: peaks covers allXGroups; width is constant layout
-  const xScale = useMemo(() => d3.scaleBand().range([0, boundsWidth]).domain(allXGroups).padding(0.05), [peaks, width]);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: peaks covers allYGroups; height tracks day count
+  // Exact deps, identical rebuild timing to the previous `[peaks, width]` / `[peaks, height]`
+  // proxies: allXGroups/allYGroups are memos on `peaks`, so their identity changes exactly when
+  // `peaks` does, and boundsWidth/boundsHeight are primitives tracking width and daysCount.
+  const xScale = useMemo(
+    () => d3.scaleBand().range([0, boundsWidth]).domain(allXGroups).padding(0.05),
+    [allXGroups, boundsWidth],
+  );
   const yScale = useMemo(
     () => d3.scaleBand().range([boundsHeight, 0]).domain(allYGroups).padding(0.05),
-    [peaks, height],
+    [allYGroups, boundsHeight],
   );
 
   // get violations
@@ -75,8 +78,8 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
           rx={5}
           stroke="white"
           width={xScale.bandwidth()}
-          x={xScale(d[0].toString())}
-          y={yScale(d[1].toString())}
+          x={x}
+          y={y}
         />
         {d[2] > 0 && (
           <a href={`#/concurrencyDetail/${result?.startTime}/${result?.endTime}`} target="_blank" rel="noreferrer">
@@ -84,10 +87,8 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
               dominantBaseline="middle"
               fontSize={10}
               textAnchor="middle"
-              // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
-              x={xScale(d[0].toString())! + xScale.bandwidth() / 2}
-              // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
-              y={yScale(d[1].toString())! + yScale.bandwidth() / 2}
+              x={x + xScale.bandwidth() / 2}
+              y={y + yScale.bandwidth() / 2}
               fill="black"
             >
               {result?.peakConcurrency}
@@ -134,10 +135,9 @@ export function ConcurrencySummaryHeatMapContent({ data }: Props) {
   const hourAverages = data.concurrency.hourAverages || [];
   // Generate 24 hour labels: '0', '1', ..., '23'
   const allAvgGroups = useMemo(() => Array.from({ length: 24 }, (_, i) => i.toString()), []);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: allAvgGroups is stable (empty-deps memo)
   const xAvgScale = useMemo(
     () => d3.scaleBand().range([0, boundsWidth]).domain(allAvgGroups).padding(0.05),
-    [boundsWidth],
+    [allAvgGroups, boundsWidth],
   );
   const yAvgScale = useMemo(() => d3.scaleBand().range([heightPerDay, 0]).domain(["Average"]).padding(0.05), []);
 

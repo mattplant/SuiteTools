@@ -50,6 +50,9 @@ export function useEntityList<TItem, TCriteria>(
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   // fetchList / getStatusMessage intentionally omitted — pages pass inline wrappers; deps covers extras.
+  // Permanent by design, not deferred work: including the wrappers would refetch on every
+  // render, and the dep array ends in `...deps` — a spread the rule cannot analyse statically,
+  // so it can never be satisfied here. The documented `deps` option is the refetch contract.
   // biome-ignore lint/correctness/useExhaustiveDependencies: callers pass inline wrappers whose identity changes every render; the explicit `deps` option is the intended refetch trigger
   useEffect(() => {
     let ignore = false;
