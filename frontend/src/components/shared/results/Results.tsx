@@ -84,13 +84,20 @@ export function Results({ type, lines, getModalData }: Props): React.JSX.Element
     };
   }, [id, lines, getModalData, modalTitle, triggerError]);
 
-  // Close the modal when in-app navigation leaves the current list route.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: location.pathname is the trigger for this effect, not a value it reads
+  // Close the modal on any in-app navigation performed from inside it.
+  //
+  // Keyed on `location.key`, not `location.pathname`. A modal can be hosted on the very route one
+  // of its buttons targets — the Job Executions list lives on `/job/:id`, and its "Job Details"
+  // button navigates to `/job/:id`. That pushes a new history entry without changing the path, so
+  // a pathname-keyed effect never fired and the modal stayed open over the page the user asked
+  // for, making the click look dead (#88). React Router issues a fresh `key` per history entry,
+  // including same-path pushes and back/forward, so this covers both cases.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: location.key is the trigger for this effect, not a value it reads
   useEffect(() => {
     setOpenModal(false);
     setId(null);
     setData(undefined);
-  }, [location.pathname]);
+  }, [location.key]);
 
   return (
     <div>
