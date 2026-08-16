@@ -7,9 +7,6 @@
  * @NApiVersion 2.1
  */
 
-// biome-ignore-all lint/suspicious/noExplicitAny: response payloads reach these helpers as `unknown` (Response.data is z.unknown()), so each re-widens to touch fields; tightening needs real types at the boundary, not 23 annotations. Tracked in #87
-// Note: the companion no-unsafe-return suppression is gone -- Biome has no type-aware equivalent.
-
 import * as log from "N/log";
 import type { Response } from "./types";
 import { SuiteToolsApiGetOptions } from "./SuiteToolsApiGetOptions";
@@ -20,6 +17,25 @@ import { validateGetResponse } from "./SuiteToolsApiGetValidate";
 import { ensureEntityOrSoftNotFound, softNotFoundResponse } from "./SuiteToolsApiGetNotFound";
 
 type RequestParams = { [key: string]: string };
+
+/**
+ * A raw payload row, as it reaches the cleaners.
+ *
+ * The cleaners run *before* schema validation -- their job is to reshape untyped SuiteQL
+ * rows into the shape the domain schema then validates. So the domain schema types their
+ * output, never their input; the honest input type is a string-keyed bag of `unknown`.
+ */
+type Row = Record<string, unknown>;
+
+/** Narrow an untyped payload to an indexable row. Mirrors the guard the cleaners already ran. */
+function isRow(value: unknown): value is Row {
+  return typeof value === "object" && value !== null;
+}
+
+/** Rows of an untyped list payload. Non-arrays and non-object entries drop out. */
+function rowsOf(value: unknown): Row[] {
+  return Array.isArray(value) ? value.filter(isRow) : [];
+}
 
 /**
  * SuiteTools API GET Class
@@ -178,15 +194,15 @@ export class SuiteToolsApiGet {
     return field ? (field.includes(",") ? field.split(",") : [field]) : null;
   }
 
-  private addUserLastLogin(data: any): object {
-    if (data) {
+  private addUserLastLogin(data: unknown): unknown {
+    if (isRow(data)) {
       // get last logins data for users
       this.stCommon.stSettings.getSettings();
       const lastLoginsObj = this.stCommon.stSettings.lastLogins;
       if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
-        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === "user");
+        const lastLogins = lastLoginsObj.data.filter((lastlogin) => lastlogin.name.type === "user");
         // add the last login data to the user record
-        const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === data.email);
+        const lastlogin = lastLogins.find((lastlogin) => lastlogin.name.name === data.email);
         if (lastlogin) {
           data.lastLogin = lastlogin.lastLogin;
         }
@@ -197,28 +213,29 @@ export class SuiteToolsApiGet {
   }
 
   private addUsersLastLogins(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
+    const records = rowsOf(response.data);
+    if (records.length > 0) {
       // get last logins data for users
       this.stCommon.stSettings.getSettings();
       const lastLoginsObj = this.stCommon.stSettings.lastLogins;
       if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
-        const lastLogins = lastLoginsObj.data.filter((lastlogin: any) => lastlogin.name.type === "user");
-        (response.data as any[]).forEach((record) => {
+        const lastLogins = lastLoginsObj.data.filter((lastlogin) => lastlogin.name.type === "user");
+        for (const record of records) {
           // add the last login data to the user record
-          const lastlogin = lastLogins.find((lastlogin: any) => lastlogin.name.name === record.email);
+          const lastlogin = lastLogins.find((lastlogin) => lastlogin.name.name === record.email);
           if (lastlogin) {
             record.lastLogin = lastlogin.lastLogin;
           }
-        });
+        }
       }
     }
 
     return response;
   }
 
-  private cleanJobData(data: any): object {
+  private cleanJobData(data: unknown): unknown {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== "object") {
+    if (!isRow(data)) {
       return data;
     }
     if (!("isInactive" in data) && !("isinactive" in data)) {
@@ -240,21 +257,19 @@ export class SuiteToolsApiGet {
   }
 
   private cleanJobsData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanJobData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanJobData(record);
     }
 
     return response;
   }
 
-  private addJobLastRun(data: any): object {
+  private addJobLastRun(data: unknown): unknown {
     log.debug({ title: "SuiteToolsApiGet:addJobLastRun() initiated", details: { data } });
 
     // Only attach lastRun when a run exists.
-    if (typeof data === "object" && data !== null && data.id) {
-      const lastRun = this.stCommon.stJobs.getJobLastRun(data.id);
+    if (isRow(data) && data.id) {
+      const lastRun = this.stCommon.stJobs.getJobLastRun(String(data.id));
       if (lastRun) {
         data.lastRun = lastRun;
       }
@@ -267,8 +282,8 @@ export class SuiteToolsApiGet {
    * SuiteQL `asMappedResults()` lowercases multi-word keys. Emit the shared
    * Login camelCase wire contract and drop flat leftovers.
    */
-  private cleanLoginData(data: any): object {
-    if (!data || typeof data !== "object") {
+  private cleanLoginData(data: unknown): unknown {
+    if (!isRow(data)) {
       return data;
     }
 
@@ -298,13 +313,11 @@ export class SuiteToolsApiGet {
   }
 
   private cleanLoginsData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record, index) => {
-        // LoginAudit has no stable internal id in this query; synthesize for the UI modal.
-        record.id = index + 1;
-        this.cleanLoginData(record);
-      });
-    }
+    rowsOf(response.data).forEach((record, index) => {
+      // LoginAudit has no stable internal id in this query; synthesize for the UI modal.
+      record.id = index + 1;
+      this.cleanLoginData(record);
+    });
 
     return response;
   }
@@ -312,8 +325,8 @@ export class SuiteToolsApiGet {
   /**
    * Remap SuiteQL-lowercased JobRun aliases to the shared camelCase wire contract.
    */
-  private cleanJobRunData(data: any): object {
-    if (!data || typeof data !== "object") {
+  private cleanJobRunData(data: unknown): unknown {
+    if (!isRow(data)) {
       return data;
     }
 
@@ -326,18 +339,16 @@ export class SuiteToolsApiGet {
   }
 
   private cleanJobRunsData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanJobRunData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanJobRunData(record);
     }
 
     return response;
   }
 
-  private cleanRoleData(data: any): object {
+  private cleanRoleData(data: unknown): unknown {
     // Soft-miss / empty payloads can be null or non-objects — bail before field access.
-    if (!data || typeof data !== "object") {
+    if (!isRow(data)) {
       return data;
     }
 
@@ -379,18 +390,16 @@ export class SuiteToolsApiGet {
   }
 
   private cleanRolesData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanRoleData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanRoleData(record);
     }
 
     return response;
   }
 
-  private cleanScriptData(data: any): object {
+  private cleanScriptData(data: unknown): unknown {
     // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!data || typeof data !== "object") {
+    if (!isRow(data)) {
       return data;
     }
     if (!("isInactive" in data) && !("isinactive" in data)) {
@@ -422,10 +431,8 @@ export class SuiteToolsApiGet {
   }
 
   private cleanScriptsData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanScriptData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanScriptData(record);
     }
 
     return response;
@@ -435,8 +442,8 @@ export class SuiteToolsApiGet {
    * SuiteQL lowercases `AS scriptType` / `AS scriptName`. Remap to the shared
    * ScriptLog camelCase wire contract before SPA Zod parse.
    */
-  private cleanScriptLogData(data: any): object {
-    if (!data || typeof data !== "object") {
+  private cleanScriptLogData(data: unknown): unknown {
+    if (!isRow(data)) {
       return data;
     }
 
@@ -452,10 +459,8 @@ export class SuiteToolsApiGet {
   }
 
   private cleanScriptLogsData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanScriptLogData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanScriptLogData(record);
     }
 
     return response;
@@ -465,8 +470,8 @@ export class SuiteToolsApiGet {
    * SuiteQL `asMappedResults()` lowercases aliases (`AS dateCreated` → `datecreated`).
    * Remap to the shared camelCase File wire contract before SPA Zod parse.
    */
-  private cleanFileData(data: any): object {
-    if (!data || typeof data !== "object") {
+  private cleanFileData(data: unknown): unknown {
+    if (!isRow(data)) {
       return data;
     }
 
@@ -483,18 +488,16 @@ export class SuiteToolsApiGet {
   }
 
   private cleanFilesData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanFileData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanFileData(record);
     }
 
     return response;
   }
 
-  private cleanUserData(data: any): object {
+  private cleanUserData(data: unknown): unknown {
     // Soft-miss / empty payloads can be null or non-objects — bail before field access.
-    if (!data || typeof data !== "object") {
+    if (!isRow(data)) {
       return data;
     }
 
@@ -523,10 +526,8 @@ export class SuiteToolsApiGet {
   }
 
   private cleanUsersData(response: Response): Response {
-    if (response && Array.isArray(response.data) && response.data.length > 0) {
-      (response.data as any[]).forEach((record) => {
-        this.cleanUserData(record);
-      });
+    for (const record of rowsOf(response.data)) {
+      this.cleanUserData(record);
     }
 
     return response;
