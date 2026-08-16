@@ -1,5 +1,6 @@
 // biome-ignore-all lint/suspicious/noArrayIndexKey: every map here renders a positional d3 chart mark. The arrays are regenerated wholesale on data change and never reordered or spliced, so the index is the identity. Data-derived keys were tried and reverted in #75 because this environment cannot render the concurrency screens (no NetSuite APM), so the change could not be visually verified. See #81.
 import * as d3 from "d3";
+import { bandPosition } from "../../bandPosition";
 import type { ConcurrencyDetailData } from "../types";
 
 type Props = { data: ConcurrencyDetailData };
@@ -24,8 +25,7 @@ export function ConcurrencyDetailBarGraphContent({ data }: Props) {
       <title>Concurrency by minute</title>
       <g transform={`translate(${margin.left}, ${margin.top})`}>
         {data.concurrency.concurrency.map((d, i) => (
-          // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
-          <g key={i} transform={`translate(${scaleX(d[0].toString())!}, 0)`}>
+          <g key={i} transform={`translate(${bandPosition(scaleX, d[0].toString())}, 0)`}>
             {(() => {
               const yFactor = height / data.concurrency.overview.peakConcurrency.value;
               const lineHeight = d[1] * yFactor;

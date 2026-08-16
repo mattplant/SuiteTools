@@ -1,5 +1,6 @@
 // biome-ignore-all lint/suspicious/noArrayIndexKey: every map here renders a positional d3 chart mark. The arrays are regenerated wholesale on data change and never reordered or spliced, so the index is the identity. Data-derived keys were tried and reverted in #75 because this environment cannot render the concurrency screens (no NetSuite APM), so the change could not be visually verified. See #81.
 import * as d3 from "d3";
+import { bandPosition } from "../../bandPosition";
 import type { ConcurrencyRequestData } from "../types";
 
 type Props = { data: ConcurrencyRequestData };
@@ -13,12 +14,17 @@ export function ConcurrencyRequestBarGraphContent({ data }: Props) {
   const width = 1024 - margin.left - margin.right;
   const height = 480 - margin.top - margin.bottom;
 
+  // `d3.min`/`max` return undefined for an empty array. The wrapper only renders this
+  // chart when `data` is set, but an empty array is still truthy — so narrow here rather
+  // than assert, and an empty result shows the same message instead of a NaN domain.
+  const firstStart = d3.min(data, (d) => d.startDate);
+  const lastEnd = d3.max(data, (d) => d.endDate);
+  if (firstStart === undefined || lastEnd === undefined) {
+    return <p>No data available</p>;
+  }
+
   // X scale (time)
-  const x = d3
-    .scaleTime()
-    // biome-ignore lint/style/noNonNullAssertion: d3.min/max only return undefined for an empty array, and the wrapper renders this chart only when data is present
-    .domain([d3.min(data, (d) => d.startDate)!, d3.max(data, (d) => d.endDate)!])
-    .range([0, width]);
+  const x = d3.scaleTime().domain([firstStart, lastEnd]).range([0, width]);
 
   // Y scale (index)
   const y = d3
@@ -50,8 +56,7 @@ export function ConcurrencyRequestBarGraphContent({ data }: Props) {
             {/* Y Axis */}
             <text
               x={-10}
-              // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
-              y={y(i.toString())! + y.bandwidth() / 2}
+              y={bandPosition(y, i.toString()) + y.bandwidth() / 2}
               textAnchor="end"
               alignmentBaseline="middle"
               fontSize={12}
@@ -62,8 +67,7 @@ export function ConcurrencyRequestBarGraphContent({ data }: Props) {
             {/* Bars */}
             <rect
               x={x(d.startDate)}
-              // biome-ignore lint/style/noNonNullAssertion: d3 band scales return undefined only for values outside the domain, which is built from this same data
-              y={y(i.toString())!}
+              y={bandPosition(y, i.toString())}
               width={x(d.endDate) - x(d.startDate)}
               height={y.bandwidth()}
             />

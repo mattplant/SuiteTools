@@ -92,6 +92,10 @@ export function Results({ type, lines, getModalData }: Props): React.JSX.Element
   // a pathname-keyed effect never fired and the modal stayed open over the page the user asked
   // for, making the click look dead (#88). React Router issues a fresh `key` per history entry,
   // including same-path pushes and back/forward, so this covers both cases.
+  //
+  // The suppression below is permanent by design, not deferred work: `location.key` is reported
+  // as unnecessary because the body only calls setters. It is the trigger, and the rule has no
+  // way to say so.
   // biome-ignore lint/correctness/useExhaustiveDependencies: location.key is the trigger for this effect, not a value it reads
   useEffect(() => {
     setOpenModal(false);
