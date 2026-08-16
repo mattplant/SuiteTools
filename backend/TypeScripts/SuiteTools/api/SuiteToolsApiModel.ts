@@ -314,8 +314,15 @@ export class SuiteToolsApiModel {
     return response;
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tracked in #28
-  private normalizeIntegrationRow(row: any): {
+  /**
+   * Map a SuiteQL Integration row into the Integration schema shape.
+   *
+   * Keys are read in several casings because SuiteQL `asMappedResults()` lowercases aliases,
+   * while other callers have supplied camelCase or uppercase rows.
+   *
+   * @param row - Raw SuiteQL row.
+   */
+  private normalizeIntegrationRow(row: Record<string, unknown>): {
     id: number;
     name: string;
     applicationId: string;
@@ -1014,10 +1021,15 @@ export class SuiteToolsApiModel {
 
   /**
    * Map a SuiteQL OAuthToken row into the Token schema shape.
+   *
+   * Keys are read in both lowercase and camelCase because SuiteQL `asMappedResults()` lowercases
+   * aliases, but callers have supplied camelCase rows too. Values are coerced with `String()`
+   * rather than defaulted with `??` alone: SuiteQL can hand back numbers, which would otherwise
+   * land in these string-typed fields unconverted.
+   *
    * @param row - Raw SuiteQL row.
    */
-  // biome-ignore lint/suspicious/noExplicitAny: raw SuiteQL row shape is not modelled yet; tracked in #28
-  private normalizeTokenRow(row: any): {
+  private normalizeTokenRow(row: Record<string, unknown>): {
     id: number;
     name: string;
     userName: string;
@@ -1029,13 +1041,13 @@ export class SuiteToolsApiModel {
   } {
     return {
       id: Number(row.id),
-      name: row.name ?? "",
-      userName: row.username ?? row.userName ?? "",
-      roleName: row.rolename ?? row.roleName ?? "",
-      integrationName: this.normalizeTokenIntegrationName(row.integrationname ?? row.integrationName ?? ""),
-      state: row.state ?? "",
-      dateCreated: row.datecreated ?? row.dateCreated ?? "",
-      createdBy: row.createdby ?? row.createdBy ?? "",
+      name: String(row.name ?? ""),
+      userName: String(row.username ?? row.userName ?? ""),
+      roleName: String(row.rolename ?? row.roleName ?? ""),
+      integrationName: this.normalizeTokenIntegrationName(String(row.integrationname ?? row.integrationName ?? "")),
+      state: String(row.state ?? ""),
+      dateCreated: String(row.datecreated ?? row.dateCreated ?? ""),
+      createdBy: String(row.createdby ?? row.createdBy ?? ""),
     };
   }
 
