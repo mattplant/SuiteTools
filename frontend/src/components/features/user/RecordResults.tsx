@@ -1,11 +1,13 @@
 import { useMemo, useRef } from "react";
 import { DataGrid, type DataGridHandle } from "react-data-grid";
+import type { Column } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { Export } from "../../shared/results/Export";
 import type { ResultsProps, SummaryRow } from "../../shared/results/types";
 import { UserBundle } from "@suiteworks/suitetools-shared";
+import type { User } from "@suiteworks/suitetools-shared";
 
-const columns = [
+const columns: Column<User, SummaryRow>[] = [
   {
     key: "id",
     name: "ID",
@@ -18,6 +20,8 @@ const columns = [
     key: "isInactive",
     name: "Active",
     width: 90,
+    // The column reads "Active", so negate the stored flag rather than printing it raw.
+    renderCell: ({ row }) => (row.isInactive ? "No" : "Yes"),
     renderSummaryCell({ row }: { row: SummaryRow }) {
       return `${row.totalCount} records`;
     },

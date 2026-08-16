@@ -240,15 +240,9 @@ export class SuiteToolsApiGet {
       return data;
     }
 
-    // SuiteQL may return `isinactive`; emit shared camelCase wire key.
-    const inactive = data.isInactive ?? data.isinactive;
-    if (inactive === "F" || inactive === false) {
-      data.isInactive = false;
-    } else if (inactive === "T" || inactive === true) {
-      data.isInactive = true;
-    } else {
-      data.isInactive = Boolean(inactive);
-    }
+    // SuiteQL may return `isinactive`; emit shared camelCase wire key. The T/F value itself is
+    // left alone -- JobSchema declares `isInactive` as booleanFromTF, which coerces it.
+    data.isInactive = data.isInactive ?? data.isinactive;
     delete data.isinactive;
 
     return data;
@@ -362,27 +356,10 @@ export class SuiteToolsApiGet {
     delete data.issupportrole;
     delete data.iswebserviceonlyrole;
 
-    // Map T/F flags to Yes/No strings for zNetSuite.booleanFromTF.
-    if (data.isInactive === "F") {
-      data.isInactive = "Yes";
-    } else {
-      data.isInactive = "No";
-    }
-    if (data.isSalesRole === "F") {
-      data.isSalesRole = "No";
-    } else {
-      data.isSalesRole = "Yes";
-    }
-    if (data.isSupportRole === "F") {
-      data.isSupportRole = "No";
-    } else {
-      data.isSupportRole = "Yes";
-    }
-    if (data.isWebServiceOnlyRole === "F") {
-      data.isWebServiceOnlyRole = "No";
-    } else {
-      data.isWebServiceOnlyRole = "Yes";
-    }
+    // Flag values are left as SuiteQL returns them. RoleSchema declares all four as
+    // booleanFromTF, which coerces "T"/"F" directly -- the Yes/No remap that used to sit here
+    // duplicated that coercion, and inverted `isInactive` while doing it ("F", meaning active,
+    // became "Yes", which booleanFromTF reads as true).
 
     return data;
   }
@@ -418,12 +395,7 @@ export class SuiteToolsApiGet {
     delete data.scriptfile;
     delete data.notifyemails;
 
-    // Normalize NetSuite T/F to boolean for shared schema validation.
-    if (data.isInactive === "F") {
-      data.isInactive = false;
-    } else if (data.isInactive === "T") {
-      data.isInactive = true;
-    }
+    // T/F is left as-is; ScriptSchema declares `isInactive` as booleanFromTF.
 
     return data;
   }
@@ -499,13 +471,10 @@ export class SuiteToolsApiGet {
       return data;
     }
 
-    // SuiteQL lowercases `AS isInactive` → `isinactive`; prefer camelCase wire key.
-    const inactive = data.isInactive ?? data.isinactive;
-    if (inactive === "F") {
-      data.isInactive = "Yes";
-    } else {
-      data.isInactive = "No";
-    }
+    // SuiteQL lowercases `AS isInactive` → `isinactive`; prefer camelCase wire key. The value is
+    // left as SuiteQL returns it -- UserSchema declares `isInactive` as booleanFromTF. The Yes/No
+    // remap that used to sit here inverted it: "F", meaning active, became "Yes" → true.
+    data.isInactive = data.isInactive ?? data.isinactive;
     delete data.isinactive;
     // clear supervisor field if empty DF()
     if (data.supervisor === " ()") {
