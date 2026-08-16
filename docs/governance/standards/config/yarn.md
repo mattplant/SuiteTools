@@ -92,7 +92,7 @@ plugins:
 ```
 
 **Plugin:** `@yarnpkg/plugin-licenses`
-**Purpose:** Generates `THIRD_PARTY_LICENSES.md` listing all third‑party packages and their licenses, supporting compliance tracking and legal review.
+**Purpose:** Generates `THIRD_PARTY_NOTICES.md` listing all third‑party packages and their licenses, supporting compliance tracking and legal review.
 
 **Governance Notes:**
 

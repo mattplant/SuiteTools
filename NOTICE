@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: August 16, 2026
 
 ---
 
@@ -25,18 +25,25 @@ Copyright © 2025 [Matthew Plant](https://idev.systems/)
 
 ## 🏷️ Attribution Formats
 
-Attribution formats and reuse snippets are available in [`docs/ATTRIBUTION.md`](./docs/ATTRIBUTION.md), including Markdown and plaintext templates for downstream documentation reuse.
+Attribution formats and reuse snippets are available in [`ATTRIBUTION.md`](./ATTRIBUTION.md), including Markdown and plaintext templates for downstream documentation reuse.
 
 ---
 
 ## 📦 Third‑Party Dependencies
 
-- All third‑party dependencies are listed in [`package.json`](./package.json) and governed by their respective licenses.
+- The third‑party packages that ship in SuiteTools distributions, and the terms they carry, are recorded in [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
 - Contributors are responsible for ensuring that all direct and transitive dependencies are compatible with GPL‑3.0‑or‑later.
 
 ---
 
 ## 🧭 Stewardship Note
 
-This NOTICE file provides attribution and licensing context.
+This NOTICE file provides attribution and licensing context for **SuiteTools itself**.
 It does not modify the terms of any license referenced herein.
+
+The two notice artifacts answer different questions:
+
+| File | Answers |
+| --- | --- |
+| `NOTICE` | How is SuiteTools itself licensed, and who stewards it? |
+| `THIRD_PARTY_NOTICES.md` | Which third‑party packages ship in SuiteTools, and under what terms? |

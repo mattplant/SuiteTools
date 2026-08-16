@@ -7,7 +7,7 @@ Last updated: 2026-08-14
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../LICENSE)
-[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](./../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
+[![Attribution Formats](https://img.shields.io/badge/Attribution%20Formats-Markdown%20%26%20Plain%20Text-blue)](../ATTRIBUTION.md) [![Source: SuiteTools](https://img.shields.io/badge/Source-SuiteTools-green)](https://gitlab.com/idev-systems/labs/SuiteTools/)
 
 ---
 
@@ -40,7 +40,7 @@ For workspace‑specific details, see the [Frontend](../frontend/README.md), [Ba
 |------------------|----------------------------------------|----------|
 | **Governance**   | Enforceable standards & policies       | [Governance Index](./governance/README.md), [Attribution](../ATTRIBUTION.md), [Emoji Usage](./governance/standards/emoji.md), [Badge Clusters](./governance/standards/badge-clusters.md) |
 | **Architecture** | Philosophy & cross‑cutting rules       | [Documentation as Architecture](./architecture/docs-architecture.md), [Error Handling](./architecture/error-handling-architecture.md), [Validation & Type Safety](./architecture/validation.md), [Monorepo & Workspace Boundaries](./architecture/monorepo-and-workspace-boundaries.md) |
-| **Developer Guides** | Practical, task‑oriented setup & workflows | [Installation](./guides/installation.md), [Uninstall](./guides/uninstall.md), [Customizing](./guides/customizing.md), [Build & Release](./guides/build-release.md), [Linting](./guides/linting.md), [Third-Party Licenses](./guides/third-party-licenses.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md) |
+| **Developer Guides** | Practical, task‑oriented setup & workflows | [Installation](./guides/installation.md), [Uninstall](./guides/uninstall.md), [Customizing](./guides/customizing.md), [Build & Release](./guides/build-release.md), [Linting](./guides/linting.md), [Third-Party Notices](./guides/third-party-notices.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md) |
 | **Workspaces**   | Implementation details                 | [Frontend](../frontend/README.md), [Backend](../backend/README.md), [Shared](../shared/README.md) |
 | **Reference**    | Legal & versioning anchors             | [LICENSE](../LICENSE), [LICENSE-DOCS](../LICENSE-DOCS.md), [License Compliance](./governance/license-compliance.md), [CHANGELOG](../CHANGELOG.md) |
 
@@ -91,7 +91,7 @@ Practical, task‑oriented instructions for contributors.
 <!-- “how + steps” layer -->
 - **Setup**: [Installation](./guides/installation.md), [Uninstall](./guides/uninstall.md), [VS Code](./guides/vscode.md), [Yarn](./guides/yarn.md), [Yarn Workflows](./guides/yarn-workflows.md)
 - **Development**: [Add an Entity](./guides/add-an-entity.md), [Customizing](./guides/customizing.md), [Linting](./guides/linting.md)
-- **Release**: [Build & Release](./guides/build-release.md), [Third-Party Licenses](./guides/third-party-licenses.md)
+- **Release**: [Build & Release](./guides/build-release.md), [Third-Party Notices](./guides/third-party-notices.md)
 
 ---
 

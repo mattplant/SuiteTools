@@ -9,12 +9,12 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Workspaces whose runtime dependencies ship in SuiteTools distributions.
 WORKSPACES=("frontend" "backend")
-OUT_FILE="$REPO_ROOT/THIRD_PARTY_LICENSES.md"
+OUT_FILE="$REPO_ROOT/THIRD_PARTY_NOTICES.md"
 OVERRIDE_DIR="$SCRIPT_DIR/overrides"
 
 cd "$REPO_ROOT"
 
-echo "✅ Generate third-party licenses script started."
+echo "✅ Third-party notices generation started."
 
 # `yarn licenses generate-disclaimer` does the scoping natively, without touching
 # node_modules:
@@ -24,7 +24,7 @@ echo "✅ Generate third-party licenses script started."
 #   --production  runtime dependencies only, excluding devDependencies
 #   --focus WS    restrict to the given workspaces
 #
-# See docs/guides/third-party-licenses.md for why --recursive is the right scope.
+# See docs/guides/third-party-notices.md for why --recursive is the right scope.
 FOCUS_ARGS=()
 for WS in "${WORKSPACES[@]}"; do
   FOCUS_ARGS+=(--focus "$WS")
@@ -33,7 +33,7 @@ done
 echo ">>> Generating disclaimer for: ${WORKSPACES[*]} (recursive, production only) ..."
 
 {
-  echo "# SuiteTools - Third-Party Licenses"
+  echo "# SuiteTools - Third-Party Notices"
   echo
   echo "This document lists the third-party packages included in SuiteTools distributions with their license terms."
   echo
@@ -44,7 +44,7 @@ echo ">>> Generating disclaimer for: ${WORKSPACES[*]} (recursive, production onl
 
   # Packages that declare a licence but ship no licence file are omitted silently by
   # the plugin -- no warning, just a quietly incomplete compliance document. Hand-written
-  # entries covering those live in ./overrides; see docs/guides/third-party-licenses.md.
+  # entries covering those live in ./overrides; see docs/guides/third-party-notices.md.
   shopt -s nullglob
   OVERRIDES=("$OVERRIDE_DIR"/*.md)
   shopt -u nullglob
@@ -80,4 +80,4 @@ echo "✅ Wrote $OUT_FILE"
 grep -c "^The following software may be included in this product:" "$OUT_FILE" \
   | awk '{print "Packages:", $1}'
 wc -l "$OUT_FILE" | awk '{print "Lines:", $1}'
-echo "✅ Generate third-party licenses generated successfully."
+echo "✅ Third-party notices generated successfully."

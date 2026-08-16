@@ -1,4 +1,4 @@
-# 📜 Third-Party Licenses Guide
+# 📜 Third-Party Notices Guide
 
 Last updated: August 14, 2026
 
@@ -10,12 +10,12 @@ Last updated: August 14, 2026
 
 ## Overview
 
-[`THIRD_PARTY_LICENSES.md`](../../THIRD_PARTY_LICENSES.md) is a **compliance artifact**. It states which third-party packages ship in SuiteTools distributions and under what terms, satisfying the notice-retention obligations of the MIT, BSD and ISC licences those packages carry.
+[`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) is a **compliance artifact**. It states which third-party packages ship in SuiteTools distributions and under what terms, satisfying the notice-retention obligations of the MIT, BSD and ISC licences those packages carry.
 
 It is **generated, never hand-edited**. Editing it directly is lost on the next regeneration and, worse, produces a document whose contents nobody can reproduce or verify.
 
 ```sh
-yarn generate-third-party-licenses
+yarn generate-third-party-notices
 ```
 
 ### 🔗 Related Governance
@@ -28,7 +28,7 @@ yarn generate-third-party-licenses
 
 ## 🛠️ How It Works
 
-The generator lives in [`scripts/third-party-licenses/`](../../scripts/third-party-licenses/) and wraps `yarn licenses generate-disclaimer` from `@yarnpkg/plugin-licenses`:
+The generator lives in [`scripts/third-party-notices/`](../../scripts/third-party-notices/) and wraps `yarn licenses generate-disclaimer` from `@yarnpkg/plugin-licenses`:
 
 | Flag | Effect |
 |------|--------|
@@ -36,7 +36,7 @@ The generator lives in [`scripts/third-party-licenses/`](../../scripts/third-par
 | `--production` | Runtime dependencies only, excluding `devDependencies` |
 | `--focus frontend --focus backend` | The workspaces whose code ships |
 
-Hand-written entries in `scripts/third-party-licenses/overrides/` are appended to the output. The script does **not** modify `node_modules`.
+Hand-written entries in `scripts/third-party-notices/overrides/` are appended to the output. The script does **not** modify `node_modules`.
 
 Two guards fail the run if a SuiteTools workspace, or SuiteTools' own GPL text, reaches the output — the document must never claim the project is third-party to itself.
 
@@ -58,7 +58,7 @@ Transitive code is genuinely distributed. The shipped `app-bundle.js` contains `
 
 The plugin emits an entry only for packages shipping licence text it can locate. A package that declares a licence in `package.json` but ships no `LICENSE` file is **omitted silently** — no warning.
 
-Such packages get a hand-written entry under `scripts/third-party-licenses/overrides/`, one file each.
+Such packages get a hand-written entry under `scripts/third-party-notices/overrides/`, one file each.
 
 ### Rules for override entries
 
@@ -99,7 +99,7 @@ Regenerate whenever the **runtime** dependency set changes — a package added, 
 Review the diff rather than accepting it blindly, then:
 
 ```sh
-yarn generate-third-party-licenses   # run twice; output must be identical
+yarn generate-third-party-notices   # run twice; output must be identical
 yarn install --immutable
 yarn build:all
 ```
@@ -112,7 +112,7 @@ Some upstream licences (`tslib`) ship CRLF line endings. Git normalises them to 
 
 ## 📋 Stewardship Notes
 
-- Treat `THIRD_PARTY_LICENSES.md` as a **legal artifact**, not a generated convenience — it is the record that notice obligations were met.
+- Treat `THIRD_PARTY_NOTICES.md` as a **legal artifact**, not a generated convenience — it is the record that notice obligations were met.
 - Never hand-edit it. Corrections belong in the generator or in an override.
 - Regenerate as part of the change that alters runtime dependencies, not as a periodic cleanup — the file drifted across three releases when this was left implicit.
-- Keep this guide in sync with [`scripts/third-party-licenses/`](../../scripts/third-party-licenses/) and [License Compliance](../governance/license-compliance.md).
+- Keep this guide in sync with [`scripts/third-party-notices/`](../../scripts/third-party-notices/) and [License Compliance](../governance/license-compliance.md).
