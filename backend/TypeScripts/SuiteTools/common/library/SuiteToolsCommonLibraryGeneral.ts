@@ -8,9 +8,9 @@
  */
 
 import * as log from "N/log";
-
-// Forward declaration to avoid circular dependency
-declare class SuiteToolsCommon {}
+// Type-only import: erased at compile time, so it creates no runtime cycle even though
+// SuiteToolsCommon constructs this class.
+import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools General Library

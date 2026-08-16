@@ -8,14 +8,10 @@
  */
 
 import * as log from "N/log";
-
-// Forward declaration to avoid circular dependency
-declare class SuiteToolsCommon {
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
-  stLib: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
-  stSettings: any;
-}
+// Type-only import: erased at compile time, so it creates no runtime cycle even though
+// SuiteToolsCommon constructs this class.
+import type { SuiteToolsCommon } from "./SuiteToolsCommon";
+import type { SuiteQLResults } from "./types";
 
 /**
  * Jobs support for SuiteTools App and SuiteTools API
@@ -200,13 +196,25 @@ export class SuiteToolsCommonJobs {
         if (notify) {
           const notifyAuthor = this.stCommon.stSettings.notifyAuthor;
           const notifyEmail = this.stCommon.stSettings.notifyEmail;
-          this.stCommon.stLib.stLibNs.stLibNsEmail.sendNotification(
-            notifyAuthor,
-            [notifyEmail],
-            notifyEmail,
-            "SuiteTools Job Notification",
-            JSON.stringify(result),
-          );
+          // Both are absent until a *successful* getSettings() -- it assigns nothing and returns
+          // false when the settings record is missing or inactive. Until the forward declaration
+          // was removed these reads went through `any`, so calling email.send() with an undefined
+          // author and recipient typechecked. Log and skip instead of sending a broken email.
+          if (notifyAuthor === undefined || !notifyEmail) {
+            log.error("SuiteToolsCommonJobs:runJob() cannot send job notification", {
+              jobId,
+              notifyAuthor,
+              notifyEmail,
+            });
+          } else {
+            this.stCommon.stLib.stLibNs.stLibNsEmail.sendNotification(
+              notifyAuthor,
+              [notifyEmail],
+              notifyEmail,
+              "SuiteTools Job Notification",
+              JSON.stringify(result),
+            );
+          }
         }
       } else {
         log.error("SuiteToolsCommonJobs:runJob() error", `Job details not found for job id: ${jobId}`);
@@ -222,21 +230,23 @@ export class SuiteToolsCommonJobs {
    * Rows come from SuiteQL `asMappedResults()`, whose keys are the **lowercased** aliases:
    * `id`, `timestamp`, `type`, `scripttype`, `owner`, `scriptname`, `title`, `detail`.
    *
-   * Typed `unknown[]` rather than a declared row interface on purpose. The query is issued
-   * through `stCommon.stLib`, which is still `any` (see #83), so an interface here would be an
-   * unchecked assertion rather than a verified shape — and a casing slip (`scriptName` vs
-   * `scriptname`) would go unnoticed. `unknown[]` removes the `any` without claiming a guarantee
-   * that does not exist; the only consumer JSON-stringifies the result, so no caller needs the
-   * fields narrowed today. Worth revisiting once #83 gives `stLib` a real type.
+   * Returns `SuiteQLResults` rather than the `unknown[]` this previously used. That placeholder
+   * existed because the query ran through `stCommon.stLib` while it was still `any`, so any
+   * declared shape would have been an unchecked assertion. Now that the forward declaration is
+   * gone, the type flows from `query()` and is actually checked.
+   *
+   * Still not a per-column interface: the values are `string | number | boolean | null`, and a
+   * casing slip (`scriptName` vs `scriptname`) would not be caught by one. The only consumer
+   * JSON-stringifies the result, so no caller needs the fields narrowed.
    *
    * @param lastRun - last run timestamp; when absent, the query covers the last 60 minutes
-   * @returns the raw SuiteQL rows
+   * @returns the SuiteQL rows
    */
-  public getRecentScriptErrorsJob(lastRun: string): unknown[] {
+  public getRecentScriptErrorsJob(lastRun: string): SuiteQLResults {
     log.debug({ title: `SuiteToolsCommonJobs:getRecentScriptErrorsJob() initiated`, details: { lastRun } });
     // get the errors from the script execution log
     let levels = ["ERROR", "EMERGENCY", "SYSTEM"];
-    let result: unknown[] = [];
+    let result: SuiteQLResults = [];
     let sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,

@@ -7,5 +7,8 @@
  * @NApiVersion 2.1
  */
 
-type SuiteQLRow = Record<string, string | number | boolean | null>;
+/** A single SuiteQL column value. `null` is what an unset column comes back as. */
+export type SuiteQLValue = string | number | boolean | null;
+
+type SuiteQLRow = Record<string, SuiteQLValue>;
 export type SuiteQLResults = SuiteQLRow[];
