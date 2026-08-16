@@ -7,7 +7,7 @@
  * @NApiVersion 2.1
  */
 
-// biome-ignore-all lint/suspicious/noExplicitAny: SuiteQL / settings bags are loosely typed today; tighten under #28
+// biome-ignore-all lint/suspicious/noExplicitAny: response payloads reach these helpers as `unknown` (Response.data is z.unknown()), so each re-widens to touch fields; tightening needs real types at the boundary, not 23 annotations. Tracked in #87
 // Note: the companion no-unsafe-return suppression is gone -- Biome has no type-aware equivalent.
 
 import * as log from "N/log";

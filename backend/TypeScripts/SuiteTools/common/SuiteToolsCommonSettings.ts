@@ -8,22 +8,39 @@
  */
 
 import * as log from "N/log";
-
-// Forward declaration to avoid circular dependency
-declare class SuiteToolsCommon {
-  appSettingsRecord: string;
-  appJsFile: string;
-  appCssFile: string;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
-  runtime: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
-  stLib: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
-  stJobs: any;
-}
+// Type-only import: erased at compile time, so it creates no runtime cycle even though
+// SuiteToolsCommon constructs this class.
+import type { SuiteToolsCommon } from "./SuiteToolsCommon";
+import type { SuiteQLValue } from "./types";
 
 // define type for Last Logins data
 type LastLogins = { finished: string; data: { name: { type: string; name: string }; lastLogin: string }[] };
+
+/**
+ * Coerce a SuiteQL column to an optional string.
+ *
+ * Columns arrive as `string | number | boolean | null`. `null` becomes `undefined` so an unset
+ * column reads as absent, rather than a `null` sitting inside a field declared `string`. Until
+ * the circular dependency was removed these assignments went through `any`, so that mismatch
+ * was invisible.
+ */
+function toOptionalString(value: SuiteQLValue): string | undefined {
+  return value === null ? undefined : String(value);
+}
+
+/**
+ * Coerce a SuiteQL column to an optional number.
+ *
+ * As {@link toOptionalString}, plus a non-numeric value is treated as absent rather than
+ * allowed to propagate as `NaN`.
+ */
+function toOptionalNumber(value: SuiteQLValue): number | undefined {
+  if (value === null) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
 
 /**
  * Settings info for SuiteTools App and SuiteTools API
@@ -107,13 +124,15 @@ export class SuiteToolsCommonSettings {
 
     if (sqlResults.length > 0) {
       // set the settings to the first returned result
-      this._recordId = sqlResults[0].id;
-      this._cssUrl = sqlResults[0].cssurl;
-      this._jsUrl = sqlResults[0].jsurl;
-      this._devMode = sqlResults[0].devmode === "T";
-      this._notifyAuthor = sqlResults[0].notifyauthor;
-      this._notifyEmail = sqlResults[0].notifyemail;
-      this._lastLogins = this.parseLastLogins(sqlResults[0].lastlogins);
+      // Note the lowercase keys: SuiteQL's asMappedResults() lowercases the column aliases above.
+      const row = sqlResults[0];
+      this._recordId = toOptionalNumber(row.id);
+      this._cssUrl = toOptionalString(row.cssurl);
+      this._jsUrl = toOptionalString(row.jsurl);
+      this._devMode = row.devmode === "T";
+      this._notifyAuthor = toOptionalNumber(row.notifyauthor);
+      this._notifyEmail = toOptionalString(row.notifyemail);
+      this._lastLogins = this.parseLastLogins(row.lastlogins);
       this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
       settingsFound = true;
     }
