@@ -197,8 +197,7 @@ export class SuiteToolsApiGet {
   private addUserLastLogin(data: unknown): unknown {
     if (isRow(data)) {
       // get last logins data for users
-      this.stCommon.stSettings.getSettings();
-      const lastLoginsObj = this.stCommon.stSettings.lastLogins;
+      const lastLoginsObj = this.stCommon.stSettings.getSettings()?.lastLogins;
       if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
         const lastLogins = lastLoginsObj.data.filter((lastlogin) => lastlogin.name.type === "user");
         // add the last login data to the user record
@@ -216,8 +215,7 @@ export class SuiteToolsApiGet {
     const records = rowsOf(response.data);
     if (records.length > 0) {
       // get last logins data for users
-      this.stCommon.stSettings.getSettings();
-      const lastLoginsObj = this.stCommon.stSettings.lastLogins;
+      const lastLoginsObj = this.stCommon.stSettings.getSettings()?.lastLogins;
       if (lastLoginsObj?.data && Array.isArray(lastLoginsObj.data)) {
         const lastLogins = lastLoginsObj.data.filter((lastlogin) => lastlogin.name.type === "user");
         for (const record of records) {
@@ -894,17 +892,23 @@ export class SuiteToolsApiGet {
    */
   private getSettings(): Response {
     // load settings from the settings custom record
-    this.stCommon.stSettings.getSettings();
+    //
+    // A null snapshot flows through as undefined fields and is then rejected by SettingsSchema,
+    // which requires `devMode: z.boolean()`. That is the intended behaviour -- the SPA bootstrap
+    // should fail loudly on an uninitialised install rather than render against blanks -- but it
+    // was previously incidental, a by-product of the fields being optional. Keeping the optional
+    // chaining below makes the reliance on schema validation visible at the call site.
+    const settings = this.stCommon.stSettings.getSettings();
     // build the settings object from this record and other sources
     const result = {
       // core configurations
-      cssUrl: this.stCommon.stSettings.cssUrl,
-      jsUrl: this.stCommon.stSettings.jsUrl,
+      cssUrl: settings?.cssUrl,
+      jsUrl: settings?.jsUrl,
       // settings
-      devMode: this.stCommon.stSettings.devMode,
-      notifyEmail: this.stCommon.stSettings.notifyEmail,
+      devMode: settings?.devMode,
+      notifyEmail: settings?.notifyEmail,
       // storage settings
-      lastLogins: this.stCommon.stSettings.lastLogins,
+      lastLogins: settings?.lastLogins,
       // system (these are all from the runtime object)
       accountId: this.stCommon.runtime.accountId,
       envType: this.stCommon.runtime.envType,
@@ -912,7 +916,7 @@ export class SuiteToolsApiGet {
       version: this.stCommon.runtime.version,
       processorCount: this.stCommon.runtime.processorCount,
       queueCount: this.stCommon.runtime.queueCount,
-      appBundle: this.stCommon.stSettings.appBundle,
+      appBundle: settings?.appBundle,
       // user - these are all from the runtime object getCurrentUser() method
       userId: this.stCommon.runtime.getCurrentUser().id,
       userName: this.stCommon.runtime.getCurrentUser().name,

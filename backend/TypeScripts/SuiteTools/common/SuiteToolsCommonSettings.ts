@@ -14,7 +14,32 @@ import type { SuiteToolsCommon } from "./SuiteToolsCommon";
 import type { SuiteQLValue } from "./types";
 
 // define type for Last Logins data
-type LastLogins = { finished: string; data: { name: { type: string; name: string }; lastLogin: string }[] };
+export type LastLogins = { finished: string; data: { name: { type: string; name: string }; lastLogin: string }[] };
+
+/**
+ * A successfully loaded settings record.
+ *
+ * Returned as a value rather than assigned to instance fields, so "no settings record" is one
+ * nullable thing a caller checks once, instead of seven optional fields re-checked at every read.
+ *
+ * Optionality here is the column's, not the load's: `recordId`, `devMode` and `appBundle` are
+ * guaranteed by the fact that a row was found, while the four config fields are user-editable
+ * and legitimately empty on a partially configured install.
+ */
+export type Settings = {
+  /** Internal id of the settings record. Guaranteed: a row we could not address is not a load. */
+  recordId: number;
+  /** Always a boolean -- the column is read as `=== "T"`. */
+  devMode: boolean;
+  /** Last-modified stamp of the app bundle, used for cache busting. `""` if the file is missing. */
+  appBundle: string;
+  cssUrl: string | undefined;
+  jsUrl: string | undefined;
+  notifyAuthor: number | undefined;
+  notifyEmail: string | undefined;
+  /** `null` means "no stored logins", which is distinct from the record being absent. */
+  lastLogins: LastLogins | null;
+};
 
 /**
  * Coerce a SuiteQL column to an optional string.
@@ -50,48 +75,12 @@ function toOptionalNumber(value: SuiteQLValue): number | undefined {
 export class SuiteToolsCommonSettings {
   private _stCommon: SuiteToolsCommon;
 
-  // The settings below are populated by getSettings(), not by the constructor, and getSettings()
-  // assigns nothing when the settings record is missing or inactive (it returns false instead).
-  // They are therefore genuinely absent until a *successful* load -- on a fresh install, or when
-  // a caller ignores the getSettings() return value. The `undefined` in these types records that
-  // reality rather than asserting an initialisation the constructor does not perform.
-  private _appBundle: string | undefined;
-  private _recordId: number | undefined;
-  private _cssUrl: string | undefined;
-  private _jsUrl: string | undefined;
-  private _devMode: boolean | undefined;
-  private _notifyAuthor: number | undefined;
-  private _notifyEmail: string | undefined;
-  // Already nullable, and `null` is what parseLastLogins() returns for "no stored logins", so
-  // consumers cannot distinguish "not loaded" from "loaded and empty" -- nor do they need to.
-  private _lastLogins: LastLogins | null = null;
+  // No settings state is held here. getSettings() returns a snapshot instead, so a caller cannot
+  // read a field without having established that the record loaded -- the shape that let a save
+  // target record id "undefined" on a fresh install.
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
-  }
-  get appBundle(): string | undefined {
-    return this._appBundle;
-  }
-  get recordId(): number | undefined {
-    return this._recordId;
-  }
-  get cssUrl(): string | undefined {
-    return this._cssUrl;
-  }
-  get jsUrl(): string | undefined {
-    return this._jsUrl;
-  }
-  get devMode(): boolean | undefined {
-    return this._devMode;
-  }
-  get notifyAuthor(): number | undefined {
-    return this._notifyAuthor;
-  }
-  get notifyEmail(): string | undefined {
-    return this._notifyEmail;
-  }
-  get lastLogins(): LastLogins | null {
-    return this._lastLogins;
   }
 
   constructor(stCommon: SuiteToolsCommon) {
@@ -99,11 +88,14 @@ export class SuiteToolsCommonSettings {
   }
 
   /**
-   * Get Settings
+   * Load the settings record.
+   *
+   * @returns the settings, or `null` when no active settings record exists -- a fresh install, or
+   *   one where the record was deleted or inactivated. Callers must handle `null`; there is no
+   *   partially populated state to read past it.
    */
-  public getSettings(): boolean {
+  public getSettings(): Settings | null {
     log.debug({ title: `SuiteToolsCommonSettings:getSettings() initiated`, details: "" });
-    let settingsFound = false;
 
     const sql = `
     SELECT
@@ -122,22 +114,30 @@ export class SuiteToolsCommonSettings {
     const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql);
     log.debug({ title: `SuiteToolsCommonSettings:getSettings() sqlResults = `, details: sqlResults });
 
-    if (sqlResults.length > 0) {
-      // set the settings to the first returned result
-      // Note the lowercase keys: SuiteQL's asMappedResults() lowercases the column aliases above.
-      const row = sqlResults[0];
-      this._recordId = toOptionalNumber(row.id);
-      this._cssUrl = toOptionalString(row.cssurl);
-      this._jsUrl = toOptionalString(row.jsurl);
-      this._devMode = row.devmode === "T";
-      this._notifyAuthor = toOptionalNumber(row.notifyauthor);
-      this._notifyEmail = toOptionalString(row.notifyemail);
-      this._lastLogins = this.parseLastLogins(row.lastlogins);
-      this._appBundle = this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile);
-      settingsFound = true;
+    if (sqlResults.length === 0) {
+      return null;
     }
 
-    return settingsFound;
+    // Note the lowercase keys: SuiteQL's asMappedResults() lowercases the column aliases above.
+    const row = sqlResults[0];
+    const recordId = toOptionalNumber(row.id);
+    if (recordId === undefined) {
+      // A row without a usable internal id cannot be updated or referenced by the MR scripts, so
+      // it is not a successful load. Narrowing here is what makes `recordId` non-optional below.
+      log.error({ title: `SuiteToolsCommonSettings:getSettings() settings row has no usable id`, details: row });
+      return null;
+    }
+
+    return {
+      recordId,
+      devMode: row.devmode === "T",
+      appBundle: this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile),
+      cssUrl: toOptionalString(row.cssurl),
+      jsUrl: toOptionalString(row.jsurl),
+      notifyAuthor: toOptionalNumber(row.notifyauthor),
+      notifyEmail: toOptionalString(row.notifyemail),
+      lastLogins: this.parseLastLogins(row.lastlogins),
+    };
   }
 
   private parseLastLogins(raw: unknown): LastLogins | null {

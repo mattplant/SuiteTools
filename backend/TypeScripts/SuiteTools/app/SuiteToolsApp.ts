@@ -60,12 +60,12 @@ export class SuiteToolsApp {
     // verify integrity of app settings before proceeding
     const issues = [];
     // check that settings were found
-    const settingsFound = this.stCommon.stSettings.getSettings();
-    if (!settingsFound) {
+    const settings = this.stCommon.stSettings.getSettings();
+    if (!settings) {
       issues.push("SuiteToolsApp:bootstrapLibrary() did not find any settings");
     }
     // check that core configs are set
-    if (!this.stCommon.stSettings.cssUrl || !this.stCommon.stSettings.jsUrl) {
+    if (!settings?.cssUrl || !settings?.jsUrl) {
       issues.push("Core config settings were not set.");
     }
     // log app issues
@@ -79,24 +79,28 @@ export class SuiteToolsApp {
 
     try {
       // get the app settings
-      const settingsFound = this._stCommon.stSettings.getSettings();
-      if (!settingsFound) {
+      const settings = this._stCommon.stSettings.getSettings();
+      if (!settings) {
         // if no settings were found, initialize the app
         log.error({ title: `SuiteToolsApp:bootstrapSpa() did not find any settings`, details: null });
         this._stCommon.stSettings.initializeApp();
+        // initializeApp() creates the record but does not reload; the issues form below tells the
+        // user to refresh, which is the same behaviour as before the snapshot change.
       }
 
       // verify integrity of app settings before proceeding
       const appIssues = [];
       // check that core configs are set
-      if (!this._stCommon.stSettings.cssUrl || !this._stCommon.stSettings.jsUrl) {
+      if (!settings?.cssUrl || !settings?.jsUrl) {
         appIssues.push("Core config settings were not set. Refresh page to see if the issue has been resolved.");
       }
 
       // render the SPA or issues form
-      if (appIssues.length === 0) {
+      // `settings &&` is what narrows the snapshot for renderSpa; an empty appIssues already
+      // implies it is non-null, since a null snapshot fails the cssUrl/jsUrl check above.
+      if (settings && appIssues.length === 0) {
         // render the SPA
-        stAppView.renderSpa();
+        stAppView.renderSpa(settings);
       } else {
         // log app issues and render the app issues form
         log.error({ title: "SuiteToolsApp:bootstrapSpa() found issues", details: appIssues });

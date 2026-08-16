@@ -8,6 +8,7 @@
 import * as log from "N/log";
 import type { EntryPoints } from "N/types";
 import type { SuiteToolsApp } from "./SuiteToolsApp";
+import type { Settings } from "../common/SuiteToolsCommonSettings";
 
 /**
  * SuiteTools App View
@@ -29,10 +30,14 @@ export class SuiteToolsAppView {
 
   /**
    * Render SPA
+   *
+   * @param settings - the loaded settings snapshot. Passed in rather than read back off
+   *   `stSettings`, which no longer holds state; this also makes the dependency explicit
+   *   instead of relying on bootstrapSpa having loaded first.
    */
-  public renderSpa(): void {
-    const css = this.stApp.stCommon.stSettings.cssUrl;
-    const js = this.stApp.stCommon.stSettings.jsUrl;
+  public renderSpa(settings: Settings): void {
+    const css = settings.cssUrl;
+    const js = settings.jsUrl;
     // SuiteToolsApp:bootstrapSpa() only reaches renderSpa() once it has confirmed both URLs are
     // set, but that invariant lives in another class. Re-check it here so the absent case is
     // handled locally rather than emitting a page with broken asset URLs.
@@ -43,7 +48,7 @@ export class SuiteToolsAppView {
       ]);
       return;
     }
-    const cacheBust = encodeURIComponent(this.stApp.stCommon.stSettings.appBundle || String(Date.now()));
+    const cacheBust = encodeURIComponent(settings.appBundle || String(Date.now()));
     const cssWithBust = this.withCacheBust(css, cacheBust);
     const jsWithBust = this.withCacheBust(js, cacheBust);
     const appUrl = this.stApp.appUrl;
