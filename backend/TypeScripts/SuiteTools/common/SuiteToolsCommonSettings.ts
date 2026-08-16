@@ -14,11 +14,11 @@ declare class SuiteToolsCommon {
   appSettingsRecord: string;
   appJsFile: string;
   appCssFile: string;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #28
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
   runtime: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #28
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
   stLib: any;
-  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #28
+  // biome-ignore lint/suspicious/noExplicitAny: forward-declared member, typed loosely to avoid a circular dependency; tracked in #83
   stJobs: any;
 }
 
@@ -32,37 +32,45 @@ type LastLogins = { finished: string; data: { name: { type: string; name: string
  */
 export class SuiteToolsCommonSettings {
   private _stCommon: SuiteToolsCommon;
-  private _appBundle: string;
-  private _recordId: number;
-  private _cssUrl: string;
-  private _jsUrl: string;
-  private _devMode: boolean;
-  private _notifyAuthor: number;
-  private _notifyEmail: string;
-  private _lastLogins: LastLogins | null;
+
+  // The settings below are populated by getSettings(), not by the constructor, and getSettings()
+  // assigns nothing when the settings record is missing or inactive (it returns false instead).
+  // They are therefore genuinely absent until a *successful* load -- on a fresh install, or when
+  // a caller ignores the getSettings() return value. The `undefined` in these types records that
+  // reality rather than asserting an initialisation the constructor does not perform.
+  private _appBundle: string | undefined;
+  private _recordId: number | undefined;
+  private _cssUrl: string | undefined;
+  private _jsUrl: string | undefined;
+  private _devMode: boolean | undefined;
+  private _notifyAuthor: number | undefined;
+  private _notifyEmail: string | undefined;
+  // Already nullable, and `null` is what parseLastLogins() returns for "no stored logins", so
+  // consumers cannot distinguish "not loaded" from "loaded and empty" -- nor do they need to.
+  private _lastLogins: LastLogins | null = null;
 
   get stCommon(): SuiteToolsCommon {
     return this._stCommon;
   }
-  get appBundle(): string {
+  get appBundle(): string | undefined {
     return this._appBundle;
   }
-  get recordId(): number {
+  get recordId(): number | undefined {
     return this._recordId;
   }
-  get cssUrl(): string {
+  get cssUrl(): string | undefined {
     return this._cssUrl;
   }
-  get jsUrl(): string {
+  get jsUrl(): string | undefined {
     return this._jsUrl;
   }
-  get devMode(): boolean {
+  get devMode(): boolean | undefined {
     return this._devMode;
   }
-  get notifyAuthor(): number {
+  get notifyAuthor(): number | undefined {
     return this._notifyAuthor;
   }
-  get notifyEmail(): string {
+  get notifyEmail(): string | undefined {
     return this._notifyEmail;
   }
   get lastLogins(): LastLogins | null {

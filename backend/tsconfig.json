@@ -10,10 +10,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
 
-    /* Type System - Gradually increasing strictness (#28) */
-    "strict": false, // TODO: #28 phase 4 -- enable, then drop the now-redundant opt-outs below
-    "noImplicitAny": true,
-    "strictNullChecks": true,
+    /* Type System */
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 

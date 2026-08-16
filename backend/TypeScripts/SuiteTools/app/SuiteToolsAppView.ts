@@ -6,7 +6,6 @@
  */
 
 import * as log from "N/log";
-import type * as error from "N/error";
 import type { EntryPoints } from "N/types";
 import type { SuiteToolsApp } from "./SuiteToolsApp";
 
@@ -34,6 +33,16 @@ export class SuiteToolsAppView {
   public renderSpa(): void {
     const css = this.stApp.stCommon.stSettings.cssUrl;
     const js = this.stApp.stCommon.stSettings.jsUrl;
+    // SuiteToolsApp:bootstrapSpa() only reaches renderSpa() once it has confirmed both URLs are
+    // set, but that invariant lives in another class. Re-check it here so the absent case is
+    // handled locally rather than emitting a page with broken asset URLs.
+    if (!css || !js) {
+      log.error({ title: "SuiteToolsAppView:renderSpa() core config settings were not set", details: { css, js } });
+      this.renderAppIssuesForm([
+        "Core config settings were not set. Refresh page to see if the issue has been resolved.",
+      ]);
+      return;
+    }
     const cacheBust = encodeURIComponent(this.stApp.stCommon.stSettings.appBundle || String(Date.now()));
     const cssWithBust = this.withCacheBust(css, cacheBust);
     const jsWithBust = this.withCacheBust(js, cacheBust);
@@ -67,14 +76,49 @@ export class SuiteToolsAppView {
   }
 
   /**
+   * Normalize a caught value into the fields the error form renders.
+   *
+   * A `catch` binding is `unknown`: it may be a NetSuite SuiteScriptError, a plain Error
+   * (no `id`, and a newline-delimited string `stack`), or a thrown non-object. Reading the
+   * SuiteScriptError shape off those unchecked previously rendered the literal "undefined".
+   *
+   * @param e - the caught value
+   * @returns the error fields, with absent ones defaulted rather than rendered as "undefined"
+   */
+  private normalizeAppError(e: unknown): { id: string; name: string; message: string; stack: string[] } {
+    if (typeof e !== "object" || e === null) {
+      return { id: "", name: "Error", message: String(e), stack: [] };
+    }
+    const candidate = e as { id?: unknown; name?: unknown; message?: unknown; stack?: unknown };
+
+    let stack: string[] = [];
+    if (Array.isArray(candidate.stack)) {
+      // SuiteScriptError.stack is a string[].
+      stack = candidate.stack.filter((line): line is string => typeof line === "string");
+    } else if (typeof candidate.stack === "string") {
+      // A plain Error stack is one newline-delimited string; keep it as a single entry so the
+      // existing split("at") formatting below still applies.
+      stack = [candidate.stack];
+    }
+
+    return {
+      id: typeof candidate.id === "string" ? candidate.id : "",
+      name: typeof candidate.name === "string" ? candidate.name : "Error",
+      message: typeof candidate.message === "string" ? candidate.message : "",
+      stack,
+    };
+  }
+
+  /**
    * Render application error form.
    *
-   * @param appError - application error
+   * @param caught - the caught value from the application bootstrap
    */
-  public renderAppErrorForm(e: error.SuiteScriptError): void {
+  public renderAppErrorForm(caught: unknown): void {
+    const e = this.normalizeAppError(caught);
     // build stack lines string for content from error if in dev mode
     let stackString = "";
-    if (Array.isArray(e.stack) && e.stack.length > 0) {
+    if (e.stack.length > 0) {
       const stackLines = e.stack[0];
       log.debug({ title: "SuiteToolsController:renderAppErrorForm() stackLines", details: stackLines });
       const stackLinesArray = stackLines.split("at");
