@@ -1,24 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 // backend workspace tsconfig.json
-// Self-contained config for type checking only (--noEmit)
+// Extends the monorepo base; type checking only (--noEmit).
 {
+  "extends": "../tsconfig.base.json",
+
   "compilerOptions": {
     /* Language & Module Settings */
-    "target": "ESNext",
+    // The SuiteScript runtime has no DOM.
     "lib": ["ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
 
     /* Type System */
-    "strict": true,
+    // Not part of the `strict` umbrella, so these must be set explicitly.
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-
-    /* Module Resolution & Interop */
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
 
     /* NetSuite-Specific */
     "experimentalDecorators": true,
