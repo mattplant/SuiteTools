@@ -2,7 +2,7 @@
 
 The Structural Blueprint for Predictable, Discoverable, and Sustainable Development
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
@@ -157,7 +157,7 @@ SuiteTools follows a **suite‑wide build and release strategy** to ensure repro
 
 - **Build** — per‑workspace builds, with `shared/` consumed by both frontend and backend.
 - **CI gates** — GitLab CI runs typecheck, lint, and test (merge-blocking); optional boundary checks later. See the build & release guide.
-- **Release** — consistent versioning, changelogs, and migration notes for breaking changes.
+- **Release** — one suite version (root `package.json`), a dated changelog, an annotated git tag, and a GitLab Release. Breaking changes include migration notes.
 
 For full principles, environment handling, build steps, and release process, see the
 [SuiteTools Build & Release Guide](../guides/build-release.md).

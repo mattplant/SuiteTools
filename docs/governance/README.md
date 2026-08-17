@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See related policies and resources in this section.
 
-Last updated: September 14, 2025
+Last updated: 2026-08-17
 
 ---
 
@@ -48,5 +48,5 @@ Enforceable governance standards — including naming conventions, licensing hea
 ## 🧭 Stewardship Callout
 
 - These standards are **living documents**: they evolve with the suite, are version‑controlled, and are applied consistently across all workspaces.
-- Changes to these files must be reflected in the changelog.
+- Substantive changes are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](../guides/build-release-checklist.md).
 - Keep cross‑links between standards up to date to avoid drift.

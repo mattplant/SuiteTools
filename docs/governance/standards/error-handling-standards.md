@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-17
 
 ---
 
@@ -164,6 +164,6 @@ Create a new subclass when:
 
 ## 🧭 Stewardship Callout
 
-- This document is a governance artifact — changes require review and changelog entry.
+- This document is a governance artifact — changes require review. Substantive changes are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](../../guides/build-release-checklist.md).
 - Keep taxonomy definitions in sync with implementation.
 - Cross‑link this doc from onboarding and contributor guides.

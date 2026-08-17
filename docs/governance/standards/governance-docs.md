@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 ---
 
@@ -62,6 +62,6 @@ When in doubt:
 
 ## 🧭 Stewardship Callout
 
-- Changes to this file must be reflected in the `CHANGELOG.md`.
+- Substantive changes are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](../../guides/build-release-checklist.md).
 - Keep cross‑links between standards up to date to avoid drift.
 - Tag governance document changes in release notes for traceability.
