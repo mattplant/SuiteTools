@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
@@ -58,4 +58,4 @@ stewarded by the Organization for Ethical Source.
 
 ## 🧭 Stewardship Callout
 
-- Changes to this file must be reflected in the changelog.
+- Substantive changes are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](docs/guides/build-release-checklist.md).

@@ -2,7 +2,6 @@
   "name": "@suiteworks/suitetools-shared",
   "displayName": "SuiteTools Shared",
   "description": "Shared utilities for SuiteTools",
-  "version": "0.1.0",
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",

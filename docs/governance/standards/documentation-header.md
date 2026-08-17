@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 ---
 
@@ -73,7 +73,7 @@ It can be used to convey the document’s scope, theme, or role in the suite in 
 
 ## 🧭 Stewardship Callout
 
-- Treat the header as part of the document’s **public contract** — changes to it should be reflected in the changelog.
+- Treat the header as part of the document’s **public contract** — substantive changes are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](../../guides/build-release-checklist.md).
 - Keep header wording, order, and formatting in sync across all docs, and keep templates aligned with `documentation-header.md`, `badge-cluster.md`, and `STYLE.md`.
 
 Also see [STYLE.md](../STYLE.md#stewardship-notes) for stewardship guidance.

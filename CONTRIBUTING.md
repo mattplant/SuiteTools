@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See `/docs/governance` for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](LICENSE)
@@ -65,7 +65,7 @@ Quick reference for maintainers:
    - Follow the [Commit Message Format](./commit-draft-TEMPLATE.md) for clarity and traceability
 4. **Document** your change:
    - Update relevant documents
-   - Add or update changelog entries in `CHANGELOG.md`
+   - Do not edit `CHANGELOG.md` unless this merge request *is* the release. Substantive work is recorded in the next release changelog — see the [Build & Release Checklist](./docs/guides/build-release-checklist.md)
    - Maintain attribution if reusing external code or assets
 5. **Submit** a pull request:
    - Link to the issue you opened
@@ -111,4 +111,4 @@ For details, see the canonical sources:
 - Update this guide whenever **contribution status** changes (e.g., paused → open).
 - Keep **workflow steps** aligned with current coding standards, governance policies, and onboarding practices.
 - Ensure **links to governance anchors** (e.g., license compliance, code of conduct) remain valid and point to canonical sources.
-- Reflect all substantive changes in the **changelog** for transparency and reproducibility.
+- Substantive changes are recorded in the **next release** changelog, not in the same merge request. See the [Build & Release Checklist](./docs/guides/build-release-checklist.md).

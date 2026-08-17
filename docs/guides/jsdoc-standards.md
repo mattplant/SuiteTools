@@ -1,6 +1,6 @@
 # 🧑‍💻 JSDoc Standards
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 ---
 
@@ -68,7 +68,7 @@ Every source file should begin with a structured JSDoc block:
 
 ## 📋 Stewardship Notes
 
-- Treat JSDoc as part of SuiteTools’ **public contract** — changes to tags or structure should be reflected in the changelog.
+- Treat JSDoc as part of SuiteTools’ **public contract** — substantive changes to tags or structure are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](./build-release-checklist.md).
 - Keep this standard in sync with [Linting Standards](../governance/standards/linting-standards.md).
 - Ensure new contributors understand that JSDoc is **not optional commentary** but enforceable metadata.
 - Cross‑link updates here with [ATTRIBUTION.md](../../ATTRIBUTION.md) and [STYLE.md](../governance/STYLE.md) to avoid drift.

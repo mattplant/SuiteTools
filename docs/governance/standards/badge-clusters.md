@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: September 22, 2025
+Last updated: 2026-08-17
 
 ---
 
@@ -71,4 +71,4 @@ Last updated: Month D, YYYY
 - Keep badge URLs and link targets **in sync** with `LICENSE`, `LICENSE-DOCS.md`, and `ATTRIBUTION.md`.
 - Use **relative links** so badges work in forks and offline clones.
 - Always link to the **canonical copy** of their authoritative source to avoid drift.
-- Treat the badge cluster as part of the doc’s **public contract** — changes to it should be reflected in the changelog.
+- Treat the badge cluster as part of the doc’s **public contract** — substantive changes are recorded in the next release changelog, not in the same merge request. See the [Build & Release Checklist](../../guides/build-release-checklist.md).

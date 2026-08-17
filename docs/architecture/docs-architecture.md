@@ -2,7 +2,7 @@
 
 Living Standards for Structure, Style, and Stewardship
 
-Last updated: September 21, 2025
+Last updated: 2026-08-17
 
 <!-- License badges: keep in sync with LICENSE, LICENSE-DOCS.md and ATTRIBUTION.md -->
 [![Docs License: CC BY 4.0](https://img.shields.io/badge/Docs%20License-CC%20BY%204.0-lightgrey.svg)](../../LICENSE-DOCS.md) [![Source Code License: GPLv3-or-later](https://img.shields.io/badge/Source%20Code-GPLv3--or--later-yellow.svg)](../../LICENSE)
@@ -138,7 +138,7 @@ Docs are **living architecture**: always accurate, discoverable, and aligned wit
 ### Keep Documentation Alive
 
 - **Track updates visibly** — changelogs, commits, badge clusters
-- **Record significant changes in the suite‑wide changelog**
+- **Record significant changes in the next release changelog** — not in the same merge request; see the [Build & Release Checklist](../guides/build-release-checklist.md)
 - **Revise at the point of change** — update docs in the same PR as code/governance changes
 - **Link related updates** — connect guides, patterns, and governance notes
 
