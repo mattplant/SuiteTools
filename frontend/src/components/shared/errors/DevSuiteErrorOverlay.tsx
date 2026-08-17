@@ -26,6 +26,12 @@ export function DevSuiteErrorOverlay({ error, onDismiss }: DevSuiteErrorOverlayP
   }, [onDismiss]);
 
   const panel = (
+    // Permanent by design, not deferred work: the rule reports the backdrop's `onClick`
+    // because a `div` is not an interactive element. Keyboard dismissal is not missing — an
+    // Escape listener is registered on `window` in the effect above, which dismisses from
+    // anywhere rather than only when the backdrop holds focus. Adding `onKeyDown` here to
+    // satisfy the rule would duplicate that listener as dead code, and restructuring was
+    // tested and is worse — see #89.
     // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click only dismisses; keyboard dismissal is handled by the window-level Escape listener registered above
     <div
       role="dialog"
@@ -66,6 +72,10 @@ export function DevSuiteErrorOverlay({ error, onDismiss }: DevSuiteErrorOverlayP
           {onDismiss ? (
             <button
               type="button"
+              // Permanent by design, not deferred work: moving focus into a modal dialog on
+              // open is what the WAI-ARIA authoring practices call for, and the dismiss control
+              // is the correct target. The rule cannot distinguish a dialog's initial focus from
+              // an unsolicited autofocus on page load. Dev-only overlay — see #89.
               // biome-ignore lint/a11y/noAutofocus: moving focus into a modal dialog on open follows the WAI-ARIA authoring practices; the dismiss control is the correct target
               autoFocus
               onClick={onDismiss}
