@@ -1,25 +1,11 @@
-import { useMemo, useRef } from "react";
-import { DataGrid, type DataGridHandle } from "react-data-grid";
-import "react-data-grid/lib/styles.css";
-import { Export } from "../../shared/results/Export";
+import type { Column } from "react-data-grid";
+import { SoapLogBundle, type SoapLog } from "@suiteworks/suitetools-shared";
+import { ResultsGrid, summaryColumn } from "../../shared/results/ResultsGrid";
 import type { ResultsProps, SummaryRow } from "../../shared/results/types";
-import { SoapLogBundle } from "@suiteworks/suitetools-shared";
 
-const columns = [
-  {
-    key: "startDate",
-    name: "Start Time",
-    renderSummaryCell() {
-      return <strong>Total</strong>;
-    },
-  },
-  {
-    key: "duration",
-    name: "Duration",
-    renderSummaryCell({ row }: { row: SummaryRow }) {
-      return `${row.totalCount} records`;
-    },
-  },
+const columns: Column<SoapLog, SummaryRow>[] = [
+  summaryColumn({ key: "startDate", name: "Start Time" }, "total"),
+  summaryColumn({ key: "duration", name: "Duration" }, "count"),
   { key: "status", name: "Status" },
   { key: "integration", name: "Integration" },
   { key: "action", name: "Action" },
@@ -31,30 +17,17 @@ const columns = [
   { key: "recordsReturned", name: "Returned" },
 ];
 
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
+export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
   SoapLogBundle.assertMany(rows);
-  const gridRef = useRef<DataGridHandle>(null);
-  const summaryRows = useMemo((): readonly SummaryRow[] => {
-    return [{ id: "total_0", totalCount: rows.length }];
-  }, [rows]);
-
+  // Eleven columns: minWidth is original and deliberate. Sortable/resizable used to be overwritten
+  // by this object; ResultsGrid merges them back in.
   return (
-    <>
-      <Export gridRef={gridRef} />
-      <div style={{ height: "600px", overflowY: "auto" }}>
-        <DataGrid
-          ref={gridRef}
-          columns={columns}
-          rows={rows}
-          bottomSummaryRows={summaryRows}
-          onCellClick={(cell) => {
-            setId(cell.row.id);
-            setOpenModal(true);
-          }}
-          defaultColumnOptions={{ minWidth: 110 }}
-          className="fill-grid"
-        />
-      </div>
-    </>
+    <ResultsGrid
+      columns={columns}
+      rows={rows}
+      setId={setId}
+      setOpenModal={setOpenModal}
+      defaultColumnOptions={{ minWidth: 110 }}
+    />
   );
 }
