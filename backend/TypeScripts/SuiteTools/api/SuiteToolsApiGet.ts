@@ -14,7 +14,7 @@ import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
 import type { SuiteToolsApiModel } from "./SuiteToolsApiModel";
 import { SuiteError, InvalidParameterError, UnexpectedError } from "@suiteworks/suitetools-shared/errors";
 import { validateGetResponse } from "./SuiteToolsApiGetValidate";
-import { ensureEntityOrSoftNotFound, softNotFoundResponse } from "./SuiteToolsApiGetNotFound";
+import { ensureEntityOrSoftNotFound } from "./SuiteToolsApiGetNotFound";
 
 type RequestParams = { [key: string]: string };
 
@@ -484,8 +484,7 @@ export class SuiteToolsApiGet {
   /**
    * Fetch a single entity by `requestParams.id`.
    *
-   * Shared by the eight endpoints whose model method returns a `Response`.
-   * `getScriptLog` stays hand-rolled: the model returns a SuiteQL array.
+   * Shared by the singular endpoints whose model method returns a `Response`.
    */
   private getById(requestParams: RequestParams, noun: string, modelFn: (id: string) => Response): Response {
     const id = requestParams.id;
@@ -669,22 +668,11 @@ export class SuiteToolsApiGet {
   /**
    * Get a single script log.
    *
-   * Hand-rolled: `SuiteToolsApiModel.getScriptLog()` returns a SuiteQL results
-   * array rather than a `Response`, so this cannot use `getById`.
-   *
    * @param requestParams - Must include id.
    * @returns script log
    */
   private getScriptLog(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getScriptLog(id);
-    if (!result || result.length === 0) {
-      return softNotFoundResponse(`No script log found with id of ${id}`);
-    }
-    return { status: 200, data: result[0] };
+    return this.getById(requestParams, "script log", (id) => this.stApiModel.getScriptLog(id));
   }
 
   /**
