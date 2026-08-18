@@ -3,7 +3,7 @@
 > Part of the SuiteTools governance set.
 > See [/docs/governance](../README.md) for related policies and resources.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-17
 
 
 ---
@@ -108,7 +108,7 @@ List-filter keys sent SPA → RESTlet use the same camelCase rule (migrated in #
 
 ### Soft NotFound (singular GET)
 
-Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). All singular GETs use soft NotFound (Role aligned in #49). Empty-`{}` validation skip and FE pre-Zod shim removed in #46 — regressing empty misses fail loudly.
+Prefer `{ status: 404, data: { code: 'NOT_FOUND', message } }` over legacy `{ data: {} }`. Helper: `SuiteToolsApiGetNotFound.ts` (#45). All singular GETs use soft NotFound (Role aligned in #49). Empty-`{}` validation skip and FE pre-Zod shim removed in #46 — regressing empty misses fail loudly. Get-layer singular cleaners refuse that payload (`isCleanableRow` / `isNotFound`, #104) so empty-string defaults cannot decorate it; Token and Integration stay model-normalized with no Get-layer cleaner.
 
 ### Suggested follow-on order
 

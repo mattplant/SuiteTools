@@ -12,6 +12,7 @@ import type { Response } from "./types";
 import { SuiteToolsApiGetOptions } from "./SuiteToolsApiGetOptions";
 import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
 import type { SuiteToolsApiModel } from "./SuiteToolsApiModel";
+import { isNotFound } from "@suiteworks/suitetools-shared";
 import { SuiteError, InvalidParameterError, UnexpectedError } from "@suiteworks/suitetools-shared/errors";
 import { validateGetResponse } from "./SuiteToolsApiGetValidate";
 import { ensureEntityOrSoftNotFound } from "./SuiteToolsApiGetNotFound";
@@ -30,6 +31,17 @@ type Row = Record<string, unknown>;
 /** Narrow an untyped payload to an indexable row. Mirrors the guard the cleaners already ran. */
 function isRow(value: unknown): value is Row {
   return typeof value === "object" && value !== null;
+}
+
+/**
+ * A SuiteQL row the Get-layer cleaners may remap.
+ *
+ * Canonical soft NotFound is an object, so `isRow` is true for it. Cleaners that write
+ * empty-string defaults would decorate `{ code: "NOT_FOUND", message }` if they only
+ * checked `isRow`. Refuse here and leave the payload unchanged (#104).
+ */
+function isCleanableRow(value: unknown): value is Row {
+  return isRow(value) && !isNotFound(value);
 }
 
 /** Rows of an untyped list payload. Non-arrays and non-object entries drop out. */
@@ -109,6 +121,7 @@ export class SuiteToolsApiGet {
           response = this.cleanJobRunsData(response);
           break;
         case "integration":
+          // Model-normalized (`normalizeIntegrationRow`); no Get-layer cleaner (#104).
           response = this.getIntegration(requestParams);
           break;
         case "integrations":
@@ -131,10 +144,7 @@ export class SuiteToolsApiGet {
           break;
         case "script":
           response = this.getScript(requestParams);
-          // Only clean successful payloads; leave NotFound / empty shapes alone.
-          if (response.status === 200) {
-            response.data = this.cleanScriptData(response.data);
-          }
+          response.data = this.cleanScriptData(response.data);
           break;
         case "scripts":
           response = this.getScripts(requestParams);
@@ -142,9 +152,7 @@ export class SuiteToolsApiGet {
           break;
         case "scriptLog":
           response = this.getScriptLog(requestParams);
-          if (response.status === 200) {
-            response.data = this.cleanScriptLogData(response.data);
-          }
+          response.data = this.cleanScriptLogData(response.data);
           break;
         case "scriptLogs":
           response = this.getScriptLogs(requestParams);
@@ -154,6 +162,7 @@ export class SuiteToolsApiGet {
           response = this.getSettings();
           break;
         case "token":
+          // Model-normalized (`normalizeTokenRow`); no Get-layer cleaner (#104).
           response = this.getToken(requestParams);
           break;
         case "tokens":
@@ -243,8 +252,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanJobData(data: unknown): unknown {
-    // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
     if (!("isInactive" in data) && !("isinactive" in data)) {
@@ -323,7 +331,7 @@ export class SuiteToolsApiGet {
    * Remap SuiteQL-lowercased JobRun aliases to the shared camelCase wire contract.
    */
   private cleanJobRunData(data: unknown): unknown {
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
 
@@ -340,8 +348,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanRoleData(data: unknown): unknown {
-    // Soft-miss / empty payloads can be null or non-objects — bail before field access.
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
 
@@ -370,8 +377,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanScriptData(data: unknown): unknown {
-    // Skip empty payloads (e.g. not-found responses still shaped as {}).
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
     if (!("isInactive" in data) && !("isinactive" in data)) {
@@ -406,7 +412,7 @@ export class SuiteToolsApiGet {
    * ScriptLog camelCase wire contract before SPA Zod parse.
    */
   private cleanScriptLogData(data: unknown): unknown {
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
 
@@ -430,7 +436,7 @@ export class SuiteToolsApiGet {
    * Remap to the shared camelCase File wire contract before SPA Zod parse.
    */
   private cleanFileData(data: unknown): unknown {
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
 
@@ -451,8 +457,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanUserData(data: unknown): unknown {
-    // Soft-miss / empty payloads can be null or non-objects — bail before field access.
-    if (!isRow(data)) {
+    if (!isCleanableRow(data)) {
       return data;
     }
 
