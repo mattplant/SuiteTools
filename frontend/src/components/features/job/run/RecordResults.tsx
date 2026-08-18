@@ -1,54 +1,17 @@
-import { useMemo, useRef } from "react";
-import { DataGrid, type DataGridHandle } from "react-data-grid";
-import "react-data-grid/lib/styles.css";
-import { Export } from "../../../shared/results/Export";
-import type { ResultsProps, SummaryRow } from "../../../shared/results/types";
+import type { Column } from "react-data-grid";
 import { JobRunBundle, type JobRun } from "@suiteworks/suitetools-shared";
+import { ResultsGrid, summaryColumn } from "../../../shared/results/ResultsGrid";
+import type { ResultsProps, SummaryRow } from "../../../shared/results/types";
 
-const columns = [
-  {
-    key: "id",
-    name: "Id",
-    renderSummaryCell() {
-      return <strong>Total</strong>;
-    },
-  },
-  {
-    key: "jobName",
-    name: "Job Name",
-    renderSummaryCell({ row }: { row: SummaryRow }) {
-      return `${row.totalCount} records`;
-    },
-  },
+const columns: Column<JobRun, SummaryRow>[] = [
+  summaryColumn({ key: "id", name: "Id" }, "total"),
+  summaryColumn({ key: "jobName", name: "Job Name" }, "count"),
   { key: "created", name: "Created At" },
-  { key: "completed", name: "Completed", renderCell: ({ row }: { row: JobRun }) => (row.completed ? "Yes" : "No") },
+  { key: "completed", name: "Completed", renderCell: ({ row }) => (row.completed ? "Yes" : "No") },
   { key: "results", name: "Results" },
 ];
 
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps) {
+export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
   JobRunBundle.assertMany(rows);
-  const gridRef = useRef<DataGridHandle>(null);
-  const summaryRows = useMemo((): readonly SummaryRow[] => {
-    return [{ id: "total_0", totalCount: rows.length }];
-  }, [rows]);
-
-  return (
-    <>
-      <Export gridRef={gridRef} />
-      <div style={{ height: "600px", overflowY: "auto" }}>
-        <DataGrid
-          ref={gridRef}
-          columns={columns}
-          rows={rows}
-          defaultColumnOptions={{ sortable: true, resizable: true }}
-          bottomSummaryRows={summaryRows}
-          onCellClick={(cell) => {
-            setId(cell.row.id);
-            setOpenModal(true);
-          }}
-          className="fill-grid"
-        />
-      </div>
-    </>
-  );
+  return <ResultsGrid columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
 }

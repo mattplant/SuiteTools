@@ -64,7 +64,7 @@ Complete in order. One entity (or tight cluster) per MR when possible.
 - [ ] Detail page: `useLoaderData()` → result component (no Suspense/`Await` for the entity record).
 - [ ] List page: `useEntityList({ defaultCriteria, fetchList })` (+ optional `getStatusMessage` for soft empty/partial UX).
 - [ ] Criteria UI: feature `RecordCriteria` built on `RecordCriteriaForm` + shared `SearchCriteria*`.
-- [ ] Results: register in `ResultsTypes` / `resultsMap` as needed; modal fetch via singular adapter.
+- [ ] Results: feature `RecordResults` on `ResultsGrid` + `summaryColumn()`, typed `Column<T, SummaryRow>[]`; register in `ResultsTypes` / `resultsMap`; modal fetch via singular adapter. Do not copy a DataGrid shell into the feature file.
 
 ### 6. Errors & soft cases
 
@@ -107,4 +107,4 @@ Complete in order. One entity (or tight cluster) per MR when possible.
 - [Validation architecture](../architecture/validation.md) — schema layers
 - [Error Handling Cheat Sheet](./error-handling-cheatsheet.md)
 - [Build & Release Checklist](./build-release-checklist.md) — deploy commands
-- FE factories: `frontend/src/adapters/api/adapterUtils.ts`, `frontend/src/routes/loaderUtils.ts`, `frontend/src/hooks/useEntityList.ts`, `frontend/src/components/shared/criteria/RecordCriteriaForm.tsx`
+- FE factories: `frontend/src/adapters/api/adapterUtils.ts`, `frontend/src/routes/loaderUtils.ts`, `frontend/src/hooks/useEntityList.ts`, `frontend/src/components/shared/criteria/RecordCriteriaForm.tsx`, `frontend/src/components/shared/results/ResultsGrid.tsx`
