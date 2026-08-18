@@ -135,3 +135,23 @@ describe("Get-layer flag cleaners", () => {
     expect(cleaned).toHaveProperty("isInactive", "F");
   });
 });
+
+const SINGULAR_CLEANERS = [
+  "cleanFileData",
+  "cleanJobData",
+  "cleanJobRunData",
+  "cleanRoleData",
+  "cleanScriptData",
+  "cleanScriptLogData",
+  "cleanUserData",
+] as const;
+
+describe("Get-layer singular cleaners refuse NotFound", () => {
+  it.each(SINGULAR_CLEANERS)("%s leaves a canonical NotFound unchanged", (method) => {
+    const notFound = { code: "NOT_FOUND", message: "No entity found with id of 9" };
+    const original = { ...notFound };
+
+    expect(clean(method, notFound)).toEqual(original);
+    expect(notFound).toEqual(original);
+  });
+});

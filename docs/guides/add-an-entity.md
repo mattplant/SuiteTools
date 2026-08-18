@@ -2,7 +2,7 @@
 
 Checklist for introducing a new SuiteTools domain entity end-to-end.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-17
 
 ---
 
@@ -42,13 +42,13 @@ Complete in order. One entity (or tight cluster) per MR when possible.
 - [ ] Add singular + list getters in `SuiteToolsApiModel.ts` (or a focused model module if splitting later).
 - [ ] Alias columns clearly in SQL; **do not** assume `AS camelCase` survives `asMappedResults()` — cleaners remap lowercase → wire keys.
 - [ ] Empty singular → message string for soft NotFound at the Get layer; empty list → `[]` (not `{}`). Prefer `queryOne` / `queryMany` from `SuiteToolsApiModelQuery.ts` over hand-rolled envelopes.
-- [ ] Prefer Token/Integration-style row normalization in the model when the Get cleaner would only remap keys.
+- [ ] Prefer Token/Integration-style row normalization in the model when the Get cleaner would only remap keys. Token and Integration have **no Get-layer cleaner** by design (`normalizeTokenRow` / `normalizeIntegrationRow`). Do not add one unless that model normalize is removed in the same change.
 
 ### 3. Backend Get (RESTlet)
 
 - [ ] Wire `case` in `SuiteToolsApiGet.ts` for singular + plural endpoints.
 - [ ] Singular miss → `ensureEntityOrSoftNotFound` / `softNotFoundResponse` (`{ status: 404, data: { code: 'NOT_FOUND', message } }`). Never legacy `{ data: {} }`.
-- [ ] Add `cleanX` / `cleanXs` (or model normalize) so the payload matches the shared schema **before** Zod.
+- [ ] Add `cleanX` / `cleanXs` (or model normalize) so the payload matches the shared schema **before** Zod. Get-layer singular cleaners must refuse canonical NotFound (`isCleanableRow` / `isNotFound`) rather than guarding `status === 200` in `process()`.
 - [ ] Register both endpoints in `GET_PAYLOAD_VALIDATED_ENDPOINTS` (`SuiteToolsApiGetValidate.ts`) and update its unit test allowlist.
 - [ ] Add/extend `endpointMap` in shared if the SPA will call the new names.
 
