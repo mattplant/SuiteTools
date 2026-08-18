@@ -8,7 +8,6 @@
 import * as log from "N/log";
 import * as task from "N/task";
 import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
-import type { SuiteQLResults } from "../common/types";
 
 import { queryMany, queryOne } from "./SuiteToolsApiModelQuery";
 import type { Response } from "./types";
@@ -736,9 +735,9 @@ export class SuiteToolsApiModel {
    * Get Script Log
    *
    * @param id - the record id to return
-   * @returns script log SuiteQLResults
+   * @returns script log
    */
-  public getScriptLog(id: string): SuiteQLResults {
+  public getScriptLog(id: string): Response {
     const sql = `SELECT
       ScriptNote.internalid AS id,
       TO_CHAR ( ScriptNote.date, 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
@@ -752,9 +751,7 @@ export class SuiteToolsApiModel {
       ON ScriptNote.scripttype = script.id
     WHERE ScriptNote.internalid = ${id}`;
     log.debug({ title: `SuiteToolsApiModel:getScriptLog() generated this sql`, details: sql });
-    const sqlResults = this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql) as SuiteQLResults;
-
-    return sqlResults;
+    return queryOne(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No script log found with id of ${id}`);
   }
 
   /**
@@ -847,12 +844,6 @@ export class SuiteToolsApiModel {
 
     return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No script log records found`);
   }
-
-  // Additional methods exist in the original implementation:
-  // - getJobRun, getJobRuns
-  // - getLogins, getRoles, getScripts
-  // - getScriptLog
-  // These would be added in the complete implementation
 
   /**
    * Add Date Filter
