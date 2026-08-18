@@ -16,7 +16,7 @@ Last updated: 2026-08-17
 
 SuiteTools takes security seriously. This policy defines how SuiteTools handles security vulnerabilities and how contributors and external parties should report them.
 
-**Scope:** Applies to the `main` branch and latest release. Forks, custom modifications, and unsupported versions are out of scope.
+**Scope:** Applies to the `main` branch and the latest published release. Forks, custom modifications, and unsupported versions are out of scope.
 
 If you discover a vulnerability, please help us protect the community by reporting it responsibly.
 
@@ -24,14 +24,14 @@ If you discover a vulnerability, please help us protect the community by reporti
 
 ## 📝 Reporting a Vulnerability
 
-- Reports can be sent to **security@[pending-domain]**
-  _(This address will be updated once the SuiteTools domain is active. Until then, please use GitHub private advisories as the primary reporting channel.)_
-- Or open a **private advisory** via GitHub Security.
-  - **Do not** open a public issue for security reports.
-- Include:
-  - Steps to reproduce
-  - Potential impact
-  - Any suggested fixes or mitigations
+Open a **confidential issue** on this GitLab project.
+
+- Use [New issue](https://gitlab.com/idev-systems/labs/SuiteTools/-/issues/new?issue[confidential]=true) and turn **confidentiality** on before you submit.
+- Include steps to reproduce, potential impact, and any suggested fixes or mitigations.
+
+> ⚠️ **Warning:** Do not open a public issue, merge request, or discussion for a vulnerability. There is no security mailbox and no GitHub advisory path for this project.
+
+A confidential issue is visible only to project members with sufficient permissions, and to you as the reporter.
 
 ---
 
@@ -40,9 +40,9 @@ If you discover a vulnerability, please help us protect the community by reporti
 We actively maintain:
 
 - The `main` branch
-- The latest published release
+- The latest published release — the most recent annotated git tag `v<version>` that has a [GitLab Release](https://gitlab.com/idev-systems/labs/SuiteTools/-/releases)
 
-These versions will receive security updates and coordinated fixes.
+These versions will receive security updates and coordinated fixes. A version number in `package.json` is not a published release until it is tagged and released on GitLab.
 
 ### ❌ Out of Scope
 
