@@ -38,6 +38,17 @@ function rowsOf(value: unknown): Row[] {
 }
 
 /**
+ * Apply a per-row cleaner to every object in a list payload.
+ * The index is for callers that synthesize an id (LoginAudit has none in this query).
+ */
+function cleanAll(response: Response, clean: (record: Row, index: number) => void): Response {
+  for (const [index, record] of rowsOf(response.data).entries()) {
+    clean(record, index);
+  }
+  return response;
+}
+
+/**
  * SuiteTools API GET Class
  *
  * @author Matthew Plant <i@idev.systems>
@@ -249,11 +260,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanJobsData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanJobData(record);
-    }
-
-    return response;
+    return cleanAll(response, (record) => this.cleanJobData(record));
   }
 
   private addJobLastRun(data: unknown): unknown {
@@ -305,13 +312,11 @@ export class SuiteToolsApiGet {
   }
 
   private cleanLoginsData(response: Response): Response {
-    rowsOf(response.data).forEach((record, index) => {
+    return cleanAll(response, (record, index) => {
       // LoginAudit has no stable internal id in this query; synthesize for the UI modal.
       record.id = index + 1;
       this.cleanLoginData(record);
     });
-
-    return response;
   }
 
   /**
@@ -331,11 +336,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanJobRunsData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanJobRunData(record);
-    }
-
-    return response;
+    return cleanAll(response, (record) => this.cleanJobRunData(record));
   }
 
   private cleanRoleData(data: unknown): unknown {
@@ -365,11 +366,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanRolesData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanRoleData(record);
-    }
-
-    return response;
+    return cleanAll(response, (record) => this.cleanRoleData(record));
   }
 
   private cleanScriptData(data: unknown): unknown {
@@ -401,11 +398,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanScriptsData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanScriptData(record);
-    }
-
-    return response;
+    return cleanAll(response, (record) => this.cleanScriptData(record));
   }
 
   /**
@@ -429,11 +422,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanScriptLogsData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanScriptLogData(record);
-    }
-
-    return response;
+    return cleanAll(response, (record) => this.cleanScriptLogData(record));
   }
 
   /**
@@ -458,11 +447,7 @@ export class SuiteToolsApiGet {
   }
 
   private cleanFilesData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanFileData(record);
-    }
-
-    return response;
+    return cleanAll(response, (record) => this.cleanFileData(record));
   }
 
   private cleanUserData(data: unknown): unknown {
@@ -493,33 +478,39 @@ export class SuiteToolsApiGet {
   }
 
   private cleanUsersData(response: Response): Response {
-    for (const record of rowsOf(response.data)) {
-      this.cleanUserData(record);
-    }
+    return cleanAll(response, (record) => this.cleanUserData(record));
+  }
 
-    return response;
+  /**
+   * Fetch a single entity by `requestParams.id`.
+   *
+   * Shared by the eight endpoints whose model method returns a `Response`.
+   * `getScriptLog` stays hand-rolled: the model returns a SuiteQL array.
+   */
+  private getById(requestParams: RequestParams, noun: string, modelFn: (id: string) => Response): Response {
+    const id = requestParams.id;
+    if (!id) {
+      throw new InvalidParameterError("id", undefined, "Missing required parameter");
+    }
+    const result = modelFn(id);
+    return ensureEntityOrSoftNotFound(result, `No ${noun} found with id of ${id}`);
   }
 
   /**
    * Get File
    *
    * @param requestParams
-   * @returns settings
+   * @returns file
    */
   private getFile(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getFile(id);
-    return ensureEntityOrSoftNotFound(result, `No file found with id of ${id}`);
+    return this.getById(requestParams, "file", (id) => this.stApiModel.getFile(id));
   }
 
   /**
    * Get Files
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional rows, fileTypes, dateCreated, lastModifiedDate.
+   * @returns files
    */
   private getFiles(requestParams: RequestParams): Response {
     const row = requestParams.rows;
@@ -536,26 +527,15 @@ export class SuiteToolsApiGet {
     return result;
   }
 
-  /**
-   * Get Job
-   *
-   * @param requestParams
-   * @returns settings
-   */
   private getJob(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getJob(id);
-    return ensureEntityOrSoftNotFound(result, `No job found with id of ${id}`);
+    return this.getById(requestParams, "job", (id) => this.stApiModel.getJob(id));
   }
 
   /**
    * Get Jobs
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional active filter.
+   * @returns jobs
    */
   private getJobs(requestParams: RequestParams): Response {
     const active = requestParams.active;
@@ -569,25 +549,14 @@ export class SuiteToolsApiGet {
     return result;
   }
 
-  /**
-   * Get Integration
-   *
-   * @param requestParams
-   * @returns integration
-   */
   private getIntegration(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getIntegration(id);
-    return ensureEntityOrSoftNotFound(result, `No integration found with id of ${id}`);
+    return this.getById(requestParams, "integration", (id) => this.stApiModel.getIntegration(id));
   }
 
   /**
    * Get Integrations
    *
-   * @param requestParams
+   * @param requestParams - Optional active filter.
    * @returns integrations
    */
   private getIntegrations(requestParams: RequestParams): Response {
@@ -601,26 +570,15 @@ export class SuiteToolsApiGet {
     return result;
   }
 
-  /**
-   * Get Run Job
-   *
-   * @param requestParams
-   * @returns settings
-   */
   private getJobRun(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getJobRun(id);
-    return ensureEntityOrSoftNotFound(result, `No job execution found with id of ${id}`);
+    return this.getById(requestParams, "job execution", (id) => this.stApiModel.getJobRun(id));
   }
 
   /**
    * Get Job Runs
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional job and completed filters.
+   * @returns job runs
    */
   private getJobRuns(requestParams: RequestParams): Response {
     const job = requestParams.job;
@@ -638,8 +596,8 @@ export class SuiteToolsApiGet {
   /**
    * Get Logins
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional rows, active, integrationName, tokenName, users, roles, dates.
+   * @returns logins
    */
   private getLogins(requestParams: RequestParams): Response {
     const rows = requestParams.rows;
@@ -659,26 +617,15 @@ export class SuiteToolsApiGet {
     return result;
   }
 
-  /**
-   * Get Role
-   *
-   * @param requestParams
-   * @returns settings
-   */
   private getRole(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getRole(id);
-    return ensureEntityOrSoftNotFound(result, `No role found with id of ${id}`);
+    return this.getById(requestParams, "role", (id) => this.stApiModel.getRole(id));
   }
 
   /**
    * Get Roles
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional active filter.
+   * @returns roles
    */
   private getRoles(requestParams: RequestParams): Response {
     const active = requestParams.active;
@@ -692,26 +639,15 @@ export class SuiteToolsApiGet {
     return result;
   }
 
-  /**
-   * Get Script
-   *
-   * @param requestParams
-   * @returns settings
-   */
   private getScript(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getScript(id);
-    return ensureEntityOrSoftNotFound(result, `No script found with id of ${id}`);
+    return this.getById(requestParams, "script", (id) => this.stApiModel.getScript(id));
   }
 
   /**
    * Get Scripts
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional active, versions, scriptTypes, scriptNames, owners, files.
+   * @returns scripts
    */
   private getScripts(requestParams: RequestParams): Response {
     const active = requestParams.active;
@@ -731,10 +667,13 @@ export class SuiteToolsApiGet {
   }
 
   /**
-   * Get Server Script Log
+   * Get a single script log.
    *
-   * @param requestParams
-   * @returns settings
+   * Hand-rolled: `SuiteToolsApiModel.getScriptLog()` returns a SuiteQL results
+   * array rather than a `Response`, so this cannot use `getById`.
+   *
+   * @param requestParams - Must include id.
+   * @returns script log
    */
   private getScriptLog(requestParams: RequestParams): Response {
     const id = requestParams.id;
@@ -751,8 +690,8 @@ export class SuiteToolsApiGet {
   /**
    * Get Server Script Logs
    *
-   * @param requestParams
-   * @returns settings
+   * @param requestParams - Optional rows, levels, scriptTypes, scriptNames, owners, time mode, dates, title, detail.
+   * @returns script logs
    */
   private getScriptLogs(requestParams: RequestParams): Response {
     const row = requestParams.rows ? requestParams.rows : "50";
@@ -830,12 +769,7 @@ export class SuiteToolsApiGet {
    * @param requestParams - Must include id.
    */
   private getToken(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getToken(id);
-    return ensureEntityOrSoftNotFound(result, `No token found with id of ${id}`);
+    return this.getById(requestParams, "token", (id) => this.stApiModel.getToken(id));
   }
 
   /**
@@ -925,25 +859,14 @@ export class SuiteToolsApiGet {
     return { status: 200, data: result };
   }
 
-  /**
-   * Get User
-   *
-   * @param requestParams
-   * @returns user
-   */
   private getUser(requestParams: RequestParams): Response {
-    const id = requestParams.id;
-    if (!id) {
-      throw new InvalidParameterError("id", undefined, "Missing required parameter");
-    }
-    const result = this.stApiModel.getUser(id);
-    return ensureEntityOrSoftNotFound(result, `No user found with id of ${id}`);
+    return this.getById(requestParams, "user", (id) => this.stApiModel.getUser(id));
   }
 
   /**
    * Get Users
    *
-   * @param requestParams
+   * @param requestParams - Optional active, roles, owners.
    * @returns users
    */
   private getUsers(requestParams: RequestParams): Response {
