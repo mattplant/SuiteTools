@@ -8,7 +8,7 @@ interface Props {
 export function SearchCriteriaLevels({ register }: Props) {
   return (
     <div className="block mb-2 text-sm font-medium text-gray-900">
-      <label htmlFor="level">Levels</label>
+      <label htmlFor="levels">Levels</label>
       <select
         multiple
         size={6}
