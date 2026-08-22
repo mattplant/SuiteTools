@@ -1,13 +1,32 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Results table plus its detail modal, for one entity type.
+ *
+ * @fileoverview
+ * The public entry point of this directory: pages and feature components render `<Results
+ * type={ResultsTypes.X} …>` and get the grid, the row-click selection, the modal fetch and the
+ * detail view. Sixteen call sites; nothing else here is imported from outside.
+ *
+ * @remarks
+ * Owns modal lifecycle only — the grid and detail rendering are looked up in `resultsRegistry`.
+ * The close-on-navigation effect is keyed on `location.key` rather than `pathname` (#88); see the
+ * comment at that effect before changing it.
+ *
+ * @see registry.tsx – the per-entity table this reads titles and components from
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 import { useEffect, useState } from "react";
 import { Modal } from "flowbite-react";
 import { useLocation } from "react-router-dom";
 import { DynamicResultsRenderer } from "./DynamicResultsRenderer";
 import type { NotFound } from "@suiteworks/suitetools-shared";
 import { handleError, isNotFound, NotFoundError } from "@suiteworks/suitetools-shared";
-import { ResultsTypes } from "./types";
-import type { ModalResult } from "./types";
+import { resultsRegistry } from "./registry";
+import type { ModalResult, ResultsTypes } from "./types";
 import { ResultsModal } from "./ResultsModal";
 import { useErrorBoundaryTrigger } from "../../../hooks/useErrorBoundaryTrigger";
 
@@ -33,22 +52,7 @@ export function Results({ type, lines, getModalData }: Props): React.JSX.Element
   const [data, setData] = useState<ModalResult>();
   const [loading, setLoading] = useState(false);
 
-  // determine modal title based on modal type
-  const modalTitles: Record<ResultsTypes, string> = {
-    [ResultsTypes.FILE]: "File",
-    [ResultsTypes.INTEGRATION]: "Integration",
-    [ResultsTypes.JOB]: "Job",
-    [ResultsTypes.JOBRUN]: "Job Execution",
-    [ResultsTypes.LOGIN]: "Login",
-    [ResultsTypes.ROLE]: "Role",
-    [ResultsTypes.SCRIPT]: "Script",
-    [ResultsTypes.SCRIPTLOG]: "Script Log Details",
-    [ResultsTypes.SOAPLOG]: "SOAP Log Details",
-    [ResultsTypes.TOKEN]: "Token",
-    [ResultsTypes.USER]: "User",
-  };
-
-  const modalTitle = modalTitles[type] ?? "Unknown";
+  const modalTitle = resultsRegistry[type].title;
 
   useEffect(() => {
     if (id === null) return; // skip since no record selected

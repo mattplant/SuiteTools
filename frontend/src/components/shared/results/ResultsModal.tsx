@@ -1,84 +1,41 @@
-import { ResultsTypes } from "./types";
-// file
-import { FileBundle } from "@suiteworks/suitetools-shared";
-import { FileResult } from "../../features/file/RecordResult";
-// integration
-import { IntegrationBundle } from "@suiteworks/suitetools-shared";
-import { IntegrationResult } from "../../features/integration/RecordResult";
-// job
-import { JobBundle } from "@suiteworks/suitetools-shared";
-import { JobResult } from "../../features/job/RecordResult";
-// jobRun
-import { JobRunBundle } from "@suiteworks/suitetools-shared";
-import { JobRunResult } from "../../features/job/run/RecordResult";
-// login
-import { LoginBundle } from "@suiteworks/suitetools-shared";
-import { LoginResult } from "../../features/login/RecordResult";
-// role
-import { RoleBundle } from "@suiteworks/suitetools-shared";
-import { RoleResult } from "../../features/role/RecordResult";
-// script
-import { ScriptBundle } from "@suiteworks/suitetools-shared";
-import { ScriptResult } from "../../features/script/RecordResult";
-// scriptLog
-import { ScriptLogBundle } from "@suiteworks/suitetools-shared";
-import { ScriptLogResult } from "../../features/scriptLog/RecordResult";
-// soapLog
-import { SoapLogBundle } from "@suiteworks/suitetools-shared";
-import { SoapLogResult } from "../../features/soapLog/RecordResult";
-// token
-import { TokenBundle } from "@suiteworks/suitetools-shared";
-import { TokenResult } from "../../features/token/RecordResult";
-// user
-import { UserBundle } from "@suiteworks/suitetools-shared";
-import { UserResult } from "../../features/user/RecordResult";
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * Detail view rendered inside the results modal.
+ *
+ * @fileoverview
+ * Resolves the selected entity's detail renderer from `resultsRegistry` and hands it the
+ * unvalidated modal payload; the registry entry asserts before rendering.
+ *
+ * @remarks
+ * Private to this directory — reached only via `Results`. Replaced an eleven-case switch whose
+ * `default:` branch returned `undefined`; the registry's exhaustive keying makes that unreachable.
+ *
+ * @see registry.tsx – where the bundle assertion is paired with each detail component
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
+import { resultsRegistry } from "./registry";
+import type { ResultsTypes } from "./types";
 
 type Props = { type: ResultsTypes; loading: boolean; data: unknown };
 
-export function ResultsModal({ type, loading, data }: Props) {
+/**
+ * Renders the detail view for the selected record inside the results modal.
+ * @param root0 - The props object.
+ * @param root0.type - Which entity's detail view to render.
+ * @param root0.loading - Whether the modal payload is still being fetched.
+ * @param root0.data - The unvalidated modal payload; asserted by the registry entry.
+ * @returns The rendered detail view, or a status message.
+ */
+export function ResultsModal({ type, loading, data }: Props): React.ReactNode {
   if (loading) {
     return "Loading...";
-  } else if (!data) {
-    return "No records found.";
-  } else {
-    // display the modal
-    switch (type) {
-      case ResultsTypes.FILE:
-        FileBundle.assert(data);
-        return <FileResult data={data} modal={true} />;
-      case ResultsTypes.INTEGRATION:
-        IntegrationBundle.assert(data);
-        return <IntegrationResult data={data} modal={true} />;
-      case ResultsTypes.JOB:
-        JobBundle.assert(data);
-        return <JobResult data={data} modal={true} />;
-      case ResultsTypes.JOBRUN:
-        JobRunBundle.assert(data);
-        return <JobRunResult data={data} modal={true} />;
-      case ResultsTypes.LOGIN:
-        LoginBundle.assert(data);
-        return <LoginResult data={data} />;
-      case ResultsTypes.ROLE:
-        RoleBundle.assert(data);
-        return <RoleResult data={data} modal={true} />;
-      case ResultsTypes.SCRIPT:
-        ScriptBundle.assert(data);
-        return <ScriptResult data={data} modal={true} />;
-      case ResultsTypes.SCRIPTLOG:
-        ScriptLogBundle.assert(data);
-        return <ScriptLogResult data={data} modal={true} />;
-      case ResultsTypes.SOAPLOG:
-        SoapLogBundle.assert(data);
-        return <SoapLogResult data={data} modal={true} />;
-      case ResultsTypes.TOKEN:
-        TokenBundle.assert(data);
-        return <TokenResult data={data} modal={true} />;
-      case ResultsTypes.USER:
-        UserBundle.assert(data);
-        return <UserResult data={data} modal={true} />;
-      default:
-        console.error("ResultsModal type not found:", type);
-        break;
-    }
   }
+  if (!data) {
+    return "No records found.";
+  }
+  return resultsRegistry[type].renderDetail(data);
 }
