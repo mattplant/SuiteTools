@@ -1,5 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Shared results DataGrid shell used by all eleven entity grids.
+ *
+ * @fileoverview
+ * Owns the export button, scroll wrapper, summary row and row-click-to-modal wiring so feature
+ * `RecordResults` files supply only their typed columns and bundle assertion.
+ *
+ * @remarks
+ * Deliberately shaped for the eleven entity grids, not for every grid in the app: the summary row
+ * is always built and the click handler is fixed to select-and-open-modal. The two concurrency
+ * grids need neither and are not callers (#96).
+ *
+ * @see docs/guides/add-an-entity.md – do not copy a DataGrid shell into a feature file
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 import { useMemo, useRef } from "react";
 import { DataGrid, type Column, type DataGridHandle, type DefaultColumnOptions } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
