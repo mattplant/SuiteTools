@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import type { UseFormRegister } from "react-hook-form";
+import { fieldControlClass, fieldGroupClass } from "../ui/fieldClasses";
 import type { CriteriaFields } from "./types";
 
 interface Props {
@@ -9,22 +10,12 @@ interface Props {
 
 export function SearchCriteriaContent({ register }: Props) {
   return (
-    <div className="block mb-2 text-sm font-medium text-gray-900">
+    <div className={fieldGroupClass}>
       <span className="block">Content</span>
       <label htmlFor="title">Title</label>
-      <input
-        type="text"
-        className="bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="title"
-        {...register("title")}
-      />
+      <input type="text" className={fieldControlClass} id="title" {...register("title")} />
       <label htmlFor="detail">Detail</label>
-      <input
-        type="text"
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="detail"
-        {...register("detail")}
-      />
+      <input type="text" className={fieldControlClass} id="detail" {...register("detail")} />
     </div>
   );
 }

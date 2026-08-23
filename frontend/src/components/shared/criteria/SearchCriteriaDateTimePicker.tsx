@@ -4,6 +4,7 @@ import type { Control, FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { Datepicker } from "flowbite-react";
 import TimePicker from "../ui/TimePicker";
+import { fieldGroupClass } from "../ui/fieldClasses";
 
 interface Props {
   control: Control<FieldValues>;
@@ -25,7 +26,7 @@ export function SearchCriteriaDateTimePicker({
   timeDefaultValue,
 }: Props) {
   return (
-    <div className="block mb-2 text-sm font-medium text-gray-900">
+    <div className={fieldGroupClass}>
       <label htmlFor={dateName}>{title}</label>
       <Controller
         name={dateName}
@@ -38,14 +39,7 @@ export function SearchCriteriaDateTimePicker({
         control={control}
         defaultValue={timeDefaultValue}
         render={({ field }) => (
-          <TimePicker
-            id={timeId}
-            name={timeName}
-            label={title}
-            value={field.value}
-            onChange={field.onChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          />
+          <TimePicker id={timeId} name={timeName} label={title} value={field.value} onChange={field.onChange} />
         )}
       />
     </div>

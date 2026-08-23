@@ -17,7 +17,7 @@ import {
   toArray,
 } from "@suiteworks/suitetools-shared";
 import type { OptionValues } from "@suiteworks/suitetools-shared";
-import type { OptionValuesTypes } from "../../components/shared/criteria/types";
+import type { ServerOptionValuesType } from "../../components/shared/criteria/types";
 import { getData } from "./netSuiteClient";
 
 const optionValuesRequestResponseSchema = makeRequestResponseSchema(optionValuesOrNotFoundSchema);
@@ -25,10 +25,11 @@ const optionValuesRequestResponseSchema = makeRequestResponseSchema(optionValues
 /**
  * Fetch and validate option values for a criteria dropdown type.
  * Always returns an array (empty if none / NotFound).
- * @param type - Option list type token (e.g. `fileType`, `scriptType`).
+ * @param type - Option list type token (e.g. `fileType`, `scriptType`). Integrations and tokens
+ *   are excluded by the type: the endpoint has no case for either.
  * @throws {ZodError} When the response fails schema validation.
  */
-export async function getOptionValues(type: OptionValuesTypes): Promise<OptionValues> {
+export async function getOptionValues(type: ServerOptionValuesType): Promise<OptionValues> {
   const response = await getData("optionValues", { type });
   const parsed = optionValuesRequestResponseSchema.parse(response);
 

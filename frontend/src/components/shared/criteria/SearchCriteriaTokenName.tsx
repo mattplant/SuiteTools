@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { useEffect, useState } from "react";
 import type { UseFormRegister } from "react-hook-form";
-import { getOptionValues } from "../../features/token/getOptionValues";
-import type { OptionValues } from "./types";
+import { SearchCriteriaSelect } from "./SearchCriteriaSelect";
+import { OptionValuesTypes } from "./types";
 import type { CriteriaFields } from "./types";
 
 interface Props {
@@ -11,34 +10,14 @@ interface Props {
   title?: string;
 }
 
-export function SearchCriteriaTokenName({ register, title = "Token" }: Props) {
-  const [values, setValues] = useState<OptionValues[]>([]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getOptionValues(false);
-      setValues(data);
-    }
-
-    fetchData();
-  }, []);
-
+export function SearchCriteriaTokenName({ register, title = "Token" }: Props): React.JSX.Element {
   return (
-    <div className="block mb-2 text-sm font-medium text-gray-900">
-      <label htmlFor="tokenName">{title}</label>
-      <select
-        size={6}
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        id="tokenName"
-        {...register("tokenName")}
-      >
-        <option value="">All</option>
-        {values.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.text}
-          </option>
-        ))}
-      </select>
-    </div>
+    <SearchCriteriaSelect
+      register={register}
+      name="tokenName"
+      label={title}
+      optionsType={OptionValuesTypes.TOKEN}
+      valueBy="text"
+    />
   );
 }

@@ -13,8 +13,8 @@
  * Every field is optional by design: a submitted form returns only the controls that screen
  * rendered, so a partial object is the normal case, not an error. Adding a field here does not
  * make it reach the API — `pickCriteria` whitelists per adapter, so a new field is inert until
- * that adapter names it. `OptionValuesTypes` must stay in step with the server's option-value
- * endpoints.
+ * that adapter names it. `OptionValuesTypes` is wider than the server's option-value endpoint:
+ * `INTEGRATION` and `TOKEN` are built client-side, which is what `ServerOptionValuesType` excludes.
  *
  * @see ../../../adapters/api/adapterUtils.ts – the pickCriteria whitelist
  * @see ./RecordCriteriaForm.tsx – the form shell these fields are registered into
@@ -54,12 +54,7 @@ export type CriteriaFields = {
   customDuration?: string;
 };
 
-export interface OptionValues {
-  value: string;
-  text: string;
-}
-
-// the option values types that we get from the server
+/** Every option list a criteria select can ask for, however it is sourced. */
 export enum OptionValuesTypes {
   FILE = "file",
   FILETYPE = "fileType",
@@ -69,5 +64,15 @@ export enum OptionValuesTypes {
   ROLE = "role",
   SCRIPT = "script",
   SCRIPTTYPE = "scriptType",
+  TOKEN = "token",
   USER = "user",
 }
+
+/**
+ * The subset the server's `optionValues` endpoint serves. Integrations and tokens are assembled
+ * from their own list adapters instead, so passing either to that endpoint is a request error.
+ */
+export type ServerOptionValuesType = Exclude<
+  OptionValuesTypes,
+  OptionValuesTypes.INTEGRATION | OptionValuesTypes.TOKEN
+>;
