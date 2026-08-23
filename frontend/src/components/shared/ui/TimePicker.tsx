@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import type React from "react";
+import { fieldControlClass } from "./fieldClasses";
 
 interface TimePickerProps {
   label?: string;
@@ -12,6 +13,7 @@ interface TimePickerProps {
   disabled?: boolean;
   name?: string;
   id?: string;
+  /** Defaults to the shared criteria control styling; every caller wants that. */
   className?: string;
 }
 
@@ -24,6 +26,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
   disabled = false,
   name,
   id,
+  className = fieldControlClass,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
@@ -42,7 +45,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
       max={max}
       required={required}
       disabled={disabled}
-      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+      className={className}
     />
   );
 };

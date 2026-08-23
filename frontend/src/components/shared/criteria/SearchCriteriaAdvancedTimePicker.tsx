@@ -10,6 +10,8 @@ import { useWatch } from "react-hook-form";
 import type { CriteriaFields } from "./types";
 import { SearchCriteriaDateCreated } from "./SearchCriteriaDateCreated";
 import { SearchCriteriaDateTimePicker } from "./SearchCriteriaDateTimePicker";
+import { SearchCriteriaSelect } from "./SearchCriteriaSelect";
+import { DURATION_OPTIONS, TIME_MODE_OPTIONS } from "./staticOptions";
 
 interface Props {
   register: UseFormRegister<CriteriaFields>;
@@ -48,18 +50,14 @@ export function SearchCriteriaAdvancedTimePicker({
 
   return (
     <>
-      <div className="block mb-2 text-sm font-medium text-gray-900">
-        <label htmlFor="timeMode">Time Mode</label>
-        <select
-          size={2}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          id="timeMode"
-          {...register("timeMode")}
-        >
-          <option value="now">Now</option>
-          <option value="custom">Custom</option>
-        </select>
-      </div>
+      <SearchCriteriaSelect
+        register={register}
+        name="timeMode"
+        label="Time Mode"
+        options={TIME_MODE_OPTIONS}
+        size={2}
+        allValue={null}
+      />
       {timeMode === "custom" ? (
         <>
           <SearchCriteriaDateTimePicker
@@ -71,22 +69,13 @@ export function SearchCriteriaAdvancedTimePicker({
             timeName="advanced-time"
             timeDefaultValue={timeDefaultValue}
           />
-          <div className="block mb-2 text-sm font-medium text-gray-900">
-            <label htmlFor="customDuration">Duration</label>
-            <select
-              size={6}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              id="customDuration"
-              {...register("customDuration")}
-            >
-              <option value="1">Minute</option>
-              <option value="15">15 min</option>
-              <option value="60">Hour</option>
-              <option value="1440">Day</option>
-              <option value="10080">Week</option>
-              <option value="43200">Month*</option>
-            </select>
-          </div>
+          <SearchCriteriaSelect
+            register={register}
+            name="customDuration"
+            label="Duration"
+            options={DURATION_OPTIONS}
+            allValue={null}
+          />
         </>
       ) : (
         <SearchCriteriaDateCreated register={register} title="Duration" />
