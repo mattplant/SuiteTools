@@ -64,10 +64,9 @@ export class SuiteToolsApp {
     if (!settings) {
       issues.push("SuiteToolsApp:bootstrapLibrary() did not find any settings");
     }
-    // check that core configs are set
-    if (!settings?.cssUrl || !settings?.jsUrl) {
-      issues.push("Core config settings were not set.");
-    }
+    // The SPA asset URLs are not checked here. They are only meaningful to a rendered page, and
+    // the library bootstrap serves the map/reduce jobs -- which would now pay for two File Cabinet
+    // lookups to log a warning about assets they never emit.
     // log app issues
     if (issues.length > 0) {
       log.error({ title: "SuiteToolsApp:bootstrapLibrary() found issues", details: issues });
@@ -88,19 +87,32 @@ export class SuiteToolsApp {
         // user to refresh, which is the same behaviour as before the snapshot change.
       }
 
+      // Resolve the SPA's asset URLs from the File Cabinet. Done here, at the one point that
+      // consumes them, rather than inside getSettings() -- and rather than read back off the
+      // settings record, where a value written once by initializeApp() can silently go stale if
+      // the file is ever deleted and re-created instead of overwritten.
+      const cssUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile);
+      const jsUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile);
+
       // verify integrity of app settings before proceeding
       const appIssues = [];
-      // check that core configs are set
-      if (!settings?.cssUrl || !settings?.jsUrl) {
-        appIssues.push("Core config settings were not set. Refresh page to see if the issue has been resolved.");
+      // check that settings were found -- the snapshot above predates initializeApp(), so this is
+      // the just-initialized case. Listed explicitly now that it no longer arrives implicitly via
+      // the missing stored URLs it used to leave behind.
+      if (!settings) {
+        appIssues.push("The settings record was just created. Refresh page to see if the issue has been resolved.");
+      }
+      // check that the app's assets are deployed
+      if (!cssUrl || !jsUrl) {
+        appIssues.push("Application files were not found. Refresh page to see if the issue has been resolved.");
       }
 
       // render the SPA or issues form
-      // `settings &&` is what narrows the snapshot for renderSpa; an empty appIssues already
-      // implies it is non-null, since a null snapshot fails the cssUrl/jsUrl check above.
-      if (settings && appIssues.length === 0) {
+      // `settings &&` narrows the snapshot, and `cssUrl && jsUrl` narrows the URLs to the
+      // non-empty strings renderSpa() requires; an empty appIssues already implies the latter.
+      if (settings && cssUrl && jsUrl && appIssues.length === 0) {
         // render the SPA
-        stAppView.renderSpa(settings);
+        stAppView.renderSpa(settings, cssUrl, jsUrl);
       } else {
         // log app issues and render the app issues form
         log.error({ title: "SuiteToolsApp:bootstrapSpa() found issues", details: appIssues });

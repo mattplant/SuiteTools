@@ -10,6 +10,7 @@
  */
 
 import * as file from "N/file";
+import * as log from "N/log";
 import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
@@ -74,15 +75,28 @@ export class SuiteToolsCommonLibraryNetSuiteFile {
   }
 
   /**
-   * Gets NetSuite file URL.
+   * Gets NetSuite file URL, or `undefined` when the file is not deployed.
+   *
+   * Unlike the getters above this one absorbs the failure rather than throwing it. `file.load()`
+   * throws when the path does not exist, and both callers resolve an app asset the SPA build
+   * emits -- the settings endpoint the SPA bootstraps from, and the page render itself -- where
+   * an unguarded lookup would turn one undeployed file into a dead app rather than one dead link.
+   *
+   * Note the return type against the siblings' plain `string`: that difference, not the name, is
+   * what tells a caller absence is possible, and `strict` makes the compiler enforce it.
    *
    * @param fileName - the path to the file in the /SuiteScripts/{appDir} folder
-   * @returns file url
+   * @returns the file url, or undefined if it could not be resolved
    */
-  public getFileUrl(fileName: string): string {
-    // log.debug({ title: 'SuiteToolsCommonLibraryNetSuiteFile:getFileURL() initiated', details: { fileName: fileName } });
-    const fileObj = this.getFileObj(fileName);
-
-    return fileObj.url;
+  public getFileUrl(fileName: string): string | undefined {
+    try {
+      return this.getFileObj(fileName).url;
+    } catch (err) {
+      log.error({
+        title: `SuiteToolsCommonLibraryNetSuiteFile:getFileUrl() could not resolve ${fileName}`,
+        details: err,
+      });
+      return undefined;
+    }
   }
 }
