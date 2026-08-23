@@ -27,7 +27,7 @@ const columns: Column<Script, SummaryRow>[] = [
   { key: "description", name: "Description" },
 ];
 
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
+export function RecordResults({ rows, setId, setOpenModal, label }: ResultsProps): React.JSX.Element {
   ScriptBundle.assertMany(rows);
-  return <ResultsGrid columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
+  return <ResultsGrid label={label} columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
 }

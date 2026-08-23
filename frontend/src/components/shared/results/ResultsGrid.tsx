@@ -4,13 +4,18 @@
  * Shared results DataGrid shell used by all eleven entity grids.
  *
  * @fileoverview
- * Owns the export button, scroll wrapper, summary row and row-click-to-modal wiring so feature
- * `RecordResults` files supply only their typed columns and bundle assertion.
+ * Owns the export button, scroll wrapper, summary row, accessible name and open-row-to-modal
+ * wiring — mouse and keyboard alike — so feature `RecordResults` files supply only their typed
+ * columns and bundle assertion.
  *
  * @remarks
  * Deliberately shaped for the eleven entity grids, not for every grid in the app: the summary row
- * is always built and the click handler is fixed to select-and-open-modal. The two concurrency
+ * is always built and the open handler is fixed to select-and-open-modal. The two concurrency
  * grids need neither and are not callers (#96).
+ *
+ * One shell means one place to fix an interaction defect for all sixteen call sites: `onCellKeyDown`
+ * was added here alone to close the WCAG 2.1.1 failure where a record could only be opened by mouse
+ * (#109).
  *
  * @see docs/guides/add-an-entity.md – do not copy a DataGrid shell into a feature file
  * @copyright Matthew Plant <i@idev.systems>
@@ -28,6 +33,8 @@ const RESULTS_GRID_HEIGHT = "600px";
 const DEFAULT_COLUMN_OPTIONS = { sortable: true, resizable: true } as const;
 
 type ResultsGridProps<T extends { id: number }> = {
+  /** Accessible name for the grid; supplied by the registry, not by the feature file. */
+  label: string;
   columns: readonly Column<T, SummaryRow>[];
   rows: readonly T[];
   setId: (id: number) => void;
@@ -37,10 +44,12 @@ type ResultsGridProps<T extends { id: number }> = {
 };
 
 /**
- * Shared results DataGrid shell: export, scroll wrapper, summary row, row-click → modal.
- * Feature `RecordResults` files supply only the typed columns and the bundle assertion.
+ * Shared results DataGrid shell: export, scroll wrapper, summary row, accessible name, and
+ * click-or-Enter/Space → modal. Feature `RecordResults` files supply only the typed columns and
+ * the bundle assertion.
  */
 export function ResultsGrid<T extends { id: number }>({
+  label,
   columns,
   rows,
   setId,
@@ -48,6 +57,10 @@ export function ResultsGrid<T extends { id: number }>({
   defaultColumnOptions,
 }: ResultsGridProps<T>): React.JSX.Element {
   const gridRef = useRef<DataGridHandle>(null);
+  const openRow = (id: number): void => {
+    setId(id);
+    setOpenModal(true);
+  };
   const summaryRows = useMemo((): readonly SummaryRow[] => {
     return [{ id: "total_0", totalCount: rows.length }];
   }, [rows]);
@@ -58,13 +71,22 @@ export function ResultsGrid<T extends { id: number }>({
       <div style={{ height: RESULTS_GRID_HEIGHT, overflowY: "auto" }}>
         <DataGrid
           ref={gridRef}
+          aria-label={label}
           columns={columns}
           rows={rows}
           defaultColumnOptions={{ ...DEFAULT_COLUMN_OPTIONS, ...defaultColumnOptions }}
           bottomSummaryRows={summaryRows}
-          onCellClick={(cell) => {
-            setId(cell.row.id);
-            setOpenModal(true);
+          onCellClick={(cell) => openRow(cell.row.id)}
+          // Keyboard equivalent of the row click. `row` is undefined on header and summary cells,
+          // which is what keeps Enter on the "N records" footer from opening a record.
+          // `preventGridDefault()` stops the grid's own handling of the key; `preventDefault()`
+          // stops the browser scrolling on Space.
+          onCellKeyDown={(args, event) => {
+            if (args.mode !== "ACTIVE" || !args.row) return;
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventGridDefault();
+            event.preventDefault();
+            openRow(args.row.id);
           }}
           className="fill-grid"
         />

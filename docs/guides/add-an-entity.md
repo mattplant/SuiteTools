@@ -64,7 +64,7 @@ Complete in order. One entity (or tight cluster) per MR when possible.
 - [ ] Detail page: `useLoaderData()` → result component (no Suspense/`Await` for the entity record).
 - [ ] List page: `useEntityList({ defaultCriteria, fetchList })` (+ optional `getStatusMessage` for soft empty/partial UX).
 - [ ] Criteria UI: feature `RecordCriteria` built on `RecordCriteriaForm` + shared `SearchCriteria*`. A new picker is a `SearchCriteriaSelect` call — pass `optionsType` for a fetched list or `options` for a fixed one, and `valueBy="text"` when the field is matched against names. Do not copy an existing `SearchCriteria*` file.
-- [ ] Results: feature `RecordResults` on `ResultsGrid` + `summaryColumn()`, typed `Column<T, SummaryRow>[]`; add a `ResultsTypes` member and one row in `resultsRegistry`; modal fetch via singular adapter. Do not copy a DataGrid shell into the feature file.
+- [ ] Results: feature `RecordResults` on `ResultsGrid` + `summaryColumn()`, typed `Column<T, SummaryRow>[]`; forward `label` from `ResultsProps` to `ResultsGrid` — it is the grid's accessible name, sourced from the registry `title`, not written at the feature file; add a `ResultsTypes` member and one row in `resultsRegistry`; modal fetch via singular adapter. Do not copy a DataGrid shell into the feature file — keyboard activation (Enter/Space → modal) lives in the shell, and a copied grid would be mouse-only.
 
 ### 6. Errors & soft cases
 

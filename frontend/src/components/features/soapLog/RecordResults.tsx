@@ -19,12 +19,13 @@ const columns: Column<SoapLog, SummaryRow>[] = [
   { key: "recordsReturned", name: "Returned" },
 ];
 
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
+export function RecordResults({ rows, setId, setOpenModal, label }: ResultsProps): React.JSX.Element {
   SoapLogBundle.assertMany(rows);
   // Eleven columns: minWidth is original and deliberate. Sortable/resizable used to be overwritten
   // by this object; ResultsGrid merges them back in.
   return (
     <ResultsGrid
+      label={label}
       columns={columns}
       rows={rows}
       setId={setId}
