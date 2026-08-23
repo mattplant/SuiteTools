@@ -20,6 +20,7 @@ export function LoginsPage(): React.ReactElement {
     tokenName: "",
     users: [""],
     roles: [""],
+    dateCreated: "0",
   };
 
   const { setCriteria, results } = useEntityList({ defaultCriteria, fetchList: getLogins });

@@ -49,6 +49,9 @@ function toLoginUrlParams(fields: Partial<CriteriaFields>): Record<string, unkno
   if (roles) {
     params.roles = roles;
   }
+  if (fields.dateCreated) {
+    params.dateCreated = fields.dateCreated;
+  }
   return params;
 }
 
@@ -59,10 +62,10 @@ function toLoginUrlParams(fields: Partial<CriteriaFields>): Record<string, unkno
 export const getLogins = makeListAdapter<
   Logins[number],
   CriteriaFields,
-  "rows" | "active" | "integrationName" | "tokenName" | "users" | "roles"
+  "rows" | "active" | "integrationName" | "tokenName" | "users" | "roles" | "dateCreated"
 >(
   "logins",
   loginsRequestResponseSchema,
-  ["rows", "active", "integrationName", "tokenName", "users", "roles"] as const,
+  ["rows", "active", "integrationName", "tokenName", "users", "roles", "dateCreated"] as const,
   { mapParams: toLoginUrlParams },
 );

@@ -600,7 +600,7 @@ export class SuiteToolsApiGet {
   /**
    * Get Logins
    *
-   * @param requestParams - Optional rows, active, integrationName, tokenName, users, roles, dates.
+   * @param requestParams - Optional rows, active, integrationName, tokenName, users, roles, dateCreated.
    * @returns logins
    */
   private getLogins(requestParams: RequestParams): Response {
@@ -610,8 +610,8 @@ export class SuiteToolsApiGet {
     const tokenName = requestParams.tokenName;
     const users = this.convertMultiSelectToArray(requestParams.users);
     const roles = this.convertMultiSelectToArray(requestParams.roles);
-    const dates = requestParams.dates;
-    const result = this.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dates);
+    const dateCreated = requestParams.dateCreated;
+    const result = this.stApiModel.getLogins(rows, active, integrationName, tokenName, users, roles, dateCreated);
 
     // List endpoints must return an array (legacy model used `{}` for empty).
     if (!Array.isArray(result.data)) {

@@ -1113,7 +1113,7 @@ export class SuiteToolsApiModel {
    * @param tokenName - the token name
    * @param users - the users
    * @param roles - the roles
-   * @param dates - the date range
+   * @param dateCreated - the date range
    * @returns results
    */
   public getLogins(
@@ -1123,7 +1123,7 @@ export class SuiteToolsApiModel {
     tokenName: string,
     users: string[] | null,
     roles: string[] | null,
-    dates: string,
+    dateCreated: string,
   ): Response {
     log.debug({
       title: `SuiteToolsApiModel:getLogins() initiated`,
@@ -1134,7 +1134,7 @@ export class SuiteToolsApiModel {
         tokenName: tokenName,
         users: users,
         roles: roles,
-        dates: dates,
+        dateCreated: dateCreated,
       },
     });
 
@@ -1190,6 +1190,8 @@ export class SuiteToolsApiModel {
         }
       }
     }
+    // Filter on the raw column, not the TO_CHAR alias the SELECT exposes as `date`.
+    this.addDateFilter(where, "SuiteToolsApiModel:getLogins()", "loginAudit", "date", dateCreated);
     if (where.length > 0) {
       sql += ` WHERE ${where.join(" AND ")}`;
     }

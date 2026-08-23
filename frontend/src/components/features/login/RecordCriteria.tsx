@@ -3,6 +3,7 @@
 import type { CriteriaFields } from "../../shared/criteria/types";
 import { RecordCriteriaForm } from "../../shared/criteria/RecordCriteriaForm";
 import { SearchCriteriaActive } from "../../shared/criteria/SearchCriteriaActive";
+import { SearchCriteriaDateCreated } from "../../shared/criteria/SearchCriteriaDateCreated";
 import { SearchCriteriaIntegrationName } from "../../shared/criteria/SearchCriteriaIntegrationName";
 import { SearchCriteriaTokenName } from "../../shared/criteria/SearchCriteriaTokenName";
 import { SearchCriteriaRoles } from "../../shared/criteria/SearchCriteriaRoles";
@@ -25,7 +26,7 @@ export function RecordCriteria({ setCriteria, defaultCriteria }: Props) {
           <SearchCriteriaTokenName register={register} title="OAuth Access Token" />
           <SearchCriteriaUsers register={register} />
           <SearchCriteriaRoles register={register} />
-          {/* TODO: Dates */}
+          <SearchCriteriaDateCreated register={register} title="Date" />
         </>
       )}
     </RecordCriteriaForm>
