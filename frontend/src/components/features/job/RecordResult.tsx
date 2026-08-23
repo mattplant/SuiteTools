@@ -8,12 +8,20 @@ import { openAppPage, getAppBaseUrl } from "../../../utils/navigation";
 import { getIntegrations } from "../../../adapters/api/integrations";
 import { getTokens } from "../../../adapters/api/tokens";
 import { useErrorBoundaryTrigger } from "../../../hooks/useErrorBoundaryTrigger";
+import { EntityFields, type EntityField } from "../../shared/ui/EntityFields";
 
 type Props = { data: Job; modal?: boolean };
 
 type LastLoginEntity = { type: string; name: string };
 
-export function JobResult({ data, modal }: Props) {
+/**
+ * Pure presentation of a Job entity, plus the action that initiates a run.
+ * @param props - Component props.
+ * @param props.data - The job data to display.
+ * @param [props.modal] - Whether to display modal actions.
+ * @returns The rendered job result component.
+ */
+export function JobResult({ data, modal }: Props): React.JSX.Element {
   const triggerError = useErrorBoundaryTrigger();
 
   const initiateJobClick = async () => {
@@ -56,29 +64,19 @@ export function JobResult({ data, modal }: Props) {
     return "Never run";
   }
 
+  const fields: EntityField[] = [
+    { label: "ID", value: data.id },
+    { label: "Name", value: data.name },
+    { label: "Active", value: data.isInactive ? "No" : "Yes" },
+    { label: "Description", value: data.description },
+    { label: "Scheduled", value: data.scheduled ? "Yes" : "No" },
+    { label: "Notify", value: data.notify ? "Yes" : "No" },
+    { label: "Last Run", value: formatLastRun(data.lastRun) },
+  ];
+
   return (
     <>
-      <p>
-        <b>ID</b>: {data.id}
-      </p>
-      <p>
-        <b>Name</b>: {data.name}
-      </p>
-      <p>
-        <b>Active</b>: {data.isInactive ? "No" : "Yes"}
-      </p>
-      <p>
-        <b>Description</b>: {data.description}
-      </p>
-      <p>
-        <b>Scheduled</b>: {data.scheduled ? "Yes" : "No"}
-      </p>
-      <p>
-        <b>Notify</b>: {data.notify ? "Yes" : "No"}
-      </p>
-      <p>
-        <b>Last Run</b>: {formatLastRun(data.lastRun)}
-      </p>
+      <EntityFields fields={fields} />
       {modal && (
         <ButtonGroup>
           <Button onClick={() => data.urlDetail && openAppPage(data.urlDetail)}>View Job Details</Button>

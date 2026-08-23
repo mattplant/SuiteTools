@@ -3,39 +3,33 @@
 import { Button, ButtonGroup } from "flowbite-react";
 import type { File } from "@suiteworks/suitetools-shared";
 import { openAppPage, openNetSuitePage } from "../../../utils/navigation";
+import { EntityFields, type EntityField } from "../../shared/ui/EntityFields";
 
 type Props = { data: File; modal?: boolean };
 
-export function FileResult({ data, modal }: Props) {
+/**
+ * Pure presentation of a File entity. Expects fully adapted & validated data.
+ * @param props - Component props.
+ * @param props.data - The file data to display.
+ * @param [props.modal] - Whether to display modal actions.
+ * @returns The rendered file result component.
+ */
+export function FileResult({ data, modal }: Props): React.JSX.Element {
+  const fields: EntityField[] = [
+    { label: "ID", value: data.id },
+    { label: "Folder", value: data.folder },
+    { label: "Created Date", value: data.dateCreated.toLocaleString() },
+    { label: "Last Modified Date", value: data.lastModifiedDate.toLocaleString() },
+    { label: "Type", value: data.fileTypeName },
+    { label: "Name", value: data.name },
+    { label: "File Size", value: data.fileSize },
+    { label: "Description", value: data.description },
+    { label: "URL", value: data.url },
+  ];
+
   return (
     <>
-      <p>
-        <b>ID</b>: {data.id}
-      </p>
-      <p>
-        <b>Folder</b>: {data.folder}
-      </p>
-      <p>
-        <b>Created Date</b>: {data.dateCreated.toLocaleString()}
-      </p>
-      <p>
-        <b>Last Modified Date</b>: {data.lastModifiedDate.toLocaleString()}
-      </p>
-      <p>
-        <b>Type</b>: {data.fileTypeName}
-      </p>
-      <p>
-        <b>Name</b>: {data.name}
-      </p>
-      <p>
-        <b>File Size</b>: {data.fileSize}
-      </p>
-      <p>
-        <b>Description</b>: {data.description}
-      </p>
-      <p>
-        <b>URL</b>: {data.url}
-      </p>
+      <EntityFields fields={fields} />
       {modal && (
         <ButtonGroup>
           <Button onClick={() => data.urlNs && openNetSuitePage(data.urlNs)}>View File Record</Button>

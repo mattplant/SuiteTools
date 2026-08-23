@@ -3,36 +3,32 @@
 import { Button, ButtonGroup } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import type { JobRun } from "@suiteworks/suitetools-shared";
+import { EntityFields, type EntityField } from "../../../shared/ui/EntityFields";
 
 type Props = { data: JobRun; modal?: boolean };
 
 /**
  * Renders job execution details and in-app navigation actions.
- * @param root0 - Component props.
- * @param root0.data - Job run record to display.
- * @param root0.modal - When true, show the execution-details action used from result modals.
+ * @param props - Component props.
+ * @param props.data - Job run record to display.
+ * @param [props.modal] - When true, show the execution-details action used from result modals.
  * @returns The rendered job run result.
  */
-export function JobRunResult({ data, modal }: Props): React.ReactElement {
+export function JobRunResult({ data, modal }: Props): React.JSX.Element {
   const navigate = useNavigate();
+
+  const fields: EntityField[] = [
+    { label: "Id", value: data.id },
+    { label: "Created At", value: data.created },
+    { label: "Job Name", value: data.jobName },
+    { label: "Completed", value: data.completed ? "Yes" : "No" },
+    { label: "Results", value: data.results },
+  ];
 
   return (
     <>
-      <p>
-        <b>Id</b>: {data.id}
-      </p>
-      <p>
-        <b>Created At</b>: {data.created}
-      </p>
-      <p>
-        <b>Job Name</b>: {data.jobName}
-      </p>
-      <p>
-        <b>Completed</b>: {data.completed ? "Yes" : "No"}
-      </p>
-      <p>
-        <b>Results</b>: {data.results}
-      </p>
+      <EntityFields fields={fields} />
+      {/* Job Details stays visible on the detail page; only Execution Details is modal-only. */}
       <ButtonGroup>
         {modal && (
           <Button
