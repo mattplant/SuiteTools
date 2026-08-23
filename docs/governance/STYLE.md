@@ -137,7 +137,6 @@ See [Linting Standard](../governance/standards/linting-standards.md) for details
 - Comment complex logic and non-obvious decisions.
 - Avoid redundant comments that restate the code.
 - Use `// TODO:` for future improvements and `// FIXME:` for known issues.
-- Use `@internal` for non‑public APIs to signal exclusion from generated docs.
 - Use `@deprecated` in JSDoc for deprecated APIs, with guidance on alternatives.
 
 ### File Naming & Organization

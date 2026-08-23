@@ -125,7 +125,7 @@ Badges signal stewardship, surfacing licensing, attribution, and source clarity.
 
 ### JSDoc Clarity
 
-Every source file begins with a structured JSDoc block that communicates intent, boundaries, and licensing. Treat JSDoc as **architectural metadata**.
+Every source file carries an SPDX license line. Files that are contracts, entry points, or seams additionally carry a prose header block communicating intent and boundaries; most files do not, and that is the standard working as intended.
 
 > 🔗 See [JSDoc Standards](../guides/jsdoc-standards.md).
 

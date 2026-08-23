@@ -61,7 +61,7 @@ Note that **type-aware linting is not available**. Biome does not use type infor
 Long‑term clarity and complexity limits.
 
 - Keep functions small enough to be easily tested; Biome's `complexity` group flags the worst offenders.
-- Use JSDoc on exported APIs to help future maintainers. This is now **convention rather than an enforced rule** — see [JSDoc Standards](../../guides/jsdoc-standards.md).
+- Use JSDoc on exported APIs to help future maintainers. Per-symbol JSDoc is **convention upheld in review**; the file-header SPDX line is **script-enforced** via `scripts/check-headers.mjs`. See [JSDoc Standards](../../guides/jsdoc-standards.md).
 
 ### Workspace Boundaries
 
