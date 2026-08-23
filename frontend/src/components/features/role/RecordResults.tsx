@@ -22,7 +22,7 @@ const columns: Column<Role, SummaryRow>[] = [
   },
 ];
 
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
+export function RecordResults({ rows, setId, setOpenModal, label }: ResultsProps): React.JSX.Element {
   RoleBundle.assertMany(rows);
-  return <ResultsGrid columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
+  return <ResultsGrid label={label} columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
 }

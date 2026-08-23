@@ -14,7 +14,7 @@ const columns: Column<Login, SummaryRow>[] = [
   { key: "roleName", name: "Role" },
 ];
 
-export function RecordResults({ rows, setId, setOpenModal }: ResultsProps): React.JSX.Element {
+export function RecordResults({ rows, setId, setOpenModal, label }: ResultsProps): React.JSX.Element {
   LoginBundle.assertMany(rows);
-  return <ResultsGrid columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
+  return <ResultsGrid label={label} columns={columns} rows={rows} setId={setId} setOpenModal={setOpenModal} />;
 }

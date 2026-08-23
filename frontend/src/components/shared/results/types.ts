@@ -30,6 +30,12 @@ export type ResultsProps = {
   rows: readonly unknown[];
   setId: (id: number) => void;
   setOpenModal: (openModal: boolean) => void;
+  /**
+   * Accessible name for the grid, threaded from `resultsRegistry[type].title` by
+   * `DynamicResultsRenderer`. Required so a new entity cannot ship a nameless grid, and sourced
+   * from the registry so the eleven names cannot drift from the modal headings.
+   */
+  label: string;
 };
 
 /**
