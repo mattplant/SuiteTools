@@ -1,4 +1,5 @@
-# SuiteTools CI — install → typecheck → lint → test → build
+# SuiteTools CI — install → typecheck → lint → test → build, plus dependency and
+# security hygiene gates (dedupe, audit, SAST, secret detection).
 # SuiteCloud deploy is intentionally out of scope for MR/default-branch CI.
 # Node matches .node-version; Yarn matches packageManager / .yarn/releases.
 
@@ -6,6 +7,17 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# Free tier: both templates run and publish JSON report artifacts, but the MR
+# security widget, the vulnerability report and the security dashboard are all
+# Ultimate — read findings from the job log or the artifact until that changes.
+# Of the SAST analyzers only semgrep-sast is reachable here: the rest are gated
+# on $GITLAB_FEATURES containing sast_advanced (Ultimate), on languages this repo
+# does not contain (Apex, Elixir, Groovy, C/C++), or are deprecated stubs.
+# Both scanners already ship allow_failure: true in the templates.
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
 
 default:
   image: node:24-bookworm
@@ -20,6 +32,11 @@ variables:
   # Setting this accepts Oracle Free Use Terms and Conditions for the SuiteCloud SDK JAR download.
   # See: https://www.oracle.com/downloads/licenses/oracle-free-license.html
   npm_config_acceptsuitecloudsdklicense: "true"
+  # The security scanners default to running in *branch* pipelines only. The
+  # workflow: rules above never create a branch pipeline for a feature branch,
+  # so without this the scanners would only ever run post-merge on main — which
+  # is exactly when their findings are least useful. (GitLab 18.0+)
+  AST_ENABLE_MR_PIPELINES: "true"
 
 cache:
   key:
@@ -67,3 +84,42 @@ build:
   extends: .validate
   script:
     - yarn build:all
+
+# Lockfile hygiene. The Build & Release Checklist used to ask contributors to run
+# this by hand on dependency MRs; enforcing locally did not hold. #113 committed a
+# `yarn dedupe` pass first (55 packages collapsed, 21 removed, -6.77 MiB) so this
+# job starts green and merge-blocking.
+dedupe:
+  extends: .validate
+  script:
+    - yarn dedupe --check
+
+# `--all` audits every workspace, not just the root one. Root-only scope is what
+# made this look clean when #113 first measured it; across all four workspaces
+# there is a real backlog — 1 critical / 29 high / 12 moderate at time of writing,
+# every one of them in dev and build tooling (node-gyp's tar, jest's
+# minimatch/glob, babel, rollup, sucrase), with flowbite-react the only shipped
+# runtime dependent.
+#
+# Non-blocking on purpose, for two reasons: that backlog predates this job and
+# cannot be cleared by the MR that adds it, and a freshly published CVE in a
+# transitive dep should not red an unrelated MR. Tighten to blocking once the
+# backlog is worked down.
+audit:
+  extends: .validate
+  script:
+    - yarn npm audit --all --recursive --severity moderate
+  allow_failure: true
+
+# The security templates place their jobs in a `test` stage this project does not
+# define. Move them into `validate` rather than adding a stage: jobs in one stage
+# run in parallel, so a leaked secret still surfaces on an MR whose lint is red.
+# (Overriding the `sast` config job reaches every analyzer through `extends`.)
+# cache: [] opts them out of the top-level Yarn cache, which they have no use for.
+sast:
+  stage: validate
+  cache: []
+
+secret_detection:
+  stage: validate
+  cache: []

@@ -60,7 +60,7 @@ This section defines the rules that govern dependency usage across the SuiteTool
 |----------------------------------------|------------------------|------------------------------------------------|-----------|
 | Missing dependency detection           | `yarn constraints`     | `dependencies:` hygiene, review                | Prevents undeclared dependencies from being used at runtime |
 | Cross‑workspace import boundary        | `yarn constraints`     | `yarn constraints.pro`                         | Stops unintended coupling between workspaces |
-| Duplicate dependency version detection | `yarn dedupe --check` (local / dependency MRs) | `yarn.lock` resolution                   | Reduces bundle size and avoids version conflicts |
+| Duplicate dependency version detection | `yarn dedupe --check` (local + merge-blocking CI job) | `yarn.lock` resolution              | Reduces bundle size and avoids version conflicts |
 | Peer dependency alignment              | `yarn constraints`     | `peerDependencies:` rules                      | Ensures shared contracts (e.g., React) are consistent across workspaces |
 | Disallowed dependency list             | `yarn constraints`     | `yarn constraints.pro`                         | Blocks known‑bad or unapproved packages |
 
@@ -108,7 +108,7 @@ SuiteTools requires that dependencies be deduplicated to maintain a clean, predi
 - Minimize duplicate versions across all workspaces.
 - Align dependency ranges to the highest compatible version.
 - Keep `yarn.lock` free of unnecessary version splits.
-- Run `yarn dedupe --check` locally (and on dependency-changing MRs) before merge. It is **not** a merge-blocking CI job today — do not claim CI enforces it until a dedicated step is added and the lockfile is clean under `--check`.
+- Run `yarn dedupe --check` locally before pushing a dependency change. Since #113 it is also a **merge-blocking CI job**, so a lockfile that fails `--check` cannot reach the default branch.
 
 **Rationale:**
 Deduplication reduces bundle size, prevents resolution drift, and ensures consistent behavior across environments.
