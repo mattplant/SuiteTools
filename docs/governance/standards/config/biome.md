@@ -111,7 +111,7 @@ The only `overrides` entry is the `package.json` formatter exclusion above, whic
 
 Recorded so the loss is deliberate rather than discovered later:
 
-- **JSDoc rules.** `jsdoc/require-jsdoc`, `check-tag-names` and `tag-lines` were enforced and are not replaceable — Biome does not lint JSDoc. See [JSDoc Standards](../../../guides/jsdoc-standards.md), which is now convention rather than an enforced rule.
+- **JSDoc rules.** `jsdoc/require-jsdoc`, `check-tag-names` and `tag-lines` were enforced and are not replaceable — Biome does not lint JSDoc, and GritQL plugins cannot stand in: `comment()` fails to compile, and under `file($body)` the span starts after the leading comment, so comments are unreachable. File-header SPDX lines are covered by `scripts/check-headers.mjs` instead; per-symbol JSDoc is convention upheld in review. See [JSDoc Standards](../../../guides/jsdoc-standards.md).
 - **Type-aware rules.** `no-unsafe-return` and `explicit-module-boundary-types` require type information, which Biome does not use.
 - **Markdown heading title case.** The custom `heading-title-case` rule and the `lint:docs` script were removed with ESLint; Biome does not lint Markdown.
 
