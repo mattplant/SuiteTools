@@ -784,20 +784,14 @@ export class SuiteToolsApiGet {
   /**
    * Media URL for a file the SPA build emits, or `undefined` when it is not deployed.
    *
-   * `file.load()` throws when the path does not exist, and this runs inside the settings endpoint
-   * the SPA bootstraps from -- so an unguarded lookup would turn a missing asset into a dead app
-   * rather than one missing link.
+   * Thin alias over the guarded library lookup, so the three call sites below read as one kind of
+   * thing rather than three copies of the same `stLib.stLibNs.stLibNsFile` chain.
    *
    * @param path - app-relative file path, e.g. `dist/third-party-notices.json`
    * @returns the file's URL, or undefined if it could not be resolved
    */
   private getAppFileUrl(path: string): string | undefined {
-    try {
-      return this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(path);
-    } catch (err) {
-      log.error({ title: `SuiteToolsApiGet:getAppFileUrl() could not resolve ${path}`, details: err });
-      return undefined;
-    }
+    return this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(path);
   }
 
   /**
@@ -817,17 +811,21 @@ export class SuiteToolsApiGet {
     // build the settings object from this record and other sources
     const result = {
       // core configurations
-      cssUrl: settings?.cssUrl,
-      jsUrl: settings?.jsUrl,
+      //
+      // Resolved from the File Cabinet here rather than read off the settings record. A stored URL
+      // is written once, by initializeApp(), and never recomputed -- so a file deleted and
+      // re-created (new internal id) would leave the app serving a dead link with nothing to
+      // notice. Resolved at the point of consumption, not inside getSettings(): only this one of
+      // its seven callers reads the URLs.
+      cssUrl: this.getAppFileUrl(this.stCommon.appCssFile),
+      jsUrl: this.getAppFileUrl(this.stCommon.appJsFile),
       // settings
       devMode: settings?.devMode,
       notifyEmail: settings?.notifyEmail,
       // storage settings
       lastLogins: settings?.lastLogins,
       // The SPA fetches the third-party notices rather than bundling them, so it needs the file's
-      // media URL. Resolved here rather than stored on the settings record like cssUrl/jsUrl:
-      // those are written once by initializeApp(), which only runs when no settings record exists,
-      // so a new stored field would stay empty forever on every existing install.
+      // media URL.
       noticesUrl: this.getAppFileUrl(this.stCommon.appNoticesFile),
       // system (these are all from the runtime object)
       accountId: this.stCommon.runtime.accountId,

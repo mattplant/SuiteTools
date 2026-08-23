@@ -25,8 +25,13 @@ export type LastLogins = { finished: string; data: { name: { type: string; name:
  * nullable thing a caller checks once, instead of seven optional fields re-checked at every read.
  *
  * Optionality here is the column's, not the load's: `recordId`, `devMode` and `appBundle` are
- * guaranteed by the fact that a row was found, while the four config fields are user-editable
- * and legitimately empty on a partially configured install.
+ * guaranteed by the fact that a row was found, while the notify fields are user-editable and
+ * legitimately empty on a partially configured install.
+ *
+ * The app's CSS and JS URLs are deliberately absent. They are File Cabinet lookups, not stored
+ * settings, and are resolved at the two points that consume them -- see
+ * `SuiteToolsApp:bootstrapSpa()` and `SuiteToolsApiGet:getSettings()`. Putting them here would
+ * make all seven `getSettings()` callers pay for lookups only one of them reads.
  */
 export type Settings = {
   /** Internal id of the settings record. Guaranteed: a row we could not address is not a load. */
@@ -35,8 +40,6 @@ export type Settings = {
   devMode: boolean;
   /** Last-modified stamp of the app bundle, used for cache busting. `""` if the file is missing. */
   appBundle: string;
-  cssUrl: string | undefined;
-  jsUrl: string | undefined;
   notifyAuthor: number | undefined;
   notifyEmail: string | undefined;
   /** `null` means "no stored logins", which is distinct from the record being absent. */
@@ -100,8 +103,6 @@ export class SuiteToolsCommonSettings {
     const sql = `
     SELECT
       ${this.stCommon.appSettingsRecord}.id,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_css_url AS cssUrl,
-      ${this.stCommon.appSettingsRecord}.custrecord_idev_st_config_js_url AS jsUrl,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_dev_mode AS devMode,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_notify_author AS notifyAuthor,
       ${this.stCommon.appSettingsRecord}.custrecord_idev_st_setting_notify_email AS notifyEmail,
@@ -132,8 +133,6 @@ export class SuiteToolsCommonSettings {
       recordId,
       devMode: row.devmode === "T",
       appBundle: this.stCommon.stLib.stLibNs.stLibNsFile.getFileLastModified(this.stCommon.appJsFile),
-      cssUrl: toOptionalString(row.cssurl),
-      jsUrl: toOptionalString(row.jsurl),
       notifyAuthor: toOptionalNumber(row.notifyauthor),
       notifyEmail: toOptionalString(row.notifyemail),
       lastLogins: this.parseLastLogins(row.lastlogins),
@@ -159,12 +158,11 @@ export class SuiteToolsCommonSettings {
   public initializeApp(): void {
     log.audit({ title: `SuiteToolsCommonSettings:initializeApp() initiated`, details: "" });
 
-    const cssUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appCssFile);
-    const jsUrl = this.stCommon.stLib.stLibNs.stLibNsFile.getFileUrl(this.stCommon.appJsFile);
     const notifyEmail = this.stCommon.runtime.getCurrentUser().email;
+    // No asset URLs are written here. This runs once, only when no settings record exists, so a
+    // stored URL could never be refreshed -- and would 404 silently if the file were ever deleted
+    // and re-created rather than overwritten. The URLs are resolved at read time instead.
     const configs = {
-      custrecord_idev_st_config_css_url: cssUrl,
-      custrecord_idev_st_config_js_url: jsUrl,
       custrecord_idev_st_setting_dev_mode: false,
       custrecord_idev_st_setting_notify_author: this.stCommon.runtime.getCurrentUser().id,
       custrecord_idev_st_setting_notify_email: notifyEmail,

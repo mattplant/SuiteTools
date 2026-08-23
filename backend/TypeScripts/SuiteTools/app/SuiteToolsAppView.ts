@@ -34,23 +34,15 @@ export class SuiteToolsAppView {
    * @param settings - the loaded settings snapshot. Passed in rather than read back off
    *   `stSettings`, which no longer holds state; this also makes the dependency explicit
    *   instead of relying on bootstrapSpa having loaded first.
+   * @param cssUrl - resolved File Cabinet URL of the stylesheet. Resolved by the caller rather
+   *   than here, and non-optional rather than re-checked: the absent case is a page that cannot
+   *   render at all, which is the caller's issues form, not a variant of this one.
+   * @param jsUrl - resolved File Cabinet URL of the app bundle, as `cssUrl`.
    */
-  public renderSpa(settings: Settings): void {
-    const css = settings.cssUrl;
-    const js = settings.jsUrl;
-    // SuiteToolsApp:bootstrapSpa() only reaches renderSpa() once it has confirmed both URLs are
-    // set, but that invariant lives in another class. Re-check it here so the absent case is
-    // handled locally rather than emitting a page with broken asset URLs.
-    if (!css || !js) {
-      log.error({ title: "SuiteToolsAppView:renderSpa() core config settings were not set", details: { css, js } });
-      this.renderAppIssuesForm([
-        "Core config settings were not set. Refresh page to see if the issue has been resolved.",
-      ]);
-      return;
-    }
+  public renderSpa(settings: Settings, cssUrl: string, jsUrl: string): void {
     const cacheBust = encodeURIComponent(settings.appBundle || String(Date.now()));
-    const cssWithBust = this.withCacheBust(css, cacheBust);
-    const jsWithBust = this.withCacheBust(js, cacheBust);
+    const cssWithBust = this.withCacheBust(cssUrl, cacheBust);
+    const jsWithBust = this.withCacheBust(jsUrl, cacheBust);
     const appUrl = this.stApp.appUrl;
     let content = `<!doctype html>
 <html lang="en">
