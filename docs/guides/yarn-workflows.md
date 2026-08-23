@@ -142,7 +142,7 @@ These steps are designed to save you time by catching issues early which is fast
    - ✅ All dependency changes follow [`yarn-dependencies.md`](../governance/standards/yarn-dependencies.md)
    - ✅ No workspace boundaries violated
    - ✅ `yarn constraints` passes locally
-   - ✅ `yarn dedupe --check` passes locally
+   - ✅ `yarn dedupe --check` passes locally (CI blocks merge on this)
    - ✅ No unexpected `yarn.lock` drift
    - ✅ All linting passes locally
    - ✅ `yarn test` passes locally

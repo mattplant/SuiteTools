@@ -1,6 +1,6 @@
 # 📘 SuiteTools Build & Release Checklist
 
-Last updated: 2026-08-17
+Last updated: 2026-08-23
 
 ---
 
@@ -62,17 +62,23 @@ yarn deploy:all
 GitLab CI (`.gitlab-ci.yml`) on MRs and the default branch:
 
 ```bash
-yarn install --immutable   # before_script — lockfile must match
-yarn typecheck             # merge-blocking — shared types + FE/BE tsc
-yarn lint                  # merge-blocking — Biome check (lint + format)
-yarn test                  # merge-blocking
-yarn build:all             # merge-blocking — full workspace build
+yarn install --immutable                              # before_script — lockfile must match
+yarn typecheck                                        # merge-blocking — shared types + FE/BE tsc
+yarn lint                                             # merge-blocking — Biome check (lint + format)
+yarn test                                             # merge-blocking
+yarn build:all                                        # merge-blocking — full workspace build
+yarn dedupe --check                                   # merge-blocking — no duplicate resolutions
+yarn npm audit --all --recursive --severity moderate  # advisory — allow_failure: true
 ```
 
-- ✅ Red **typecheck** / **lint** / **test** / **build** should block merge when **Pipelines must succeed** is enabled in project settings.
-- ✅ Dependency MRs: run `yarn install` locally (and `yarn dedupe --check` when touching deps) before push so immutable CI install succeeds.
+Plus two GitLab scanner templates, both non-blocking: `semgrep-sast` and `secret_detection`.
+
+- ✅ Red **typecheck** / **lint** / **test** / **build** / **dedupe** blocks merge when **Pipelines must succeed** is enabled in project settings.
+- ✅ Dependency MRs: run `yarn install` and `yarn dedupe --check` locally before push, so both the immutable install and the dedupe gate succeed.
+- ⚠️ **audit** is advisory, not blocking. There is a pre-existing backlog (1 critical / 29 high / 12 moderate as of #113), all of it in dev and build tooling. A newly published CVE in a transitive dep should not red an unrelated MR — read the job, do not ignore it.
+- ⚠️ On the **Free** plan the scanners publish JSON report artifacts only. The MR security widget, vulnerability report and security dashboard are all Ultimate, so findings must be read from the job log or the artifact.
 - ❌ SuiteCloud deploy is not run in MR CI.
-- ❌ `yarn dedupe --check` is not a CI job yet — enforce locally on dependency changes.
+- ❌ No automated dependency updates (Renovate / Dependabot). Declined deliberately in #113: this is a small repo with a hand-ordered upgrade sequence, and bot-raised MRs would fight that order rather than help it. Revisit if the dependency surface grows.
 
 ---
 
