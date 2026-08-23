@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useRef } from "react";
 import { DataGrid, type DataGridHandle } from "react-data-grid";
 import "react-data-grid/lib/styles.css";

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useState } from "react";
 import type { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import type { CriteriaFields } from "./types";

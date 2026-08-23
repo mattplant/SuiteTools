@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API - PUT Operations
  *
@@ -15,8 +17,6 @@ import { validateMutationResponse } from "./SuiteToolsApiMutationValidate";
 
 /**
  * SuiteTools API PUT Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApiPut {
   private _stCommon: SuiteToolsCommon;

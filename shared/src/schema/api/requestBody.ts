@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // schema/api/requestBody.ts
 import { z } from "zod";
 

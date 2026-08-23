@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useParams } from "react-router-dom";
 import type { CriteriaFields } from "../components/shared/criteria/types";
 import { getScriptLog } from "../adapters/api/scriptLog";

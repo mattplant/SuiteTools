@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useEffect, useState } from "react";
 import type { UseFormRegister } from "react-hook-form";
 import { getOptionValues } from "../../features/integration/getOptionValues";

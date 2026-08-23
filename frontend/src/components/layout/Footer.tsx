@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 export default function Footer(): React.JSX.Element {
   return (
     <footer className="p-4 text-center text-sm text-slate-600">

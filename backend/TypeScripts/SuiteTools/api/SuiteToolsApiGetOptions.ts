@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API - GET Options Operations
  *
@@ -25,8 +27,6 @@ type RequestParams = { [key: string]: string };
 
 /**
  * SuiteTools API GET Options Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApiGetOptions {
   private _stCommon: SuiteToolsCommon;

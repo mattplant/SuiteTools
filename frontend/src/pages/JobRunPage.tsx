@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useLoaderData } from "react-router-dom";
 import { JobRunResult } from "../components/features/job/run/RecordResult";
 import type { JobRunLoaderData } from "../routes/jobRunLoader";

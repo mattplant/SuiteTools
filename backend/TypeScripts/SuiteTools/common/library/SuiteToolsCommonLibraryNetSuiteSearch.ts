@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - NetSuite Search Operations
  *
@@ -21,8 +23,6 @@ import type { SuiteToolsCommon } from "../SuiteToolsCommon";
  * and exposed via `SuiteToolsCommonLibraryNetSuite.stLibNsSearch` only. It is retained because
  * it is the tool's only saved-search support. Nothing here is covered by tests or exercised at
  * runtime, so treat it as unverified until something wires it up. Tracked in #85.
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibraryNetSuiteSearch {
   private _stCommon: SuiteToolsCommon;

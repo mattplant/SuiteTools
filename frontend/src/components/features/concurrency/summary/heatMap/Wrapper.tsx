@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { ConcurrencySummaryHeatMapContent } from "./Content";
 import type { ConcurrencySummaryData } from "../types";
 

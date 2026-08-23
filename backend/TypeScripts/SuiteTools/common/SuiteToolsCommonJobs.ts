@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - Jobs
  *
@@ -15,8 +17,6 @@ import type { SuiteQLResults } from "./types";
 
 /**
  * Jobs support for SuiteTools App and SuiteTools API
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonJobs {
   private _stCommon: SuiteToolsCommon;

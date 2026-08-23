@@ -1,9 +1,22 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * SuiteTools NetSuite API client adapter.
- * @file netSuiteClient.ts
- * @description Bridges raw NetSuite HTTP calls into the SuiteTools Schema → Adapter → View pipeline
+ * The single HTTP boundary between the frontend and the SuiteTools RESTlet.
+ *
+ * @fileoverview
+ * Every API call in the app funnels through `getData`, `postData` and `putData` here, which is
+ * why tests mock this module rather than `fetch` — mocking one seam covers the whole adapter
+ * layer. Four adapters call it directly; the rest reach it through `adapterUtils`.
+ *
+ * @remarks
+ * `script`, `deploy`, `compid` and `endpoint` are reserved query keys: the first three belong
+ * to NetSuite's RESTlet addressing and the fourth is how SuiteTools routes within it. Passing
+ * any of them in `params` throws `InvalidParameterError` rather than silently overriding the
+ * request target. A non-2xx response becomes a `NetSuiteApiError`, so callers never see a raw
+ * `Response`.
+ *
+ * @see ./adapterUtils.ts – the factories layered over this
+ * @see ../../../../backend/TypeScripts/SuiteTools/idev-suitetools-api.ts – the RESTlet answering these calls
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>

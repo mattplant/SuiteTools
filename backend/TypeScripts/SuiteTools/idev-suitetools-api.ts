@@ -1,24 +1,25 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools API
+ * The RESTlet the frontend talks to — the entire backend API surface.
  *
- * This script handles the SuiteTools API calls.
+ * @fileoverview
+ * NetSuite invokes this directly. Every request from the browser arrives here, is dispatched
+ * into `SuiteToolsApi`, and comes back as a `RequestResponse`. `statusForSuiteError` is the
+ * other half of the contract: it maps each SuiteError subclass onto the HTTP-style status the
+ * frontend adapters branch on.
  *
+ * @remarks
+ * The error mapping is a wire contract, not an implementation detail — changing which status a
+ * SuiteError maps to changes how the frontend reacts, with no compiler error on either side.
+ * Imports from the `/errors` subpath rather than the package root so the Zod runtime stays out
+ * of this bundle.
+ *
+ * @see ./api/SuiteToolsApi.ts – the dispatch this delegates to
+ * @see ../../../frontend/src/adapters/api/netSuiteClient.ts – the client calling in
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2024  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  *
  * @NApiVersion 2.1
  * @NScriptType Restlet

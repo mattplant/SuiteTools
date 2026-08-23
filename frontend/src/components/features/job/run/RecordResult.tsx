@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { Button, ButtonGroup } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import type { JobRun } from "@suiteworks/suitetools-shared";

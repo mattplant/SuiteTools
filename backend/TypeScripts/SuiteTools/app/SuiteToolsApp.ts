@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools App - Main Application Class
  *
@@ -15,8 +17,6 @@ import { SuiteToolsAppView } from "./SuiteToolsAppView";
 
 /**
  * SuiteTools Application Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApp {
   private _appUrl: string;

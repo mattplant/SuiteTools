@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { Button, ButtonGroup } from "flowbite-react";
 import type { User } from "@suiteworks/suitetools-shared";
 import { openAppPage, openNetSuitePage } from "../../../utils/navigation";

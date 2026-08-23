@@ -13,7 +13,6 @@ import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const warnOnly = process.argv.includes("--warn-only");
 
 /** Workspaces holding first-party source, config files included. */
 const ROOTS = ["frontend", "shared", "backend"];
@@ -63,8 +62,7 @@ if (missing.length === 0) {
   process.exit(0);
 }
 
-const label = warnOnly ? "warning" : "error";
-console.error(`check-headers: ${missing.length} of ${checked} files are missing an SPDX line (${label}).`);
+console.error(`check-headers: ${missing.length} of ${checked} files are missing an SPDX line.`);
 for (const file of missing.sort()) console.error(`  ${file}`);
 console.error("");
 console.error("Add this as the first line of each file:");
@@ -72,9 +70,4 @@ console.error("  // SPDX-License-Identifier: GPL-3.0-or-later");
 console.error("");
 console.error("See docs/guides/jsdoc-standards.md (tier 1).");
 
-if (warnOnly) {
-  console.error("");
-  console.error("Reported only — see issue #106, which adds the missing lines and drops --warn-only.");
-  process.exit(0);
-}
 process.exit(1);

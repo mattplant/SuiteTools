@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { RouterProvider } from "react-router-dom";
 import { ThemeInit } from "../.flowbite-react/init";
 import { AppSettingsProvider } from "./components/shared/context/AppSettingsContext";

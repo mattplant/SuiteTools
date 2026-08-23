@@ -37,7 +37,7 @@
     "watch:backend": "yarn workspace backend run watch",
     "build:all": "yarn workspace frontend run build && yarn workspace backend run build",
     "deploy:all": "yarn build:all && yarn workspace backend run deploy",
-    "lint": "node ./scripts/check-headers.mjs --warn-only && yarn run -T biome check .",
+    "lint": "node ./scripts/check-headers.mjs && yarn run -T biome check .",
     "typecheck": "yarn workspace @suiteworks/suitetools-shared run typecheck && yarn workspace frontend run typecheck && yarn workspace backend run typecheck",
     "test": "yarn workspace @suiteworks/suitetools-shared run build && yarn workspaces foreach -Apt --verbose run test",
     "postinstall": "node ./scripts/check-node.mjs",

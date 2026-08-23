@@ -62,13 +62,13 @@ Every source file starts with this line, before any other comment or code:
 
 A file qualifies if **any** of these is true:
 
-1. it is one of `shared/`'s published entry points — `index.ts`, `errors-entry.ts`, `contracts-entry.ts`, `bundleEntry.ts`;
-2. it is imported from outside its own directory by **three or more** files;
+1. it is an **entry point something outside this repo calls into** — `shared/`'s published package entries (`index.ts`, `errors-entry.ts`, `contracts-entry.ts` — the three rollup inputs), or a backend SuiteScript that NetSuite invokes directly (any file carrying `@NScriptType`);
+2. it is imported by **three or more** files outside its own directory, or by **eight or more** files in total — the second clause catches a hub inside a large directory, whose importers are all siblings;
 3. it is mocked by a test.
 
-Re-export barrels are excluded, except the entry points in (1) — those *are* the package contract. Small size is not an exemption: `DynamicResultsRenderer.tsx` is one line of logic and qualifies under (3), because it is the seam `Results.test.tsx` mocks.
+Re-export barrels are excluded, except the entry points in (1) — those *are* the contract. Small size is not an exemption: `DynamicResultsRenderer.tsx` is one line of logic and qualifies under (3), because it is the seam `Results.test.tsx` mocks.
 
-The rule is the source of truth, not any checked-in list. It currently selects around 43 files. If you are unsure whether a file qualifies, it probably does not — tier 1 plus good per-symbol JSDoc is the norm, not a shortfall.
+The rule is the source of truth, not any checked-in list. It currently selects about 51 files. Worked examples of the second criterion: `adapterUtils.ts` has 20 importers and `routes/loaderUtils.ts` has 11, all siblings — a directory-only test would miss both, which is why the total-importer clause exists. If you are unsure whether a file qualifies, it probably does not — tier 1 plus good per-symbol JSDoc is the norm, not a shortfall.
 
 ### Tags
 
@@ -100,6 +100,7 @@ Not used: `@module` (nothing consumes it — the repo has no doc generator), `@a
 - Use `@remarks` for boundary assumptions, not implementation detail — the code already says how.
 - Point `@see` at things worth opening, and say why in the same line.
 - If you change what a file does, change its header in the same commit. A stale tier-2 block is a defect.
+- Beware bare utility words in frontend prose. Tailwind scans comment text for class candidates, so a sentence containing a word like `grow` or `block` emits that utility into `output.css`. Writing "If utilities grow beyond…" in `adapterUtils.ts` was generating a phantom `.grow` class no component used. Phrase around it, or quote the word as code.
 
 ---
 

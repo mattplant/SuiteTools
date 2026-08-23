@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import "react-data-grid/lib/styles.css";
 import { DataGrid } from "react-data-grid";
 import type { Column, RowCol } from "../types";

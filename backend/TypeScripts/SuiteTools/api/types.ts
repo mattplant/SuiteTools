@@ -1,8 +1,24 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools API - Shared Types
+ * Wire types and the request-body guard for the RESTlet.
  *
+ * @fileoverview
+ * Twelve backend modules import from here. Re-exports the shared `RequestBody` and
+ * `RequestResponse` under local names, and supplies `assertIsRequestBody`, the runtime check
+ * that untrusted request payloads pass through before any handler reads them.
+ *
+ * @remarks
+ * The type re-exports are type-only, which is what keeps the shared package's Zod runtime out
+ * of this bundle — importing the value form here would pull it in. `assertIsRequestBody` is a
+ * hand-written assertion rather than a schema parse for the same reason, so it must be kept in
+ * step with the shared `RequestBody` shape by hand.
+ *
+ * @see ../../../../shared/src/schema/api – the shared definition this mirrors
+ * @see ./SuiteToolsApi.ts – the dispatch that consumes these types
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  *
  * @NApiVersion 2.1
  */

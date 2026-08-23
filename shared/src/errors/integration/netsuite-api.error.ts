@@ -1,5 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Thrown when a NetSuite API call fails.
+ *
+ * @fileoverview
+ * Wraps a failed request with the endpoint, HTTP status and any NetSuite error code, so a
+ * failure can be told apart from a SuiteTools bug when it surfaces in logs.
+ *
+ * @remarks
+ * `service` is fixed to "NetSuite" so integration errors stay greppable if other services are
+ * ever added alongside. `status` and `nsErrorCode` are optional because NetSuite does not
+ * always return either — treat their absence as unknown, not as success.
+ *
+ * @see ../base/SuiteError.ts – the code/severity contract
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 import { SuiteError } from "../base/SuiteError";
 
 /**

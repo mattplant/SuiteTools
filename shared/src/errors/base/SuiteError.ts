@@ -1,6 +1,28 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
+ * Root of the SuiteTools error taxonomy.
+ *
+ * @fileoverview
+ * Every thrown SuiteTools error extends this class, which is what lets callers catch one type
+ * and still read a stable `code` and `severity`. Seven modules under `errors/` import it
+ * directly, plus the `base` barrel, and it ships through the `/errors` subpath that backend
+ * NetSuite scripts rely on.
+ *
+ * @remarks
+ * `code` and `severity` are abstract on purpose: a subclass that forgets them fails to compile
+ * rather than producing an error nobody can classify. `name` is assigned from `new.target` so
+ * it survives minification of the subclass. Changing the severity vocabulary is a breaking
+ * change for anything filtering logs on it.
+ *
+ * @see ../../errors-entry.ts – the Zod-free subpath this ships through
+ * @see ../domain/not-found.error.ts – a representative subclass
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
+/**
  * Base class for all SuiteTools errors.
  * Enforces a normalized taxonomy with code, severity, and context.
  *

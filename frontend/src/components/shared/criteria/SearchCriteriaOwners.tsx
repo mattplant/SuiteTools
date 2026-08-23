@@ -1,3 +1,24 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * Owner criteria control, populated from the server's option values.
+ *
+ * @fileoverview
+ * Unlike the static criteria controls, this one fetches its options on mount via
+ * `getOptionValues` and holds them in local state — owners are account data, not a fixed list.
+ *
+ * @remarks
+ * The fetch runs per mount with no shared cache, so several owner controls on one screen each
+ * issue a request. That is tolerable at current usage but is the thing to change first if
+ * criteria screens get heavier.
+ *
+ * @see ./getOptionValues.ts – the indirection this fetches through
+ * @see ./RecordCriteriaForm.tsx – the form that owns register
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 import { useEffect, useState } from "react";
 import type { UseFormRegister } from "react-hook-form";
 import { getOptionValues } from "./getOptionValues";

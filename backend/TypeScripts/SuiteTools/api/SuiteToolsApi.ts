@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API - Main API Class
  *
@@ -19,8 +21,6 @@ export type { Response, RequestBody, RequestBodyData } from "./types";
 
 /**
  * SuiteTools API Main Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApi {
   private _stApiGet: SuiteToolsApiGet;

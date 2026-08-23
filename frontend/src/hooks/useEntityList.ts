@@ -1,8 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file useEntityList.ts
- * @description Criteria-driven list fetch loop shared by SuiteTools list pages.
+ * The criteria-driven fetch loop every list page runs on.
+ *
+ * @fileoverview
+ * Sixteen modules use it. Owns the whole cycle a list screen needs — current criteria, the
+ * fetch that reruns when they change, loading state, and error reporting through
+ * `useErrorBoundaryTrigger` — so a list page supplies a `fetchList` and renders rows.
+ *
+ * @remarks
+ * `deps` is spread into the effect's dependency array, so an inline array literal there
+ * re-fetches on every render; pass a stable or memoised value. `getStatusMessage` is a soft
+ * status for partial results (an empty scrape, say) and is deliberately cleared when a fetch
+ * starts and on error, so it can never outlive the rows it described.
+ *
+ * @see ./useErrorBoundaryTrigger.ts – how fetch failures surface
+ * @see ../components/shared/criteria/types.ts – the criteria shape driving the loop
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";

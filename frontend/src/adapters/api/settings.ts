@@ -1,10 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving SuiteTools application settings.
- * @description
- * Fetches and validates the singleton Settings payload.
- * Pattern: Schema → Adapter → View
+ * Adapter for the SuiteTools settings singleton.
+ *
+ * @fileoverview
+ * Settings is one record rather than a collection, so this file does not use the singular
+ * adapter factory — there is no id to fetch by. It pairs a `getSettings` read with a
+ * `saveSettings` write.
+ *
+ * @remarks
+ * The payload carries `lastLogins`, which several list adapters join against to enrich rows.
+ * That makes settings a read dependency of screens that appear unrelated to configuration, so
+ * a shape change here reaches further than the settings page.
+ *
+ * @see ../../hooks/useAppSettingsContext.ts – how screens consume the loaded settings
+ * @see ./tokens.ts – a consumer of the lastLogins payload
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>

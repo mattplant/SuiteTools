@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useLoaderData } from "react-router-dom";
 import { TokenResult } from "../components/features/token/RecordResult";
 import type { TokenLoaderData } from "../routes/tokenLoader";

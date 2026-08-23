@@ -1,7 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for a single SOAP web services status row (scrape-based).
+ * Adapter for a single SOAP web services status row.
+ *
+ * @fileoverview
+ * Scrape-based: SOAP status is not exposed through the RESTlet, so a single row is found by id
+ * within the already-scraped set rather than fetched. That is why this module calls
+ * `handleNotFound` directly instead of configuring a singular adapter.
+ *
+ * @remarks
+ * A lookup only succeeds if the scrape has been performed — this cannot resolve a row from a
+ * cold start the way a RESTlet-backed adapter can, so deep-linking to a SOAP detail view
+ * depends on the list having been loaded.
+ *
+ * @see ./soapLogsScrape.ts – the scrape this searches
+ * @see ./adapterUtils.ts – handleNotFound and the contract this mirrors
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { SoapLogBundle } from "@suiteworks/suitetools-shared";

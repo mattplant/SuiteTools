@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useForm } from "react-hook-form";
 import { Button } from "flowbite-react";
 import type { CriteriaFields } from "./types";

@@ -1,22 +1,23 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools Jobs Run Map/Reduce Script
+ * Map/Reduce script that executes queued SuiteTools jobs.
  *
+ * @fileoverview
+ * NetSuite invokes this directly, and the frontend triggers it indirectly: `initiateJob` posts
+ * to the RESTlet, which queues a run that this script picks up. Each staged run produces the
+ * JobRun records the UI later displays.
+ *
+ * @remarks
+ * Because execution is asynchronous, a successful `initiateJob` response means queued, not
+ * finished — the UI must poll for the JobRun rather than assume completion. Map/Reduce is what
+ * lets a job exceed a single script's governance budget.
+ *
+ * @see ../app/SuiteToolsApp.ts – the application context this runs within
+ * @see ../../../../frontend/src/adapters/api/job.ts – where a run is initiated
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2024  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  *
  * @NApiVersion 2.1
  * @NScriptType MapReduceScript

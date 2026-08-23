@@ -1,22 +1,24 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools Last Logins Map/Reduce Script
+ * Map/Reduce script that collects last-login timestamps.
  *
+ * @fileoverview
+ * NetSuite schedules and invokes this directly. It reads the login audit with SuiteQL and
+ * writes a per-entity last-login summary that the settings payload later carries to the
+ * frontend, where token, user and integration lists join against it by name.
+ *
+ * @remarks
+ * Runs as Map/Reduce because the login audit is far too large to page through in a Suitelet's
+ * governance budget — the staged model is what keeps it inside limits. The key is
+ * `{ type, name }`, so entities are matched by name downstream and a rename breaks the join
+ * until this reruns.
+ *
+ * @see ../common/library/SuiteToolsCommonLibraryNetSuiteSuiteQl.ts – the SuiteQL access used here
+ * @see ../../../../frontend/src/adapters/api/tokens.ts – a consumer of the lastLogins payload
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2023  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  *
  * @NApiVersion 2.1
  * @NScriptType MapReduceScript

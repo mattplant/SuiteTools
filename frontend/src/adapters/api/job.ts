@@ -1,12 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving a single Job entity from SuiteTools.
- * @description
- * Fetches and validates a single Job record by ID, returning either a fully typed Job object or throwing NotFound.
- * Pattern: Schema → Adapter → View
- * - Always validate via shared bundle `.schema`
- * - Transform only on success; propagate `NotFound` via SuiteError
+ * Adapter for a single Job record, plus job initiation.
+ *
+ * @fileoverview
+ * `getJob` is a thin `makeSingularAdapter` configuration. `initiateJob` is the part worth
+ * knowing about: it POSTs a payload that asks the backend to start a Map/Reduce run, so this
+ * module both reads and triggers work.
+ *
+ * @remarks
+ * `initiateJob` returns the raw `RequestResponse` rather than an adapted entity — the caller
+ * needs the status to decide what to show, and there is no Job record to adapt yet. A
+ * successful response means the job was queued, not that it finished.
+ *
+ * @see ./adapterUtils.ts – the singular-adapter contract
+ * @see ./jobRun.ts – the record produced once a run completes
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
