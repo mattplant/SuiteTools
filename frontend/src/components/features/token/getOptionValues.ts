@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { getTokens } from "../../../adapters/api/tokens";
 import type { OptionValues } from "../../shared/criteria/types";
 

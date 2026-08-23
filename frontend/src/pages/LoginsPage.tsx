@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from "../components/shared/criteria/types";
 import { getLoginFromResults } from "../adapters/api/login";
 import { getLogins } from "../adapters/api/logins";

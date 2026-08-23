@@ -1,12 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file Schema/domain utilities for SuiteTools.
- * @description
- * Shared helpers for schema/domain logic:
- * - MergeShapes: combine Zod shapes
- * - orNotFoundSchema / OrNotFound: union schema with NotFound
- * - toArray: normalize `T[] | NotFound` into `T[]`
+ * Schema utilities shared by every domain schema.
+ *
+ * @fileoverview
+ * Twelve domain schemas build on these three helpers: `MergeShapes` to compose Zod shapes,
+ * `orNotFoundSchema` to union an entity with the not-found shape, and `toArray` to normalise
+ * `T[] | NotFound` down to `T[]` at the call site.
+ *
+ * @remarks
+ * `orNotFoundSchema` is what makes absence representable without every schema restating it, so
+ * a change to the union shape here reaches all twelve. `toArray` collapses not-found to an
+ * empty array — callers that must distinguish "none" from "absent" should narrow with
+ * `isNotFound` before calling it.
+ *
+ * @see ../../../domain/notFound.ts – the shape being unioned in
+ * @see ../../../typeGuards/isNotFound.guard.ts – narrowing back out
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import type { z } from "zod";

@@ -1,7 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving a single TBA access token.
+ * Adapter for a single TBA access token.
+ *
+ * @fileoverview
+ * A `makeSingularAdapter` configuration, plus `addTokenLastLogin`, which merges the last-login
+ * timestamp out of the settings payload onto a token row.
+ *
+ * @remarks
+ * The enrichment is a separate step rather than part of the adapt function because the
+ * timestamp lives in settings, not on the token record — the caller must already hold settings
+ * to apply it. Matching is by token name, so a renamed token loses its last-login until the
+ * settings payload catches up.
+ *
+ * @see ./tokens.ts – the list form, including the plural enrichment
+ * @see ./settings.ts – where the lastLogins payload comes from
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { makeRequestResponseSchema, tokenOrNotFoundSchema } from "@suiteworks/suitetools-shared";

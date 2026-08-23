@@ -1,5 +1,25 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+/**
+ * Thrown when Zod validation fails at a trust boundary.
+ *
+ * @fileoverview
+ * Carries the raw `ZodIssue[]` alongside the schema name, so a failure can be logged
+ * machine-readably and still rendered for a human. Raised by the backend's request and
+ * response validators.
+ *
+ * @remarks
+ * Holds issues rather than a formatted string on purpose: formatting at the throw site loses
+ * the paths that make a validation failure diagnosable. This is the one error class that
+ * depends on a Zod *type* — a type-only import, so the `/errors` subpath stays runtime-free.
+ *
+ * @see ../base/SuiteError.ts – the code/severity contract
+ * @see ../../errors-entry.ts – why the Zod runtime must not leak in here
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 import type { ZodIssue } from "zod";
 import { SuiteError } from "../base/SuiteError";
 

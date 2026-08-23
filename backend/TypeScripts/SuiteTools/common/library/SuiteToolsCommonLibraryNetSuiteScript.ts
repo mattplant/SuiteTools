@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - NetSuite Script Operations
  *
@@ -12,8 +14,6 @@ import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite Script Library
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibraryNetSuiteScript {
   private _stCommon: SuiteToolsCommon;

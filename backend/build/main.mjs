@@ -102,9 +102,14 @@ async function convertToAMD(_isProduction) {
       const originalContent = await readFile(filePath, "utf8");
       const sourceContent = await readFile(sourceFilePath, "utf8");
 
-      // Extract the original header from the source file (first JSDoc comment)
-      const headerMatch = sourceContent.match(/^(\/\*\*[\s\S]*?\*\/)/);
-      const header = headerMatch ? headerMatch[1] : "";
+      // Preserve the source file's header in the AMD output: the SPDX line, if
+      // present, plus the first JSDoc block. NetSuite reads @NApiVersion and
+      // @NScriptType from that JSDoc, so dropping it breaks the deploy — which
+      // is what happened when the SPDX line was added ahead of it and this
+      // match was still anchored to the file starting with `/**`.
+      const spdxMatch = sourceContent.match(/^\/\/[ \t]*SPDX-License-Identifier:[^\n]*/);
+      const jsdocMatch = sourceContent.match(/^(?:\/\/[^\n]*\n|[ \t]*\n)*([ \t]*\/\*\*[\s\S]*?\*\/)/);
+      const header = [spdxMatch?.[0], jsdocMatch?.[1]?.trim()].filter(Boolean).join("\n\n");
 
       // Strip inline sourcemaps before regex work
       let content = originalContent.replace(/\n\/\/# sourceMappingURL=data:application\/json;base64,[^\n]*$/m, "");

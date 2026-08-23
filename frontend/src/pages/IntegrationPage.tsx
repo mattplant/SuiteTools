@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useLoaderData } from "react-router-dom";
 import { IntegrationResult } from "../components/features/integration/RecordResult";
 import { IntegrationSoapLogs } from "../components/features/integration/IntegrationSoapLogs";

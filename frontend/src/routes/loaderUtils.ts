@@ -1,8 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file loaderUtils.ts
- * @description Shared helpers for React Router loaders.
+ * Shared error handling for React Router loaders.
+ *
+ * @fileoverview
+ * Eleven route loaders funnel their failures through `mapLoaderError`, so every route decides
+ * what a failed fetch looks like in one place rather than eleven.
+ *
+ * @remarks
+ * A NotFound is rethrown as `NotFoundError` rather than converted to a `Response`. That is
+ * deliberate and was arrived at the hard way: converting here raced the settings load and
+ * always suppressed the dev error overlay in Sandbox. `ErrorPage` needs the error instance to
+ * choose between the overlay and the friendly 404, so returning a `Response` breaks it.
+ *
+ * @see ../components/shared/context/DevErrorOverlayContext.tsx – the overlay this preserves
+ * @see ../adapters/api/adapterUtils.ts – where singular-fetch misses are thrown
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import type { LoaderFunctionArgs } from "react-router-dom";

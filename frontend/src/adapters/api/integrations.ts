@@ -1,12 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving multiple Integration entities for SuiteTools.
- * @description
- * Prefer Manage Integrations UI scrape for real ids / applicationId / dateCreated.
- * LoginAudit/RESTlet rows only supply last-login enrichment by name.
- * Pattern: Schema → Adapter → View
- * @copyright Matthew Plant
+ * Adapter for the Integrations list.
+ *
+ * @fileoverview
+ * Builds the list from the Manage Integrations UI scrape rather than the RESTlet, because only
+ * the scrape carries real internal ids, `applicationId` and `dateCreated`. RESTlet and
+ * LoginAudit rows contribute last-login enrichment, joined by name.
+ *
+ * @remarks
+ * The name-based join is the fragile part: integrations whose display name differs between the
+ * scrape and LoginAudit will silently miss enrichment, which is what `integrationLookupKey`
+ * normalises against. Prefer scrape fields whenever the two sources disagree.
+ *
+ * @see ./integrationsScrape.ts – the scrape and its lookup key
+ * @see ./integration.ts – the singular adapter and the detail stash
+ * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */

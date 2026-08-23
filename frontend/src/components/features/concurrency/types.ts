@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // defined columns as subset of DataGrid's ColumnOrColumnGroup<undefined, unknown>[]
 export type Column = { name: string; key: string; width?: number; minWidth?: number };
 

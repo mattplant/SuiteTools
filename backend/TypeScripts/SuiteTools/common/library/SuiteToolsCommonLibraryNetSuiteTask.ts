@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - NetSuite Task Operations
  *
@@ -15,8 +17,6 @@ import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite Task Library
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibraryNetSuiteTask {
   private _stCommon: SuiteToolsCommon;

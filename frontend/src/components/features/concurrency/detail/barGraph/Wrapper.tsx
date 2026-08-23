@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { ConcurrencyDetailBarGraphContent } from "./Content";
 import type { ConcurrencyDetailData } from "../types";
 

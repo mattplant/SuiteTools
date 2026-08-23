@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useContext } from "react";
 import type { InlineMessageContextType } from "../components/shared/context/MessageContext";
 import { InlineMessageContext } from "../components/shared/context/MessageContext";

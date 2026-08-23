@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - Settings
  *
@@ -69,8 +71,6 @@ function toOptionalNumber(value: SuiteQLValue): number | undefined {
 
 /**
  * Settings info for SuiteTools App and SuiteTools API
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonSettings {
   private _stCommon: SuiteToolsCommon;

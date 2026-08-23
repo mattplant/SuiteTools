@@ -1,22 +1,23 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools SuiteToolsApp
+ * The Suitelet that serves the SuiteTools single-page app.
  *
+ * @fileoverview
+ * NetSuite invokes this directly. It is the entry point a user's browser hits, and it does
+ * almost nothing itself — `SuiteToolsApp` renders the shell HTML that loads the built frontend
+ * bundle.
+ *
+ * @remarks
+ * This is the Suitelet whose URL the frontend later reads back as `data-app-url`; the app
+ * cannot construct any of its own links without it. Data does not flow through here — the SPA
+ * fetches from the RESTlet once loaded.
+ *
+ * @see ./app/SuiteToolsApp.ts – the shell rendering and the data-app-url attribute
+ * @see ./idev-suitetools-api.ts – the RESTlet serving the app's data
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2023  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  *
  * @NScriptName SuiteTools SuiteToolsApp
  * @NScriptType Suitelet

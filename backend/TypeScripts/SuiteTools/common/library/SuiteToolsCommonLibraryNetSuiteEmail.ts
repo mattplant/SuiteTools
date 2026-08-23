@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - NetSuite Email
  *
@@ -15,8 +17,6 @@ import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools NetSuite Email Library
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibraryNetSuiteEmail {
   private _stCommon: SuiteToolsCommon;

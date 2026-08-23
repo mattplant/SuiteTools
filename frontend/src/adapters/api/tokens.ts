@@ -1,7 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving TBA access tokens.
+ * Adapter for the TBA access tokens list.
+ *
+ * @fileoverview
+ * A `makeListAdapter` configuration that then filters further in the browser. Only `active` is
+ * forwarded to the API; integration, user and role filters are applied to the returned rows
+ * here.
+ *
+ * @remarks
+ * That split is the thing to preserve: the endpoint understands `active` and nothing else, so
+ * moving a filter server-side means changing the backend, and adding one client-side means it
+ * runs after paging. Integration matching goes through `integrationLookupKey` because the
+ * names are not byte-identical across sources.
+ *
+ * @see ./adapterUtils.ts – the list-adapter contract and pickCriteria whitelist
+ * @see ./integrationsScrape.ts – the lookup key used for integration matching
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { makeRequestResponseSchema, tokensOrNotFoundSchema } from "@suiteworks/suitetools-shared";

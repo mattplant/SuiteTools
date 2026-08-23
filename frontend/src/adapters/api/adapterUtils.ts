@@ -1,16 +1,29 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter utilities for SuiteTools.
- * @description
- * Shared helpers for API adapter modules, including:
- * - pickCriteria: safely project whitelisted fields from criteria objects
- * - toEntityArray: normalize array-like values into strongly typed arrays
+ * The factory every entity adapter in this directory is built from.
  *
- * Keep this file focused on adapter-layer concerns only.
- * If utilities grow beyond ~200–300 lines or mix concerns,
- * split into thematic files (e.g. `criteria.ts`, `normalizers.ts`)
- * and re-export from an index barrel.
+ * @fileoverview
+ * Nineteen of the 34 adapters here are a few lines of configuration over `makeSingularAdapter`
+ * or `makeListAdapter`. Those two encode the fetch → validate → adapt pipeline once: call the
+ * RESTlet, parse the envelope with a Zod schema, narrow away `NotFound`, then map rows through
+ * an adapt function. `pickCriteria` and `toEntityArray` are the supporting pieces.
+ *
+ * @remarks
+ * The two factories differ deliberately on absence. A singular miss throws through
+ * `handleNotFound`, because a detail view has nothing to render; a list miss returns `[]`,
+ * because an empty grid is a valid result. Do not "fix" that asymmetry.
+ *
+ * `pickCriteria` is a whitelist, not a filter — only the keys an adapter names reach the API,
+ * so a new criteria field is invisible until it is added to that list. `makeSingularAdapter`
+ * rejects ids that are 0, NaN or non-finite up front, which is what keeps `id = NaN` out of
+ * SuiteQL.
+ *
+ * @see ./netSuiteClient.ts – the HTTP call these wrap
+ * @see ./tokens.ts – a representative list adapter, including client-side filtering
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { handleError, isNotFound, NotFoundError, toArray } from "@suiteworks/suitetools-shared";

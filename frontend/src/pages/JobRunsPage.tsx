@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from "../components/shared/criteria/types";
 import { getJobRun } from "../adapters/api/jobRun";
 import { getJobRuns } from "../adapters/api/jobRuns";

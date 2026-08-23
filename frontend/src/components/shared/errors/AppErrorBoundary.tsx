@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { Component } from "react";
 import type { ReactNode } from "react";
 import { DefaultFallback } from "./DefaultFallback";

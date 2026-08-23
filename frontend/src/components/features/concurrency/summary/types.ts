@@ -1,3 +1,26 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * Dataset shapes for the concurrency summary view.
+ *
+ * @fileoverview
+ * Describes the overview figures the summary renders — concurrency limit, peak, time close to
+ * and over the limit — plus the config and violations datasets behind the heat map. Six modules
+ * outside this directory use it.
+ *
+ * @remarks
+ * `CriteriaFields` here is local to the concurrency views and shadows the app-wide one, and it
+ * differs from its two siblings: this one types the dates as `Date`, while detail and request
+ * use `string`. That inconsistency is real, not a typo — converting one without the other
+ * breaks the view that was not changed.
+ *
+ * @see ../../../../utils/concurrency.ts – where this data is assembled
+ * @see ../detail/types.ts – the sibling view using string dates
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 export type CriteriaFields = { startDate?: Date; endDate?: Date };
 
 export interface ConcurrencySummaryData {

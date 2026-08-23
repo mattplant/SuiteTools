@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { useLoaderData } from "react-router-dom";
 import { ScriptResult } from "../components/features/script/RecordResult";
 import type { ScriptLoaderData } from "../routes/scriptLoader";

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools App - View Management Class
  *
@@ -12,8 +14,6 @@ import type { Settings } from "../common/SuiteToolsCommonSettings";
 
 /**
  * SuiteTools App View
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsAppView {
   private _context: EntryPoints.Suitelet.onRequestContext;

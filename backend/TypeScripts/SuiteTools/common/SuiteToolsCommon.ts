@@ -1,24 +1,23 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools Library
+ * Shared foundation for both the Suitelet and the RESTlet.
  *
- * This is the library file for SuiteTools.
+ * @fileoverview
+ * Nineteen backend modules import this — it is the widest dependency in the workspace. Holds
+ * the jobs, settings and NetSuite library instances, so the app and the API share one
+ * construction path instead of each assembling its own.
  *
+ * @remarks
+ * `_appFiles` maps the SPA build's output paths, so it is the coupling point between the
+ * frontend build and the backend: renaming a bundle in the frontend build without editing this
+ * map breaks the served app at runtime, with nothing failing at compile time.
+ *
+ * @see ../idev-suitetools-app.ts – the Suitelet built on this
+ * @see ../idev-suitetools-api.ts – the RESTlet built on this
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2024  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  *
  * @NApiVersion 2.1
  */
@@ -30,8 +29,6 @@ import { SuiteToolsCommonLibrary } from "./library/SuiteToolsCommonLibrary";
 
 /**
  * Common functionality between SuiteTools App and SuiteTools API
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommon {
   // classes

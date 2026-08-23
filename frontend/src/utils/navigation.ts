@@ -1,9 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * Navigation utilities for SuiteTools.
- * @file navigation.ts
- * @description Provides helper functions for constructing URLs and handling navigation
+ * URL construction for a frontend served from inside NetSuite.
+ *
+ * @fileoverview
+ * The app runs at a NetSuite-assigned Suitelet URL that is not known at build time, so no route
+ * can be hardcoded. `getAppBaseUrl` reads the `data-app-url` attribute the backend writes onto
+ * the root element, and `openAppPage` / `openNetSuitePage` build on it. Eleven modules use it.
+ *
+ * @remarks
+ * The whole file depends on the backend having set `data-app-url` — if that attribute is ever
+ * dropped from the Suitelet's HTML, every in-app link breaks at runtime rather than at build.
+ * `openNetSuitePage` targets NetSuite's own UI rather than the app, so its argument is an
+ * account-relative URL, not an app route.
+ *
+ * @see ../../../backend/TypeScripts/SuiteTools/app/SuiteToolsAppView.ts – where data-app-url is written
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>

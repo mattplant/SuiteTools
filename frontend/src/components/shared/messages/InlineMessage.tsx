@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { Alert } from "flowbite-react";
 import { messageTypeIcon } from "../context/MessageContext";
 import { useInlineMessage } from "../../../hooks/useInlineMessage";

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API - GET Operations
  *
@@ -62,8 +64,6 @@ function cleanAll(response: Response, clean: (record: Row, index: number) => voi
 
 /**
  * SuiteTools API GET Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApiGet {
   private _stCommon: SuiteToolsCommon;

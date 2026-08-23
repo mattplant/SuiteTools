@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { Column } from "react-data-grid";
 import { UserBundle, type User } from "@suiteworks/suitetools-shared";
 import { ResultsGrid, summaryColumn } from "../../shared/results/ResultsGrid";

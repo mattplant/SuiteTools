@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { ConcurrencySummaryData } from "./types";
 import { formatDate } from "../../../../utils/date";
 

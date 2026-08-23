@@ -1,12 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving a single JobRun entity from SuiteTools.
- * @description
- * Fetches and validates a single JobRun record by ID, returning either a fully typed JobRun object or throwing NotFound.
- * Pattern: Schema → Adapter → View
- * - Always validate via shared bundle `.schema`
- * - Transform only on success; propagate `NotFound` via SuiteError
+ * Adapter for a single JobRun record.
+ *
+ * @fileoverview
+ * A `makeSingularAdapter` configuration over the `jobRun` endpoint. A JobRun is the record of
+ * one execution of a Job, which is what the run-detail view renders.
+ *
+ * @remarks
+ * Absence throws rather than returning null, per the singular-adapter contract — a run id that
+ * does not resolve is a bad link, not an empty state.
+ *
+ * @see ./adapterUtils.ts – the singular-adapter contract
+ * @see ./job.ts – the Job these runs belong to, and how a run is started
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>

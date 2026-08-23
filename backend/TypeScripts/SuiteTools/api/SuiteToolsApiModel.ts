@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API - Model Operations
  *
@@ -14,8 +16,6 @@ import type { Response } from "./types";
 
 /**
  * SuiteTools API Model Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApiModel {
   private _stCommon: SuiteToolsCommon;

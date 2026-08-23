@@ -1,23 +1,24 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
- * SuiteTools Concurrency Library
+ * Concurrency and APM data collection for the three concurrency views.
  *
- * This library provides functions to support concurrency in SuiteTools.
+ * @fileoverview
+ * Fetches the summary, detail and request datasets, and shapes them into the columns and series
+ * the charts render. The data comes from scraping NetSuite's APM pages via
+ * `getDataFromPageContent`, not from the SuiteTools RESTlet — APM has no API surface.
+ *
+ * @remarks
+ * Because it depends on NetSuite's own APM markup, this breaks when NetSuite changes those
+ * pages, and it cannot be exercised in a local environment at all — there is no APM to scrape,
+ * which is why the concurrency screens are hard to verify outside a real account (#75, #81).
+ * Treat changes here as needing manual checking in NetSuite.
+ *
+ * @see ../lib/netsuite/collectData.ts – the scrape this builds on
+ * @see ../components/features/concurrency/types.ts – the Column shape produced
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
- *
- * Copyright (C) 2024  Matthew Plant
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
  */
 
 import { getDataFromPageContent } from "../lib/netsuite/collectData";

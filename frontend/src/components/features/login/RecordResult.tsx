@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { Login } from "@suiteworks/suitetools-shared";
 
 type Props = { data: Login };

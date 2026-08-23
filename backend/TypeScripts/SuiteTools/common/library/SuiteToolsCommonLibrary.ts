@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools Library - Main Library Class
  *
@@ -13,8 +15,6 @@ import type { SuiteToolsCommon } from "../SuiteToolsCommon";
 
 /**
  * SuiteTools Library
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsCommonLibrary {
   private _stCommon: SuiteToolsCommon;

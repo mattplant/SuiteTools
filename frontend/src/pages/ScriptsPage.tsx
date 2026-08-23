@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { CriteriaFields } from "../components/shared/criteria/types";
 import { getScriptModalData } from "../adapters/api/script";
 import { getScripts } from "../adapters/api/scripts";

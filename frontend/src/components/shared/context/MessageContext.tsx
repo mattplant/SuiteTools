@@ -1,3 +1,24 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+/**
+ * Context for the transient inline message shown above a screen's content.
+ *
+ * @fileoverview
+ * Carries one message at a time — the "saved", "nothing found" or "scrape was partial" banner —
+ * along with the icon set that renders each type. Four modules consume it.
+ *
+ * @remarks
+ * The context defaults to `undefined` rather than a no-op value, so a consumer rendered outside
+ * the provider fails loudly instead of silently swallowing messages. Holding a single message
+ * rather than a queue is intentional: a second message replaces the first, since these are
+ * screen-level status, not notifications.
+ *
+ * @see ../messages – the components that render this
+ * @copyright Matthew Plant <i@idev.systems>
+ * @license GPL-3.0-or-later
+ * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>
+ */
+
 import type { ReactNode } from "react";
 import { createContext, useCallback, useState, useEffect } from "react";
 

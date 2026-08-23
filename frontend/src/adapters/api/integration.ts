@@ -1,11 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /**
- * @file API adapter for retrieving a single Integration entity from SuiteTools.
- * @description
- * Integration Applications are not reliably available via the RESTlet/SuiteQL.
- * Detail views resolve from the Manage Integrations list scrape (real internal ids).
- * Pattern: Schema → Adapter → View
+ * Adapter for a single Integration record.
+ *
+ * @fileoverview
+ * Integration applications are not reliably reachable over the RESTlet or SuiteQL, so a detail
+ * view cannot simply fetch one by id. This module resolves a record from the Manage
+ * Integrations list scrape, which is the only source carrying real internal ids, and stashes
+ * the row so the detail route can read it back without a second scrape.
+ *
+ * @remarks
+ * The stash is why this file exists at all — navigating list → detail must not re-scrape, and
+ * `getIntegrationEnriched` depends on the stashed row being present. Treat the scrape as the
+ * source of truth for ids; the RESTlet supplies last-login enrichment only, matched by name.
+ *
+ * @see ./integrations.ts – the list adapter that populates the stash
+ * @see ./integrationsScrape.ts – the Manage Integrations scrape and its lookup key
  * @copyright Matthew Plant <i@idev.systems>
  * @license GPL-3.0-or-later
  * See the LICENSE file at <https://gitlab.com/idev-systems/labs/SuiteTools/-/blob/main/LICENSE>

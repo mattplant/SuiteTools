@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import type { Control, FieldValues } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import TimePicker from "../ui/TimePicker";

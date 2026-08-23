@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 /**
  * SuiteTools API - POST Operations
  *
@@ -17,8 +19,6 @@ type RequestParams = { [key: string]: string };
 
 /**
  * SuiteTools API POST Class
- *
- * @author Matthew Plant <i@idev.systems>
  */
 export class SuiteToolsApiPost {
   private _stCommon: SuiteToolsCommon;
