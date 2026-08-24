@@ -11,6 +11,7 @@ import * as log from "N/log";
 import * as task from "N/task";
 import type { SuiteToolsCommon } from "../common/SuiteToolsCommon";
 
+import { addDateFilter } from "./SuiteToolsApiModelFilters";
 import { queryMany, queryOne } from "./SuiteToolsApiModelQuery";
 import type { Response } from "./types";
 
@@ -96,8 +97,8 @@ export class SuiteToolsApiModel {
         }
       }
     }
-    this.addDateFilter(where, "SuiteToolsApiModel:getFiles()", "file", "createddate", createdDate);
-    this.addDateFilter(where, "SuiteToolsApiModel:getFiles()", "file", "lastmodifieddate", modifiedDate);
+    addDateFilter(where, "SuiteToolsApiModel:getFiles()", "file", "createddate", createdDate);
+    addDateFilter(where, "SuiteToolsApiModel:getFiles()", "file", "lastmodifieddate", modifiedDate);
     if (where.length > 0) {
       sql += ` WHERE ${where.join(" AND ")}`;
     }
@@ -824,7 +825,7 @@ export class SuiteToolsApiModel {
     // Add date/time filtering
     if (timemode === "now" && date) {
       // Named windows (today/yesterday/…) and minute offsets via addDateFilter
-      this.addDateFilter(where, "SuiteToolsApiModel:getScriptLogsViaSuiteQL()", "ScriptNote", "date", date);
+      addDateFilter(where, "SuiteToolsApiModel:getScriptLogsViaSuiteQL()", "ScriptNote", "date", date);
     } else if (timemode === "custom" && customdatetime && customduration) {
       // End datetime (YYYY-MM-DD HH24:MI:SS or epoch ms) + lookback in minutes
       const durationMinutes = this.resolveDurationMinutes(customduration);
@@ -843,66 +844,6 @@ export class SuiteToolsApiModel {
     sql += ` ORDER BY ScriptNote.date DESC`;
 
     return queryMany(this.stCommon.stLib.stLibNs.stLibNsSuiteQl.query(sql), `No script log records found`);
-  }
-
-  /**
-   * Add Date Filter
-   *
-   * Supports:
-   * - `0` / empty: no filter
-   * - numeric strings (`15`, `60`, `240`): last N minutes
-   * - `today`, `yesterday`, `lastweek` (7 days), `lastmonth` (31 days)
-   *
-   * @param where - the where clause
-   * @param functionName - the function name (for debug logging)
-   * @param table - the table name
-   * @param field - the field name
-   * @param dates - the dates
-   */
-  private addDateFilter(
-    where: string[],
-    functionName: string,
-    table: string,
-    field: string,
-    dates: string | string[],
-  ): void {
-    if (!dates || dates === "" || dates === "0") {
-      return;
-    }
-
-    // Files UI only sends a single select value today.
-    if (typeof dates !== "string") {
-      log.debug({ title: `${functionName} addDateFilter`, details: { skippedNonStringDates: dates } });
-      return;
-    }
-
-    const column = table ? `${table}.${field}` : field;
-
-    switch (dates) {
-      case "today":
-        where.push(`TO_CHAR(${column}, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')`);
-        break;
-      case "yesterday":
-        where.push(`TO_CHAR(${column}, 'YYYY-MM-DD') = TO_CHAR(SYSDATE - 1, 'YYYY-MM-DD')`);
-        break;
-      case "lastweek":
-        where.push(`${column} >= (SYSDATE - 7)`);
-        break;
-      case "lastmonth":
-        where.push(`${column} >= (SYSDATE - 31)`);
-        break;
-      default: {
-        // Relative window in minutes (e.g. "15", "60", "240")
-        // NetSuite SuiteQL uses fractional days: minutes / 1440
-        const minutes = parseInt(dates, 10);
-        if (!Number.isNaN(minutes) && minutes > 0) {
-          where.push(`${column} >= (SYSDATE - ${minutes} / 1440)`);
-        } else {
-          log.debug({ title: `${functionName} addDateFilter`, details: `Unhandled date filter value: ${dates}` });
-        }
-        break;
-      }
-    }
   }
 
   /**
@@ -1191,7 +1132,7 @@ export class SuiteToolsApiModel {
       }
     }
     // Filter on the raw column, not the TO_CHAR alias the SELECT exposes as `date`.
-    this.addDateFilter(where, "SuiteToolsApiModel:getLogins()", "loginAudit", "date", dateCreated);
+    addDateFilter(where, "SuiteToolsApiModel:getLogins()", "loginAudit", "date", dateCreated);
     if (where.length > 0) {
       sql += ` WHERE ${where.join(" AND ")}`;
     }
