@@ -65,7 +65,7 @@ GitLab CI (`.gitlab-ci.yml`) on MRs and the default branch:
 yarn install --immutable                              # before_script — lockfile must match
 yarn typecheck                                        # merge-blocking — shared types + FE/BE tsc
 yarn lint                                             # merge-blocking — Biome check (lint + format)
-yarn test                                             # merge-blocking
+yarn test:coverage                                    # merge-blocking — tests, plus the coverage report
 yarn build:all                                        # merge-blocking — full workspace build
 yarn dedupe --check                                   # merge-blocking — no duplicate resolutions
 yarn npm audit --all --recursive --severity moderate  # advisory — allow_failure: true
@@ -75,6 +75,7 @@ Plus two GitLab scanner templates, both non-blocking: `semgrep-sast` and `secret
 
 - ✅ Red **typecheck** / **lint** / **test** / **build** / **dedupe** blocks merge when **Pipelines must succeed** is enabled in project settings.
 - ✅ Dependency MRs: run `yarn install` and `yarn dedupe --check` locally before push, so both the immutable install and the dedupe gate succeed.
+- ℹ️ **Coverage is reported, not gated** (#111). The `test` job publishes a cobertura report per workspace, so the MR diff is annotated per line, and prints one combined figure. Baseline when it landed: **16.37% of lines** (571/3488). No threshold exists yet — a low number does not red the job. Raising it is follow-on work, aimed by what the report shows.
 - ⚠️ **audit** is advisory, not blocking. There is a pre-existing backlog (1 critical / 29 high / 12 moderate as of #113), all of it in dev and build tooling. A newly published CVE in a transitive dep should not red an unrelated MR — read the job, do not ignore it.
 - ⚠️ On the **Free** plan the scanners publish JSON report artifacts only. The MR security widget, vulnerability report and security dashboard are all Ultimate, so findings must be read from the job log or the artifact.
 - ❌ SuiteCloud deploy is not run in MR CI.

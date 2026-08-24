@@ -44,6 +44,21 @@ module.exports = {
   ...suitecloud,
   testMatch: ["**/__tests__/**/*.(test|spec).(ts|js)"],
   moduleFileExtensions: ["ts", "js", "json"],
+  // Coverage (#111). Jest 29 has it built in, so unlike frontend/shared there is no
+  // provider package to install -- only `--coverage` and where to point it.
+  //
+  // `collectCoverageFrom` is what puts untested files in the denominator: without it
+  // `--coverage` reports only the files a test already imports, which for this workspace
+  // would be the api layer and nothing else. Authoring sources only -- the generated AMD
+  // bundles under src/FileCabinet/ are build output, and counting them would double every
+  // module and measure esbuild rather than the code.
+  collectCoverageFrom: ["TypeScripts/**/*.ts"],
+  coverageDirectory: "coverage",
+  // `text` for the job log, `cobertura` for GitLab's MR diff annotations, `html` to read
+  // locally. Matches the two Vitest workspaces so all three reports are read the same way.
+  coverageReporters: ["text", "cobertura", "html"],
+  // Measured, not gated: #111 turned the number on and left `coverageThreshold` for the
+  // follow-up, once there is a baseline to ratchet from.
   transform: {
     ...suitecloud.transform,
     "^.+\\.tsx?$": [

@@ -26,8 +26,9 @@
     "typecheck": "tsc --noEmit",
     "watch": "tsc --watch --noEmit",
     "lint": "yarn run -T biome check .",
-    "clean-local": "rm -rf src/FileCabinet/SuiteScripts/SuiteTools/",
+    "clean-local": "rm -rf src/FileCabinet/SuiteScripts/SuiteTools/ coverage",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "format": "yarn run -T biome format --write .",
     "lint:fix": "yarn run -T biome check --write .",
     "check-format": "yarn run -T biome format ."
