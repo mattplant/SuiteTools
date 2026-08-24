@@ -59,6 +59,7 @@ Build compiles `TypeScripts/SuiteTools/` → `src/FileCabinet/SuiteScripts/Suite
 - Run: `yarn test` from the monorepo root (builds `shared/` first, then all workspaces), or `yarn workspace backend run test` when `shared/dist` is already built.
 - `N/*` modules are mocked via `@oracle/suitecloud-unit-testing` stubs; no live NetSuite account is required.
 - Suite lives under `backend/__tests__/`. Jest rewrites Oracle’s default `node_modules/…` paths, which point at `backend/node_modules/` — a directory Yarn’s hoisting never creates.
+- Coverage: `yarn test:coverage` writes `backend/coverage/`. Jest 29 has coverage built in, so there is no provider package here. `collectCoverageFrom` in [`jest.config.js`](jest.config.js) scopes it to `TypeScripts/**/*.ts` — authoring sources only, never the generated FileCabinet bundles — and is what puts untested files in the denominator. No threshold — see [Build & Release](../docs/guides/build-release.md).
 
 ---
 

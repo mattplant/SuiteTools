@@ -40,6 +40,7 @@
     "lint": "node ./scripts/check-headers.mjs && yarn run -T biome check .",
     "typecheck": "yarn workspace @suiteworks/suitetools-shared run typecheck && yarn workspace frontend run typecheck && yarn workspace backend run typecheck",
     "test": "yarn workspace @suiteworks/suitetools-shared run build && yarn workspaces foreach -Apt --verbose run test",
+    "test:coverage": "yarn workspace @suiteworks/suitetools-shared run build && yarn workspaces foreach -Apt --verbose run test:coverage && node ./scripts/coverage-summary.mjs",
     "postinstall": "node ./scripts/check-node.mjs",
     "clean": "yarn workspaces foreach -Apt run clean-local && yarn cache clean && find . -name '*.tsbuildinfo' -delete",
     "yarn:reset": "./scripts/resetYarn.sh",

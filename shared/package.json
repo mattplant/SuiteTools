@@ -47,8 +47,9 @@
     "typecheck": "yarn build:types",
     "watch": "tsc -b --watch --verbose --diagnostics --listEmittedFiles",
     "lint": "yarn run -T biome check .",
-    "clean-local": "rm -rf dist tsconfig.tsbuildinfo",
+    "clean-local": "rm -rf dist coverage tsconfig.tsbuildinfo",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "lint:fix": "yarn run -T biome check --write .",
     "format": "yarn run -T biome format --write .",
     "check-format": "yarn run -T biome format ."
@@ -60,9 +61,10 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-sucrase": "^5.0.2",
     "@rollup/plugin-terser": "^0.4.4",
+    "@vitest/coverage-v8": "^4.1.11",
     "rollup": "^4.52.3",
     "tslib": "^2.8.1",
     "typescript": "6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

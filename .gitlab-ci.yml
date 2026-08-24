@@ -1,5 +1,6 @@
 # SuiteTools CI — install → typecheck → lint → test → build, plus dependency and
-# security hygiene gates (dedupe, audit, SAST, secret detection).
+# security hygiene gates (dedupe, audit, SAST, secret detection). The test job also
+# measures coverage and publishes it to the merge request diff (#111).
 # SuiteCloud deploy is intentionally out of scope for MR/default-branch CI.
 # Node matches .node-version; Yarn matches packageManager / .yarn/releases.
 
@@ -71,10 +72,38 @@ lint:
   script:
     - yarn lint
 
+# Runs the suite with coverage instrumentation rather than plain `yarn test`. Same
+# pass/fail signal, one run instead of two: a separate coverage job would double the
+# slowest stage in the pipeline for no extra merge-blocking information.
+#
+# #111 turned the number on and deliberately set no threshold. There is nothing here that
+# reds the job on a low figure -- only on a failing test -- because a gate written against
+# an unmeasured baseline either fails on day one or is pitched so low it certifies nothing.
+# Baseline at the time of writing: 16.37% of lines (571/3488).
 test:
   extends: .validate
   script:
-    - yarn test
+    - yarn test:coverage
+  # `scripts/coverage-summary.mjs` prints this after the three per-workspace tables. Without
+  # it GitLab would scrape whichever workspace table happened to print last and label one
+  # workspace as the whole repository.
+  coverage: '/^Total coverage: (\d+\.\d+)%/'
+  artifacts:
+    # A red suite still leaves a readable report (`reportOnFailure` in both Vitest configs).
+    when: always
+    expire_in: 1 week
+    paths:
+      # The HTML reports -- the only per-line view without rerunning locally.
+      - "*/coverage/"
+    reports:
+      # One report per workspace, merged by GitLab, which is what puts per-line coverage on
+      # the MR diff. Each file's <sources> is $CI_PROJECT_DIR/<workspace>, which matches the
+      # <CI_BUILDS_DIR>/<PROJECT_FULL_PATH>/... shape GitLab requires to rewrite the
+      # workspace-relative filenames to repository-relative ones. Run the jobs from anywhere
+      # else and the annotations silently stop appearing.
+      coverage_report:
+        coverage_format: cobertura
+        path: "*/coverage/cobertura-coverage.xml"
 
 # Builds every workspace. `yarn build:all` was the only root script CI never ran,
 # which is how #79's broken clean-checkout build reached main unnoticed: the

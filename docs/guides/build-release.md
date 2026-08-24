@@ -58,9 +58,10 @@ Defined in [`.gitlab-ci.yml`](../../.gitlab-ci.yml). Runs on **merge request** e
 | --- | --- | --- | --- |
 | `typecheck` | `yarn typecheck` | Yes | Shared types emit, then frontend + backend `tsc --noEmit` |
 | `lint` | `yarn lint` | Yes | Biome check (lint + format) across all workspaces |
-| `test` | `yarn test` | Yes | Workspace Vitest (shared/frontend) + SuiteCloud Jest (backend) |
+| `test` | `yarn test:coverage` | Yes | Workspace Vitest (shared/frontend) + SuiteCloud Jest (backend), with coverage |
 | `build` | `yarn build:all` | Yes | Full workspace build; Yarn does not run npm-style `prebuild` hooks |
 
+- **Coverage** — the `test` job runs the suite instrumented rather than adding a second job: same pass/fail signal, one run. It publishes three cobertura reports (one per workspace), which GitLab merges into per-line annotations on the merge request diff, and the HTML reports as job artifacts for a week. `scripts/coverage-summary.mjs` sums the three into the one figure GitLab shows on the MR. **There is no threshold** — #111 turned the number on and left the gate for a follow-up, because a threshold written against an unmeasured baseline either fails on day one or is pitched so low it certifies nothing. Baseline when reporting landed: **16.37% of lines** (571/3488) — shared 64.61%, frontend 16.84%, backend 8.56%.
 - **Image / toolchain** — `node:24-bookworm` (matches [`.node-version`](../../.node-version)); Yarn **4.18.0** via Corepack / `packageManager` and the checked-in `.yarn/releases` binary; the `node-modules` linker, with `.yarn/cache` cached on `yarn.lock`.
 - **SuiteCloud SDK license** — CI sets `npm_config_acceptsuitecloudsdklicense=true` so `@oracle/suitecloud-cli` postinstall can download the SDK JAR non-interactively (Oracle Free Use Terms and Conditions). Deploy credentials are still out of scope.
 - **Merge policy** — Enable **Pipelines must succeed** under GitLab → Settings → Merge requests so red **required** jobs block merge.
@@ -72,7 +73,7 @@ Local equivalent before opening an MR:
 yarn install
 yarn typecheck
 yarn lint
-yarn test
+yarn test          # or `yarn test:coverage`, which is what CI runs
 yarn build:all
 ```
 

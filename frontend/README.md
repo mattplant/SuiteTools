@@ -32,6 +32,7 @@ See the parent directory [README](../README.md) for more information about the S
 - Colocate tests as `src/**/*.test.ts` / `*.test.tsx` (node env by default; hook tests may set `@vitest-environment jsdom`).
 - Cover utils/adapters/hooks first — no NetSuite account or Playwright required for a green suite.
 - Root `yarn test` includes this workspace.
+- Coverage: `yarn test:coverage` (root, or this workspace alone) writes `frontend/coverage/`. `src/**/*.{ts,tsx}` is measured whether or not a test imports it — Vitest 4 dropped `coverage.all`, so `coverage.include` in [`vitest.config.ts`](vitest.config.ts) is what keeps untested files in the denominator. Only tests, `*.d.ts`, and `src/main.tsx` are excluded. No threshold — see [Build & Release](../docs/guides/build-release.md).
 
 ---
 

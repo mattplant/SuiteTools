@@ -138,6 +138,8 @@ These steps are designed to save you time by catching issues early which is fast
 
    `yarn test` runs each workspace’s `test` script (`yarn workspaces foreach -Apt --verbose run test`). Shared uses Vitest (`shared/src/**/*.test.ts`). Backend uses SuiteCloud Jest against `TypeScripts/` (`backend/__tests__/`). Frontend uses Vitest (+ Testing Library for hooks) under `frontend/src/**/*.test.ts(x)`.
 
+   `yarn test:coverage` is the same suite instrumented, and is what CI runs. It writes `<workspace>/coverage/` — an HTML report to open locally, and a cobertura report GitLab turns into per-line annotations on the merge request diff — then prints one combined figure. Coverage is measured, not gated: there is no threshold, so a low number never fails the run (#111).
+
 4. **Before you commit** — self‑check:
    - ✅ All dependency changes follow [`yarn-dependencies.md`](../governance/standards/yarn-dependencies.md)
    - ✅ No workspace boundaries violated
